@@ -3,11 +3,13 @@ import { isSolved, type Pour } from './rules.ts';
 import { replaySolution } from './solver.ts';
 
 export const GENERATOR_ID = 'balanced-shuffle-v1' as const;
+export type MixingPolicy = 'relaxed' | 'diverse';
 export type GenerationConfig = {
   readonly colors: readonly string[];
   readonly emptyBottles: 1 | 2;
   readonly minSolutionMoves: number;
   readonly maxSolutionMoves: number;
+  readonly mixing?: MixingPolicy;
 };
 export type ContentMetrics = {
   readonly colorCount: number;
@@ -38,7 +40,7 @@ export function isSeed(seed: unknown): seed is number {
 }
 
 export function parseGenerationConfig(input: unknown): GenerationConfig {
-  const value = recordObject(input, ['colors', 'emptyBottles', 'minSolutionMoves', 'maxSolutionMoves'], 'generation config');
+  const value = recordObject(input, ['colors', 'emptyBottles', 'minSolutionMoves', 'maxSolutionMoves', 'mixing'], 'generation config');
   const colors = value.colors;
   if (!Array.isArray(colors) || colors.length < 2 || colors.length > 5) throw new LevelValidationError(['Generator requires 2 to 5 colors']);
   // Use the same ID validation and color-count rules as actual levels.
@@ -49,7 +51,17 @@ export function parseGenerationConfig(input: unknown): GenerationConfig {
   if (typeof minimum !== 'number' || typeof maximum !== 'number' || !Number.isInteger(minimum) || !Number.isInteger(maximum) || minimum < 1 || maximum < minimum || maximum > 256) {
     throw new LevelValidationError(['Solution move range must be integers with 1 <= minimum <= maximum <= 256']);
   }
-  return Object.freeze({ colors: Object.freeze([...colors] as string[]), emptyBottles: value.emptyBottles, minSolutionMoves: minimum, maxSolutionMoves: maximum });
+  const mixing = value.mixing ?? 'relaxed';
+  if (mixing !== 'relaxed' && mixing !== 'diverse') throw new LevelValidationError(['mixing must be relaxed or diverse']);
+  if (mixing === 'diverse' && colors.length < 3) throw new LevelValidationError(['Diverse starts require at least 3 colors']);
+  return Object.freeze({ colors: Object.freeze([...colors] as string[]), emptyBottles: value.emptyBottles, minSolutionMoves: minimum, maxSolutionMoves: maximum, mixing });
+}
+
+/** Initial nonempty bottles only: >=3 distinct colors and <=half a bottle per color.
+ * Total count is checked, even when matching layers are not adjacent. Empty spares are exempt. */
+export function hasDiverseStart(level: LevelDefinition): boolean {
+  return level.bottles.every(({ layers }) => layers.length === 0 || (new Set(layers).size >= 3
+    && level.colors.every(color => layers.filter(layer => layer === color).length <= level.capacity / 2)));
 }
 
 /** Directly address a candidate; retries never depend on time, global random state or prior calls. */
@@ -107,6 +119,7 @@ export function parseGeneratedContent(input: unknown): GeneratedContent {
   const level = parseLevel(value.level);
   const expected = makeCandidate(origin.seed, origin.candidateIndex, config);
   if (JSON.stringify(level) !== JSON.stringify(expected)) throw new LevelValidationError(['Actual layout does not match generation origin']);
+  if (config.mixing === 'diverse' && !hasDiverseStart(level)) throw new LevelValidationError(['Initial bottles do not meet diverse mixing policy']);
   if (!Array.isArray(value.solution) || value.solution.length < config.minSolutionMoves || value.solution.length > config.maxSolutionMoves) throw new LevelValidationError(['Solution outside configured move range']);
   const solution = value.solution.map(inputPour => {
     const pour = recordObject(inputPour, ['source', 'target', 'color', 'amount'], 'pour');

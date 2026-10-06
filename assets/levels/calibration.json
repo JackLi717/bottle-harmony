@@ -16,7 +16,8 @@
           ],
           "emptyBottles": 2,
           "minSolutionMoves": 3,
-          "maxSolutionMoves": 80
+          "maxSolutionMoves": 80,
+          "mixing": "relaxed"
         }
       },
       "level": {
@@ -102,7 +103,8 @@
           ],
           "emptyBottles": 2,
           "minSolutionMoves": 3,
-          "maxSolutionMoves": 80
+          "maxSolutionMoves": 80,
+          "mixing": "relaxed"
         }
       },
       "level": {
@@ -210,7 +212,8 @@
           ],
           "emptyBottles": 2,
           "minSolutionMoves": 3,
-          "maxSolutionMoves": 80
+          "maxSolutionMoves": 80,
+          "mixing": "relaxed"
         }
       },
       "level": {
@@ -325,7 +328,8 @@
           ],
           "emptyBottles": 2,
           "minSolutionMoves": 3,
-          "maxSolutionMoves": 80
+          "maxSolutionMoves": 80,
+          "mixing": "relaxed"
         }
       },
       "level": {
@@ -458,7 +462,7 @@
       "origin": {
         "generator": "balanced-shuffle-v1",
         "seed": 717,
-        "candidateIndex": 0,
+        "candidateIndex": 69,
         "config": {
           "colors": [
             "jade",
@@ -466,15 +470,16 @@
             "amber"
           ],
           "emptyBottles": 1,
-          "minSolutionMoves": 3,
-          "maxSolutionMoves": 80
+          "minSolutionMoves": 10,
+          "maxSolutionMoves": 80,
+          "mixing": "diverse"
         }
       },
       "level": {
         "format": "bottle-harmony",
         "version": 1,
         "rules": "water-sort",
-        "id": "g-v1-000002cd-0-3c-1e",
+        "id": "g-v1-000002cd-69-3c-1e",
         "capacity": 4,
         "colors": [
           "jade",
@@ -485,8 +490,8 @@
           {
             "id": "bottle-1",
             "layers": [
-              "amber",
-              "amber",
+              "jade",
+              "coral",
               "amber",
               "coral"
             ]
@@ -494,19 +499,19 @@
           {
             "id": "bottle-2",
             "layers": [
+              "amber",
+              "jade",
               "coral",
-              "jade",
-              "jade",
-              "jade"
+              "amber"
             ]
           },
           {
             "id": "bottle-3",
             "layers": [
-              "coral",
               "amber",
               "jade",
-              "coral"
+              "coral",
+              "jade"
             ]
           },
           {
@@ -515,42 +520,66 @@
           }
         ]
       },
-      "structureKey": "water-sort:4:3:4:/AAAB/BACB/BCCC",
+      "structureKey": "water-sort:4:3:4:/ABCA/ABCB/BCAC",
       "solution": [
         {
-          "source": 1,
-          "target": 3,
-          "color": "jade",
-          "amount": 3
-        },
-        {
           "source": 0,
-          "target": 1,
-          "color": "coral",
-          "amount": 1
-        },
-        {
-          "source": 2,
-          "target": 1,
-          "color": "coral",
-          "amount": 1
-        },
-        {
-          "source": 2,
           "target": 3,
-          "color": "jade",
+          "color": "coral",
           "amount": 1
         },
         {
-          "source": 2,
+          "source": 1,
           "target": 0,
           "color": "amber",
           "amount": 1
         },
         {
           "source": 1,
-          "target": 2,
+          "target": 3,
           "color": "coral",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "jade",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "coral",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "jade",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "amber",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 3,
+          "color": "coral",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 0,
+          "color": "jade",
+          "amount": 3
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "amber",
           "amount": 3
         }
       ],
@@ -558,8 +587,8 @@
         "colorCount": 3,
         "bottleCount": 4,
         "mixedBottles": 3,
-        "colorRuns": 8,
-        "solutionMoves": 6
+        "colorRuns": 12,
+        "solutionMoves": 10
       }
     },
     {
@@ -578,7 +607,8 @@
           ],
           "emptyBottles": 2,
           "minSolutionMoves": 3,
-          "maxSolutionMoves": 80
+          "maxSolutionMoves": 80,
+          "mixing": "diverse"
         }
       },
       "level": {
@@ -741,7 +771,7 @@
       "origin": {
         "generator": "balanced-shuffle-v1",
         "seed": 717,
-        "candidateIndex": 6,
+        "candidateIndex": 78,
         "config": {
           "colors": [
             "jade",
@@ -750,15 +780,16 @@
             "azure"
           ],
           "emptyBottles": 1,
-          "minSolutionMoves": 3,
-          "maxSolutionMoves": 80
+          "minSolutionMoves": 14,
+          "maxSolutionMoves": 80,
+          "mixing": "diverse"
         }
       },
       "level": {
         "format": "bottle-harmony",
         "version": 1,
         "rules": "water-sort",
-        "id": "g-v1-000002cd-6-4c-1e",
+        "id": "g-v1-000002cd-78-4c-1e",
         "capacity": 4,
         "colors": [
           "jade",
@@ -771,36 +802,36 @@
             "id": "bottle-1",
             "layers": [
               "azure",
-              "coral",
               "jade",
-              "coral"
+              "azure",
+              "amber"
             ]
           },
           {
             "id": "bottle-2",
             "layers": [
-              "amber",
-              "amber",
               "azure",
-              "coral"
+              "coral",
+              "amber",
+              "jade"
             ]
           },
           {
             "id": "bottle-3",
             "layers": [
+              "coral",
               "jade",
               "amber",
-              "azure",
               "jade"
             ]
           },
           {
             "id": "bottle-4",
             "layers": [
-              "jade",
               "azure",
+              "amber",
               "coral",
-              "amber"
+              "coral"
             ]
           },
           {
@@ -809,58 +840,40 @@
           }
         ]
       },
-      "structureKey": "water-sort:4:4:5:/AABC/BCDC/DABD/DBCA",
+      "structureKey": "water-sort:4:4:5:/ABAC/ACDD/ADCB/DBCB",
       "solution": [
         {
-          "source": 0,
-          "target": 4,
-          "color": "coral",
-          "amount": 1
-        },
-        {
           "source": 1,
           "target": 4,
-          "color": "coral",
+          "color": "jade",
           "amount": 1
         },
         {
           "source": 2,
-          "target": 0,
+          "target": 4,
           "color": "jade",
           "amount": 1
         },
         {
           "source": 1,
           "target": 2,
-          "color": "azure",
-          "amount": 1
-        },
-        {
-          "source": 3,
-          "target": 1,
           "color": "amber",
           "amount": 1
         },
         {
           "source": 3,
-          "target": 4,
+          "target": 1,
           "color": "coral",
-          "amount": 1
-        },
-        {
-          "source": 2,
-          "target": 3,
-          "color": "azure",
           "amount": 2
         },
         {
           "source": 2,
-          "target": 1,
+          "target": 3,
           "color": "amber",
-          "amount": 1
+          "amount": 2
         },
         {
-          "source": 0,
+          "source": 4,
           "target": 2,
           "color": "jade",
           "amount": 2
@@ -868,20 +881,50 @@
         {
           "source": 0,
           "target": 4,
-          "color": "coral",
+          "color": "amber",
           "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 4,
+          "color": "amber",
+          "amount": 3
         },
         {
           "source": 3,
           "target": 0,
           "color": "azure",
-          "amount": 3
+          "amount": 1
         },
         {
           "source": 2,
           "target": 3,
           "color": "jade",
           "amount": 3
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "coral",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "azure",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 3,
+          "color": "jade",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "azure",
+          "amount": 1
         }
       ],
       "metrics": {
@@ -889,7 +932,7 @@
         "bottleCount": 5,
         "mixedBottles": 4,
         "colorRuns": 15,
-        "solutionMoves": 12
+        "solutionMoves": 14
       }
     },
     {
@@ -898,7 +941,7 @@
       "origin": {
         "generator": "balanced-shuffle-v1",
         "seed": 717,
-        "candidateIndex": 0,
+        "candidateIndex": 3,
         "config": {
           "colors": [
             "jade",
@@ -908,15 +951,16 @@
             "violet"
           ],
           "emptyBottles": 2,
-          "minSolutionMoves": 3,
-          "maxSolutionMoves": 80
+          "minSolutionMoves": 17,
+          "maxSolutionMoves": 80,
+          "mixing": "diverse"
         }
       },
       "level": {
         "format": "bottle-harmony",
         "version": 1,
         "rules": "water-sort",
-        "id": "g-v1-000002cd-0-5c-2e",
+        "id": "g-v1-000002cd-3-5c-2e",
         "capacity": 4,
         "colors": [
           "jade",
@@ -930,7 +974,7 @@
             "id": "bottle-1",
             "layers": [
               "azure",
-              "coral",
+              "amber",
               "violet",
               "jade"
             ]
@@ -938,37 +982,37 @@
           {
             "id": "bottle-2",
             "layers": [
-              "coral",
               "amber",
-              "violet",
-              "violet"
+              "azure",
+              "coral",
+              "jade"
             ]
           },
           {
             "id": "bottle-3",
             "layers": [
-              "azure",
-              "jade",
               "amber",
-              "jade"
+              "violet",
+              "azure",
+              "coral"
             ]
           },
           {
             "id": "bottle-4",
             "layers": [
+              "violet",
+              "jade",
               "azure",
-              "coral",
-              "coral",
-              "violet"
+              "coral"
             ]
           },
           {
             "id": "bottle-5",
             "layers": [
-              "azure",
               "amber",
-              "jade",
-              "amber"
+              "violet",
+              "coral",
+              "jade"
             ]
           },
           {
@@ -981,7 +1025,7 @@
           }
         ]
       },
-      "structureKey": "water-sort:4:5:7://ABBC/ABCD/ADED/AEDE/BECC",
+      "structureKey": "water-sort:4:5:7://ABCD/ABDE/ACDE/BECD/CABE",
       "solution": [
         {
           "source": 0,
@@ -990,93 +1034,99 @@
           "amount": 1
         },
         {
-          "source": 0,
-          "target": 6,
-          "color": "violet",
+          "source": 1,
+          "target": 5,
+          "color": "jade",
           "amount": 1
         },
         {
           "source": 1,
           "target": 6,
+          "color": "coral",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 6,
+          "color": "coral",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "azure",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 6,
+          "color": "coral",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 5,
+          "color": "jade",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 6,
+          "color": "coral",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 4,
           "color": "violet",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "amber",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 0,
+          "color": "azure",
           "amount": 2
         },
         {
           "source": 2,
-          "target": 5,
-          "color": "jade",
+          "target": 4,
+          "color": "violet",
           "amount": 1
         },
         {
           "source": 1,
           "target": 2,
           "color": "amber",
-          "amount": 1
+          "amount": 2
         },
         {
-          "source": 0,
-          "target": 1,
-          "color": "coral",
+          "source": 3,
+          "target": 0,
+          "color": "azure",
           "amount": 1
         },
         {
           "source": 3,
-          "target": 6,
+          "target": 5,
+          "color": "jade",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 3,
           "color": "violet",
-          "amount": 1
-        },
-        {
-          "source": 3,
-          "target": 1,
-          "color": "coral",
-          "amount": 2
-        },
-        {
-          "source": 0,
-          "target": 3,
-          "color": "azure",
-          "amount": 1
+          "amount": 3
         },
         {
           "source": 2,
-          "target": 0,
-          "color": "amber",
-          "amount": 2
-        },
-        {
-          "source": 2,
-          "target": 5,
-          "color": "jade",
-          "amount": 1
-        },
-        {
-          "source": 2,
-          "target": 3,
-          "color": "azure",
-          "amount": 1
-        },
-        {
-          "source": 4,
-          "target": 0,
-          "color": "amber",
-          "amount": 1
-        },
-        {
-          "source": 4,
-          "target": 5,
-          "color": "jade",
-          "amount": 1
-        },
-        {
-          "source": 4,
-          "target": 0,
-          "color": "amber",
-          "amount": 1
-        },
-        {
-          "source": 3,
           "target": 4,
-          "color": "azure",
+          "color": "amber",
           "amount": 3
         }
       ],
@@ -1084,8 +1134,8 @@
         "colorCount": 5,
         "bottleCount": 7,
         "mixedBottles": 5,
-        "colorRuns": 18,
-        "solutionMoves": 16
+        "colorRuns": 20,
+        "solutionMoves": 17
       }
     }
   ]

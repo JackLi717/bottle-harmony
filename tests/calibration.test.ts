@@ -37,13 +37,20 @@ test('bundled calibration has two samples per provisional tier, all independentl
   }
 });
 
-test('calibration rejects a missing or replaced fixture; matched pair isolates spare capacity', () => {
+test('calibration rejects missing/replaced fixtures and requires diverse starts for D3/D4 only', () => {
   const pool = JSON.parse(json);
   assert.throws(() => loadCalibrationSamples(JSON.stringify({ ...pool, records: pool.records.slice(1) })));
   assert.throws(() => loadCalibrationSamples(JSON.stringify({ ...pool, records: [...pool.records.slice(1), pool.records[1]] })));
-  const a = samples[2].content.level, b = samples[4].content.level;
-  assert.deepEqual(a.bottles.slice(0, 3), b.bottles.slice(0, 3));
-  assert.equal(a.bottles.length, b.bottles.length + 1);
+  pool.records[4].origin.config.mixing = 'relaxed';
+  assert.throws(() => loadCalibrationSamples(JSON.stringify(pool)));
+  for (const sample of samples) {
+    assert.equal(sample.content.origin.config.mixing, sample.tier === 'D3' || sample.tier === 'D4' ? 'diverse' : 'relaxed');
+    if (sample.tier === 'D3' || sample.tier === 'D4') for (const { layers } of sample.content.level.bottles) {
+      if (!layers.length) continue;
+      assert.ok(new Set(layers).size >= 3);
+      for (const color of sample.content.level.colors) assert.ok(layers.filter(c => c === color).length <= 2);
+    }
+  }
 });
 
 test('reference hints follow exact verified states, including undo, and never trust move count', () => {

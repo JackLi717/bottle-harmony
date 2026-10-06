@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import test from 'node:test';
 import { decodeContentPool, encodeContentPool } from '../src/game/contentCodec.ts';
 import { createGenerator, generateContent, type GenerationResult, type GeneratorOptions } from '../src/game/generator.ts';
-import { makeCandidate, parseGeneratedContent, structureKey, type GenerationConfig } from '../src/game/generation.ts';
+import { hasDiverseStart, makeCandidate, parseGeneratedContent, structureKey, type GenerationConfig } from '../src/game/generation.ts';
 import { initialBoard, parseLevel } from '../src/game/model.ts';
 import { getLegalPours, isSolved } from '../src/game/rules.ts';
 import { replaySolution } from '../src/game/solver.ts';
@@ -91,6 +91,28 @@ test('simple, unsolvable and move-range failures are rejected without exposing c
   for (const result of [simple, unsolvable, outsideRange]) assert.equal('content' in result, false);
 });
 
+test('diverse generation enforces each initial filled bottle while conserving colors and proving solvability', () => {
+  const rejected = generateContent({ seed: 717, colors: colors.slice(0, 3), mixing: 'diverse', maxAttempts: 1 });
+  assert.equal(rejected.status, 'exhausted');
+  assert.equal(rejected.stats.rejected.mixing, 1);
+  assert.equal(rejected.stats.visitedStates, 0);
+  for (const count of [3, 4, 5]) for (const seed of [717, 718]) {
+    const a = generate({ seed, colors: colors.slice(0, count), mixing: 'diverse', maxAttempts: 1000 });
+    const b = generate({ seed, colors: colors.slice(0, count), mixing: 'diverse', maxAttempts: 1000 });
+    assert.equal(a.content.origin.config.mixing, 'diverse');
+    assert.deepEqual(a.content, b.content);
+    assert.ok(hasDiverseStart(a.content.level));
+    for (const bottle of a.content.level.bottles) if (bottle.layers.length) {
+      assert.ok(new Set(bottle.layers).size >= 3);
+      for (const color of a.content.level.colors) assert.ok(bottle.layers.filter(c => c === color).length <= 2);
+    }
+    assert.ok(isSolved(replaySolution(initialBoard(a.content.level), a.content.solution)));
+  }
+  const simple = generate({ colors: colors.slice(0, 3) }).content;
+  assert.equal(hasDiverseStart(simple.level), false);
+  assert.throws(() => parseGeneratedContent({ ...simple, origin: { ...simple.origin, config: { ...simple.origin.config, mixing: 'diverse' } } }));
+});
+
 test('state/time/attempt budgets are distinct; cancellation preserves the bounded accounting', () => {
   const options = { seed: 717, colors: colors.slice(0, 2) };
   const states = generateContent({ ...options, maxStates: 1, maxTotalStates: 1 });
@@ -119,6 +141,7 @@ test('invalid generator settings reject before candidate creation or search', ()
     { emptyBottles: 0 }, { maxAttempts: 0 }, { maxAttempts: 1001 }, { maxStates: Infinity }, { maxTotalStates: 0 },
     { maxMilliseconds: 0 }, { maxMilliseconds: 60001 }, { minSolutionMoves: 5, maxSolutionMoves: 3 },
     { excludedKeys: ['x'.repeat(257)] },
+    { mixing: 'unknown' }, { mixing: 'diverse' },
   ];
   for (const change of changes) {
     const result = generateContent({ seed: 717, colors: colors.slice(0, 2), ...change } as GeneratorOptions);
@@ -172,6 +195,12 @@ test('CLI generates a reproducible pool, verifies serialized replay and preserve
     assert.equal(await readFile(output, 'utf8'), original);
     assert.equal(run('generate', '--seed', '4294967296', '--output', output).status, 1);
     assert.equal(run('generate', '--unknown', 'x', '--output', output).status, 1);
+    const diverseOutput = join(directory, 'diverse.json');
+    assert.equal(run('generate', '--colors', '4', '--count', '2', '--mixing', 'diverse', '--output', diverseOutput).status, 0);
+    assert.ok(decodeContentPool(await readFile(diverseOutput, 'utf8')).every(content => content.origin.config.mixing === 'diverse' && hasDiverseStart(content.level)));
+    assert.equal(run('verify', '--input', diverseOutput).status, 0);
+    assert.equal(run('generate', '--colors', '2', '--mixing', 'diverse', '--output', output).status, 1);
+    assert.equal(await readFile(output, 'utf8'), original);
     const tampered = JSON.parse(original); tampered.records[0].solution[0].amount = 99;
     await writeFile(output, JSON.stringify(tampered));
     assert.equal(run('verify', '--input', output).status, 1);

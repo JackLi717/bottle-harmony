@@ -1,4 +1,4 @@
-import { contentMetrics, GENERATOR_ID, isSeed, makeCandidate, parseGeneratedContent, parseGenerationConfig, structureKey, type GeneratedContent, type GenerationConfig } from './generation.ts';
+import { contentMetrics, GENERATOR_ID, hasDiverseStart, isSeed, makeCandidate, parseGeneratedContent, parseGenerationConfig, structureKey, type GeneratedContent, type GenerationConfig, type MixingPolicy } from './generation.ts';
 import { initialBoard, LevelValidationError, type LevelDefinition } from './model.ts';
 import { isSolved } from './rules.ts';
 import { createSolver, type SolverTask } from './solver.ts';
@@ -14,12 +14,13 @@ export type GeneratorOptions = {
   maxTotalStates?: number;
   maxMilliseconds?: number;
   excludedKeys?: readonly string[];
+  mixing?: MixingPolicy;
 };
 export type GenerationStats = {
   readonly attempts: number;
   readonly visitedStates: number;
   readonly elapsedMilliseconds: number;
-  readonly rejected: Readonly<Record<'initiallySimple' | 'duplicate' | 'unsolvable' | 'searchStates' | 'solutionLength', number>>;
+  readonly rejected: Readonly<Record<'initiallySimple' | 'mixing' | 'duplicate' | 'unsolvable' | 'searchStates' | 'solutionLength', number>>;
 };
 export type GenerationResult =
   | { status: 'generated'; content: GeneratedContent; stats: GenerationStats }
@@ -37,7 +38,7 @@ export function createGenerator(options: GeneratorOptions): GeneratorTask {
   const maxStates = options.maxStates ?? 30000;
   const maxTotalStates = options.maxTotalStates ?? 150000;
   const maxMilliseconds = options.maxMilliseconds ?? 5000;
-  const rejected = { initiallySimple: 0, duplicate: 0, unsolvable: 0, searchStates: 0, solutionLength: 0 };
+  const rejected = { initiallySimple: 0, mixing: 0, duplicate: 0, unsolvable: 0, searchStates: 0, solutionLength: 0 };
   let config: GenerationConfig | null = null;
   let attempts = 0, visitedStates = 0, elapsed = 0;
   let result: GenerationResult | null = null;
@@ -50,7 +51,7 @@ export function createGenerator(options: GeneratorOptions): GeneratorTask {
   const stats = (): GenerationStats => ({ attempts, visitedStates, elapsedMilliseconds: elapsed, rejected: Object.freeze({ ...rejected }) });
   try {
     config = parseGenerationConfig({ colors: options.colors, emptyBottles: options.emptyBottles ?? 2,
-      minSolutionMoves: options.minSolutionMoves ?? 3, maxSolutionMoves: options.maxSolutionMoves ?? 80 });
+      minSolutionMoves: options.minSolutionMoves ?? 3, maxSolutionMoves: options.maxSolutionMoves ?? 80, mixing: options.mixing ?? 'relaxed' });
   } catch (error) { issues.push(...(error instanceof LevelValidationError ? error.issues : ['Invalid configuration'])); }
   if (!isSeed(seed)) issues.push('Seed must be an unsigned 32-bit integer');
   if (!Number.isInteger(maxAttempts) || maxAttempts < 1 || maxAttempts > 1000) issues.push('maxAttempts must be an integer from 1 to 1000');
@@ -93,6 +94,7 @@ export function createGenerator(options: GeneratorOptions): GeneratorTask {
           candidate = makeCandidate(seed, attempts++, config!);
           const board = initialBoard(candidate);
           if (isSolved(board, 4) || contentMetrics(candidate, 0).mixedBottles < 2) { rejected.initiallySimple++; continue; }
+          if (config!.mixing === 'diverse' && !hasDiverseStart(candidate)) { rejected.mixing++; continue; }
           const key = structureKey(candidate);
           if (excluded.has(key)) { rejected.duplicate++; continue; }
           excluded.add(key);
