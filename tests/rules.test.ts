@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { DEMO_BOARD } from '../src/game/demo.ts';
-import { applyPour, getPour, isSolved, solveDemo, type Board } from '../src/game/rules.ts';
+import { applyPour, getPour, isSolved, type Board } from '../src/game/rules.ts';
+import { solveBoard } from '../src/game/solver.ts';
 import { clipBelow, LAYER_AREA, liquidPolygon, polygonArea, rotatedInterior } from '../src/art/liquidGeometry.ts';
 import { bottleBounds, createPourPlan, FLOW_END, FLOW_START, outletPoint, pouringAngle, rotateBottlePoint, sourcePose } from '../src/art/pourGeometry.ts';
 
@@ -22,8 +23,11 @@ test('empty sources, full destinations, different colors and same bottle reject'
 });
 
 test('the demonstration is solvable and every step conserves both colors', () => {
-  const route = solveDemo(DEMO_BOARD);
-  assert.ok(route?.length);
+  const result = solveBoard(DEMO_BOARD);
+  assert.equal(result.status, 'solved');
+  assert.ok(result.status === 'solved');
+  const route = result.route;
+  assert.ok(route.length);
   let board = DEMO_BOARD;
   for (const pour of route) {
     board = applyPour(board, pour);

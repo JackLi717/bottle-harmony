@@ -5,9 +5,9 @@
 ## 当前范围
 
 当前是竖屏视觉与交互演示：原创玻璃瓶、青绿/珊瑚红两种液体、四瓶固定演示局面、点击倒水、演示一步、撤销和重来。演示局面经过独立求解器验证。
-这一阶段用于确认美术、倒水手感、手机和平板布局，以及旧设备运行情况。完整关卡、合作、账号、时间额度、音效和进度保存尚未实现。
+通用核心现已支持多色多瓶关卡定义、显式统一容量、不可变会话、分段预算求解与 JSON 编码解码；演示已接回同一套规则。界面仍保留四瓶视觉基线。生成器、难度评级、连续游玩、每日题、合作、账号、时间额度、音效和进度保存尚未实现。
 
-用户已在 iPhone 和低端安卓手机上试玩，并在最新复测中认可当前效果与速度，认为核心技术问题已经解决。当前视觉演示的真机体验验证通过，后续开发保留已验证的 React Native、SVG 绘图与 Reanimated 动画方案；新增功能另行确认范围。
+用户已在 iPhone 和低端安卓手机上试玩，并在最新复测中认可当前效果与速度，认为核心技术问题已经解决。当前视觉演示的真机体验验证通过，后续开发保留已验证的 React Native、SVG 绘图与 Reanimated 动画方案；通用求解器仍需新增真机性能测量，其他功能另行确认范围。
 
 使用 Expo Development Build 开发。依赖版本以 package.json 和 package-lock.json 为准；React Native 版本跟随 Expo SDK 的兼容配置。
 
@@ -15,7 +15,8 @@
 
 - [竞品功能记录](docs/competitor-functional-review.md)：截图与操作确认的规则、活动、商业化和待确认项，附原始截图索引。
 - [游戏模式讨论稿](docs/game-mode-design.md)：第一期候选范围、关卡设计方法、原创机制，以及已有的好友协助、共享棋盘和时间奖励讨论。新增功能仍需讨论确认。
-- [纯玩版系统方案](docs/system-design.md)：通用关卡模型、颜色、求解器、生成器、编码解码、动画接口与自由游玩／每日题的实施顺序；目前为待审阅的方案。
+- [纯玩版系统方案](docs/system-design.md)：完整架构、四档难度与松紧节奏、后续实施顺序。
+- [通用关卡核心](docs/level-core.md)：已实现的数据格式、会话、分段求解接口、测试及桌面性能基准，含 C++ 后端的评估条件。
 
 原始截图和后续游戏参考资料保存在[本地素材目录](docs/references/README.md)。该目录及素材索引已加入 Git 忽略规则，仅在本机保存，不随仓库上传。
 
@@ -64,6 +65,7 @@ npm start
 npm run typecheck
 npm run lint
 npm test
+npm run benchmark:solver
 npx expo install --check
 npx expo-doctor
 ```
@@ -73,7 +75,7 @@ npx expo-doctor
 - App.tsx：应用入口与安全区域。
 - src/ui/DemoScreen.tsx：演示交互与自适应排版。
 - src/art/：瓶子、液体、水流与背景绘制。
-- src/game/：独立规则、演示局面与小规模求解器。
+- src/game/：独立模型、规则、会话、通用求解器、编码解码与演示局面。
 - index.ts：应用入口。
 - app.json：应用名称、平台标识和原生配置。
 - tsconfig.json：严格 TypeScript 配置。

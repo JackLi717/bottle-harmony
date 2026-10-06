@@ -10,8 +10,10 @@ import { PourStream } from '../art/PourStream';
 import { StageArt } from '../art/StageArt';
 import { LIQUIDS } from '../art/palette';
 import { createPourPlan, type PourPlan } from '../art/pourGeometry';
-import { DEMO_BOARD } from '../game/demo';
-import { applyPour, getPour, isSolved, solveDemo, type Board, type Pour } from '../game/rules';
+import { DEMO_LEVEL } from '../game/demo';
+import { getPour, type Board, type Pour } from '../game/rules';
+import { createSession, moveSession, resetSession, undoSession } from '../game/session';
+import { createSolver, type SolveResult, type SolverTask } from '../game/solver';
 import { Icon } from './Icon';
 
 const POSITIONS = [{ x: 38, y: 14 }, { x: 222, y: 14 }, { x: 38, y: 228 }, { x: 222, y: 228 }];
@@ -21,8 +23,10 @@ export function DemoScreen() {
   const insets = useSafeAreaInsets();
   const dimensions = useWindowDimensions();
   const compact = dimensions.height < 720;
-  const [board, setBoard] = useState<Board>(DEMO_BOARD);
-  const [history, setHistory] = useState<Board[]>([]);
+  const [session, setSession] = useState(() => createSession(DEMO_LEVEL));
+  const { board, history } = session;
+  const [searching, setSearching] = useState(false);
+  const search = useRef<SolverTask | null>(null);
   const [selected, setSelected] = useState<number | null>(null);
   const [animation, setAnimation] = useState<Animation | null>(null);
   const [stage, setStage] = useState({ width: 0, height: 0, y: 0 });
@@ -36,7 +40,7 @@ export function DemoScreen() {
   // above the board. Reserve at least 130 design units without crossing the notch.
   const scale = Math.max(0, Math.min(stage.width / 360, stage.height / 430, (stage.y - safeTop + stage.height / 2) / 345));
   const minY = scale > 0 ? -Math.max(130, (stage.y - safeTop + (stage.height - 430 * scale) / 2) / scale) : -130;
-  const won = isSolved(board);
+  const won = session.status === 'solved';
   const finished = useCallback(() => {
     busy.current = false;
     setAnimation(null);
@@ -59,6 +63,9 @@ export function DemoScreen() {
     const preference = AccessibilityInfo.addEventListener('reduceMotionChanged', setReduceMotion);
     const subscription = AppState.addEventListener('change', state => {
       if (state !== 'active') {
+        search.current?.cancel();
+        search.current = null;
+        setSearching(false);
         // The logical move was already committed; interruption displays that result.
         cancelAnimation(progress);
         progress.set(1);
@@ -72,23 +79,27 @@ export function DemoScreen() {
       preference.remove();
       subscription.remove();
       cancelAnimation(progress);
+      search.current?.cancel();
+      search.current = null;
     };
   }, [progress]);
 
   function startPour(pour: Pour) {
     if (busy.current) return;
-    const next = applyPour(board, pour);
+    const accepted = moveSession(session, pour.source, pour.target);
+    if (!accepted) return;
     busy.current = true;
-    setHistory(old => [...old, board]);
-    setBoard(next);
-    setMessage(isSolved(next) ? '色彩归位了。再来一次？' : '慢慢来，让相同的颜色相遇');
+    setSession(accepted.session);
+    setMessage(accepted.session.status === 'solved' ? '色彩归位了。再来一次？' : accepted.session.status === 'stalled' ? '暂时没有可倒的瓶子，可以撤销或重来' : '慢慢来，让相同的颜色相遇');
     if (reduceMotion) { busy.current = false; setSelected(null); return; }
     progress.set(0);
-    setAnimation({ before: board, pour, plan: createPourPlan(POSITIONS[pour.source], POSITIONS[pour.target], board[pour.source].length, pour.amount, minY, selected === pour.source ? 12 : 0) });
+    const { before, pour: committedPour } = accepted.event;
+    setAnimation({ before, pour: committedPour, plan: createPourPlan(POSITIONS[committedPour.source], POSITIONS[committedPour.target], before[committedPour.source].length, committedPour.amount, minY, selected === committedPour.source ? 12 : 0) });
   }
 
   function selectBottle(index: number) {
     if (busy.current) return;
+    if (won) { setMessage('色彩归位了。可以撤销、重来或再玩一次'); return; }
     if (selected === index) { setSelected(null); return; }
     if (selected === null) {
       if (!board[index].length) { setMessage('先选一个有水的瓶子'); return; }
@@ -96,9 +107,9 @@ export function DemoScreen() {
       setMessage('再点空瓶，或顶部同色的瓶子');
       return;
     }
-    const pour = getPour(board, selected, index);
+    const pour = getPour(board, selected, index, session.level.capacity);
     if (!pour) {
-      setMessage(board[index].length === 4 ? '这个瓶子已经装满了' : '只能倒入空瓶，或顶部同色的瓶子');
+      setMessage(board[index].length === session.level.capacity ? '这个瓶子已经装满了' : '只能倒入空瓶，或顶部同色的瓶子');
       return;
     }
     startPour(pour);
@@ -106,22 +117,35 @@ export function DemoScreen() {
 
   function reset() {
     if (busy.current) return;
-    setBoard(DEMO_BOARD); setHistory([]); setSelected(null);
+    setSession(resetSession(session)); setSelected(null);
     setMessage('点选有水的瓶子，再点空瓶');
   }
 
   function undo() {
     if (busy.current || !history.length) return;
-    setBoard(history[history.length - 1]);
-    setHistory(old => old.slice(0, -1));
+    setSession(undoSession(session));
     setSelected(null); setMessage('已退回上一步');
   }
 
-  function demonstrate() {
+  async function demonstrate() {
     if (busy.current) return;
-    const route = solveDemo(board);
-    if (route?.length) startPour(route[0]);
-    else if (won) reset();
+    if (won) { reset(); return; }
+    const task = createSolver(board, { capacity: session.level.capacity, maxStates: 30000, maxMilliseconds: 200 });
+    search.current = task;
+    busy.current = true;
+    setSearching(true);
+    let result: SolveResult | null = null;
+    do {
+      // Yield to rendering/input between small CPU slices; no search inside animation frames.
+      await new Promise<void>(resolve => setTimeout(resolve, 0));
+      if (search.current !== task) return;
+      result = task.step(32, 4);
+    } while (!result);
+    search.current = null;
+    busy.current = false;
+    setSearching(false);
+    if (result.status === 'solved' && result.route.length) startPour(result.route[0]);
+    else if (result.status === 'limitReached') setMessage('这次没有及时找到解法，可以继续尝试、撤销或重来');
     else setMessage('试试撤销一步，或重新开始');
   }
 
@@ -156,7 +180,7 @@ export function DemoScreen() {
             {POSITIONS.map((position, index) => {
               const bottle = displayBoard[index];
               const label = `${index + 1}号瓶，${bottle.length ? [...bottle].reverse().map(c => LIQUIDS[c as keyof typeof LIQUIDS].name).join('、') : '空瓶'}`;
-              return <Pressable key={index} accessibilityRole="button" accessibilityLabel={label} accessibilityHint="先选源瓶，再选目标瓶" accessibilityState={{ selected: selected === index, disabled: !!animation }} disabled={!!animation} onPress={() => selectBottle(index)} style={{ position: 'absolute', left: position.x * scale, top: position.y * scale, width: 100 * scale, height: 180 * scale, zIndex: 3 }}>
+              return <Pressable key={index} accessibilityRole="button" accessibilityLabel={label} accessibilityHint="先选源瓶，再选目标瓶" accessibilityState={{ selected: selected === index, disabled: !!animation || searching }} disabled={!!animation || searching} onPress={() => selectBottle(index)} style={{ position: 'absolute', left: position.x * scale, top: position.y * scale, width: 100 * scale, height: 180 * scale, zIndex: 3 }}>
                 {selected === index && !animation && <View style={[styles.selectionDot, { bottom: -5 * scale }]} />}
               </Pressable>;
             })}
@@ -166,9 +190,9 @@ export function DemoScreen() {
         <View style={[styles.footer, compact && styles.footerCompact]}>
           <Text accessibilityLiveRegion="polite" style={[styles.message, won && styles.success]}>{message}</Text>
           <View style={styles.controls}>
-            <Pressable onPress={undo} disabled={!history.length || !!animation} accessibilityRole="button" accessibilityLabel="撤销上一步" style={({ pressed }) => [styles.secondary, (!history.length || !!animation) && styles.disabled, pressed && styles.pressed]}><Icon name="undo" /><Text style={styles.secondaryText}>撤销</Text></Pressable>
-            <Pressable onPress={demonstrate} disabled={!!animation} accessibilityRole="button" accessibilityLabel={won ? '再玩一次' : '演示一次倒水'} style={({ pressed }) => [styles.primaryWrap, !!animation && styles.disabled, pressed && styles.pressed]}><LinearGradient colors={['#F0DCAD', '#CEAD72']} style={styles.primary}><Icon name={won ? 'reset' : 'play'} color="#263B3D" size={21} /><Text style={styles.primaryText}>{won ? '再玩一次' : '演示一步'}</Text></LinearGradient></Pressable>
-            <Pressable onPress={reset} disabled={!!animation} accessibilityRole="button" accessibilityLabel="重新开始" style={({ pressed }) => [styles.secondary, !!animation && styles.disabled, pressed && styles.pressed]}><Icon name="reset" /><Text style={styles.secondaryText}>重来</Text></Pressable>
+            <Pressable onPress={undo} disabled={!history.length || !!animation || searching} accessibilityRole="button" accessibilityLabel="撤销上一步" style={({ pressed }) => [styles.secondary, (!history.length || !!animation || searching) && styles.disabled, pressed && styles.pressed]}><Icon name="undo" /><Text style={styles.secondaryText}>撤销</Text></Pressable>
+            <Pressable onPress={demonstrate} disabled={!!animation || searching} accessibilityRole="button" accessibilityLabel={won ? '再玩一次' : '演示一次倒水'} style={({ pressed }) => [styles.primaryWrap, (!!animation || searching) && styles.disabled, pressed && styles.pressed]}><LinearGradient colors={['#F0DCAD', '#CEAD72']} style={styles.primary}><Icon name={won ? 'reset' : 'play'} color="#263B3D" size={21} /><Text style={styles.primaryText}>{searching ? '正在寻找…' : won ? '再玩一次' : '演示一步'}</Text></LinearGradient></Pressable>
+            <Pressable onPress={reset} disabled={!!animation || searching} accessibilityRole="button" accessibilityLabel="重新开始" style={({ pressed }) => [styles.secondary, (!!animation || searching) && styles.disabled, pressed && styles.pressed]}><Icon name="reset" /><Text style={styles.secondaryText}>重来</Text></Pressable>
           </View>
           <Text style={styles.footnote}>无需计时 · 随心尝试</Text>
         </View>

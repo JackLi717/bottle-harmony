@@ -3,7 +3,7 @@
 ## Scope
 
 Bottle Harmony is a new iOS and Android water sort puzzle project.
-The approved current scope is a reusable portrait visual demo: original glass bottle artwork, two liquid colors, a solver-validated four-bottle fixture, tap-to-pour animation, undo/reset, and phone/tablet adaptation. Validate its appearance and performance on iPhone and low-end Android before expanding the game. Chapters, friends, accounts, time credits, audio, and saved progress are not implemented. Confirm the next feature's boundary before expanding game behavior.
+The approved current scope includes the reusable portrait visual demo and a general level core: stable color/bottle IDs, ordinary bottles with a shared explicit capacity, unified rules and sessions, bounded incremental solver, and JSON level encoding/decoding. The visible demo remains two colors and four bottles with tap-to-pour animation, undo/reset, and phone/tablet adaptation. Its appearance and performance have been approved on iPhone and low-end Android; the expanded solver still needs mobile performance measurement. Measure TypeScript first and consider a C++ backend only if mobile results justify it. Generators, difficulty rating, additional modes, special mechanisms, chapters, friends, accounts, time credits, audio, and saved progress are not implemented. Confirm the next feature's boundary before expanding game behavior.
 
 Work directly on main. Do not create feature branches or worktrees unless the user requests them. Keep this project independent from sibling projects.
 
