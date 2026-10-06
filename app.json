@@ -1,13 +1,15 @@
 {
   "expo": {
-    "name": "bottle-harmony",
+    "name": "Bottle Harmony",
     "slug": "bottle-harmony",
-    "version": "1.0.0",
+    "version": "0.0.1",
     "orientation": "portrait",
+    "backgroundColor": "#0B1B2F",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.bottleharmony.app"
     },
     "android": {
       "adaptiveIcon": {
@@ -16,7 +18,8 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.bottleharmony.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"
