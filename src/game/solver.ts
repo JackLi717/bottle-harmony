@@ -118,7 +118,10 @@ export function replaySolution(board: Board, route: readonly Pour[], capacity = 
   const issues = validateBoard(board, capacity);
   if (issues.length) throw new Error(issues.join('; '));
   let current = board;
-  for (const pour of route) current = applyPour(current, pour, capacity);
+  for (const pour of route) {
+    if (isSolved(current, capacity)) throw new Error('Route continues after completion');
+    current = applyPour(current, pour, capacity);
+  }
   if (!isSolved(current, capacity)) throw new Error('Route does not complete the board');
   return current;
 }

@@ -117,6 +117,7 @@ test('incremental and synchronous searches yield the same shortest replayable ro
   assert.throws(() => replaySolution(DEMO_BOARD, result.route.slice(0, -1)));
   assert.throws(() => replaySolution(DEMO_BOARD, [{ ...result.route[0], color: 'forged' }]));
   const complete = replaySolution(DEMO_BOARD, result.route);
+  assert.throws(() => replaySolution(DEMO_BOARD, [...result.route, getLegalPours(complete)[0]]));
   const alreadySolved = solveBoard(complete, { maxStates: 1 });
   assert.ok(alreadySolved.status === 'solved');
   assert.equal(alreadySolved.route.length, 0);
