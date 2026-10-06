@@ -1,0 +1,1092 @@
+{
+  "format": "bottle-harmony-pool",
+  "version": 1,
+  "records": [
+    {
+      "format": "bottle-harmony-content",
+      "version": 1,
+      "origin": {
+        "generator": "balanced-shuffle-v1",
+        "seed": 717,
+        "candidateIndex": 0,
+        "config": {
+          "colors": [
+            "jade",
+            "coral"
+          ],
+          "emptyBottles": 2,
+          "minSolutionMoves": 3,
+          "maxSolutionMoves": 80
+        }
+      },
+      "level": {
+        "format": "bottle-harmony",
+        "version": 1,
+        "rules": "water-sort",
+        "id": "g-v1-000002cd-0-2c-2e",
+        "capacity": 4,
+        "colors": [
+          "jade",
+          "coral"
+        ],
+        "bottles": [
+          {
+            "id": "bottle-1",
+            "layers": [
+              "jade",
+              "jade",
+              "coral",
+              "coral"
+            ]
+          },
+          {
+            "id": "bottle-2",
+            "layers": [
+              "coral",
+              "coral",
+              "jade",
+              "jade"
+            ]
+          },
+          {
+            "id": "spare-1",
+            "layers": []
+          },
+          {
+            "id": "spare-2",
+            "layers": []
+          }
+        ]
+      },
+      "structureKey": "water-sort:4:2:4://AABB/BBAA",
+      "solution": [
+        {
+          "source": 0,
+          "target": 2,
+          "color": "coral",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 0,
+          "color": "jade",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "coral",
+          "amount": 2
+        }
+      ],
+      "metrics": {
+        "colorCount": 2,
+        "bottleCount": 4,
+        "mixedBottles": 2,
+        "colorRuns": 4,
+        "solutionMoves": 3
+      }
+    },
+    {
+      "format": "bottle-harmony-content",
+      "version": 1,
+      "origin": {
+        "generator": "balanced-shuffle-v1",
+        "seed": 718,
+        "candidateIndex": 0,
+        "config": {
+          "colors": [
+            "jade",
+            "coral",
+            "amber"
+          ],
+          "emptyBottles": 2,
+          "minSolutionMoves": 3,
+          "maxSolutionMoves": 80
+        }
+      },
+      "level": {
+        "format": "bottle-harmony",
+        "version": 1,
+        "rules": "water-sort",
+        "id": "g-v1-000002ce-0-3c-2e",
+        "capacity": 4,
+        "colors": [
+          "jade",
+          "coral",
+          "amber"
+        ],
+        "bottles": [
+          {
+            "id": "bottle-1",
+            "layers": [
+              "jade",
+              "amber",
+              "jade",
+              "amber"
+            ]
+          },
+          {
+            "id": "bottle-2",
+            "layers": [
+              "amber",
+              "amber",
+              "jade",
+              "jade"
+            ]
+          },
+          {
+            "id": "bottle-3",
+            "layers": [
+              "coral",
+              "coral",
+              "coral",
+              "coral"
+            ]
+          },
+          {
+            "id": "spare-1",
+            "layers": []
+          },
+          {
+            "id": "spare-2",
+            "layers": []
+          }
+        ]
+      },
+      "structureKey": "water-sort:4:3:5://AAAA/BBCC/CBCB",
+      "solution": [
+        {
+          "source": 1,
+          "target": 3,
+          "color": "jade",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "amber",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 3,
+          "color": "jade",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "amber",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 3,
+          "color": "jade",
+          "amount": 1
+        }
+      ],
+      "metrics": {
+        "colorCount": 3,
+        "bottleCount": 5,
+        "mixedBottles": 2,
+        "colorRuns": 7,
+        "solutionMoves": 5
+      }
+    },
+    {
+      "format": "bottle-harmony-content",
+      "version": 1,
+      "origin": {
+        "generator": "balanced-shuffle-v1",
+        "seed": 717,
+        "candidateIndex": 0,
+        "config": {
+          "colors": [
+            "jade",
+            "coral",
+            "amber"
+          ],
+          "emptyBottles": 2,
+          "minSolutionMoves": 3,
+          "maxSolutionMoves": 80
+        }
+      },
+      "level": {
+        "format": "bottle-harmony",
+        "version": 1,
+        "rules": "water-sort",
+        "id": "g-v1-000002cd-0-3c-2e",
+        "capacity": 4,
+        "colors": [
+          "jade",
+          "coral",
+          "amber"
+        ],
+        "bottles": [
+          {
+            "id": "bottle-1",
+            "layers": [
+              "amber",
+              "amber",
+              "amber",
+              "coral"
+            ]
+          },
+          {
+            "id": "bottle-2",
+            "layers": [
+              "coral",
+              "jade",
+              "jade",
+              "jade"
+            ]
+          },
+          {
+            "id": "bottle-3",
+            "layers": [
+              "coral",
+              "amber",
+              "jade",
+              "coral"
+            ]
+          },
+          {
+            "id": "spare-1",
+            "layers": []
+          },
+          {
+            "id": "spare-2",
+            "layers": []
+          }
+        ]
+      },
+      "structureKey": "water-sort:4:3:5://AAAB/BACB/BCCC",
+      "solution": [
+        {
+          "source": 1,
+          "target": 3,
+          "color": "jade",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "coral",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "coral",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "jade",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 0,
+          "color": "amber",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "coral",
+          "amount": 3
+        }
+      ],
+      "metrics": {
+        "colorCount": 3,
+        "bottleCount": 5,
+        "mixedBottles": 3,
+        "colorRuns": 8,
+        "solutionMoves": 6
+      }
+    },
+    {
+      "format": "bottle-harmony-content",
+      "version": 1,
+      "origin": {
+        "generator": "balanced-shuffle-v1",
+        "seed": 722,
+        "candidateIndex": 0,
+        "config": {
+          "colors": [
+            "jade",
+            "coral",
+            "amber",
+            "azure"
+          ],
+          "emptyBottles": 2,
+          "minSolutionMoves": 3,
+          "maxSolutionMoves": 80
+        }
+      },
+      "level": {
+        "format": "bottle-harmony",
+        "version": 1,
+        "rules": "water-sort",
+        "id": "g-v1-000002d2-0-4c-2e",
+        "capacity": 4,
+        "colors": [
+          "jade",
+          "coral",
+          "amber",
+          "azure"
+        ],
+        "bottles": [
+          {
+            "id": "bottle-1",
+            "layers": [
+              "jade",
+              "jade",
+              "amber",
+              "amber"
+            ]
+          },
+          {
+            "id": "bottle-2",
+            "layers": [
+              "jade",
+              "amber",
+              "azure",
+              "azure"
+            ]
+          },
+          {
+            "id": "bottle-3",
+            "layers": [
+              "coral",
+              "amber",
+              "azure",
+              "jade"
+            ]
+          },
+          {
+            "id": "bottle-4",
+            "layers": [
+              "azure",
+              "coral",
+              "coral",
+              "coral"
+            ]
+          },
+          {
+            "id": "spare-1",
+            "layers": []
+          },
+          {
+            "id": "spare-2",
+            "layers": []
+          }
+        ]
+      },
+      "structureKey": "water-sort:4:4:6://AABB/ABCC/CDDD/DBCA",
+      "solution": [
+        {
+          "source": 0,
+          "target": 4,
+          "color": "amber",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 5,
+          "color": "azure",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 4,
+          "color": "amber",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "jade",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "jade",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 5,
+          "color": "azure",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "amber",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 2,
+          "color": "coral",
+          "amount": 3
+        },
+        {
+          "source": 3,
+          "target": 5,
+          "color": "azure",
+          "amount": 1
+        }
+      ],
+      "metrics": {
+        "colorCount": 4,
+        "bottleCount": 6,
+        "mixedBottles": 4,
+        "colorRuns": 11,
+        "solutionMoves": 9
+      }
+    },
+    {
+      "format": "bottle-harmony-content",
+      "version": 1,
+      "origin": {
+        "generator": "balanced-shuffle-v1",
+        "seed": 717,
+        "candidateIndex": 0,
+        "config": {
+          "colors": [
+            "jade",
+            "coral",
+            "amber"
+          ],
+          "emptyBottles": 1,
+          "minSolutionMoves": 3,
+          "maxSolutionMoves": 80
+        }
+      },
+      "level": {
+        "format": "bottle-harmony",
+        "version": 1,
+        "rules": "water-sort",
+        "id": "g-v1-000002cd-0-3c-1e",
+        "capacity": 4,
+        "colors": [
+          "jade",
+          "coral",
+          "amber"
+        ],
+        "bottles": [
+          {
+            "id": "bottle-1",
+            "layers": [
+              "amber",
+              "amber",
+              "amber",
+              "coral"
+            ]
+          },
+          {
+            "id": "bottle-2",
+            "layers": [
+              "coral",
+              "jade",
+              "jade",
+              "jade"
+            ]
+          },
+          {
+            "id": "bottle-3",
+            "layers": [
+              "coral",
+              "amber",
+              "jade",
+              "coral"
+            ]
+          },
+          {
+            "id": "spare-1",
+            "layers": []
+          }
+        ]
+      },
+      "structureKey": "water-sort:4:3:4:/AAAB/BACB/BCCC",
+      "solution": [
+        {
+          "source": 1,
+          "target": 3,
+          "color": "jade",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "coral",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "coral",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "jade",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 0,
+          "color": "amber",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "coral",
+          "amount": 3
+        }
+      ],
+      "metrics": {
+        "colorCount": 3,
+        "bottleCount": 4,
+        "mixedBottles": 3,
+        "colorRuns": 8,
+        "solutionMoves": 6
+      }
+    },
+    {
+      "format": "bottle-harmony-content",
+      "version": 1,
+      "origin": {
+        "generator": "balanced-shuffle-v1",
+        "seed": 723,
+        "candidateIndex": 0,
+        "config": {
+          "colors": [
+            "jade",
+            "coral",
+            "amber",
+            "azure"
+          ],
+          "emptyBottles": 2,
+          "minSolutionMoves": 3,
+          "maxSolutionMoves": 80
+        }
+      },
+      "level": {
+        "format": "bottle-harmony",
+        "version": 1,
+        "rules": "water-sort",
+        "id": "g-v1-000002d3-0-4c-2e",
+        "capacity": 4,
+        "colors": [
+          "jade",
+          "coral",
+          "amber",
+          "azure"
+        ],
+        "bottles": [
+          {
+            "id": "bottle-1",
+            "layers": [
+              "azure",
+              "coral",
+              "jade",
+              "azure"
+            ]
+          },
+          {
+            "id": "bottle-2",
+            "layers": [
+              "azure",
+              "jade",
+              "amber",
+              "jade"
+            ]
+          },
+          {
+            "id": "bottle-3",
+            "layers": [
+              "amber",
+              "azure",
+              "amber",
+              "coral"
+            ]
+          },
+          {
+            "id": "bottle-4",
+            "layers": [
+              "coral",
+              "amber",
+              "jade",
+              "coral"
+            ]
+          },
+          {
+            "id": "spare-1",
+            "layers": []
+          },
+          {
+            "id": "spare-2",
+            "layers": []
+          }
+        ]
+      },
+      "structureKey": "water-sort:4:4:6://ABAC/BCDB/BDAD/CADC",
+      "solution": [
+        {
+          "source": 0,
+          "target": 4,
+          "color": "azure",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 5,
+          "color": "jade",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 5,
+          "color": "jade",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 0,
+          "color": "coral",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "amber",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 5,
+          "color": "jade",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 4,
+          "color": "azure",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 0,
+          "color": "coral",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 5,
+          "color": "jade",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "amber",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "azure",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 2,
+          "color": "amber",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 3,
+          "color": "coral",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 4,
+          "color": "azure",
+          "amount": 1
+        }
+      ],
+      "metrics": {
+        "colorCount": 4,
+        "bottleCount": 6,
+        "mixedBottles": 4,
+        "colorRuns": 16,
+        "solutionMoves": 14
+      }
+    },
+    {
+      "format": "bottle-harmony-content",
+      "version": 1,
+      "origin": {
+        "generator": "balanced-shuffle-v1",
+        "seed": 717,
+        "candidateIndex": 6,
+        "config": {
+          "colors": [
+            "jade",
+            "coral",
+            "amber",
+            "azure"
+          ],
+          "emptyBottles": 1,
+          "minSolutionMoves": 3,
+          "maxSolutionMoves": 80
+        }
+      },
+      "level": {
+        "format": "bottle-harmony",
+        "version": 1,
+        "rules": "water-sort",
+        "id": "g-v1-000002cd-6-4c-1e",
+        "capacity": 4,
+        "colors": [
+          "jade",
+          "coral",
+          "amber",
+          "azure"
+        ],
+        "bottles": [
+          {
+            "id": "bottle-1",
+            "layers": [
+              "azure",
+              "coral",
+              "jade",
+              "coral"
+            ]
+          },
+          {
+            "id": "bottle-2",
+            "layers": [
+              "amber",
+              "amber",
+              "azure",
+              "coral"
+            ]
+          },
+          {
+            "id": "bottle-3",
+            "layers": [
+              "jade",
+              "amber",
+              "azure",
+              "jade"
+            ]
+          },
+          {
+            "id": "bottle-4",
+            "layers": [
+              "jade",
+              "azure",
+              "coral",
+              "amber"
+            ]
+          },
+          {
+            "id": "spare-1",
+            "layers": []
+          }
+        ]
+      },
+      "structureKey": "water-sort:4:4:5:/AABC/BCDC/DABD/DBCA",
+      "solution": [
+        {
+          "source": 0,
+          "target": 4,
+          "color": "coral",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 4,
+          "color": "coral",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 0,
+          "color": "jade",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "azure",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "amber",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 4,
+          "color": "coral",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "azure",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "amber",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "jade",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 4,
+          "color": "coral",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 0,
+          "color": "azure",
+          "amount": 3
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "jade",
+          "amount": 3
+        }
+      ],
+      "metrics": {
+        "colorCount": 4,
+        "bottleCount": 5,
+        "mixedBottles": 4,
+        "colorRuns": 15,
+        "solutionMoves": 12
+      }
+    },
+    {
+      "format": "bottle-harmony-content",
+      "version": 1,
+      "origin": {
+        "generator": "balanced-shuffle-v1",
+        "seed": 717,
+        "candidateIndex": 0,
+        "config": {
+          "colors": [
+            "jade",
+            "coral",
+            "amber",
+            "azure",
+            "violet"
+          ],
+          "emptyBottles": 2,
+          "minSolutionMoves": 3,
+          "maxSolutionMoves": 80
+        }
+      },
+      "level": {
+        "format": "bottle-harmony",
+        "version": 1,
+        "rules": "water-sort",
+        "id": "g-v1-000002cd-0-5c-2e",
+        "capacity": 4,
+        "colors": [
+          "jade",
+          "coral",
+          "amber",
+          "azure",
+          "violet"
+        ],
+        "bottles": [
+          {
+            "id": "bottle-1",
+            "layers": [
+              "azure",
+              "coral",
+              "violet",
+              "jade"
+            ]
+          },
+          {
+            "id": "bottle-2",
+            "layers": [
+              "coral",
+              "amber",
+              "violet",
+              "violet"
+            ]
+          },
+          {
+            "id": "bottle-3",
+            "layers": [
+              "azure",
+              "jade",
+              "amber",
+              "jade"
+            ]
+          },
+          {
+            "id": "bottle-4",
+            "layers": [
+              "azure",
+              "coral",
+              "coral",
+              "violet"
+            ]
+          },
+          {
+            "id": "bottle-5",
+            "layers": [
+              "azure",
+              "amber",
+              "jade",
+              "amber"
+            ]
+          },
+          {
+            "id": "spare-1",
+            "layers": []
+          },
+          {
+            "id": "spare-2",
+            "layers": []
+          }
+        ]
+      },
+      "structureKey": "water-sort:4:5:7://ABBC/ABCD/ADED/AEDE/BECC",
+      "solution": [
+        {
+          "source": 0,
+          "target": 5,
+          "color": "jade",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 6,
+          "color": "violet",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 6,
+          "color": "violet",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 5,
+          "color": "jade",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "amber",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "coral",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 6,
+          "color": "violet",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "coral",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 3,
+          "color": "azure",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 0,
+          "color": "amber",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 5,
+          "color": "jade",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "azure",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 0,
+          "color": "amber",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 5,
+          "color": "jade",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 0,
+          "color": "amber",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 4,
+          "color": "azure",
+          "amount": 3
+        }
+      ],
+      "metrics": {
+        "colorCount": 5,
+        "bottleCount": 7,
+        "mixedBottles": 5,
+        "colorRuns": 18,
+        "solutionMoves": 16
+      }
+    }
+  ]
+}

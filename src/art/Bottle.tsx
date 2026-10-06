@@ -95,7 +95,7 @@ export const Bottle = memo(function Bottle({ index, colors, selected, completed,
             <Stop offset="0.4" stopColor="#8EC5CE" />
             <Stop offset="1" stopColor="#315670" />
           </LinearGradient>
-          {(['jade', 'coral'] as const).map(color => (
+          {Object.keys(LIQUIDS).map(color => (
             <LinearGradient key={color} id={`${id}-${color}`} x1="0" y1="0" x2="1" y2="0.45">
               <Stop offset="0" stopColor={LIQUIDS[color].dark} />
               <Stop offset="0.22" stopColor={LIQUIDS[color].main} />

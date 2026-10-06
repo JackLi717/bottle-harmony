@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { AccessibilityInfo, AppState, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { AccessibilityInfo, AppState, Dimensions, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -15,8 +15,10 @@ import { getPour, type Board, type Pour } from '../game/rules';
 import { createSession, moveSession, resetSession, undoSession } from '../game/session';
 import { createSolver, type SolveResult, type SolverTask } from '../game/solver';
 import { Icon } from './Icon';
+import { LevelPicker } from './LevelPicker';
+import { boardLayout, fitBoard } from './boardLayout';
+import { referenceHint, TIER_NAMES, type CalibrationSample } from '../game/calibration';
 
-const POSITIONS = [{ x: 38, y: 14 }, { x: 222, y: 14 }, { x: 38, y: 228 }, { x: 222, y: 228 }];
 type Animation = { before: Board; pour: Pour; plan: PourPlan };
 
 export function DemoScreen() {
@@ -24,6 +26,8 @@ export function DemoScreen() {
   const dimensions = useWindowDimensions();
   const compact = dimensions.height < 720;
   const [session, setSession] = useState(() => createSession(DEMO_LEVEL));
+  const [sample, setSample] = useState<CalibrationSample | null>(null);
+  const [pickerVisible, setPickerVisible] = useState(false);
   const { board, history } = session;
   const [searching, setSearching] = useState(false);
   const search = useRef<SolverTask | null>(null);
@@ -38,8 +42,8 @@ export function DemoScreen() {
   const safeTop = insets.top + (compact ? 8 : 14);
   // Keep the current bottle slots, while allowing art to use existing space
   // above the board. Reserve at least 130 design units without crossing the notch.
-  const scale = Math.max(0, Math.min(stage.width / 360, stage.height / 430, (stage.y - safeTop + stage.height / 2) / 345));
-  const minY = scale > 0 ? -Math.max(130, (stage.y - safeTop + (stage.height - 430 * scale) / 2) / scale) : -130;
+  const layout = boardLayout(board.length);
+  const { scale, minY } = fitBoard(layout, stage, safeTop);
   const won = session.status === 'solved';
   const finished = useCallback(() => {
     busy.current = false;
@@ -84,6 +88,27 @@ export function DemoScreen() {
     };
   }, [progress]);
 
+  useEffect(() => {
+    // A window resize ends the visual move; it never rolls back accepted liquid state.
+    const subscription = Dimensions.addEventListener('change', () => {
+      cancelAnimation(progress);
+      progress.set(1);
+      setAnimation(null);
+      setSelected(null);
+      if (!search.current) busy.current = false;
+    });
+    return () => subscription.remove();
+  }, [progress]);
+
+  function chooseSample(next: CalibrationSample | null) {
+    if (busy.current) return;
+    setSession(createSession(next?.content.level ?? DEMO_LEVEL));
+    setSample(next);
+    setSelected(null);
+    setMessage('点选有水的瓶子，再点空瓶');
+    setPickerVisible(false);
+  }
+
   function startPour(pour: Pour) {
     if (busy.current) return;
     const accepted = moveSession(session, pour.source, pour.target);
@@ -94,7 +119,7 @@ export function DemoScreen() {
     if (reduceMotion) { busy.current = false; setSelected(null); return; }
     progress.set(0);
     const { before, pour: committedPour } = accepted.event;
-    setAnimation({ before, pour: committedPour, plan: createPourPlan(POSITIONS[committedPour.source], POSITIONS[committedPour.target], before[committedPour.source].length, committedPour.amount, minY, selected === committedPour.source ? 12 : 0) });
+    setAnimation({ before, pour: committedPour, plan: createPourPlan(layout.positions[committedPour.source], layout.positions[committedPour.target], before[committedPour.source].length, committedPour.amount, minY, selected === committedPour.source ? 12 : 0, layout.width, layout.height) });
   }
 
   function selectBottle(index: number) {
@@ -130,6 +155,8 @@ export function DemoScreen() {
   async function demonstrate() {
     if (busy.current) return;
     if (won) { reset(); return; }
+    const referencePour = sample ? referenceHint(sample.content, board) : null;
+    if (referencePour) { startPour(referencePour); return; }
     const task = createSolver(board, { capacity: session.level.capacity, maxStates: 30000, maxMilliseconds: 200 });
     search.current = task;
     busy.current = true;
@@ -159,25 +186,25 @@ export function DemoScreen() {
       <View style={[styles.safe, { paddingTop: insets.top + (compact ? 8 : 14), paddingBottom: Math.max(insets.bottom, 14) }]}>
         <View style={styles.brandRow}>
           <View style={styles.brand}><View style={styles.emblem}><Icon name="spark" color="#DEC793" size={25} /></View><View><Text style={styles.brandTitle}>BOTTLE</Text><Text style={styles.brandSubtitle}>H A R M O N Y</Text></View></View>
-          <View style={styles.demoBadge}><Text style={styles.demoBadgeText}>倒水体验</Text></View>
+          <Pressable accessibilityRole="button" accessibilityLabel="打开关卡试玩选题" disabled={!!animation || searching} onPress={() => { if (!busy.current) setPickerVisible(true); }} style={[styles.demoBadge, (!!animation || searching) && styles.disabled]}><Text style={styles.demoBadgeText}>选题试玩</Text></Pressable>
         </View>
         <View style={[styles.intro, compact && styles.introCompact]}>
           <Text style={[styles.title, compact && styles.titleCompact]}>让色彩，慢慢归位</Text>
-          <Text style={styles.subtitle}>一瓶色彩，一刻宁静。</Text>
+          <Text style={styles.subtitle}>{sample ? `${sample.code} · ${TIER_NAMES[sample.tier]}（试排）· ${session.level.colors.length} 色` : '一瓶色彩，一刻宁静。'}</Text>
         </View>
         <View style={styles.stageSpace} onLayout={event => {
           const layout = event.nativeEvent.layout;
           setStage(old => old.width === layout.width && old.height === layout.height && old.y === layout.y ? old : layout);
         }}>
-          {scale > 0 && <View collapsable={false} style={{ width: 360 * scale, height: 430 * scale, overflow: 'visible' }}>
-            <View style={StyleSheet.absoluteFill}><StageArt /></View>
+          {scale > 0 && <View collapsable={false} style={{ width: layout.width * scale, height: layout.height * scale, overflow: 'visible' }}>
+            <View style={StyleSheet.absoluteFill}><StageArt layout={layout} /></View>
             {/* Art stays mounted in one layer for selection, pouring and return.
                 Fixed hit areas below never reparent or reposition the artwork. */}
-            {POSITIONS.map((position, index) => {
+            {layout.positions.map((position, index) => {
               const bottle = displayBoard[index];
-              return <Bottle key={index} index={index} position={position} colors={bottle} selected={selected === index} completed={!animation && bottle.length === 4 && bottle.every(c => c === bottle[0])} width={100 * scale} scale={scale} plan={animation?.plan ?? null} pour={animation?.pour ?? null} progress={progress} />;
+              return <Bottle key={`${session.level.id}-${session.level.bottles[index].id}`} index={index} position={position} colors={bottle} selected={selected === index} completed={!animation && bottle.length === session.level.capacity && bottle.every(c => c === bottle[0])} width={100 * scale} scale={scale} plan={animation?.plan ?? null} pour={animation?.pour ?? null} progress={progress} />;
             })}
-            {POSITIONS.map((position, index) => {
+            {layout.positions.map((position, index) => {
               const bottle = displayBoard[index];
               const label = `${index + 1}号瓶，${bottle.length ? [...bottle].reverse().map(c => LIQUIDS[c as keyof typeof LIQUIDS].name).join('、') : '空瓶'}`;
               return <Pressable key={index} accessibilityRole="button" accessibilityLabel={label} accessibilityHint="先选源瓶，再选目标瓶" accessibilityState={{ selected: selected === index, disabled: !!animation || searching }} disabled={!!animation || searching} onPress={() => selectBottle(index)} style={{ position: 'absolute', left: position.x * scale, top: position.y * scale, width: 100 * scale, height: 180 * scale, zIndex: 3 }}>
@@ -194,9 +221,10 @@ export function DemoScreen() {
             <Pressable onPress={demonstrate} disabled={!!animation || searching} accessibilityRole="button" accessibilityLabel={won ? '再玩一次' : '演示一次倒水'} style={({ pressed }) => [styles.primaryWrap, (!!animation || searching) && styles.disabled, pressed && styles.pressed]}><LinearGradient colors={['#F0DCAD', '#CEAD72']} style={styles.primary}><Icon name={won ? 'reset' : 'play'} color="#263B3D" size={21} /><Text style={styles.primaryText}>{searching ? '正在寻找…' : won ? '再玩一次' : '演示一步'}</Text></LinearGradient></Pressable>
             <Pressable onPress={reset} disabled={!!animation || searching} accessibilityRole="button" accessibilityLabel="重新开始" style={({ pressed }) => [styles.secondary, (!!animation || searching) && styles.disabled, pressed && styles.pressed]}><Icon name="reset" /><Text style={styles.secondaryText}>重来</Text></Pressable>
           </View>
-          <Text style={styles.footnote}>无需计时 · 随心尝试</Text>
+          <Text style={styles.footnote}>{history.length} 次倒水 · 无需计时</Text>
         </View>
       </View>
+      <LevelPicker visible={pickerVisible} currentCode={sample?.code ?? null} onClose={() => setPickerVisible(false)} onSelect={chooseSample} />
     </LinearGradient>
   );
 }
@@ -209,7 +237,7 @@ const styles = StyleSheet.create({
   emblem: { width: 42, height: 42, borderRadius: 15, backgroundColor: '#FFFFFF06', borderWidth: 1, borderColor: '#DBCBA52B', alignItems: 'center', justifyContent: 'center' },
   brandTitle: { color: '#EFE6CD', fontSize: 15, fontWeight: '700', letterSpacing: 3.5 },
   brandSubtitle: { color: '#96ACA9', fontSize: 8, marginTop: 4, letterSpacing: 0.5 },
-  demoBadge: { paddingHorizontal: 12, paddingVertical: 7, borderRadius: 20, borderWidth: 1, borderColor: '#ADC6C528' },
+  demoBadge: { minHeight: 44, justifyContent: 'center', paddingHorizontal: 12, paddingVertical: 7, borderRadius: 20, borderWidth: 1, borderColor: '#ADC6C528' },
   demoBadgeText: { color: '#AEC4C0', fontSize: 11, letterSpacing: 1 },
   intro: { marginTop: 30, marginBottom: 4, alignItems: 'center' },
   introCompact: { marginTop: 15, marginBottom: 0 },

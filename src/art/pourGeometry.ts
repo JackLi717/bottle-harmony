@@ -16,6 +16,8 @@ export type PourPlan = {
   minY: number;
   startLift: number;
   angles: number[];
+  width: number;
+  height: number;
 };
 
 function clamp(value: number, lo: number, hi: number) {
@@ -80,24 +82,24 @@ export function bottleBounds(angle: number) {
 }
 
 /** Use the screen's existing header space. The recipient stays in its slot. */
-export function createPourPlan(source: Point, target: Point, sourceCount: number, amount: number, minY = -130, startLift = 12): PourPlan {
-  const direction = target.x > source.x ? 1 : target.x < source.x ? -1 : target.x < STAGE_WIDTH / 2 ? -1 : 1;
+export function createPourPlan(source: Point, target: Point, sourceCount: number, amount: number, minY = -130, startLift = 12, width = STAGE_WIDTH, height = STAGE_HEIGHT): PourPlan {
+  const direction = target.x > source.x ? 1 : target.x < source.x ? -1 : target.x < width / 2 ? -1 : 1;
   const startAngle = pouringAngle(sourceCount);
   const endAngle = pouringAngle(sourceCount - amount);
   let minimumOutletY = minY;
-  let maximumOutletY = STAGE_HEIGHT;
+  let maximumOutletY = height;
   for (let i = 0; i <= 80; i++) {
     const angle = direction * (startAngle + (endAngle - startAngle) * i / 80);
     const bounds = bottleBounds(angle);
     const lip = rotateBottlePoint(outletPoint(direction), angle);
     minimumOutletY = Math.max(minimumOutletY, minY + MARGIN - bounds.minY + lip.y);
-    maximumOutletY = Math.min(maximumOutletY, STAGE_HEIGHT - MARGIN - bounds.maxY + lip.y);
+    maximumOutletY = Math.min(maximumOutletY, height - MARGIN - bounds.maxY + lip.y);
   }
   const outletY = clamp(target.y + 28 - 38, minimumOutletY + 1, maximumOutletY - 1);
   return {
     source, target, direction, sourceCount, amount,
     outlet: { x: target.x + 50, y: outletY },
-    minY, startLift,
+    minY, startLift, width, height,
     angles: Array.from({ length: 129 }, (_, index) => direction * pouringAngle(sourceCount - amount * index / 128)),
   };
 }
@@ -133,7 +135,7 @@ export function sourcePose(plan: PourPlan, progress: number) {
   }
   const lip = rotateBottlePoint(outletPoint(plan.direction), angle);
   const bounds = bottleBounds(angle);
-  const left = clamp(x - lip.x, MARGIN - bounds.minX, STAGE_WIDTH - MARGIN - bounds.maxX);
-  const top = clamp(y - lip.y, plan.minY + MARGIN - bounds.minY, STAGE_HEIGHT - MARGIN - bounds.maxY);
+  const left = clamp(x - lip.x, MARGIN - bounds.minX, plan.width - MARGIN - bounds.maxX);
+  const top = clamp(y - lip.y, plan.minY + MARGIN - bounds.minY, plan.height - MARGIN - bounds.maxY);
   return { angle, dx: left - plan.source.x, dy: top - plan.source.y, outlet: { x: left + lip.x, y: top + lip.y } };
 }

@@ -16,7 +16,7 @@ export function PourStream({ plan, color, progress }: { plan: PourPlan; color: C
     };
   });
   return (
-    <Svg width="100%" height="100%" viewBox="0 0 360 430" pointerEvents="none">
+    <Svg width="100%" height="100%" viewBox={`0 0 ${plan.width} ${plan.height}`} pointerEvents="none">
       <AnimatedPath stroke={LIQUIDS[color].main} strokeWidth={3.5} strokeLinecap="round" fill="none" animatedProps={props} />
       <AnimatedPath stroke={LIQUIDS[color].light} strokeWidth={0.9} strokeLinecap="round" fill="none" animatedProps={props} />
     </Svg>
