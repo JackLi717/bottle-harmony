@@ -15,7 +15,8 @@ import { getPour, type Board, type Pour } from '../game/rules';
 import { createSession, moveSession, resetSession, undoSession } from '../game/session';
 import { createSolver, type SolveResult, type SolverTask } from '../game/solver';
 import { Icon } from './Icon';
-import { LevelPicker } from './LevelPicker';
+import { DifficultyDebug } from './DifficultyDebug';
+import { CALIBRATION_DIFFICULTY, LevelPicker } from './LevelPicker';
 import { boardLayout, fitBoard } from './boardLayout';
 import { referenceHint, TIER_NAMES, type CalibrationSample } from '../game/calibration';
 
@@ -28,6 +29,7 @@ export function DemoScreen() {
   const [session, setSession] = useState(() => createSession(DEMO_LEVEL));
   const [sample, setSample] = useState<CalibrationSample | null>(null);
   const [pickerVisible, setPickerVisible] = useState(false);
+  const [difficultyVisible, setDifficultyVisible] = useState(false);
   const { board, history } = session;
   const [searching, setSearching] = useState(false);
   const search = useRef<SolverTask | null>(null);
@@ -44,6 +46,7 @@ export function DemoScreen() {
   // above the board. Reserve at least 130 design units without crossing the notch.
   const layout = boardLayout(board.length);
   const { scale, minY } = fitBoard(layout, stage, safeTop);
+  const difficulty = CALIBRATION_DIFFICULTY.get(session.level.id)!;
   const won = session.status === 'solved';
   const finished = useCallback(() => {
     busy.current = false;
@@ -221,9 +224,10 @@ export function DemoScreen() {
             <Pressable onPress={demonstrate} disabled={!!animation || searching} accessibilityRole="button" accessibilityLabel={won ? '再玩一次' : '演示一次倒水'} style={({ pressed }) => [styles.primaryWrap, (!!animation || searching) && styles.disabled, pressed && styles.pressed]}><LinearGradient colors={['#F0DCAD', '#CEAD72']} style={styles.primary}><Icon name={won ? 'reset' : 'play'} color="#263B3D" size={21} /><Text style={styles.primaryText}>{searching ? '正在寻找…' : won ? '再玩一次' : '演示一步'}</Text></LinearGradient></Pressable>
             <Pressable onPress={reset} disabled={!!animation || searching} accessibilityRole="button" accessibilityLabel="重新开始" style={({ pressed }) => [styles.secondary, (!!animation || searching) && styles.disabled, pressed && styles.pressed]}><Icon name="reset" /><Text style={styles.secondaryText}>重来</Text></Pressable>
           </View>
-          <Text style={styles.footnote}>{history.length} 次倒水 · 无需计时</Text>
+          <Pressable accessibilityRole="button" accessibilityLabel="查看当前关卡的调试难度" disabled={!!animation || searching} onPress={() => { if (!busy.current) setDifficultyVisible(true); }} style={[styles.difficultyButton, (!!animation || searching) && styles.disabled]}><Text style={styles.footnote}>{history.length} 次倒水 · 调试难度：{difficulty.tier ?? '未知'}（暂定） ›</Text></Pressable>
         </View>
       </View>
+      <DifficultyDebug visible={difficultyVisible} report={difficulty} sample={sample} onClose={() => setDifficultyVisible(false)} />
       <LevelPicker visible={pickerVisible} currentCode={sample?.code ?? null} onClose={() => setPickerVisible(false)} onSelect={chooseSample} />
     </LinearGradient>
   );
@@ -258,5 +262,6 @@ const styles = StyleSheet.create({
   primaryText: { color: '#263B3D', fontSize: 15, fontWeight: '700', letterSpacing: 1 },
   disabled: { opacity: 0.38 },
   pressed: { opacity: 0.7 },
-  footnote: { color: '#748D92', textAlign: 'center', fontSize: 10, letterSpacing: 2, marginTop: 16 },
+  difficultyButton: { minHeight: 44, justifyContent: 'center', marginTop: 4 },
+  footnote: { color: '#ADC4C4', textAlign: 'center', fontSize: 11 },
 });

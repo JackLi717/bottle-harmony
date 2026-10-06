@@ -31,6 +31,7 @@
     "benchmark:solver": "node --expose-gc --experimental-strip-types scripts/benchmark-solver.ts",
     "levels:generate": "node --experimental-strip-types scripts/levels.ts generate",
     "levels:verify": "node --experimental-strip-types scripts/levels.ts verify",
+    "levels:rate": "node --experimental-strip-types scripts/difficulty.ts",
     "art": "node --experimental-strip-types scripts/render-art.ts",
     "ios:device": "expo run:ios --device --configuration Release",
     "android:apk": "expo prebuild --platform android && cd android && ./gradlew :app:assembleRelease -PreactNativeArchitectures=arm64-v8a,armeabi-v7a --max-workers=3 \"-Dorg.gradle.jvmargs=-Xmx3g -XX:MaxMetaspaceSize=1g\""

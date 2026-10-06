@@ -1,0 +1,1727 @@
+{
+  "format": "bottle-harmony-difficulty-pool",
+  "version": 1,
+  "records": [
+    {
+      "format": "bottle-harmony-difficulty",
+      "version": 1,
+      "policy": "planning-frontier-v1",
+      "levelId": "g-v1-000002cd-0-2c-2e",
+      "structureKey": "water-sort:4:2:4://AABB/BBAA",
+      "status": "rated",
+      "tier": "D1",
+      "reason": null,
+      "metrics": {
+        "colors": 2,
+        "bottles": 4,
+        "initialEmptyBottles": 2,
+        "spareColorRatio": 1,
+        "colorRuns": 4,
+        "shortestMoves": 3,
+        "minimumEmptyBottlesOnRoute": 1,
+        "maximumPreparationMovesOnRoute": 1,
+        "minimumLegalChoicesOnRoute": 1
+      },
+      "policies": [
+        {
+          "tier": "P1",
+          "chainLimit": 2,
+          "lookahead": 0,
+          "status": "passed",
+          "checkedStates": 3,
+          "branchingStates": 1,
+          "maximumChoices": 2,
+          "excludedChoices": 0,
+          "witness": [
+            {
+              "source": 0,
+              "target": 2,
+              "color": "coral",
+              "amount": 2
+            },
+            {
+              "source": 1,
+              "target": 0,
+              "color": "jade",
+              "amount": 2
+            },
+            {
+              "source": 1,
+              "target": 2,
+              "color": "coral",
+              "amount": 2
+            }
+          ],
+          "stallReason": null
+        }
+      ],
+      "referenceSolution": [
+        {
+          "source": 0,
+          "target": 2,
+          "color": "coral",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 0,
+          "color": "jade",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "coral",
+          "amount": 2
+        }
+      ],
+      "work": 39
+    },
+    {
+      "format": "bottle-harmony-difficulty",
+      "version": 1,
+      "policy": "planning-frontier-v1",
+      "levelId": "g-v1-000002ce-0-3c-2e",
+      "structureKey": "water-sort:4:3:5://AAAA/BBCC/CBCB",
+      "status": "rated",
+      "tier": "D1",
+      "reason": null,
+      "metrics": {
+        "colors": 3,
+        "bottles": 5,
+        "initialEmptyBottles": 2,
+        "spareColorRatio": 0.6666666666666666,
+        "colorRuns": 7,
+        "shortestMoves": 5,
+        "minimumEmptyBottlesOnRoute": 1,
+        "maximumPreparationMovesOnRoute": 1,
+        "minimumLegalChoicesOnRoute": 1
+      },
+      "policies": [
+        {
+          "tier": "P1",
+          "chainLimit": 2,
+          "lookahead": 0,
+          "status": "passed",
+          "checkedStates": 4,
+          "branchingStates": 0,
+          "maximumChoices": 1,
+          "excludedChoices": 0,
+          "witness": [
+            {
+              "source": 1,
+              "target": 3,
+              "color": "jade",
+              "amount": 2
+            },
+            {
+              "source": 0,
+              "target": 1,
+              "color": "amber",
+              "amount": 1
+            },
+            {
+              "source": 0,
+              "target": 3,
+              "color": "jade",
+              "amount": 1
+            },
+            {
+              "source": 0,
+              "target": 1,
+              "color": "amber",
+              "amount": 1
+            },
+            {
+              "source": 0,
+              "target": 3,
+              "color": "jade",
+              "amount": 1
+            }
+          ],
+          "stallReason": null
+        }
+      ],
+      "referenceSolution": [
+        {
+          "source": 1,
+          "target": 3,
+          "color": "jade",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "amber",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 3,
+          "color": "jade",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "amber",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 3,
+          "color": "jade",
+          "amount": 1
+        }
+      ],
+      "work": 77
+    },
+    {
+      "format": "bottle-harmony-difficulty",
+      "version": 1,
+      "policy": "planning-frontier-v1",
+      "levelId": "g-v1-000002cd-0-3c-2e",
+      "structureKey": "water-sort:4:3:5://AAAB/BACB/BCCC",
+      "status": "rated",
+      "tier": "D1",
+      "reason": null,
+      "metrics": {
+        "colors": 3,
+        "bottles": 5,
+        "initialEmptyBottles": 2,
+        "spareColorRatio": 0.6666666666666666,
+        "colorRuns": 8,
+        "shortestMoves": 6,
+        "minimumEmptyBottlesOnRoute": 1,
+        "maximumPreparationMovesOnRoute": 1,
+        "minimumLegalChoicesOnRoute": 1
+      },
+      "policies": [
+        {
+          "tier": "P1",
+          "chainLimit": 2,
+          "lookahead": 0,
+          "status": "passed",
+          "checkedStates": 13,
+          "branchingStates": 6,
+          "maximumChoices": 3,
+          "excludedChoices": 0,
+          "witness": [
+            {
+              "source": 1,
+              "target": 3,
+              "color": "jade",
+              "amount": 3
+            },
+            {
+              "source": 0,
+              "target": 1,
+              "color": "coral",
+              "amount": 1
+            },
+            {
+              "source": 2,
+              "target": 1,
+              "color": "coral",
+              "amount": 1
+            },
+            {
+              "source": 2,
+              "target": 3,
+              "color": "jade",
+              "amount": 1
+            },
+            {
+              "source": 2,
+              "target": 0,
+              "color": "amber",
+              "amount": 1
+            },
+            {
+              "source": 2,
+              "target": 1,
+              "color": "coral",
+              "amount": 1
+            }
+          ],
+          "stallReason": null
+        }
+      ],
+      "referenceSolution": [
+        {
+          "source": 1,
+          "target": 3,
+          "color": "jade",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "coral",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "coral",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "jade",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 0,
+          "color": "amber",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "coral",
+          "amount": 3
+        }
+      ],
+      "work": 248
+    },
+    {
+      "format": "bottle-harmony-difficulty",
+      "version": 1,
+      "policy": "planning-frontier-v1",
+      "levelId": "g-v1-000002d2-0-4c-2e",
+      "structureKey": "water-sort:4:4:6://AABB/ABCC/CDDD/DBCA",
+      "status": "rated",
+      "tier": "D1",
+      "reason": null,
+      "metrics": {
+        "colors": 4,
+        "bottles": 6,
+        "initialEmptyBottles": 2,
+        "spareColorRatio": 0.5,
+        "colorRuns": 11,
+        "shortestMoves": 9,
+        "minimumEmptyBottlesOnRoute": 0,
+        "maximumPreparationMovesOnRoute": 2,
+        "minimumLegalChoicesOnRoute": 1
+      },
+      "policies": [
+        {
+          "tier": "P1",
+          "chainLimit": 2,
+          "lookahead": 0,
+          "status": "passed",
+          "checkedStates": 56,
+          "branchingStates": 31,
+          "maximumChoices": 8,
+          "excludedChoices": 0,
+          "witness": [
+            {
+              "source": 0,
+              "target": 4,
+              "color": "amber",
+              "amount": 2
+            },
+            {
+              "source": 2,
+              "target": 0,
+              "color": "jade",
+              "amount": 1
+            },
+            {
+              "source": 3,
+              "target": 5,
+              "color": "coral",
+              "amount": 3
+            },
+            {
+              "source": 2,
+              "target": 3,
+              "color": "azure",
+              "amount": 1
+            },
+            {
+              "source": 2,
+              "target": 4,
+              "color": "amber",
+              "amount": 1
+            },
+            {
+              "source": 1,
+              "target": 3,
+              "color": "azure",
+              "amount": 2
+            },
+            {
+              "source": 1,
+              "target": 4,
+              "color": "amber",
+              "amount": 1
+            },
+            {
+              "source": 1,
+              "target": 0,
+              "color": "jade",
+              "amount": 1
+            },
+            {
+              "source": 2,
+              "target": 5,
+              "color": "coral",
+              "amount": 1
+            }
+          ],
+          "stallReason": null
+        }
+      ],
+      "referenceSolution": [
+        {
+          "source": 0,
+          "target": 4,
+          "color": "amber",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 5,
+          "color": "azure",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 4,
+          "color": "amber",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "jade",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "jade",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 5,
+          "color": "azure",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "amber",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 2,
+          "color": "coral",
+          "amount": 3
+        },
+        {
+          "source": 3,
+          "target": 5,
+          "color": "azure",
+          "amount": 1
+        }
+      ],
+      "work": 1128
+    },
+    {
+      "format": "bottle-harmony-difficulty",
+      "version": 1,
+      "policy": "planning-frontier-v1",
+      "levelId": "g-v1-000002cd-69-3c-1e",
+      "structureKey": "water-sort:4:3:4:/ABCA/ABCB/BCAC",
+      "status": "rated",
+      "tier": "D3",
+      "reason": null,
+      "metrics": {
+        "colors": 3,
+        "bottles": 4,
+        "initialEmptyBottles": 1,
+        "spareColorRatio": 0.3333333333333333,
+        "colorRuns": 12,
+        "shortestMoves": 10,
+        "minimumEmptyBottlesOnRoute": 0,
+        "maximumPreparationMovesOnRoute": 1,
+        "minimumLegalChoicesOnRoute": 1
+      },
+      "policies": [
+        {
+          "tier": "P1",
+          "chainLimit": 2,
+          "lookahead": 0,
+          "status": "failed",
+          "checkedStates": 12,
+          "branchingStates": 3,
+          "maximumChoices": 3,
+          "excludedChoices": 0,
+          "witness": [
+            {
+              "source": 0,
+              "target": 3,
+              "color": "coral",
+              "amount": 1
+            },
+            {
+              "source": 1,
+              "target": 0,
+              "color": "amber",
+              "amount": 1
+            },
+            {
+              "source": 3,
+              "target": 1,
+              "color": "coral",
+              "amount": 1
+            },
+            {
+              "source": 0,
+              "target": 3,
+              "color": "amber",
+              "amount": 2
+            },
+            {
+              "source": 1,
+              "target": 0,
+              "color": "coral",
+              "amount": 2
+            },
+            {
+              "source": 2,
+              "target": 1,
+              "color": "jade",
+              "amount": 1
+            }
+          ],
+          "stallReason": "no-local-progress"
+        },
+        {
+          "tier": "P2",
+          "chainLimit": 4,
+          "lookahead": 1,
+          "status": "failed",
+          "checkedStates": 11,
+          "branchingStates": 3,
+          "maximumChoices": 3,
+          "excludedChoices": 1,
+          "witness": [
+            {
+              "source": 0,
+              "target": 3,
+              "color": "coral",
+              "amount": 1
+            },
+            {
+              "source": 1,
+              "target": 0,
+              "color": "amber",
+              "amount": 1
+            },
+            {
+              "source": 3,
+              "target": 1,
+              "color": "coral",
+              "amount": 1
+            },
+            {
+              "source": 0,
+              "target": 3,
+              "color": "amber",
+              "amount": 2
+            },
+            {
+              "source": 1,
+              "target": 0,
+              "color": "coral",
+              "amount": 2
+            }
+          ],
+          "stallReason": "lookahead-excludes-all"
+        },
+        {
+          "tier": "P3",
+          "chainLimit": 6,
+          "lookahead": 2,
+          "status": "failed",
+          "checkedStates": 12,
+          "branchingStates": 3,
+          "maximumChoices": 2,
+          "excludedChoices": 3,
+          "witness": [
+            {
+              "source": 1,
+              "target": 3,
+              "color": "amber",
+              "amount": 1
+            },
+            {
+              "source": 0,
+              "target": 1,
+              "color": "coral",
+              "amount": 1
+            },
+            {
+              "source": 0,
+              "target": 3,
+              "color": "amber",
+              "amount": 1
+            }
+          ],
+          "stallReason": "lookahead-excludes-all"
+        },
+        {
+          "tier": "P3",
+          "chainLimit": 6,
+          "lookahead": 3,
+          "status": "passed",
+          "checkedStates": 11,
+          "branchingStates": 2,
+          "maximumChoices": 2,
+          "excludedChoices": 3,
+          "witness": [
+            {
+              "source": 0,
+              "target": 3,
+              "color": "coral",
+              "amount": 1
+            },
+            {
+              "source": 1,
+              "target": 0,
+              "color": "amber",
+              "amount": 1
+            },
+            {
+              "source": 1,
+              "target": 3,
+              "color": "coral",
+              "amount": 1
+            },
+            {
+              "source": 2,
+              "target": 1,
+              "color": "jade",
+              "amount": 1
+            },
+            {
+              "source": 2,
+              "target": 3,
+              "color": "coral",
+              "amount": 1
+            },
+            {
+              "source": 2,
+              "target": 1,
+              "color": "jade",
+              "amount": 1
+            },
+            {
+              "source": 0,
+              "target": 2,
+              "color": "amber",
+              "amount": 2
+            },
+            {
+              "source": 0,
+              "target": 3,
+              "color": "coral",
+              "amount": 1
+            },
+            {
+              "source": 1,
+              "target": 0,
+              "color": "jade",
+              "amount": 3
+            },
+            {
+              "source": 1,
+              "target": 2,
+              "color": "amber",
+              "amount": 1
+            }
+          ],
+          "stallReason": null
+        }
+      ],
+      "referenceSolution": [
+        {
+          "source": 0,
+          "target": 3,
+          "color": "coral",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 0,
+          "color": "amber",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 3,
+          "color": "coral",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "jade",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "coral",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "jade",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "amber",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 3,
+          "color": "coral",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 0,
+          "color": "jade",
+          "amount": 3
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "amber",
+          "amount": 3
+        }
+      ],
+      "work": 462
+    },
+    {
+      "format": "bottle-harmony-difficulty",
+      "version": 1,
+      "policy": "planning-frontier-v1",
+      "levelId": "g-v1-000002d3-0-4c-2e",
+      "structureKey": "water-sort:4:4:6://ABAC/BCDB/BDAD/CADC",
+      "status": "rated",
+      "tier": "D1",
+      "reason": null,
+      "metrics": {
+        "colors": 4,
+        "bottles": 6,
+        "initialEmptyBottles": 2,
+        "spareColorRatio": 0.5,
+        "colorRuns": 16,
+        "shortestMoves": 14,
+        "minimumEmptyBottlesOnRoute": 0,
+        "maximumPreparationMovesOnRoute": 2,
+        "minimumLegalChoicesOnRoute": 1
+      },
+      "policies": [
+        {
+          "tier": "P1",
+          "chainLimit": 2,
+          "lookahead": 0,
+          "status": "passed",
+          "checkedStates": 337,
+          "branchingStates": 226,
+          "maximumChoices": 8,
+          "excludedChoices": 0,
+          "witness": [
+            {
+              "source": 3,
+              "target": 4,
+              "color": "coral",
+              "amount": 1
+            },
+            {
+              "source": 2,
+              "target": 4,
+              "color": "coral",
+              "amount": 1
+            },
+            {
+              "source": 1,
+              "target": 3,
+              "color": "jade",
+              "amount": 1
+            },
+            {
+              "source": 1,
+              "target": 2,
+              "color": "amber",
+              "amount": 1
+            },
+            {
+              "source": 3,
+              "target": 1,
+              "color": "jade",
+              "amount": 2
+            },
+            {
+              "source": 2,
+              "target": 3,
+              "color": "amber",
+              "amount": 2
+            },
+            {
+              "source": 0,
+              "target": 2,
+              "color": "azure",
+              "amount": 1
+            },
+            {
+              "source": 1,
+              "target": 5,
+              "color": "jade",
+              "amount": 3
+            },
+            {
+              "source": 0,
+              "target": 5,
+              "color": "jade",
+              "amount": 1
+            },
+            {
+              "source": 0,
+              "target": 4,
+              "color": "coral",
+              "amount": 1
+            },
+            {
+              "source": 2,
+              "target": 0,
+              "color": "azure",
+              "amount": 2
+            },
+            {
+              "source": 3,
+              "target": 2,
+              "color": "amber",
+              "amount": 3
+            },
+            {
+              "source": 3,
+              "target": 4,
+              "color": "coral",
+              "amount": 1
+            },
+            {
+              "source": 1,
+              "target": 0,
+              "color": "azure",
+              "amount": 1
+            }
+          ],
+          "stallReason": null
+        }
+      ],
+      "referenceSolution": [
+        {
+          "source": 0,
+          "target": 4,
+          "color": "azure",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 5,
+          "color": "jade",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 5,
+          "color": "jade",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 0,
+          "color": "coral",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "amber",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 5,
+          "color": "jade",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 4,
+          "color": "azure",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 0,
+          "color": "coral",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 5,
+          "color": "jade",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "amber",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "azure",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 2,
+          "color": "amber",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 3,
+          "color": "coral",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 4,
+          "color": "azure",
+          "amount": 1
+        }
+      ],
+      "work": 6432
+    },
+    {
+      "format": "bottle-harmony-difficulty",
+      "version": 1,
+      "policy": "planning-frontier-v1",
+      "levelId": "g-v1-000002cd-78-4c-1e",
+      "structureKey": "water-sort:4:4:5:/ABAC/ACDD/ADCB/DBCB",
+      "status": "rated",
+      "tier": "D4",
+      "reason": null,
+      "metrics": {
+        "colors": 4,
+        "bottles": 5,
+        "initialEmptyBottles": 1,
+        "spareColorRatio": 0.25,
+        "colorRuns": 15,
+        "shortestMoves": 14,
+        "minimumEmptyBottlesOnRoute": 0,
+        "maximumPreparationMovesOnRoute": 1,
+        "minimumLegalChoicesOnRoute": 1
+      },
+      "policies": [
+        {
+          "tier": "P1",
+          "chainLimit": 2,
+          "lookahead": 0,
+          "status": "failed",
+          "checkedStates": 5,
+          "branchingStates": 3,
+          "maximumChoices": 4,
+          "excludedChoices": 0,
+          "witness": [
+            {
+              "source": 2,
+              "target": 4,
+              "color": "jade",
+              "amount": 1
+            },
+            {
+              "source": 1,
+              "target": 4,
+              "color": "jade",
+              "amount": 1
+            },
+            {
+              "source": 1,
+              "target": 2,
+              "color": "amber",
+              "amount": 1
+            },
+            {
+              "source": 3,
+              "target": 1,
+              "color": "coral",
+              "amount": 2
+            },
+            {
+              "source": 0,
+              "target": 3,
+              "color": "amber",
+              "amount": 1
+            }
+          ],
+          "stallReason": "no-local-progress"
+        },
+        {
+          "tier": "P2",
+          "chainLimit": 4,
+          "lookahead": 1,
+          "status": "failed",
+          "checkedStates": 6,
+          "branchingStates": 3,
+          "maximumChoices": 3,
+          "excludedChoices": 5,
+          "witness": [
+            {
+              "source": 2,
+              "target": 4,
+              "color": "jade",
+              "amount": 1
+            },
+            {
+              "source": 1,
+              "target": 4,
+              "color": "jade",
+              "amount": 1
+            },
+            {
+              "source": 1,
+              "target": 2,
+              "color": "amber",
+              "amount": 1
+            },
+            {
+              "source": 3,
+              "target": 1,
+              "color": "coral",
+              "amount": 2
+            },
+            {
+              "source": 2,
+              "target": 3,
+              "color": "amber",
+              "amount": 2
+            },
+            {
+              "source": 2,
+              "target": 4,
+              "color": "jade",
+              "amount": 1
+            }
+          ],
+          "stallReason": "lookahead-excludes-all"
+        },
+        {
+          "tier": "P3",
+          "chainLimit": 6,
+          "lookahead": 2,
+          "status": "failed",
+          "checkedStates": 14,
+          "branchingStates": 2,
+          "maximumChoices": 2,
+          "excludedChoices": 12,
+          "witness": [
+            {
+              "source": 2,
+              "target": 4,
+              "color": "jade",
+              "amount": 1
+            },
+            {
+              "source": 1,
+              "target": 4,
+              "color": "jade",
+              "amount": 1
+            },
+            {
+              "source": 2,
+              "target": 1,
+              "color": "amber",
+              "amount": 1
+            },
+            {
+              "source": 2,
+              "target": 4,
+              "color": "jade",
+              "amount": 1
+            },
+            {
+              "source": 3,
+              "target": 2,
+              "color": "coral",
+              "amount": 2
+            }
+          ],
+          "stallReason": "lookahead-excludes-all"
+        },
+        {
+          "tier": "P3",
+          "chainLimit": 6,
+          "lookahead": 3,
+          "status": "failed",
+          "checkedStates": 13,
+          "branchingStates": 2,
+          "maximumChoices": 2,
+          "excludedChoices": 11,
+          "witness": [
+            {
+              "source": 2,
+              "target": 4,
+              "color": "jade",
+              "amount": 1
+            },
+            {
+              "source": 1,
+              "target": 4,
+              "color": "jade",
+              "amount": 1
+            },
+            {
+              "source": 2,
+              "target": 1,
+              "color": "amber",
+              "amount": 1
+            },
+            {
+              "source": 2,
+              "target": 4,
+              "color": "jade",
+              "amount": 1
+            }
+          ],
+          "stallReason": "lookahead-excludes-all"
+        },
+        {
+          "tier": "P4",
+          "chainLimit": null,
+          "lookahead": null,
+          "status": "passed",
+          "checkedStates": 51,
+          "branchingStates": 0,
+          "maximumChoices": 0,
+          "excludedChoices": 0,
+          "witness": [
+            {
+              "source": 1,
+              "target": 4,
+              "color": "jade",
+              "amount": 1
+            },
+            {
+              "source": 2,
+              "target": 4,
+              "color": "jade",
+              "amount": 1
+            },
+            {
+              "source": 1,
+              "target": 2,
+              "color": "amber",
+              "amount": 1
+            },
+            {
+              "source": 3,
+              "target": 1,
+              "color": "coral",
+              "amount": 2
+            },
+            {
+              "source": 2,
+              "target": 3,
+              "color": "amber",
+              "amount": 2
+            },
+            {
+              "source": 4,
+              "target": 2,
+              "color": "jade",
+              "amount": 2
+            },
+            {
+              "source": 0,
+              "target": 4,
+              "color": "amber",
+              "amount": 1
+            },
+            {
+              "source": 3,
+              "target": 4,
+              "color": "amber",
+              "amount": 3
+            },
+            {
+              "source": 3,
+              "target": 0,
+              "color": "azure",
+              "amount": 1
+            },
+            {
+              "source": 2,
+              "target": 3,
+              "color": "jade",
+              "amount": 3
+            },
+            {
+              "source": 1,
+              "target": 2,
+              "color": "coral",
+              "amount": 3
+            },
+            {
+              "source": 0,
+              "target": 1,
+              "color": "azure",
+              "amount": 2
+            },
+            {
+              "source": 0,
+              "target": 3,
+              "color": "jade",
+              "amount": 1
+            },
+            {
+              "source": 0,
+              "target": 1,
+              "color": "azure",
+              "amount": 1
+            }
+          ],
+          "stallReason": null
+        }
+      ],
+      "referenceSolution": [
+        {
+          "source": 1,
+          "target": 4,
+          "color": "jade",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "jade",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "amber",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "coral",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "amber",
+          "amount": 2
+        },
+        {
+          "source": 4,
+          "target": 2,
+          "color": "jade",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 4,
+          "color": "amber",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 4,
+          "color": "amber",
+          "amount": 3
+        },
+        {
+          "source": 3,
+          "target": 0,
+          "color": "azure",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "jade",
+          "amount": 3
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "coral",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "azure",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 3,
+          "color": "jade",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "azure",
+          "amount": 1
+        }
+      ],
+      "work": 573
+    },
+    {
+      "format": "bottle-harmony-difficulty",
+      "version": 1,
+      "policy": "planning-frontier-v1",
+      "levelId": "g-v1-000002cd-3-5c-2e",
+      "structureKey": "water-sort:4:5:7://ABCD/ABDE/ACDE/BECD/CABE",
+      "status": "rated",
+      "tier": "D2",
+      "reason": null,
+      "metrics": {
+        "colors": 5,
+        "bottles": 7,
+        "initialEmptyBottles": 2,
+        "spareColorRatio": 0.4,
+        "colorRuns": 20,
+        "shortestMoves": 17,
+        "minimumEmptyBottlesOnRoute": 0,
+        "maximumPreparationMovesOnRoute": 1,
+        "minimumLegalChoicesOnRoute": 1
+      },
+      "policies": [
+        {
+          "tier": "P1",
+          "chainLimit": 2,
+          "lookahead": 0,
+          "status": "failed",
+          "checkedStates": 329,
+          "branchingStates": 239,
+          "maximumChoices": 8,
+          "excludedChoices": 0,
+          "witness": [
+            {
+              "source": 4,
+              "target": 5,
+              "color": "jade",
+              "amount": 1
+            },
+            {
+              "source": 0,
+              "target": 5,
+              "color": "jade",
+              "amount": 1
+            },
+            {
+              "source": 1,
+              "target": 5,
+              "color": "jade",
+              "amount": 1
+            },
+            {
+              "source": 4,
+              "target": 1,
+              "color": "coral",
+              "amount": 1
+            },
+            {
+              "source": 0,
+              "target": 4,
+              "color": "violet",
+              "amount": 1
+            },
+            {
+              "source": 4,
+              "target": 6,
+              "color": "violet",
+              "amount": 2
+            },
+            {
+              "source": 0,
+              "target": 4,
+              "color": "amber",
+              "amount": 1
+            }
+          ],
+          "stallReason": "no-local-progress"
+        },
+        {
+          "tier": "P2",
+          "chainLimit": 4,
+          "lookahead": 1,
+          "status": "passed",
+          "checkedStates": 813,
+          "branchingStates": 632,
+          "maximumChoices": 10,
+          "excludedChoices": 4,
+          "witness": [
+            {
+              "source": 4,
+              "target": 5,
+              "color": "jade",
+              "amount": 1
+            },
+            {
+              "source": 0,
+              "target": 5,
+              "color": "jade",
+              "amount": 1
+            },
+            {
+              "source": 1,
+              "target": 5,
+              "color": "jade",
+              "amount": 1
+            },
+            {
+              "source": 3,
+              "target": 1,
+              "color": "coral",
+              "amount": 1
+            },
+            {
+              "source": 2,
+              "target": 4,
+              "color": "coral",
+              "amount": 1
+            },
+            {
+              "source": 3,
+              "target": 2,
+              "color": "azure",
+              "amount": 1
+            },
+            {
+              "source": 3,
+              "target": 5,
+              "color": "jade",
+              "amount": 1
+            },
+            {
+              "source": 0,
+              "target": 3,
+              "color": "violet",
+              "amount": 1
+            },
+            {
+              "source": 1,
+              "target": 6,
+              "color": "coral",
+              "amount": 2
+            },
+            {
+              "source": 4,
+              "target": 6,
+              "color": "coral",
+              "amount": 2
+            },
+            {
+              "source": 2,
+              "target": 1,
+              "color": "azure",
+              "amount": 2
+            },
+            {
+              "source": 2,
+              "target": 4,
+              "color": "violet",
+              "amount": 1
+            },
+            {
+              "source": 0,
+              "target": 2,
+              "color": "amber",
+              "amount": 1
+            },
+            {
+              "source": 4,
+              "target": 3,
+              "color": "violet",
+              "amount": 2
+            },
+            {
+              "source": 1,
+              "target": 0,
+              "color": "azure",
+              "amount": 3
+            },
+            {
+              "source": 1,
+              "target": 4,
+              "color": "amber",
+              "amount": 1
+            },
+            {
+              "source": 2,
+              "target": 4,
+              "color": "amber",
+              "amount": 2
+            }
+          ],
+          "stallReason": null
+        }
+      ],
+      "referenceSolution": [
+        {
+          "source": 0,
+          "target": 5,
+          "color": "jade",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 5,
+          "color": "jade",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 6,
+          "color": "coral",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 6,
+          "color": "coral",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "azure",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 6,
+          "color": "coral",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 5,
+          "color": "jade",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 6,
+          "color": "coral",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 4,
+          "color": "violet",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "amber",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 0,
+          "color": "azure",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "violet",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "amber",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 0,
+          "color": "azure",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 5,
+          "color": "jade",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 3,
+          "color": "violet",
+          "amount": 3
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "amber",
+          "amount": 3
+        }
+      ],
+      "work": 35918
+    },
+    {
+      "format": "bottle-harmony-difficulty",
+      "version": 1,
+      "policy": "planning-frontier-v1",
+      "levelId": "visual-demo",
+      "structureKey": "water-sort:4:2:4://ABAB/BABA",
+      "status": "rated",
+      "tier": "D1",
+      "reason": null,
+      "metrics": {
+        "colors": 2,
+        "bottles": 4,
+        "initialEmptyBottles": 2,
+        "spareColorRatio": 1,
+        "colorRuns": 8,
+        "shortestMoves": 7,
+        "minimumEmptyBottlesOnRoute": 1,
+        "maximumPreparationMovesOnRoute": 1,
+        "minimumLegalChoicesOnRoute": 1
+      },
+      "policies": [
+        {
+          "tier": "P1",
+          "chainLimit": 2,
+          "lookahead": 0,
+          "status": "passed",
+          "checkedStates": 13,
+          "branchingStates": 7,
+          "maximumChoices": 2,
+          "excludedChoices": 0,
+          "witness": [
+            {
+              "source": 0,
+              "target": 2,
+              "color": "coral",
+              "amount": 1
+            },
+            {
+              "source": 1,
+              "target": 0,
+              "color": "jade",
+              "amount": 1
+            },
+            {
+              "source": 1,
+              "target": 2,
+              "color": "coral",
+              "amount": 1
+            },
+            {
+              "source": 0,
+              "target": 1,
+              "color": "jade",
+              "amount": 2
+            },
+            {
+              "source": 0,
+              "target": 2,
+              "color": "coral",
+              "amount": 1
+            },
+            {
+              "source": 1,
+              "target": 0,
+              "color": "jade",
+              "amount": 3
+            },
+            {
+              "source": 1,
+              "target": 2,
+              "color": "coral",
+              "amount": 1
+            }
+          ],
+          "stallReason": null
+        }
+      ],
+      "referenceSolution": [
+        {
+          "source": 0,
+          "target": 2,
+          "color": "coral",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 0,
+          "color": "jade",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "coral",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "jade",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "coral",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 0,
+          "color": "jade",
+          "amount": 3
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "coral",
+          "amount": 1
+        }
+      ],
+      "work": 263
+    }
+  ]
+}

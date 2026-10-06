@@ -1,11 +1,15 @@
 import { useState } from 'react';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import difficultyPool from '../../assets/levels/calibration-difficulty.json';
+import { decodeDifficultyPool } from '../game/difficultyCodec';
+import { DEMO_LEVEL } from '../game/demo';
 import pool from '../../assets/levels/calibration.json';
 import { loadCalibrationSamples, TIER_NAMES, TRIAL_TIERS, type CalibrationSample, type TrialTier } from '../game/calibration';
 import { LIQUIDS } from '../art/palette';
 
 export const CALIBRATION_SAMPLES = loadCalibrationSamples(JSON.stringify(pool));
+export const CALIBRATION_DIFFICULTY = new Map(decodeDifficultyPool(JSON.stringify(difficultyPool), [...CALIBRATION_SAMPLES.map(sample => sample.content.level), DEMO_LEVEL]).map(report => [report.levelId, report]));
 for (const sample of CALIBRATION_SAMPLES) for (const color of sample.content.level.colors) {
   if (!LIQUIDS[color]) throw new Error(`Missing liquid art for ${color}`);
 }
@@ -19,7 +23,7 @@ export function LevelPicker({ visible, currentCode, onClose, onSelect }: Props) 
     <View style={[styles.backdrop, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 12 }]}>
       <View style={styles.panel}>
         <View style={styles.heading}><Text accessibilityRole="header" style={styles.title}>选一题，慢慢玩</Text><Pressable accessibilityRole="button" accessibilityLabel="关闭选题" onPress={onClose} style={styles.close}><Text style={styles.closeText}>关闭</Text></Pressable></View>
-        <Text style={styles.note}>四档为试排，实际难度等待试玩确认。切换题目将重新开始；不保存进度。</Text>
+        <Text style={styles.note}>分类保留人工试排；自动评级另列，待试玩校准。切换题目将重新开始；不保存进度。</Text>
         <View accessibilityRole="tablist" style={styles.filters}>{TRIAL_TIERS.map(value => <Pressable key={value} accessibilityRole="tab" accessibilityState={{ selected: tier === value }} accessibilityLabel={`${value} ${TIER_NAMES[value]}试排题`} onPress={() => setTier(value)} style={[styles.filter, tier === value && styles.selected]}><Text style={styles.filterText}>{value}</Text><Text style={styles.filterText}>{TIER_NAMES[value]}</Text></Pressable>)}</View>
         <ScrollView contentContainerStyle={styles.list}>
           <Pressable accessibilityRole="button" accessibilityState={{ selected: currentCode === null }} onPress={() => onSelect(null)} style={[styles.card, currentCode === null && styles.selected]}>
@@ -29,6 +33,7 @@ export function LevelPicker({ visible, currentCode, onClose, onSelect }: Props) 
             <Text accessibilityRole="header" style={styles.tier}>{tier} · {TIER_NAMES[tier]}（试排）</Text>
             {CALIBRATION_SAMPLES.filter(sample => sample.tier === tier).map(sample => <Pressable key={sample.code} accessibilityRole="button" accessibilityState={{ selected: currentCode === sample.code }} onPress={() => onSelect(sample)} style={[styles.card, currentCode === sample.code && styles.selected]}>
               <Text style={styles.name}>{sample.code} · {sample.content.metrics.colorCount} 色 · {sample.content.metrics.bottleCount} 瓶</Text>
+              <Text style={styles.detail}>自动评级：{CALIBRATION_DIFFICULTY.get(sample.content.level.id)?.tier}（暂定）</Text>
               <Text style={styles.detail}>{sample.content.origin.config.emptyBottles} 个空瓶 · {sample.focus}</Text>
             </Pressable>)}
           </View>

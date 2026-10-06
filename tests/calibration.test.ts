@@ -99,7 +99,7 @@ test('multi-bottle pour geometry contains all pairs and aligns streams, includin
 });
 
 test('small phone and tablet layouts keep touch targets, slots and moving art inside the safe screen', () => {
-  for (const stage of [{ width: 276, height: 280, y: 155 }, { width: 331, height: 350, y: 155 }, { width: 680, height: 700, y: 180 }]) {
+  for (const stage of [{ width: 276, height: 264, y: 155 }, { width: 331, height: 350, y: 155 }, { width: 680, height: 700, y: 180 }]) {
     const safeTop = 35;
     for (let count = 4; count <= 7; count++) {
       const layout = boardLayout(count);
