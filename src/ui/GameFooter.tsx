@@ -5,18 +5,18 @@ import { StyleSheet, View } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { GameButton } from './GameButton';
 
-type Props = { won: boolean; compact: boolean; disabled: boolean; undoDisabled: boolean; searching: boolean; reduceMotion: boolean; nextLabel: string; onUndo: () => void; onHint: () => void; onReset: () => void; onContinue: () => void };
-export function GameFooter({ won, compact, disabled, undoDisabled, searching, reduceMotion, nextLabel, onUndo, onHint, onReset, onContinue }: Props) {
+type Props = { won: boolean; continueVisible: boolean; compact: boolean; disabled: boolean; undoDisabled: boolean; searching: boolean; reduceMotion: boolean; nextLabel: string; onUndo: () => void; onHint: () => void; onReset: () => void; onContinue: () => void };
+export function GameFooter({ won, continueVisible, compact, disabled, undoDisabled, searching, reduceMotion, nextLabel, onUndo, onHint, onReset, onContinue }: Props) {
   const { t, rtl } = useI18n();
-  const entrance = useSharedValue(won ? 1 : 0);
+  const entrance = useSharedValue(continueVisible ? 1 : 0);
   useEffect(() => {
-    entrance.set(won ? reduceMotion ? 1 : withTiming(1, { duration: 320, easing: Easing.out(Easing.cubic) }) : 0);
-  }, [won, reduceMotion, entrance]);
+    entrance.set(continueVisible ? reduceMotion ? 1 : withTiming(1, { duration: 320, easing: Easing.out(Easing.cubic) }) : 0);
+  }, [continueVisible, reduceMotion, entrance]);
   const celebrationStyle = useAnimatedStyle(() => ({ opacity: entrance.value, transform: [{ translateY: 8 * (1 - entrance.value) }] }));
   return <View style={styles.footer}>
     {/* An empty reserved area keeps bottle size fixed when the next button appears. */}
     <View style={[styles.continueArea, compact && styles.compactContinueArea]}>
-      {won && <Animated.View style={[styles.continueButton, celebrationStyle]}>
+      {continueVisible && <Animated.View style={[styles.continueButton, celebrationStyle]}>
         <GameButton compact={compact} kind="wide" tone="mint" icon="play" label={nextLabel} disabled={disabled} onPress={onContinue} />
       </Animated.View>}
     </View>

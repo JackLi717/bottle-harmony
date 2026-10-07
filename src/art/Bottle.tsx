@@ -191,7 +191,7 @@ export const Bottle = memo(function Bottle({ index, colors, selected, completed,
         <Ellipse cx={50} cy={28} rx={17} ry={5.8} fill="#183447" stroke={`url(#${id}-rim)`} strokeWidth={2.5} />
         <Ellipse cx={50} cy={28} rx={11.5} ry={3.3} fill="#081C2C" stroke="#72ACBC" strokeWidth={0.7} />
         <Path d="M34 27 Q50 19 66 27" fill="none" stroke="#EAF4E0" strokeWidth={1.1} strokeOpacity={0.75} />
-        {completionEffect === 'cork' && <AnimatedG animatedProps={cork}>
+        {completionEffect === 'cork' && <AnimatedG opacity={completed ? 1 : 0} animatedProps={cork}>
           {/* One tapered plug moves as a whole: its lower half enters the neck. */}
           <Path d="M38 18 Q50 14 62 18 L59.5 44 Q50 48 40.5 44 Z" fill={`url(#${id}-cork)`} stroke="#A78150" strokeWidth={0.65} />
           <Path d="M41 21 L43 42" stroke="#FFF0CB" strokeWidth={1.2} strokeOpacity={0.4} strokeLinecap="round" />

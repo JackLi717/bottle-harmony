@@ -22,7 +22,10 @@ import { createSolver, type SolveResult, type SolverTask } from '../game/solver'
 import { HomeScreen } from './HomeScreen';
 import { GameHeader } from './GameHeader';
 import { GameFooter } from './GameFooter';
-import { finishPresentation } from './gamePresentation';
+import { Celebration } from './Celebration';
+import { fireworkCount } from '../art/fireworkPhysics';
+import { useSoundPreference } from './useSoundPreference';
+import { completedPreviewSession, finishPresentation } from './gamePresentation';
 import { DifficultyDebug } from './DifficultyDebug';
 import { LevelPicker } from './LevelPicker';
 import { CALIBRATION_SAMPLES, DIFFICULTY, LEVEL_LABELS } from './content';
@@ -44,6 +47,7 @@ export function DemoScreen() {
   const dimensions = useWindowDimensions();
   const compact = dimensions.height < 720;
   const { play, setPlay, ready, notice, saveStatus } = usePlayProgress();
+  const { sound, ready: soundReady, saved: soundSaved, toggleSound } = useSoundPreference();
   const [page, setPage] = useState<'home' | 'game'>('home');
   const [internalSession, setInternalSession] = useState<GameSession | null>(null);
   const session = internalSession ?? visibleSession(play);
@@ -57,6 +61,8 @@ export function DemoScreen() {
   const [languageVisible, setLanguageVisible] = useState(false);
   const [completionPickerVisible, setCompletionPickerVisible] = useState(false);
   const [completionEffect, setCompletionEffect] = useState<CompletionEffect>('cork');
+  const [pendingCelebration, setPendingCelebration] = useState<string | null>(null);
+  const [celebration, setCelebration] = useState<'win' | 2 | 3 | 4 | 5 | null>(null);
   const [appActive, setAppActive] = useState(AppState.currentState === 'active');
   const [completionEpoch, setCompletionEpoch] = useState(0);
   const [debugReport, setDebugReport] = useState<DifficultyReport | PlanningDepthReport | null>(null);
@@ -77,6 +83,22 @@ export function DemoScreen() {
   const { scale, minY } = fitBoard(layout, stage, safeTop);
   const won = session.status === 'solved';
   const finish = finishPresentation(internalSession ? 'preview' : play.replay ? 'replay' : 'mainline', entry?.number ?? play.current);
+  const celebrationCount = fireworkCount(entry?.tier ?? sample?.tier ?? 'D1');
+  useEffect(() => {
+    if (!pendingCelebration || animation || !appActive || page !== 'game' || session.level.id !== pendingCelebration || !won) return;
+    // Let the final bottle's cork settle. This timer never controls completion or unlocks.
+    const timeout = setTimeout(() => { setCelebration(reduceMotion ? null : 'win'); setPendingCelebration(null); }, reduceMotion ? 0 : 1000);
+    return () => clearTimeout(timeout);
+  }, [pendingCelebration, animation, appActive, page, session.level.id, won, reduceMotion]);
+  const celebrationFinished = useCallback(() => setCelebration(null), []);
+  function previewCelebration(count: 2 | 3 | 4 | 5) {
+    if (busy.current) return;
+    const preview = MAINLINE.entries.find(item => item.level.bottles.length === 8)!;
+    setInternalSession(completedPreviewSession(preview));
+    setPendingCelebration(null);
+    setCelebration(reduceMotion ? null : count);
+    setSelected(null); setMenuVisible(false); setPage('game');
+  }
   const finished = useCallback(() => {
     busy.current = false;
     setAnimation(null);
@@ -95,11 +117,14 @@ export function DemoScreen() {
 
   useEffect(() => {
     let mounted = true;
-    AccessibilityInfo.isReduceMotionEnabled().then(value => { if (mounted) setReduceMotion(value); }).catch(() => {});
-    const preference = AccessibilityInfo.addEventListener('reduceMotionChanged', setReduceMotion);
+    const motionChanged = (value: boolean) => { setReduceMotion(value); if (value) { setCelebration(null); setPendingCelebration(null); } };
+    AccessibilityInfo.isReduceMotionEnabled().then(value => { if (mounted) motionChanged(value); }).catch(() => {});
+    const preference = AccessibilityInfo.addEventListener('reduceMotionChanged', motionChanged);
     const subscription = AppState.addEventListener('change', state => {
       setAppActive(state === 'active');
       if (state !== 'active') {
+        setPendingCelebration(null);
+        setCelebration(null);
         setCompletionEpoch(epoch => epoch + 1);
         search.current?.cancel();
         search.current = null;
@@ -125,6 +150,8 @@ export function DemoScreen() {
   useEffect(() => {
     // A window resize ends the visual move; it never rolls back accepted liquid state.
     const subscription = Dimensions.addEventListener('change', () => {
+      setPendingCelebration(null);
+      setCelebration(null);
       setCompletionEpoch(epoch => epoch + 1);
       cancelAnimation(progress);
       progress.set(1);
@@ -142,8 +169,10 @@ export function DemoScreen() {
   const goHome = useCallback(() => {
     if (busy.current) return;
     setSelected(null);
+    setPendingCelebration(null);
+    setCelebration(null);
     setPage('home');
-  }, [setSelected, setPage]);
+  }, [setSelected, setPage, setPendingCelebration, setCelebration]);
   useEffect(() => {
     const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
       if (page !== 'game') return false;
@@ -155,6 +184,7 @@ export function DemoScreen() {
 
   function chooseSample(next: CalibrationSample | null) {
     if (busy.current) return;
+    setPendingCelebration(null); setCelebration(null);
     setInternalSession(createSession(next?.content.level ?? DEMO_LEVEL));
     setSelected(null);
     announceStatus('tapStart');
@@ -177,6 +207,7 @@ export function DemoScreen() {
 
   function nextLevel() {
     if (busy.current) return;
+    setPendingCelebration(null); setCelebration(null);
     setInternalSession(null);
     if (!internalSession) setPlay(nextMainline(play, MAINLINE));
     setSelected(null); setMenuVisible(false);
@@ -185,6 +216,7 @@ export function DemoScreen() {
 
   function chooseNumber(number: number) {
     if (busy.current) return;
+    setPendingCelebration(null); setCelebration(null);
     setInternalSession(null); setPlay(selectMainline(play, MAINLINE, number));
     setSelected(null); setMenuVisible(false); setPage('game'); announceStatus('tapStart');
   }
@@ -197,6 +229,7 @@ export function DemoScreen() {
     if ('state' in accepted) setPlay(accepted.state);
     else setInternalSession(accepted.session);
     const resultingSession = 'state' in accepted ? visibleSession(accepted.state) : accepted.session;
+    if (resultingSession.status === 'solved') setPendingCelebration(resultingSession.level.id);
     announceStatus(resultingSession.status === 'solved' ? 'finished' : resultingSession.status === 'stalled' ? 'stalled' : 'gentle');
     if (reduceMotion) { busy.current = false; setSelected(null); return; }
     progress.set(0);
@@ -224,12 +257,14 @@ export function DemoScreen() {
 
   function reset() {
     if (busy.current) return;
+    setPendingCelebration(null); setCelebration(null);
     if (internalSession) setInternalSession(resetSession(internalSession)); else setPlay(editMainline(play, 'reset')); setSelected(null);
     announceStatus('tapStart');
   }
 
   function undo() {
     if (busy.current || !history.length) return;
+    setPendingCelebration(null); setCelebration(null);
     if (internalSession) setInternalSession(undoSession(internalSession)); else setPlay(editMainline(play, 'undo'));
     setSelected(null); announceStatus('undone');
   }
@@ -262,7 +297,15 @@ export function DemoScreen() {
     ? [...bottle, ...Array(animation.pour.amount).fill(animation.pour.color)]
     : bottle) : board;
 
-  if (!ready || !languageReady) return <LinearGradient colors={['#11171E', '#070B12']} style={[styles.screen, { alignItems: 'center', justifyContent: 'center' }]}><StatusBar style="light" /><UiText style={styles.loading}>{t('loading')}</UiText></LinearGradient>;
+  function continueAfterWin() {
+    if (busy.current) return;
+    setPendingCelebration(null); setCelebration(null);
+    if (finish.action === 'home') goHome();
+    else if (finish.action === 'levels') { goHome(); openMenu('levels'); }
+    else nextLevel();
+  }
+
+  if (!ready || !languageReady || !soundReady) return <LinearGradient colors={['#11171E', '#070B12']} style={[styles.screen, { alignItems: 'center', justifyContent: 'center' }]}><StatusBar style="light" /><UiText style={styles.loading}>{t('loading')}</UiText></LinearGradient>;
 
   return (
     <LinearGradient colors={['#11171E', '#090E16', '#070B12']} locations={[0, 0.58, 1]} style={styles.screen}>
@@ -295,15 +338,16 @@ export function DemoScreen() {
             })}
             {animation && <View pointerEvents="none" style={[StyleSheet.absoluteFill, { zIndex: 11 }]}><PourStream plan={animation.plan} color={animation.pour.color} progress={progress} /></View>}
           </View>}
+          {celebration !== null && appActive && !reduceMotion && stage.width > 0 && stage.height > 0 && <Celebration count={celebration === 'win' ? celebrationCount : celebration} width={stage.width} height={stage.height} sound={sound} onComplete={celebrationFinished} />}
         </View>
-        <GameFooter won={won && !animation} compact={compact}
+        <GameFooter won={won} continueVisible={won && !animation && !pendingCelebration && celebration === null} compact={compact}
           disabled={!!animation || searching} undoDisabled={!history.length || !!animation || searching} searching={searching} reduceMotion={reduceMotion}
           nextLabel={t(finish.label)} onUndo={undo} onReset={reset} onHint={demonstrate}
-          onContinue={() => { if (finish.action === 'home') goHome(); else if (finish.action === 'levels') { goHome(); openMenu('levels'); } else void demonstrate(); }} />
+          onContinue={continueAfterWin} />
         </>}
       </View>
       {debugReport && <DifficultyDebug visible={difficultyVisible} report={debugReport} sample={sample} label={label} onClose={() => setDifficultyVisible(false)} />}
-      {menuVisible && <MainlineMenu visible initialSection={menuSection} play={play} saveStatus={t(saveStatus)} onClose={() => setMenuVisible(false)} onResume={() => chooseNumber(play.current)} onSelect={chooseNumber} onSamples={() => { setMenuVisible(false); setPickerVisible(true); }} symbols={play.symbols} onSymbols={() => setPlay(Object.freeze({ ...play, symbols: !play.symbols }))} completionName={t(completionEffect)} onLanguage={() => { setMenuVisible(false); setLanguageVisible(true); }} onCompletionEffects={() => { setMenuVisible(false); setCompletionPickerVisible(true); }} onDebug={INTERNAL_TOOLS ? openDifficulty : undefined} />}
+      {menuVisible && <MainlineMenu visible initialSection={menuSection} play={play} saveStatus={t(saveStatus)} onClose={() => setMenuVisible(false)} onResume={() => chooseNumber(play.current)} onSelect={chooseNumber} onSamples={() => { setMenuVisible(false); setPickerVisible(true); }} symbols={play.symbols} onSymbols={() => setPlay(Object.freeze({ ...play, symbols: !play.symbols }))} completionName={t(completionEffect)} onLanguage={() => { setMenuVisible(false); setLanguageVisible(true); }} onCompletionEffects={() => { setMenuVisible(false); setCompletionPickerVisible(true); }} sound={sound} soundSaved={soundSaved} onSound={toggleSound} onCelebrationPreview={previewCelebration} onDebug={INTERNAL_TOOLS ? openDifficulty : undefined} />}
       <LanguagePicker visible={languageVisible} onClose={() => { setLanguageVisible(false); openMenu('settings'); }} />
       <CompletionEffectPicker visible={completionPickerVisible} value={completionEffect} reduceMotion={reduceMotion} onSelect={effect => { setCompletionEffect(effect); setSelected(null); }} onClose={() => setCompletionPickerVisible(false)} />
       <Tutorial visible={page === 'game' && ready && !play.tutorialDone} notice={notice ? t(notice) : undefined} onStart={() => setPlay(Object.freeze({ ...play, tutorialDone: true }))} onSkip={() => setPlay(Object.freeze({ ...play, tutorialDone: true }))} />

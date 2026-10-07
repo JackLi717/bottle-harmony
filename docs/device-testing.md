@@ -1,17 +1,22 @@
 # 竖屏试玩设备测试
 
-## 独立主页、简洁游玩页与多语言（2026-10-07）
+## 双名称语言、棋盘叠加礼花与音效（2026-10-07）
 
-当前界面保留原玻璃、点击倒水和完成收尾动画，瓶身外轮廓由 64 单位收窄为 58 单位（约 9.4%），高度不变，内腔与倾斜液体体积同步匹配。背景采用墨黑渐变与柔和光感，移除拱廊、金线纹饰及背景小十字。已认可的无厚底薄边玻璃按钮与线条图标保持不变。启动先到独立主页，点当前 `Level N` 才进入游戏；游玩页只保留返回、关卡号、瓶子与撤销/提示/重来，通关后出现继续按钮。难度、颜色完成进度、倒水次数和常驻指导文字均已移除。选关与全局设置放在主页；语言入口位于设置第一项，提供 13 种语言、跟随设备和本地偏好保存；阿拉伯语正文和导航镜像，棋盘坐标固定。
+保留认可的墨黑背景、薄边玻璃按钮、收窄玻璃瓶与独立主页。语言列表采用固定顺序，同时显示语言自己的名字和当前界面语言中的名称；“跟随系统”固定在滚动区域外，语言入口有地球图标。
 
-- 自动检查：78 项测试、TypeScript、ESLint、差异空白检查全部通过；Expo doctor 21/21 通过。测试涵盖收窄内腔的体积守恒、倒水对位、六列触摸与像素取整、通关按钮的主线/重玩/最后一关边界，以及所有语言的插值字段完整性与系统语言匹配。
-- 独立 Android 14 模拟器：首次打开先到主页，点击关卡后才出现教学；界面返回与 Android 系统返回均回到主页。重新进入及冷启动后待完成局面、撤销记录保留。提示完成第一关、撤销解除通关、恢复完成后进入第二关；通关前后瓶子触摸边界完全一致。重玩第一关不会替换已保存的主线第二关。
-- 同一模拟器，320×568 点：游玩页可见文字只有关卡号和三项工具，通关后才有继续按钮。十二瓶预览全部可见，每个触摸宽度至少 44 点，原生像素边界没有重叠；返回主页再进入主线后原局面保持。阿拉伯语返回按钮位于右侧并镜像箭头，工具栏与主页导航镜像；语言偏好在冷启动后恢复。改变模拟器尺寸和密度导致 Activity 重建时仍先到主页，内部预览不会替换主线存档。此前的德语、教学小屏和完成效果检查仍通过，本轮未改变这些布局。
-- iPhone 12 Pro Max / iOS 17.4.1：最终 Release 构建和签名验证通过，设备工具确认更新安装与启动成功。T517D / Android 15：最终 Release 构建、APK 签名验证、更新安装与启动通过；手机实际 APK 的 SHA-256 与本地最终包一致，最近的 AndroidRuntime / ReactNativeJS 错误日志为空。两个真实手机均未清除数据或卸载。
+实际通关、倒水回位及瓶塞收尾后，在原有已完成瓶子区域叠加透明礼花，不切换页面，不加卡片、遮罩或庆祝文字。D1/D2/D3/D4 分别放 2/3/4/5 朵；每朵六色、三层花瓣与延迟碎星，共 180 条火花。升空减速、扩散受阻力、下落受重力；较淡的弯曲长尾与明亮尖端逐渐熄灭。各层按颜色合并 SVG 路径。落尽后，同一棋盘的继续按钮淡入，瓶子和工具区位置不变。修正原生 SVG 在最后倒水绑定切换后偶尔遗失瓶塞透明度的问题，提供完成状态的静态透明度作为落定值；已核对实际第一关两个完成瓶塞。
 
-最终包仍为版本 0.0.1，标识 `com.bottleharmony.app`，路径仍为 `builds/bottle-harmony-demo.apk` 与 `builds/ios-device/Build/Products/Release-iphoneos/BottleHarmony.app`。安装证据保存为 `builds/home-iphone-install.json`、`builds/home-iphone-launch.json`。本轮 Android 手机锁屏，新的布局与语言画面验证来自独立模拟器；未采集新版 iPhone 真机画面，未开展持续性能、耗电或帧率测量。
+原创发射、绽放与余响可在主页设置关闭并保存，遵循 iOS 系统静音，不录音、不后台播放。返回、撤销、重来和切后台结束庆祝；减少动态效果跳过礼花、直接显示继续。过关、解锁与保存早于视觉效果，恢复完成局面不重播。内部预览通过已验证路线创建独立八瓶完成局面，不改变主线。
 
-当前流程通过 78 项测试、TypeScript、ESLint、差异检查、iOS/Android 构建与签名验证；两个手机更新安装与启动成功。模拟器的主线与恢复检查记录为 `builds/home-native-check.log`；其中切换密度后的旧页面等待已按 Activity 重建重新进入主页处理，后续小屏与语言检查通过，记录为 `builds/home-small-check.log`。当前截图为 `builds/home-final.png`、`builds/home-game-final.png`、`builds/home-game-finish.png`、`builds/home-small-twelve.png` 与 `builds/home-small-game-ar.png`。独立模拟器的小屏尺寸和密度覆盖已恢复，随后关闭本轮启动的模拟器。
+- 自动检查：84 项测试、TypeScript、ESLint、差异检查全部通过。包含六色多层火花、升空减速与最终下落、音画时间轴、WAV 无削波、独立预览的合法路线与主线隔离。核心、千关内容、保存、规则及倒水几何检查仍通过。依赖未新增，上一轮 Expo 兼容检查与 doctor 21/21 通过。
+- 独立 Android 14 模拟器：真实完成第一关，礼花期间保留四瓶坐标且没有独立庆祝标题，继续按钮等礼花结束才出现；撤销再完成、返回取消、恢复已完成局面不重播、继续第二关通过。五朵礼花录屏与逐帧检查覆盖升空、错落绽放和渐隐下落；八瓶预览未覆盖待完成的第二关。
+- 同一模拟器：播放时原生音轨 started，22.05 kHz 单声道，结束后停止；切后台停止并不重播，关闭音效、冷启动后偏好仍关闭，静音预览无播放音轨。返回在礼花期间仍可使用。
+- 320×568 点：八瓶完成局面、瓶塞、继续与工具区完整可见；减少动态效果直接显示继续，不播放礼花。模拟器尺寸、密度和动画设置已恢复，并关闭本轮测试模拟器。原生运行日志无应用错误。
+- T517D / Android 15：最终 Release 包签名验证、覆盖安装与启动成功，手机实际 APK 的 SHA-256 与最终本地包一致。iPhone 12 Pro Max / iOS 17.4.1：最终 Release 构建、签名验证、覆盖安装成功；设备锁屏阻止启动验证，解锁后可自行打开。两台手机未卸载或清除数据，未操作主线。
+
+版本为 0.0.1，标识 `com.bottleharmony.app`。最终包为 `builds/bottle-harmony-demo.apk` 和 `builds/ios-device/Build/Products/Release-iphoneos/BottleHarmony.app`。iPhone 安装记录 `builds/overlay-iphone-install.json`；启动锁屏记录 `builds/overlay-iphone-launch.log`。原生检查记录 `builds/overlay-native-check.log`、`builds/overlay-native-errors.log`，Android 手机包校验 `builds/overlay-android-install-check.log`。
+
+无声原生录屏 `builds/overlay-mainline.mp4`、`builds/overlay-five.mp4`；绽放截图 `builds/overlay-burst.png` 和 `builds/overlay-video-burst.png`，完成局面 `builds/overlay-mainline-finished.png`，小屏 `builds/overlay-small-finished.png`，减少动态效果 `builds/overlay-reduced.png`。音频输出记录在 `builds/overlay-audio-*.txt`；声音在安装包内，录屏不含声音。语言原生双名称与西班牙语/阿拉伯语恢复检查沿用同一天上一轮记录。庆祝、声音与布局复测来自独立模拟器，未测量新版手机帧率、耗电或持续性能。
 
 ## 完成状态效果（2026-10-07）
 
@@ -38,6 +43,7 @@ Android 与 iOS Release 重建及签名验证通过，已覆盖安装并启动�
 一千关实际资源已接入两个平台的独立 Release 安装包，离线运行，不需要 Metro。Android APK 位于 `builds/bottle-harmony-demo.apk`；iPhone 真机包位于 `builds/ios-device/Build/Products/Release-iphoneos/BottleHarmony.app`。两个构建成功，APK 与 iPhone 包的签名验证通过。当前仍为版本 0.0.1、应用标识 `com.bottleharmony.app`，内部工具开关开启。
 
 - iPhone 12 Pro Max / iOS 17.4.1：设备工具确认新版安装成功、应用启动成功。本轮没有采集 iPhone 真机画面或量化渲染性能。
+- 320×568 点：八瓶完成局面、瓶塞、继续与工具区完整可见；减少动态效果直接显示继续，不播放礼花。模拟器尺寸、密度和动画设置已恢复，并关闭本轮测试模拟器。原生运行日志无应用错误。
 - T517D / Android 15：USB 更新安装成功，观察到千关主线第六关、已通过五关与本地保存状态；后续关卡显示未解锁。
 - 安卓内部第 419 关预览：十一色、十二瓶、两排各六瓶，完整显示；辅助符号开启后各层可见。执行一步参考提示、等待动画回位并撤销成功。内部预览未增加主线解锁进度。
 - 返回第六关，恢复原先关闭辅助符号的偏好；停止游戏进程并重新启动后，第六关和原来的初始局面恢复。检查期间的当前运行日志未发现 AndroidRuntime / ReactNativeJS 异常。

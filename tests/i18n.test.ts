@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { LANGUAGES, MESSAGES, parsePreference, resolveLanguage, translate } from '../src/i18n/messages.ts';
+import { LANGUAGES, localizedLanguageName, MESSAGES, parsePreference, resolveLanguage, translate } from '../src/i18n/messages.ts';
 
 test('all public messages cover all languages and preserve interpolation fields', () => {
   const fields = (text: string) => [...text.matchAll(/\{(\w+)\}/g)].map(match => match[1]).sort();
@@ -28,4 +28,11 @@ test('translations change presentation without changing numerical level identifi
   assert.equal(translate('zh-Hans', 'continueLevel', { n: 419 }), '继续第 419 关');
   assert.equal(translate('ar', 'continueLevel', { n: 419 }), 'متابعة · 419');
   assert.equal(translate('de', 'goal', { done: 2, total: 11 }), '2 von 11 Farben sortiert');
+});
+test('language rows keep recognizable native names and localized secondary names', () => {
+  assert.equal(LANGUAGES.find(language => language.id === 'es')!.name, 'Español');
+  assert.equal(localizedLanguageName('es', 'zh-Hans'), '西班牙语');
+  assert.equal(localizedLanguageName('zh-Hans', 'es'), 'Chino (simplificado)');
+  assert.equal(localizedLanguageName('ar', 'en'), 'Arabic');
+  for (const display of LANGUAGES) for (const target of LANGUAGES) assert.ok(localizedLanguageName(target.id, display.id));
 });

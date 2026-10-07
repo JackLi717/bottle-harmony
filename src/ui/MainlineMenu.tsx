@@ -9,8 +9,8 @@ import { GameButton } from './GameButton';
 import { Icon } from './Icon';
 
 const NUMBERS = Array.from({ length: 1000 }, (_, i) => i + 1);
-type Props = { visible: boolean; initialSection: 'levels' | 'settings'; play: MainlineState; saveStatus: string; onClose: () => void; onResume: () => void; onSelect: (number: number) => void; onSamples: () => void; onSymbols: () => void; symbols: boolean; completionName: string; onLanguage: () => void; onCompletionEffects: () => void; onDebug?: () => void };
-export function MainlineMenu({ visible, initialSection, play, saveStatus, onClose, onResume, onSelect, onSamples, onSymbols, symbols, completionName, onLanguage, onCompletionEffects, onDebug }: Props) {
+type Props = { visible: boolean; initialSection: 'levels' | 'settings'; play: MainlineState; saveStatus: string; onClose: () => void; onResume: () => void; onSelect: (number: number) => void; onSamples: () => void; onSymbols: () => void; symbols: boolean; completionName: string; onLanguage: () => void; onCompletionEffects: () => void; sound: boolean; soundSaved: boolean; onSound: () => void; onCelebrationPreview: (count: 2 | 3 | 4 | 5) => void; onDebug?: () => void };
+export function MainlineMenu({ visible, initialSection, play, saveStatus, onClose, onResume, onSelect, onSamples, onSymbols, symbols, completionName, onLanguage, onCompletionEffects, sound, soundSaved, onSound, onCelebrationPreview, onDebug }: Props) {
   const { t, rtl, languageName } = useI18n();
   const insets = useSafeAreaInsets();
   const [section, setSection] = useState(initialSection);
@@ -37,13 +37,14 @@ export function MainlineMenu({ visible, initialSection, play, saveStatus, onClos
             }} />
         </> : <ScrollView style={styles.settings} contentContainerStyle={styles.settingsContent}>
           <View style={styles.settingsHero}><Icon name="spark" color="#DEC797" size={22} /><UiText style={styles.settingsBrand}>BOTTLE HARMONY</UiText></View>
-          <Pressable accessibilityRole="button" onPress={onLanguage} style={[styles.settingRow, rtl && styles.reverse]}><View style={styles.settingCopy}><UiText style={styles.settingTitle}>{t('language')}</UiText></View><UiText style={styles.settingValue}>{languageName} ›</UiText></Pressable>
+          <Pressable accessibilityRole="button" onPress={onLanguage} style={[styles.settingRow, rtl && styles.reverse]}><Icon name="language" color="#BDCDD3" /><View style={styles.settingCopy}><UiText style={styles.settingTitle}>{t('language')}</UiText></View><UiText style={styles.settingValue}>{languageName} ›</UiText></Pressable>
+          <Pressable accessibilityRole="switch" accessibilityLabel={t('sound')} accessibilityState={{ checked: sound }} onPress={onSound} style={[styles.settingRow, rtl && styles.reverse]}><View style={styles.settingCopy}><UiText style={styles.settingTitle}>{t('sound')}</UiText><UiText style={styles.settingNote}>{t(soundSaved ? 'soundNote' : 'saveFailed')}</UiText></View><View style={[styles.toggle, sound && styles.toggleOn]}><View style={[styles.toggleThumb, sound && styles.toggleThumbOn]} /></View></Pressable>
           <Pressable accessibilityRole="button" onPress={onCompletionEffects} style={[styles.settingRow, rtl && styles.reverse]}><View style={styles.settingCopy}><UiText style={styles.settingTitle}>{t('effects')}</UiText></View><UiText style={styles.settingValue}>{completionName} ›</UiText></Pressable>
           <Pressable accessibilityRole="switch" accessibilityLabel={t('symbols')} accessibilityState={{ checked: symbols }} onPress={onSymbols} style={[styles.settingRow, rtl && styles.reverse]}><View style={styles.settingCopy}><UiText style={styles.settingTitle}>{t('symbols')}</UiText><UiText style={styles.settingNote}>{t('symbolsNote')}</UiText></View><View style={[styles.toggle, symbols && styles.toggleOn]}><View style={[styles.toggleThumb, symbols && styles.toggleThumbOn]} /></View></Pressable>
           <UiText style={styles.saveStatus}>{saveStatus}</UiText>
           {INTERNAL_TOOLS && <View style={styles.tools}>
             <Pressable accessibilityRole="button" accessibilityState={{ expanded: toolsVisible }} onPress={() => setToolsVisible(value => !value)} style={styles.toolsButton}><UiText style={styles.note}>开发工具 {toolsVisible ? '⌃' : '⌄'}</UiText></Pressable>
-            {toolsVisible && <><Pressable accessibilityRole="button" onPress={onDebug} style={styles.toolsButton}><UiText style={styles.toolText}>当前关卡诊断 ›</UiText></Pressable><Pressable accessibilityRole="button" onPress={onSamples} style={styles.toolsButton}><UiText style={styles.toolText}>内部对照题 ›</UiText></Pressable></>}
+            {toolsVisible && <><Pressable accessibilityRole="button" onPress={onDebug} style={styles.toolsButton}><UiText style={styles.toolText}>当前关卡诊断 ›</UiText></Pressable><Pressable accessibilityRole="button" onPress={onSamples} style={styles.toolsButton}><UiText style={styles.toolText}>内部对照题 ›</UiText></Pressable>{([2, 3, 4, 5] as const).map(count => <Pressable key={count} accessibilityRole="button" onPress={() => onCelebrationPreview(count)} style={styles.toolsButton}><UiText style={styles.toolText}>{t('fireworksPreview')} · D{count - 1} ›</UiText></Pressable>)}</>}
           </View>}
         </ScrollView>}
         <UiText style={styles.brand}>BOTTLE HARMONY</UiText>

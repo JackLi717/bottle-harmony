@@ -9,6 +9,23 @@ export type Language = typeof LANGUAGES[number]['id'];
 export type LanguagePreference = Language | 'system';
 type Translations = readonly [string, string, string, string, string, string, string, string, string, string, string, string, string];
 export const MESSAGES = {
+  sound: ['Sound effects','音效','音效','Efectos de sonido','Efeitos sonoros','Effets sonores','Soundeffekte','効果音','효과음','Звуковые эффекты','المؤثرات الصوتية','ध्वनि प्रभाव','Efek suara'],
+  soundNote: ['Firework launch, burst and crackle','礼花升空、绽放和余响','禮花升空、綻放和餘響','Lanzamiento, explosión y crepitar','Lançamento, explosão e estalos','Envol, explosion et crépitement','Aufstieg, Knall und Knistern','打ち上げ・開花・余韻','발사, 폭발, 잔향','Запуск, взрыв и треск','إطلاق وانفجار وطقطقة','उड़ान, विस्फोट और चटख','Peluncuran, ledakan, dan gemerisik'],
+  levelComplete: ['Level complete!','过关了！','過關了！','¡Nivel completado!','Nível concluído!','Niveau réussi !','Level geschafft!','レベルクリア！','레벨 완료!','Уровень пройден!','اكتملت المرحلة!','स्तर पूरा!','Level selesai!'],
+  fireworksPreview: ['Preview celebration','预览通关礼花','預覽通關禮花','Ver celebración','Ver celebração','Voir la célébration','Feuerwerk ansehen','花火をプレビュー','축하 미리 보기','Посмотреть салют','معاينة الاحتفال','जश्न देखें','Pratinjau perayaan'],
+  languageEn: ['English','英语','英語','Inglés','Inglês','Anglais','Englisch','英語','영어','Английский','الإنجليزية','अंग्रेज़ी','Inggris'],
+  languageZhHans: ['Chinese (Simplified)','中文（简体）','中文（簡體）','Chino (simplificado)','Chinês (simplificado)','Chinois (simplifié)','Chinesisch (vereinfacht)','中国語（簡体字）','중국어(간체)','Китайский (упрощённый)','الصينية المبسطة','चीनी (सरलीकृत)','Mandarin (Sederhana)'],
+  languageZhHant: ['Chinese (Traditional)','中文（繁体）','中文（繁體）','Chino (tradicional)','Chinês (tradicional)','Chinois (traditionnel)','Chinesisch (traditionell)','中国語（繁体字）','중국어(번체)','Китайский (традиционный)','الصينية التقليدية','चीनी (पारंपरिक)','Mandarin (Tradisional)'],
+  languageEs: ['Spanish','西班牙语','西班牙語','Español','Espanhol','Espagnol','Spanisch','スペイン語','스페인어','Испанский','الإسبانية','स्पेनिश','Spanyol'],
+  languagePt: ['Portuguese','葡萄牙语','葡萄牙語','Portugués','Português','Portugais','Portugiesisch','ポルトガル語','포르투갈어','Португальский','البرتغالية','पुर्तगाली','Portugis'],
+  languageFr: ['French','法语','法語','Francés','Francês','Français','Französisch','フランス語','프랑스어','Французский','الفرنسية','फ़्रेंच','Prancis'],
+  languageDe: ['German','德语','德語','Alemán','Alemão','Allemand','Deutsch','ドイツ語','독일어','Немецкий','الألمانية','जर्मन','Jerman'],
+  languageJa: ['Japanese','日语','日語','Japonés','Japonês','Japonais','Japanisch','日本語','일본어','Японский','اليابانية','जापानी','Jepang'],
+  languageKo: ['Korean','韩语','韓語','Coreano','Coreano','Coréen','Koreanisch','韓国語','한국어','Корейский','الكورية','कोरियाई','Korea'],
+  languageRu: ['Russian','俄语','俄語','Ruso','Russo','Russe','Russisch','ロシア語','러시아어','Русский','الروسية','रूसी','Rusia'],
+  languageAr: ['Arabic','阿拉伯语','阿拉伯語','Árabe','Árabe','Arabe','Arabisch','アラビア語','아랍어','Арабский','العربية','अरबी','Arab'],
+  languageHi: ['Hindi','印地语','印地語','Hindi','Hindi','Hindi','Hindi','ヒンディー語','힌디어','Хинди','الهندية','हिन्दी','Hindi'],
+  languageId: ['Indonesian','印度尼西亚语','印度尼西亞語','Indonesio','Indonésio','Indonésien','Indonesisch','インドネシア語','인도네시아어','Индонезийский','الإندونيسية','इंडोनेशियाई','Indonesia'],
   home: ['Home','主页','首頁','Inicio','Início','Accueil','Startseite','ホーム','홈','Главная','الرئيسية','मुख्य पृष्ठ','Beranda'],
   back: ['Back','返回','返回','Volver','Voltar','Retour','Zurück','戻る','뒤로','Назад','رجوع','वापस','Kembali'],
   levels: ['Levels','关卡','關卡','Niveles','Níveis','Niveaux','Level','レベル','레벨','Уровни','المراحل','स्तर','Level'],
@@ -96,6 +113,10 @@ export const MESSAGES = {
   upgraded: ['1,000 levels are ready. Start from level 1.','已升级为千关主线，从第一关开始解锁。','已升級為千關主線，從第一關開始解鎖。','1.000 niveles listos. Empieza en el nivel 1.','1.000 níveis prontos. Comece no nível 1.','1 000 niveaux prêts. Commencez au niveau 1.','1.000 Level bereit. Beginne mit Level 1.','1,000レベルを用意しました。レベル1からどうぞ。','1,000개 레벨 준비 완료. 1레벨부터 시작해요.','Готовы 1 000 уровней. Начните с первого.','ألف مرحلة جاهزة. ابدأ من المرحلة الأولى.','1,000 स्तर तैयार हैं। स्तर 1 से शुरू करें।','1.000 level siap. Mulai dari level 1.'],
 } as const satisfies Record<string, Translations>;
 export type MessageKey = keyof typeof MESSAGES;
+const LANGUAGE_LABELS = { en: 'languageEn', 'zh-Hans': 'languageZhHans', 'zh-Hant': 'languageZhHant', es: 'languageEs', pt: 'languagePt', fr: 'languageFr', de: 'languageDe', ja: 'languageJa', ko: 'languageKo', ru: 'languageRu', ar: 'languageAr', hi: 'languageHi', id: 'languageId' } as const satisfies Record<Language, MessageKey>;
+export function localizedLanguageName(target: Language, display: Language): string {
+  return translate(display, LANGUAGE_LABELS[target]);
+}
 export function parsePreference(value: unknown): LanguagePreference {
   return value === 'system' || LANGUAGES.some(language => language.id === value) ? value as LanguagePreference : 'system';
 }
