@@ -50,3 +50,17 @@ export function undoSession(current: GameSession): GameSession {
 export function resetSession(current: GameSession): GameSession {
   return session(current.level, initialBoard(current.level), []);
 }
+
+/** Add the original, trailing empty bottle without changing any accepted pour
+ * or undo snapshot. The bottle cannot have existed in the smaller session. */
+export function extendSessionWithEmptyBottle(current: GameSession, definition: LevelDefinition): GameSession {
+  const full = parseLevel(definition);
+  if (full.id !== current.level.id || full.capacity !== current.level.capacity
+    || full.bottles.length !== current.level.bottles.length + 1
+    || full.bottles.at(-1)!.layers.length !== 0
+    || full.bottles.slice(0, -1).some((bottle, index) => bottle.id !== current.level.bottles[index].id
+      || JSON.stringify(bottle.layers) !== JSON.stringify(current.level.bottles[index].layers))) {
+    throw new Error('Reserve bottle does not match the current level');
+  }
+  return session(full, [...current.board, []], current.history.map(board => [...board, []]));
+}

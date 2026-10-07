@@ -8,12 +8,15 @@ import { Icon } from './Icon';
 import type { StalledReason } from './stalledNoticePolicy';
 
 /** Fits over the existing footer, keeping all bottle coordinates unchanged. */
-export function StalledNotice({ reason, compact, canUndo, reduceMotion, onClose, onUndo, onReset }: {
-  reason: StalledReason; compact: boolean; canUndo: boolean; reduceMotion: boolean; onClose: () => void; onUndo: () => void; onReset: () => void;
+export function StalledNotice({ reason, compact, canUndo, reserveAvailable, reduceMotion, onClose, onUndo, onReset }: {
+  reason: StalledReason; compact: boolean; canUndo: boolean; reserveAvailable: boolean; reduceMotion: boolean; onClose: () => void; onUndo: () => void; onReset: () => void;
 }) {
   const { t, rtl } = useI18n();
   const entrance = useSharedValue(reduceMotion ? 1 : 0);
   const title = t(reason === 'noMoves' ? 'noMovesTitle' : 'unsolvableTitle');
+  const help = reserveAvailable
+    ? canUndo ? 'reserveStalledHelp' : 'reserveStalledRestartHelp'
+    : canUndo ? 'stalledHelp' : 'stalledRestartHelp';
   useEffect(() => {
     entrance.set(reduceMotion ? 1 : withTiming(1, { duration: 180 }));
     AccessibilityInfo.announceForAccessibility(title);
@@ -25,7 +28,7 @@ export function StalledNotice({ reason, compact, canUndo, reduceMotion, onClose,
         <UiText accessibilityRole="header" numberOfLines={2} adjustsFontSizeToFit minimumFontScale={.8} style={[styles.title, compact && styles.compactTitle, rtl ? styles.rtlTitle : styles.ltrTitle]}>{title}</UiText>
         <Pressable accessibilityRole="button" accessibilityLabel={t('close')} onPress={onClose} style={[styles.close, rtl ? styles.closeLeft : styles.closeRight]}><Icon name="close" size={18} color="#BDCDD3" /></Pressable>
       </View>
-      <UiText numberOfLines={2} adjustsFontSizeToFit minimumFontScale={.8} style={[styles.note, compact && styles.compactNote]}>{t(canUndo ? 'stalledHelp' : 'stalledRestartHelp')}</UiText>
+      <UiText numberOfLines={2} adjustsFontSizeToFit minimumFontScale={.8} style={[styles.note, compact && styles.compactNote]}>{t(help)}</UiText>
       <View style={[styles.actions, rtl && styles.reverse]}>
         {canUndo && <View style={styles.action}><GameButton compact={compact} kind="wide" tone="mint" icon="undo" label={t(compact ? 'undo' : 'undoStep')} accessibilityLabel={t('undoStep')} onPress={onUndo} /></View>}
         <View style={styles.action}><GameButton compact={compact} kind="wide" tone="blue" icon="reset" label={t('reset')} accessibilityLabel={t('resetHint')} onPress={onReset} /></View>

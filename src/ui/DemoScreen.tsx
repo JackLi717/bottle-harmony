@@ -16,7 +16,7 @@ import { LanguagePicker } from './LanguagePicker';
 import { createPourPlan, type PourPlan } from '../art/pourGeometry';
 import { DEMO_LEVEL } from '../game/demo';
 import { getPour, type Board, type Pour } from '../game/rules';
-import { moveMainline, hintMainline, hintAvailability, MAX_HINT_CREDITS, editMainline, nextMainline, selectMainline, visibleSession } from '../game/mainline';
+import { moveMainline, hintMainline, hintAvailability, MAX_HINT_CREDITS, editMainline, nextMainline, selectMainline, visibleSession, reserveIsLocked, unlockReserveMainline } from '../game/mainline';
 import { createSession, moveSession, resetSession, undoSession, type GameSession } from '../game/session';
 import { createSolver, type SolveResult, type SolverTask } from '../game/solver';
 import { HomeScreen } from './HomeScreen';
@@ -75,6 +75,7 @@ export function DemoScreen() {
   const [debugReport, setDebugReport] = useState<DifficultyReport | PlanningDepthReport | null>(null);
   const [debugHuman, setDebugHuman] = useState<HumanDifficultyReport | null>(null);
   const { board, history } = session;
+  const reserveLocked = !internalSession && reserveIsLocked(play, MAINLINE);
   const [searching, setSearching] = useState(false);
   const [lastAward, setLastAward] = useState(0);
   const search = useRef<SolverTask | null>(null);
@@ -88,7 +89,8 @@ export function DemoScreen() {
   const safeTop = insets.top + (compact ? 8 : 14);
   // Use the full screen width for resting bottles. Pouring art may cross the
   // horizontal screen edge and is clipped by the screen, not by a bottle slot.
-  const layout = useMemo(() => boardLayout(board.length), [board.length]);
+  // Keep the original slot visible so enabling the reserve never shifts glass.
+  const layout = useMemo(() => boardLayout(board.length + (reserveLocked ? 1 : 0)), [board.length, reserveLocked]);
   const { scale, minY } = fitBoard(layout, stage, safeTop);
   const won = session.status === 'solved';
   const hintMode = internalSession ? 'replay' : hintAvailability(play);
@@ -295,6 +297,14 @@ export function DemoScreen() {
     startPour(pour);
   }
 
+  function useReserve() {
+    if (busy.current || searching || won || !reserveLocked) return;
+    setStalledNotice(value => closeStalledNotice(value, true));
+    setPlay(unlockReserveMainline(play, MAINLINE));
+    setSelected(null);
+    announceStatus('reserveEnabled');
+  }
+
   function reset() {
     if (busy.current) return;
     setStalledNotice(value => closeStalledNotice(value, true));
@@ -370,13 +380,16 @@ export function DemoScreen() {
             <View style={StyleSheet.absoluteFill}><StageArt layout={layout} /></View>
             {/* Art stays mounted in one layer for selection, pouring and return.
                 Fixed hit areas below never reparent or reposition the artwork. */}
-            {layout.positions.map((position, index) => {
+            {layout.positions.slice(0, displayBoard.length).map((position, index) => {
               const bottle = displayBoard[index];
               // A view belongs to a visual slot; logical bottle IDs stay in the session.
               // Reuse glass/SVG/worklet bindings when the next level replaces its contents.
               return <Bottle key={index} index={index} vessel={vessel} position={position} colors={bottle} selected={selected === index} completed={isBottleComplete(bottle, session.level.capacity)} width={100 * scale} scale={scale} plan={animation?.plan ?? null} pour={animation?.pour ?? null} progress={progress} symbols={play.symbols} completionEffect={completionEffect} completionScene={`${session.level.id}:${completionEpoch}`} completionAnimations={appActive && !reduceMotion} />;
             })}
-            {layout.positions.map((position, index) => {
+            {reserveLocked && <View pointerEvents="none" style={[StyleSheet.absoluteFill, { opacity: 0.25 }]}>
+              <Bottle index={board.length} vessel={vessel} position={layout.positions[board.length]} colors={[]} selected={false} completed={false} width={100 * scale} scale={scale} plan={null} pour={null} progress={progress} completionAnimations={false} />
+            </View>}
+            {layout.positions.slice(0, displayBoard.length).map((position, index) => {
               const bottle = displayBoard[index];
               const label = t('bottle', { n: index + 1, colors: bottle.length ? [...bottle].reverse().map(c => t(c)).join(', ') : t('empty') });
               const hitWidth = bottleHitWidth(layout, scale);
@@ -384,6 +397,14 @@ export function DemoScreen() {
                 {selected === index && !animation && <View style={[styles.selectionDot, { bottom: -5 * scale }]} />}
               </Pressable>;
             })}
+            {reserveLocked && <Pressable accessibilityRole="button" accessibilityLabel={t('reserveUnlock')} accessibilityHint={t('reserveScope')}
+              accessibilityState={{ disabled: !!animation || searching || won }} disabled={!!animation || searching || won} onPress={useReserve}
+              style={{ position: 'absolute', left: (layout.positions[board.length].x + 50) * scale - bottleHitWidth(layout, scale) / 2,
+                top: layout.positions[board.length].y * scale, width: bottleHitWidth(layout, scale), height: 180 * scale,
+                alignItems: 'center', justifyContent: 'center', zIndex: 3 }}>
+              <View style={styles.reserveBadge}><UiText style={styles.reservePlus}>+</UiText></View>
+              <UiText numberOfLines={1} adjustsFontSizeToFit style={styles.reserveLabel}>{t('reserveUse')}</UiText>
+            </Pressable>}
             {animation && <View pointerEvents="none" style={[StyleSheet.absoluteFill, { zIndex: 11 }]}><PourStream plan={animation.plan} color={animation.pour.color} progress={progress} /></View>}
           </View>}
           {celebration !== null && appActive && !reduceMotion && stage.width > 0 && stage.height > 0 && <Celebration count={celebration === 'win' ? celebrationCount : celebration} width={stage.width} height={stage.height} sound={sound} onComplete={celebrationFinished} />}
@@ -391,7 +412,7 @@ export function DemoScreen() {
         <GameFooter won={won} continueVisible={won && !animation && !pendingCelebration && celebration === null} compact={compact}
           disabled={!!animation || searching} undoDisabled={!history.length || !!animation || searching} searching={searching} reduceMotion={reduceMotion}
           nextLabel={t(finish.label)} hintStatus={hintStatus} onUndo={undo} onReset={reset} onHint={demonstrate}
-          stalledReason={stalledReason} onCloseStalled={() => setStalledNotice(value => closeStalledNotice(value))}
+          stalledReason={stalledReason} reserveAvailable={reserveLocked} onCloseStalled={() => setStalledNotice(value => closeStalledNotice(value))}
           onContinue={continueAfterWin} />
         </>}
       </View>
@@ -411,4 +432,7 @@ const styles = StyleSheet.create({
   loading: { color: '#BDCDD3', fontSize: 14 },
   stageSpace: { flex: 1, alignItems: 'center', justifyContent: 'center', marginHorizontal: -22, marginTop: 8, marginBottom: 4 },
   selectionDot: { position: 'absolute', alignSelf: 'center', width: 4, height: 4, borderRadius: 2, backgroundColor: '#B8F7E2' },
+  reserveBadge: { width: 28, height: 28, borderRadius: 14, backgroundColor: '#18383D', borderWidth: 1, borderColor: '#A9D6D2', alignItems: 'center', justifyContent: 'center' },
+  reservePlus: { color: '#DBF7EA', fontSize: 24, lineHeight: 26 },
+  reserveLabel: { color: '#C8EDE3', fontSize: 10, marginTop: 5, textAlign: 'center', width: '100%' },
 });

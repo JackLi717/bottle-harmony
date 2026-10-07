@@ -1,5 +1,6 @@
 import type { PlayableMainline } from './mainlinePlayable.ts';
-import { createSession, moveSession, undoSession, resetSession, type GameSession } from './session.ts';
+import { createSession, moveSession, undoSession, resetSession, extendSessionWithEmptyBottle, type GameSession } from './session.ts';
+import { hasOptionalReserve, oneSpareLevel } from './optionalReserve.ts';
 
 export type MainlineState = {
   readonly main: GameSession;
@@ -13,8 +14,21 @@ export type MainlineState = {
 };
 export const MAX_HINT_CREDITS = 5;
 export const visibleSession = (state: MainlineState) => state.replay ?? state.main;
+const newLevelSession = (catalog: PlayableMainline, number: number) => createSession(oneSpareLevel(catalog.entries[number - 1]));
 export function createMainline(catalog: PlayableMainline): MainlineState {
-  return Object.freeze({ main: createSession(catalog.entries[0].level), replay: null, current: 1, completedThrough: 0, tutorialDone: false, symbols: false, hintCredits: 0, freeHintUsed: false });
+  return Object.freeze({ main: newLevelSession(catalog, 1), replay: null, current: 1, completedThrough: 0, tutorialDone: false, symbols: false, hintCredits: 0, freeHintUsed: false });
+}
+export function reserveIsLocked(state: MainlineState, catalog: PlayableMainline): boolean {
+  const session = visibleSession(state);
+  const entry = state.replay ? catalog.entries.find(e => e.level.id === session.level.id) : catalog.entries[state.current - 1];
+  return !!entry && hasOptionalReserve(entry) && session.level.bottles.length === entry.level.bottles.length - 1;
+}
+export function unlockReserveMainline(state: MainlineState, catalog: PlayableMainline): MainlineState {
+  if (!reserveIsLocked(state, catalog)) return state;
+  const session = visibleSession(state);
+  const entry = state.replay ? catalog.entries.find(e => e.level.id === session.level.id)! : catalog.entries[state.current - 1];
+  const expanded = extendSessionWithEmptyBottle(session, entry.level);
+  return Object.freeze(state.replay ? { ...state, replay: expanded } : { ...state, main: expanded });
 }
 export function moveMainline(state: MainlineState, source: number, target: number) {
   const result = moveSession(visibleSession(state), source, target);
@@ -47,11 +61,11 @@ export function nextMainline(state: MainlineState, catalog: PlayableMainline): M
   if (state.replay) return Object.freeze({ ...state, replay: null });
   if (state.main.status !== 'solved') throw new Error('Complete the current level first');
   if (state.current === catalog.entries.length) return state;
-  return Object.freeze({ ...state, current: state.current + 1, main: createSession(catalog.entries[state.current].level), freeHintUsed: false });
+  return Object.freeze({ ...state, current: state.current + 1, main: newLevelSession(catalog, state.current + 1), freeHintUsed: false });
 }
 export function selectMainline(state: MainlineState, catalog: PlayableMainline, number: number): MainlineState {
   if (!Number.isInteger(number) || number < 1 || number > catalog.entries.length) throw new Error('Invalid level number');
   if (number === state.current) return Object.freeze({ ...state, replay: null });
   if (number > state.completedThrough) throw new Error('Level is locked');
-  return Object.freeze({ ...state, replay: createSession(catalog.entries[number - 1].level) });
+  return Object.freeze({ ...state, replay: newLevelSession(catalog, number) });
 }
