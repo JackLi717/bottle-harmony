@@ -1,11 +1,13 @@
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
 
-export type IconName = 'language' | 'back' | 'undo' | 'reset' | 'play' | 'spark' | 'hint' | 'fire' | 'settings' | 'levels' | 'close' | 'trophy' | 'lock';
+export type IconName = 'language' | 'back' | 'previous' | 'next' | 'undo' | 'reset' | 'play' | 'spark' | 'hint' | 'fire' | 'settings' | 'levels' | 'close' | 'trophy' | 'lock';
 export function Icon({ name, color = '#FFF2D4', size = 22 }: { name: IconName; color?: string; size?: number }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       {name === 'language' && <><Circle cx={12} cy={12} r={9} stroke={color} strokeWidth={1.5} /><Path d="M3 12h18 M12 3c-6 5-6 13 0 18 M12 3c6 5 6 13 0 18" stroke={color} strokeWidth={1.3} /></>}
       {name === 'back' && <Path d="m14 5-7 7 7 7 M7 12h13" stroke={color} strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" />}
+      {name === 'previous' && <Path d="m15 5-7 7 7 7" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />}
+      {name === 'next' && <Path d="m9 5 7 7-7 7" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />}
       {name === 'undo' && <Path d="M9 4 3 10l6 6 M3 10h11a5 5 0 0 1 0 10h-3" stroke={color} strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" />}
       {name === 'reset' && <Path d="M20 9a8 8 0 1 0 0 6 M20 3v6h-6" stroke={color} strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" />}
       {name === 'play' && <Path d="m9 5 10 7-10 7Z" fill={color} />}
