@@ -179,15 +179,15 @@ export const Bottle = memo(function Bottle({ index, colors, selected, completed,
             <LiquidLayer key={layer} color={color} layer={layer} firstLayer={firstLayer} count={count} angle={angle} id={id} />
           ))}
           {symbols && !isSource && !isTarget && colors.map((color, layer) => <SvgText key={`symbol-${layer}`} x={50} y={155 - layer * 24} textAnchor="middle" fontSize={16} fill="#142F39" opacity={0.8}>{LIQUID_SYMBOLS[color]}</SvgText>)}
-          <AnimatedEllipse cx={50} rx={27.5} ry={3.5} fill="#FFFFFF" animatedProps={surface} />
+          <AnimatedEllipse cx={50} rx={24.5} ry={3.5} fill="#FFFFFF" animatedProps={surface} />
           <AnimatedPath animatedProps={innerStream} fill="none" stroke={flowColor.main} strokeWidth={3.3} strokeLinecap="round" />
           <AnimatedPath animatedProps={innerStream} fill="none" stroke={flowColor.light} strokeWidth={0.9} strokeLinecap="round" />
           <AnimatedEllipse cx={50} ry={1.8} fill={flowColor.light} animatedProps={splash} />
         </G>
-        <Path d="M31 62 Q27 68 27 77 V147 Q27 155 33 157" fill="none" stroke="#E9FFFF" strokeWidth={2.8} strokeOpacity={0.25} strokeLinecap="round" />
-        <Path d="M73 80 V142" fill="none" stroke="#DEF6F7" strokeWidth={1.4} strokeOpacity={0.11} strokeLinecap="round" />
+        <Path d="M34 62 Q30 68 30 77 V147 Q30 155 36 157" fill="none" stroke="#E9FFFF" strokeWidth={2.3} strokeOpacity={0.25} strokeLinecap="round" />
+        <Path d="M70 80 V142" fill="none" stroke="#DEF6F7" strokeWidth={1.4} strokeOpacity={0.11} strokeLinecap="round" />
         <Path d="M40 42 Q38 49 30 55" fill="none" stroke="#F0FFFF" strokeWidth={1.8} strokeOpacity={0.24} strokeLinecap="round" />
-        <Path d="M27 162 Q50 169 73 162" fill="none" stroke="#9FDEDC" strokeWidth={1.7} strokeOpacity={0.48} />
+        <Path d="M30 162 Q50 169 70 162" fill="none" stroke="#9FDEDC" strokeWidth={1.7} strokeOpacity={0.48} />
         <Ellipse cx={50} cy={28} rx={17} ry={5.8} fill="#183447" stroke={`url(#${id}-rim)`} strokeWidth={2.5} />
         <Ellipse cx={50} cy={28} rx={11.5} ry={3.3} fill="#081C2C" stroke="#72ACBC" strokeWidth={0.7} />
         <Path d="M34 27 Q50 19 66 27" fill="none" stroke="#EAF4E0" strokeWidth={1.1} strokeOpacity={0.75} />

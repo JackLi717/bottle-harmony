@@ -4,11 +4,11 @@ export type Point = { x: number; y: number };
 // the reusable 100 × 180 bottle design, independent of screen resolution.
 export const INTERIOR: Point[] = [
   { x: 38, y: 34 }, { x: 62, y: 34 }, { x: 62, y: 42 },
-  { x: 76, y: 57 }, { x: 78, y: 66 }, { x: 78, y: 154 },
-  { x: 74, y: 162 }, { x: 26, y: 162 }, { x: 22, y: 154 },
-  { x: 22, y: 66 }, { x: 24, y: 57 }, { x: 38, y: 42 },
+  { x: 73, y: 57 }, { x: 75, y: 66 }, { x: 75, y: 154 },
+  { x: 71, y: 162 }, { x: 29, y: 162 }, { x: 25, y: 154 },
+  { x: 25, y: 66 }, { x: 27, y: 57 }, { x: 38, y: 42 },
 ];
-export const LAYER_AREA = (56 * 96 - 32) / 4;
+export const LAYER_AREA = (50 * 96 - 32) / 4;
 
 export function polygonArea(points: Point[]): number {
   'worklet';

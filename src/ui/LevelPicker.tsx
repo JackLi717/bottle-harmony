@@ -14,7 +14,7 @@ export function LevelPicker({ visible, currentCode, onClose, onSelect, onPreview
     <View style={[styles.backdrop, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 12 }]}>
       <View style={styles.panel}>
         <View style={styles.heading}><Text accessibilityRole="header" style={styles.title}>选一题，慢慢玩</Text><Pressable accessibilityRole="button" accessibilityLabel="关闭选题" onPress={onClose} style={styles.close}><Text style={styles.closeText}>关闭</Text></Pressable></View>
-        <Text style={styles.note}>内部题可用于对照，不解锁主线。关闭后在游玩菜单继续原来的主线局面。</Text>
+        <Text style={styles.note}>内部题可用于对照，不解锁主线。返回主页后可继续原来的主线局面。</Text>
         <View accessibilityRole="tablist" style={styles.filters}>{TRIAL_TIERS.map(value => <Pressable key={value} accessibilityRole="tab" accessibilityState={{ selected: tier === value }} accessibilityLabel={`${value} ${TIER_NAMES[value]}试排题`} onPress={() => setTier(value)} style={[styles.filter, tier === value && styles.selected]}><Text style={styles.filterText}>{value}</Text><Text style={styles.filterText}>{TIER_NAMES[value]}</Text></Pressable>)}</View>
         <ScrollView contentContainerStyle={styles.list}>
           {[MAINLINE.entries.find(e => e.level.colors.length === 11)!, MAINLINE.entries.find(e => e.level.colors.length === 10 && e.level.bottles.length === 12)!, MAINLINE.entries[999]].map(entry => <Pressable key={entry.number} accessibilityRole="button" onPress={() => onPreview(entry.number)} style={styles.card}>

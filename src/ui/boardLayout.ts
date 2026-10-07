@@ -2,10 +2,15 @@ import type { Point } from '../art/liquidGeometry.ts';
 
 export type BoardLayout = { readonly width: number; readonly height: number; readonly slotWidth: number; readonly positions: readonly Point[] };
 
+/** Leave a point between neighboring controls so native pixel rounding cannot overlap them. */
+export function bottleHitWidth(layout: BoardLayout, scale: number) {
+  return Math.max(44, layout.slotWidth * scale - 1);
+}
+
 /** One bottle size for every level. Six glass silhouettes fit across the screen. */
 export function boardLayout(bottleCount: number): BoardLayout {
   if (!Number.isInteger(bottleCount) || bottleCount < 4 || bottleCount > 12) throw new Error('Boards support 4–12 bottles');
-  // Glass occupies x=18–82 of its 100-unit SVG canvas. Only that visible
+  // Glass occupies x=21–79 of its 100-unit SVG canvas. Only that visible
   // silhouette needs to fit; transparent canvas and moving art may cross an edge.
   const width = 400;
   const columns = Math.ceil(bottleCount / 2);

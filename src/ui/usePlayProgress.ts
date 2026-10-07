@@ -1,3 +1,4 @@
+import type { MessageKey } from '../i18n/messages';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AppState } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -10,8 +11,8 @@ const write = createProgressWriter(value => AsyncStorage.setItem(MAINLINE_SAVE_K
 export function usePlayProgress() {
   const [play, updatePlay] = useState(() => createMainline(MAINLINE));
   const [ready, setReady] = useState(false);
-  const [notice, setNotice] = useState('');
-  const [saveStatus, setSaveStatus] = useState('本地进度');
+  const [notice, setNotice] = useState<MessageKey | null>(null);
+  const [saveStatus, setSaveStatus] = useState<MessageKey>('localProgress');
   const latest = useRef<string | null>(null);
   const lastRequested = useRef<string | null>(null);
   const alive = useRef(true);
@@ -23,17 +24,17 @@ export function usePlayProgress() {
       let restored = createMainline(MAINLINE);
       try {
         const json = await AsyncStorage.getItem(MAINLINE_SAVE_KEY);
-        if (!json && await AsyncStorage.getItem('bottle-harmony.play.v1') && !cancelled) setNotice('已升级为千关主线，从第一关开始解锁。');
+        if (!json && await AsyncStorage.getItem('bottle-harmony.play.v1') && !cancelled) setNotice('upgraded');
         if (json) {
           try { restored = decodeMainline(json, MAINLINE); }
-          catch { if (!cancelled) setNotice('保存记录无法恢复，已回到初次体验。新的操作会建立新记录。'); }
+          catch { if (!cancelled) setNotice('restoreFailed'); }
         }
-      } catch { if (!cancelled) setNotice('暂时读不到本地进度，已进入初次体验。新的操作会重试保存。'); }
+      } catch { if (!cancelled) setNotice('readFailed'); }
       if (cancelled) return;
       // Do not overwrite a failed read or invalid save merely by mounting the app.
       lastRequested.current = encodeMainline(restored, MAINLINE);
       latest.current = lastRequested.current;
-      updatePlay(restored); setSaveStatus('本地进度就绪'); setReady(true);
+      updatePlay(restored); setSaveStatus('localProgress'); setReady(true);
     })();
     return () => { cancelled = true; alive.current = false; };
   }, []);
@@ -48,7 +49,7 @@ export function usePlayProgress() {
     lastRequested.current = json;
     dirty.current = true;
     write(json).then(ok => {
-      if (alive.current && latest.current === json) setSaveStatus(ok ? '已保存在本机' : '保存失败，下次操作重试');
+      if (alive.current && latest.current === json) setSaveStatus(ok ? 'saved' : 'saveFailed');
     });
   }, [encoded, ready]);
   useEffect(() => {
@@ -56,13 +57,13 @@ export function usePlayProgress() {
     const subscription = AppState.addEventListener('change', state => {
       if (state !== 'active' && dirty.current && latest.current) {
         const json = latest.current;
-        write(json).then(ok => { if (alive.current && latest.current === json) setSaveStatus(ok ? '已保存在本机' : '保存失败，下次操作重试'); });
+        write(json).then(ok => { if (alive.current && latest.current === json) setSaveStatus(ok ? 'saved' : 'saveFailed'); });
       }
     });
     return () => subscription.remove();
   }, [ready]);
   function setPlay(next: MainlineState) {
-    updatePlay(next); setNotice('');
+    updatePlay(next); setNotice(null);
   }
-  return { play, setPlay, ready, notice, saveStatus: encoded === null ? '本次进度过长，未保存' : saveStatus };
+  return { play, setPlay, ready, notice, saveStatus: encoded === null ? 'saveTooLong' as const : saveStatus };
 }

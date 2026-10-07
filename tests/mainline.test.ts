@@ -5,7 +5,7 @@ import { createMainline, moveMainline, nextMainline, selectMainline, editMainlin
 import { decodeMainline, encodeMainline } from '../src/game/mainlineCodec.ts';
 import { parseProductionRecords } from '../src/game/mainlineCatalog.ts';
 import type { PlayableMainline } from '../src/game/mainlinePlayable.ts';
-import { boardLayout, fitBoard } from '../src/ui/boardLayout.ts';
+import { boardLayout, bottleHitWidth, fitBoard } from '../src/ui/boardLayout.ts';
 import { makeLayeredCandidate, parseGeneratedContent, PRODUCTION_COLORS, structureKey, contentMetrics } from '../src/game/generation.ts';
 import { initialBoard } from '../src/game/model.ts';
 import { solveBoard } from '../src/game/solver.ts';
@@ -74,7 +74,7 @@ test('wide boards use two rows with six columns and nonoverlapping 44-point hit 
       const layout = boardLayout(count), { scale, minY } = fitBoard(layout, stage, 35);
       assert.equal(new Set(layout.positions.map(p => p.y)).size, 2);
       assert.ok(layout.positions.filter(p => p.y === 14).length <= 6);
-      const hit = Math.max(44, layout.slotWidth * scale);
+      const hit = bottleHitWidth(layout, scale);
       for (const p of layout.positions) {
         assert.ok((p.x + 50) * scale - hit / 2 >= -0.01);
         assert.ok((p.x + 50) * scale + hit / 2 <= stage.width + 0.01);
@@ -95,16 +95,36 @@ test('all levels keep the same large bottle size and six bottles reach the scree
     assert.equal(scale, baseline);
     assert.ok(Math.abs(layout.width * scale - stage.width) < 0.01);
     for (const p of layout.positions) {
-      assert.ok((p.x + 18) * scale >= 0);
-      assert.ok((p.x + 82) * scale <= stage.width);
+      assert.ok((p.x + 21) * scale >= 0);
+      assert.ok((p.x + 79) * scale <= stage.width);
     }
   }
   const six = boardLayout(12);
   const first = six.positions[0], last = six.positions[5];
-  assert.ok((first.x + 18) * baseline < 2);
-  assert.ok(stage.width - (last.x + 82) * baseline < 2);
+  assert.ok((first.x + 21) * baseline < 6);
+  assert.ok(stage.width - (last.x + 79) * baseline < 6);
   // Animation headroom must not reduce the resting bottle size.
   assert.equal(fitBoard(six, { ...stage, y: 0 }, 35).scale, baseline);
+});
+
+test('compact game controls leave nonoverlapping hit areas after native pixel rounding', () => {
+  const stage = { width: 320, height: 272, y: 128 };
+  for (let count = 4; count <= 12; count++) {
+    const layout = boardLayout(count), { scale } = fitBoard(layout, stage, 35);
+    const hit = bottleHitWidth(layout, scale);
+    assert.ok(hit >= 44);
+    for (const density of [2, 2.75, 3]) {
+      for (const offset of [0, .125, .5]) {
+        const left = (stage.width - layout.width * scale) / 2 + offset;
+        const bounds = layout.positions.map(p => ({ y: p.y,
+          left: Math.floor((left + (p.x + 50) * scale - hit / 2) * density),
+          right: Math.ceil((left + (p.x + 50) * scale + hit / 2) * density) }));
+        for (let i = 1; i < bounds.length; i++) {
+          if (bounds[i].y === bounds[i - 1].y) assert.ok(bounds[i - 1].right <= bounds[i].left);
+        }
+      }
+    }
+  }
 });
 test('layered proposals preserve color quantities and their distinct deterministic source', () => {
   const content = records[0].content;

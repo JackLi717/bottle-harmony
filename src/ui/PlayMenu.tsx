@@ -1,32 +1,59 @@
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { UiText, useI18n } from '../i18n/I18n';
+import { Modal, Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSharedValue } from 'react-native-reanimated';
+import { Bottle } from '../art/Bottle';
+import { GameButton } from './GameButton';
 
 export function Tutorial({ visible, notice, onStart, onSkip }: { visible: boolean; notice?: string; onStart: () => void; onSkip: () => void }) {
+  const { t, rtl } = useI18n();
   const insets = useSafeAreaInsets();
+  const progress = useSharedValue(1);
+  const compact = useWindowDimensions().height < 720;
+  const bottleScale = compact ? .48 : .64;
   return <Modal visible={visible} transparent animationType="fade" onRequestClose={onStart}>
-    <View style={[styles.backdrop, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 12 }]}><View style={styles.panel}>
-      <Text style={styles.title}>从两种颜色开始</Text>
-      <Text style={styles.note}>一千个固定关卡，完成后解锁下一关。已通过的关卡可以随时重玩。</Text>
-      {!!notice && <Text style={[styles.note, styles.gold]}>{notice}</Text>}
-      <Text style={styles.note}>先点有水的瓶子，再点空瓶或顶部同色的瓶子。</Text>
-      <Text style={styles.note}>连续同色会一起倒过去，空间不足时只倒能装下的部分。</Text>
-      <Text style={styles.note}>把每种颜色装满一瓶就完成了。随时撤销、重来；卡住时可演示一步。</Text>
-      <Pressable accessibilityRole="button" onPress={onStart} style={[styles.card, styles.selected]}><Text style={styles.name}>开始第一关</Text></Pressable>
-      <Pressable accessibilityRole="button" onPress={onSkip} style={styles.card}><Text style={styles.name}>我会玩，直接开始</Text></Pressable>
-    </View></View>
+    <View style={[styles.backdrop, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 12 }]}>
+      <LinearGradient colors={['#203745', '#102230']} style={styles.panel}><ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
+        <UiText style={styles.brand}>BOTTLE HARMONY</UiText><UiText style={[styles.title, compact && styles.compactTitle]}>{t('tutorialTitle')}</UiText>
+        <View pointerEvents="none" style={[styles.preview, compact && styles.compactPreview]}>
+          <Bottle index={200} colors={['jade', 'jade', 'coral', 'coral']} selected={false} completed={false} width={100 * bottleScale} scale={bottleScale} position={{ x: 0, y: 0 }} plan={null} pour={null} progress={progress} completionAnimations={false} />
+          <UiText style={[styles.arrow, compact && styles.compactArrow]}>→</UiText>
+          <Bottle index={201} colors={['jade', 'jade', 'jade', 'jade']} selected={false} completed width={100 * bottleScale} scale={bottleScale} position={{ x: 144 / bottleScale, y: 0 }} plan={null} pour={null} progress={progress} completionEffect="cork" completionAnimations={false} />
+        </View>
+        {[[t('step1'), t('step1Note')], [t('step2'), t('pourTarget')], [t('step3'), t('objective')]].map(([title, note], index) => <View key={title} style={[styles.step, compact && styles.compactStep, rtl && styles.reverse]}><View style={styles.stepNumber}><UiText style={styles.number}>{index + 1}</UiText></View><View style={styles.stepCopy}><UiText style={styles.stepTitle}>{title}</UiText><UiText style={[styles.note, compact && styles.compactNote]}>{note}</UiText></View></View>)}
+        {!!notice && <UiText style={styles.notice}>{notice}</UiText>}
+        <UiText style={[styles.tip, compact && styles.compactTip]}>{t('tutorialTip')}</UiText>
+      </ScrollView>
+        <GameButton kind="wide" tone="mint" icon="play" label={t('start')} onPress={onStart} />
+        <Pressable accessibilityRole="button" onPress={onSkip} style={styles.skip}><UiText style={styles.note}>{t('skip')}</UiText></Pressable>
+      </LinearGradient>
+    </View>
   </Modal>;
 }
 const styles = StyleSheet.create({
-  backdrop: { flex: 1, backgroundColor: '#020D19CC', paddingHorizontal: 18, alignItems: 'center', justifyContent: 'center' },
-  panel: { width: '100%', maxWidth: 520, maxHeight: '100%', flexShrink: 1, backgroundColor: '#122C39', borderRadius: 24, borderWidth: 1, borderColor: '#ADC6C540', padding: 18 },
-  heading: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  title: { color: '#F2EAD7', fontSize: 20, fontWeight: '600' },
-  close: { minWidth: 48, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
-  gold: { color: '#E8CF93', fontSize: 13 },
-  note: { color: '#A0B6B5', fontSize: 12, lineHeight: 21, marginVertical: 8 },
-  progress: { color: '#E8CF93', fontSize: 12, marginVertical: 8 },
-  card: { borderRadius: 14, borderWidth: 1, borderColor: '#ADC6C51C', backgroundColor: '#FFFFFF05', padding: 14, marginVertical: 5, minHeight: 48 },
-  selected: { borderColor: '#B8F7E2', backgroundColor: '#B8F7E211' },
-  name: { color: '#E4EBDF', fontSize: 14, fontWeight: '600' },
-  detail: { color: '#A0B6B5', fontSize: 12, lineHeight: 19, marginTop: 5 },
+  backdrop: { flex: 1, backgroundColor: '#050E19CC', paddingHorizontal: 18, alignItems: 'center', justifyContent: 'center' },
+  panel: { width: '100%', maxWidth: 420, maxHeight: '100%', flexShrink: 1, borderRadius: 28, borderWidth: 1, borderColor: '#C7AD7866', padding: 18 },
+  content: { alignItems: 'center' },
+  scroll: { flexShrink: 1 },
+  brand: { color: '#C7AD78', fontSize: 10, fontWeight: '500', letterSpacing: 2, marginTop: 4 },
+  title: { color: '#EBD8AD', fontSize: 24, fontWeight: '500', marginTop: 12, textAlign: 'center' },
+  compactTitle: { fontSize: 20 },
+  compactNote: { fontSize: 11, lineHeight: 17 },
+  preview: { width: 208, height: 122, marginTop: 15, marginBottom: 8 },
+  compactPreview: { height: 76, marginTop: 10 },
+  arrow: { position: 'absolute', left: 91, top: 38, color: '#F4D38C', fontSize: 28 },
+  compactArrow: { top: 25 },
+  step: { width: '100%', flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 10 },
+  compactStep: { paddingVertical: 4 },
+  reverse: { flexDirection: 'row-reverse' },
+  stepCopy: { flex: 1 },
+  stepNumber: { width: 30, height: 30, borderRadius: 10, backgroundColor: '#243F4C', borderWidth: 1, borderColor: '#C7AD7855', alignItems: 'center', justifyContent: 'center' },
+  number: { color: '#EBD8AD', fontSize: 15, fontWeight: '600' },
+  stepTitle: { color: '#D7E3E7', fontSize: 15, fontWeight: '500' },
+  note: { color: '#9AAFBA', fontSize: 12, lineHeight: 19, marginTop: 3 },
+  notice: { color: '#F4D38C', fontSize: 12, lineHeight: 19, marginVertical: 8 },
+  tip: { color: '#ADBFCA', fontSize: 11, marginVertical: 14, textAlign: 'center' },
+  compactTip: { marginVertical: 8 },
+  skip: { minHeight: 44, justifyContent: 'center', alignItems: 'center' },
 });
