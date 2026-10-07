@@ -1,20 +1,32 @@
 import { UiText, useI18n } from '../i18n/I18n';
-import { useState } from 'react';
-import { FlatList, Modal, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { useRef, useState } from 'react';
+import { FlatList, Keyboard, Modal, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { MainlineState } from '../game/mainline';
 import { INTERNAL_TOOLS } from './buildConfig';
 import { GameButton } from './GameButton';
 import { Icon } from './Icon';
+import { MAINLINE } from './mainlineContent';
+import { SOLID_SIDES } from './solidSideContent';
 
 const NUMBERS = Array.from({ length: 1000 }, (_, i) => i + 1);
-type Props = { visible: boolean; initialSection: 'levels' | 'settings'; play: MainlineState; saveStatus: string; onClose: () => void; onResume: () => void; onSelect: (number: number) => void; onSelectSide: (number: number) => void; onSamples: () => void; onSymbols: () => void; symbols: boolean; completionName: string; onLanguage: () => void; onCompletionEffects: () => void; sound: boolean; soundSaved: boolean; onSound: () => void; onCelebrationPreview: (count: 2 | 3 | 4 | 5) => void; onDebug?: () => void };
-export function MainlineMenu({ visible, initialSection, play, saveStatus, onClose, onResume, onSelect, onSelectSide, onSamples, onSymbols, symbols, completionName, onLanguage, onCompletionEffects, sound, soundSaved, onSound, onCelebrationPreview, onDebug }: Props) {
+type Props = { visible: boolean; initialSection: 'levels' | 'settings'; play: MainlineState; saveStatus: string; onClose: () => void; onResume: () => void; onSelect: (number: number) => void; onSelectSide: (number: number) => void; onPreview: (number: number) => void; onSidePreview: (number: number) => void; onSamples: () => void; onSymbols: () => void; symbols: boolean; completionName: string; onLanguage: () => void; onCompletionEffects: () => void; sound: boolean; soundSaved: boolean; onSound: () => void; onCelebrationPreview: (count: 2 | 3 | 4 | 5) => void; onDebug?: () => void };
+export function MainlineMenu({ visible, initialSection, play, saveStatus, onClose, onResume, onSelect, onSelectSide, onPreview, onSidePreview, onSamples, onSymbols, symbols, completionName, onLanguage, onCompletionEffects, sound, soundSaved, onSound, onCelebrationPreview, onDebug }: Props) {
   const { t, rtl, languageName } = useI18n();
   const insets = useSafeAreaInsets();
   const [section, setSection] = useState(initialSection);
   const [toolsVisible, setToolsVisible] = useState(false);
+  const [testing, setTesting] = useState(false);
+  const [testGroup, setTestGroup] = useState<'main' | 'side'>('main');
+  const [jumpText, setJumpText] = useState('');
+  const mainList = useRef<FlatList<number>>(null);
+  function jumpToLevel() {
+    const number = Number(jumpText);
+    if (!Number.isInteger(number) || number < 1 || number > 1000) return;
+    mainList.current?.scrollToIndex({ index: Math.floor((number - 1) / 5), animated: false });
+    Keyboard.dismiss();
+  }
   return <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
     <View style={[styles.backdrop, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 12 }]}>
       <LinearGradient colors={['#203745', '#102230']} style={styles.panel}>
@@ -24,23 +36,45 @@ export function MainlineMenu({ visible, initialSection, play, saveStatus, onClos
           <View style={[styles.progressHeading, rtl && styles.reverse]}><UiText style={styles.progressText}>{t('completedCount', { n: play.completedThrough })}</UiText><UiText style={styles.note}>{t('totalLevels')}</UiText></View>
           <View style={styles.progressTrack}><View style={[styles.progressFill, { width: `${play.completedThrough / 10}%` }]} /></View>
           <GameButton kind="wide" tone="mint" icon="play" label={play.side ? t('solidSideLabel', { n: play.current / 20 }) : t('continueLevel', { n: play.current })} onPress={onResume} style={styles.resume} />
-          <UiText style={styles.help}>{t('replayNote')}</UiText>
-          {play.sideCompletedThrough > 0 && <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.sideList} contentContainerStyle={styles.sideListContent}>
+          {INTERNAL_TOOLS && <Pressable accessibilityRole="button" accessibilityState={{ expanded: testing }} onPress={() => setTesting(value => !value)} style={styles.testToggle}>
+            <UiText style={styles.testToggleText}>{testing ? '关闭难度试玩' : '难度试玩 · 任意选关'} {testing ? '⌃' : '⌄'}</UiText>
+          </Pressable>}
+          <UiText style={styles.help}>{testing ? '预览不解锁关卡、不改动正在玩的局面；主线分数是制作代理分，副关显示首步风险。' : t('replayNote')}</UiText>
+          {testing && <View style={styles.testTabs}>
+            <Pressable accessibilityRole="tab" accessibilityState={{ selected: testGroup === 'main' }} onPress={() => setTestGroup('main')} style={[styles.testTab, testGroup === 'main' && styles.activeTab]}><UiText style={styles.testToggleText}>主线 · 1000</UiText></Pressable>
+            <Pressable accessibilityRole="tab" accessibilityState={{ selected: testGroup === 'side' }} onPress={() => setTestGroup('side')} style={[styles.testTab, testGroup === 'side' && styles.activeTab]}><UiText style={styles.testToggleText}>副关 · 50</UiText></Pressable>
+          </View>}
+          {testing && testGroup === 'main' && <View style={styles.jumpRow}>
+            <TextInput accessibilityLabel="跳转关号" keyboardType="number-pad" returnKeyType="go" value={jumpText} onChangeText={setJumpText}
+              onSubmitEditing={jumpToLevel} placeholder="输入 1–1000 关" placeholderTextColor="#7F9CA6" style={styles.jumpInput} />
+            <Pressable accessibilityRole="button" accessibilityLabel="跳转到关号" onPress={jumpToLevel} style={styles.jumpButton}><UiText style={styles.testToggleText}>跳转</UiText></Pressable>
+          </View>}
+          {!testing && play.sideCompletedThrough > 0 && <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.sideList} contentContainerStyle={styles.sideListContent}>
             {Array.from({ length: play.sideCompletedThrough }, (_, index) => index + 1).map(number => <Pressable key={number} accessibilityRole="button"
               accessibilityLabel={t('solidSideLabel', { n: number })} onPress={() => onSelectSide(number)} style={styles.sideCell}>
               <UiText style={styles.sideText}>{t('solidSideLabel', { n: number })}</UiText>
             </Pressable>)}
           </ScrollView>}
-          <FlatList data={NUMBERS} numColumns={5} keyExtractor={number => String(number)} initialScrollIndex={Math.floor((play.current - 1) / 5)}
-            getItemLayout={(_, index) => ({ length: 60, offset: 60 * index, index })} initialNumToRender={10} maxToRenderPerBatch={10} windowSize={5}
+          {testing && testGroup === 'side' ? <FlatList key="side-test" data={SOLID_SIDES.entries} numColumns={2} keyExtractor={item => String(item.number)}
+            getItemLayout={(_, index) => ({ length: 98, offset: 98 * index, index })} initialNumToRender={10} maxToRenderPerBatch={10} windowSize={5}
+            style={styles.list} renderItem={({ item }) => <Pressable accessibilityRole="button" accessibilityLabel={`试玩副关卡 ${item.number}，凝固最短 ${item.difficulty.frozenMoves} 步，首步死路 ${item.difficulty.frozenFirstChoices.dead}/${item.difficulty.frozenFirstChoices.choices}`}
+              onPress={() => onSidePreview(item.number)} style={({ pressed }) => [styles.sideTestCell, pressed && styles.pressed]}>
+              <UiText style={styles.number}>副 {item.number}</UiText>
+              <UiText style={styles.testDetail}>{item.level.colors.length} 色 · 最短 {item.difficulty.frozenMoves} 步</UiText>
+              <UiText style={styles.testDetail}>首步死路 {item.difficulty.frozenFirstChoices.dead}/{item.difficulty.frozenFirstChoices.choices}</UiText>
+            </Pressable>} /> : <FlatList key="mainline-grid" ref={mainList} data={NUMBERS} numColumns={5} keyExtractor={number => String(number)} initialScrollIndex={Math.floor((play.current - 1) / 5)}
+            getItemLayout={(_, index) => ({ length: 68, offset: 68 * index, index })} initialNumToRender={10} maxToRenderPerBatch={10} windowSize={5}
             style={styles.list} renderItem={({ item: number }) => {
               const unlocked = number <= play.completedThrough || number === play.current;
-              return <Pressable accessibilityRole="button" accessibilityLabel={t('levelState', { n: number, state: t(unlocked ? number <= play.completedThrough ? 'completed' : 'current' : 'locked') })}
-                accessibilityState={{ disabled: !unlocked, selected: number === play.current }} disabled={!unlocked} onPress={() => onSelect(number)}
-                style={({ pressed }) => [styles.cell, number === play.current && styles.selected, !unlocked && styles.locked, pressed && styles.pressed]}>
-                {unlocked ? <><UiText style={[styles.number, number % 10 === 0 && styles.challenge]}>{number}</UiText><UiText style={styles.mark}>{number <= play.completedThrough ? '✓' : '·'}</UiText></> : <><UiText style={styles.lockedNumber}>{number}</UiText><Icon name="lock" size={10} color="#7B919F" /></>}
+              const rating = MAINLINE.entries[number - 1];
+              return <Pressable accessibilityRole="button" accessibilityLabel={testing ? `试玩第 ${number} 关，${rating.tier}，${rating.score} 分` : t('levelState', { n: number, state: t(unlocked ? number <= play.completedThrough ? 'completed' : 'current' : 'locked') })}
+                accessibilityState={{ disabled: !testing && !unlocked, selected: !testing && number === play.current }} disabled={!testing && !unlocked} onPress={() => testing ? onPreview(number) : onSelect(number)}
+                style={({ pressed }) => [styles.cell, number === play.current && !testing && styles.selected, !unlocked && !testing && styles.locked, pressed && styles.pressed]}>
+                <UiText style={[styles.number, !unlocked && !testing && styles.lockedNumber, number % 10 === 0 && styles.challenge]}>{number}</UiText>
+                {INTERNAL_TOOLS && <UiText style={styles.testScore}>{rating.tier} · {rating.score}</UiText>}
+                {!testing && (unlocked ? <UiText style={styles.mark}>{number <= play.completedThrough ? '✓' : '·'}</UiText> : <Icon name="lock" size={10} color="#7B919F" />)}
               </Pressable>;
-            }} />
+            }} />}
         </> : <ScrollView style={styles.settings} contentContainerStyle={styles.settingsContent}>
           <View style={styles.settingsHero}><Icon name="spark" color="#DEC797" size={22} /><UiText style={styles.settingsBrand}>BOTTLE HARMONY</UiText></View>
           <Pressable accessibilityRole="button" onPress={onLanguage} style={[styles.settingRow, rtl && styles.reverse]}><Icon name="language" color="#BDCDD3" /><View style={styles.settingCopy}><UiText style={styles.settingTitle}>{t('language')}</UiText></View><UiText style={styles.settingValue}>{languageName} ›</UiText></Pressable>
@@ -76,13 +110,23 @@ const styles = StyleSheet.create({
   progressTrack: { height: 7, backgroundColor: '#0E202D', borderRadius: 4, overflow: 'hidden', marginTop: 8 },
   progressFill: { height: '100%', backgroundColor: '#BCA36F', borderRadius: 4 },
   resume: { marginTop: 14 },
-  help: { color: '#9AAFBA', fontSize: 11, marginTop: 14, marginBottom: 8 },
+  help: { color: '#9AAFBA', fontSize: 11, marginTop: 10, marginBottom: 8 },
+  testToggle: { minHeight: 42, marginTop: 10, paddingHorizontal: 12, borderRadius: 12, borderWidth: 1, borderColor: '#91C9BA66', backgroundColor: '#1B3A40', justifyContent: 'center' },
+  testToggleText: { color: '#CDEDE2', fontSize: 12, fontWeight: '600', textAlign: 'center' },
+  testTabs: { flexDirection: 'row', gap: 8, marginBottom: 8 },
+  testTab: { flex: 1, minHeight: 38, justifyContent: 'center', borderRadius: 10, backgroundColor: '#17313C' },
+  jumpRow: { flexDirection: 'row', gap: 8, marginBottom: 8 },
+  jumpInput: { flex: 1, minHeight: 40, borderRadius: 10, borderWidth: 1, borderColor: '#91C9BA66', backgroundColor: '#102A35', color: '#EBD8AD', paddingHorizontal: 12, fontSize: 13 },
+  jumpButton: { width: 70, minHeight: 40, justifyContent: 'center', borderRadius: 10, borderWidth: 1, borderColor: '#91C9BA66', backgroundColor: '#1B3A40' },
+  testScore: { color: '#A9CFCA', fontSize: 10, marginTop: 2 },
+  testDetail: { color: '#A9CFCA', fontSize: 10, marginTop: 3 },
+  sideTestCell: { flex: 1, height: 90, margin: 4, borderWidth: 1, borderColor: '#91C9BA66', borderRadius: 14, justifyContent: 'center', alignItems: 'center', backgroundColor: '#233F49' },
   sideList: { flexGrow: 0, maxHeight: 42, marginBottom: 6 },
   sideListContent: { gap: 6, alignItems: 'center' },
   sideCell: { minHeight: 36, paddingHorizontal: 10, borderRadius: 10, borderWidth: 1, borderColor: '#A7BCC166', backgroundColor: '#263E4D', justifyContent: 'center' },
   sideText: { color: '#EBD8AD', fontSize: 11 },
   list: { flex: 1 },
-  cell: { flex: 1, height: 52, margin: 4, borderWidth: 1, borderColor: '#A7BCC144', borderRadius: 14, justifyContent: 'center', alignItems: 'center', backgroundColor: '#263E4D' },
+  cell: { flex: 1, height: 60, margin: 4, borderWidth: 1, borderColor: '#A7BCC144', borderRadius: 14, justifyContent: 'center', alignItems: 'center', backgroundColor: '#263E4D' },
   selected: { borderColor: '#DEC797', backgroundColor: '#32515B' },
   locked: { backgroundColor: '#142A37', borderColor: '#60798744' },
   number: { color: '#EBD8AD', fontSize: 17, fontWeight: '600' },

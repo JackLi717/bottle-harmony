@@ -22,7 +22,8 @@ export function GameFooter({ won, continueVisible, compact, disabled, undoDisabl
       {continueVisible && <Animated.View style={[styles.continueButton, celebrationStyle]}>
         <GameButton compact={compact} kind="wide" tone="mint" icon="play" label={nextLabel} disabled={disabled} onPress={onContinue} />
       </Animated.View>}
-      {(!continueVisible || !compact) && <UiText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={.75} style={styles.hintStatus}>{hintStatus}</UiText>}
+      {heatAvailable && !won && !stalledReason ? <GameButton compact={compact} kind="wide" tone="gold" icon="fire" label={t('meltTarget')} disabled={disabled} onPress={onHeat} style={styles.heatButton} />
+        : (!continueVisible || !compact) && <UiText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={.75} style={styles.hintStatus}>{hintStatus}</UiText>}
     </View>
     <LinearGradient colors={['#17313C99', '#11263199']} style={[styles.dock, compact && styles.compactDock, rtl && styles.reverse, stalledReason && styles.hiddenDock]}>
       {stalledReason ? <View style={[styles.toolSpace, compact && styles.compactToolSpace]} /> : <>
@@ -44,6 +45,7 @@ const styles = StyleSheet.create({
   continueArea: { height: 66, width: '100%', alignItems: 'center', justifyContent: 'center' },
   compactContinueArea: { height: 52 },
   continueButton: { width: '100%', maxWidth: 280 },
+  heatButton: { width: '100%', maxWidth: 240, minHeight: 46 },
   hintStatus: { color: '#CEBA8D', fontSize: 11, lineHeight: 13, textAlign: 'center', width: '100%' },
   reverse: { flexDirection: 'row-reverse' },
   dock: { flexDirection: 'row', gap: 16, padding: 10, borderWidth: .5, borderColor: '#C7AD7833', borderRadius: 22 },

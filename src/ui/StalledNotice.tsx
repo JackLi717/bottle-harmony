@@ -30,7 +30,7 @@ export function StalledNotice({ reason, compact, canUndo, reserveAvailable, heat
       </View>
       <UiText numberOfLines={2} adjustsFontSizeToFit minimumFontScale={.8} style={[styles.note, compact && styles.compactNote]}>{t(help)}</UiText>
       <View style={[styles.actions, rtl && styles.reverse]}>
-        {heatAvailable && <View style={styles.action}><GameButton compact={compact} kind="wide" tone="gold" icon="fire" label={t('heat')} onPress={onHeat} /></View>}
+        {heatAvailable && <View style={styles.action}><GameButton compact={compact} kind="wide" tone="gold" icon="fire" label={t('meltTarget')} onPress={onHeat} /></View>}
         {canUndo && <View style={styles.action}><GameButton compact={compact} kind="wide" tone="mint" icon="undo" label={t(compact ? 'undo' : 'undoStep')} accessibilityLabel={t('undoStep')} onPress={onUndo} /></View>}
         <View style={styles.action}><GameButton compact={compact} kind="wide" tone="blue" icon="reset" label={t('reset')} accessibilityLabel={t('resetHint')} onPress={onReset} /></View>
       </View>

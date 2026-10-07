@@ -44,7 +44,6 @@ import { INTERNAL_TOOLS } from './buildConfig';
 import { Tutorial } from './PlayMenu';
 import { usePlayProgress } from './usePlayProgress';
 import { boardLayout, bottleHitWidth, fitBoard } from './boardLayout';
-import { Icon } from './Icon';
 import { referenceHint, type CalibrationSample } from '../game/calibration';
 import { advanceStalledNotice, closeStalledNotice, INITIAL_STALLED_NOTICE, showUnsolvableNotice } from './stalledNoticePolicy';
 
@@ -238,7 +237,16 @@ export function DemoScreen() {
     if (!extra) return;
     setPendingCelebration(null); setCelebration(null); setLastAward(0);
     setInternalSession(createSession(extra.level, { bottle: extra.frozenBottle, depth: 1, melted: false, meltAt: null }));
-    setSelected(null); setPickerVisible(false); setPage('game'); announceStatus('tapStart');
+    setSelected(null); setMenuVisible(false); setPickerVisible(false); setPage('game'); announceStatus('tapStart');
+  }
+
+  function previewMainline(number: number) {
+    if (busy.current) return;
+    const target = MAINLINE.entries[number - 1];
+    if (!target) return;
+    setPendingCelebration(null); setCelebration(null); setLastAward(0);
+    setInternalSession(createSession(target.level));
+    setSelected(null); setMenuVisible(false); setPickerVisible(false); setPage('game'); announceStatus('tapStart');
   }
 
   function openMenu(section: 'levels' | 'settings') {
@@ -451,17 +459,14 @@ export function DemoScreen() {
               accessibilityState={{ disabled: !!animation || searching || won }} disabled={!!animation || searching || won} onPress={useReserve}
               style={{ position: 'absolute', left: (layout.positions[board.length].x + 50) * scale - bottleHitWidth(layout, scale) / 2,
                 top: layout.positions[board.length].y * scale, width: bottleHitWidth(layout, scale), height: 180 * scale,
-                alignItems: 'center', justifyContent: 'center', zIndex: 3 }}>
-              <View style={styles.reserveBadge}><UiText style={styles.reservePlus}>+</UiText></View>
-              <UiText numberOfLines={1} adjustsFontSizeToFit style={styles.reserveLabel}>{t('reserveUse')}</UiText>
-            </Pressable>}
-            {sideEntry && session.solid && !session.solid.melted && !won && <Pressable accessibilityRole="button"
-              accessibilityLabel={t('heat')} accessibilityHint={t('solidInstruction')} disabled={!!animation || searching}
-              onPress={heatSide} style={{ position: 'absolute', left: (layout.positions[session.solid.bottle].x + 50) * scale - 28,
-                top: (layout.positions[session.solid.bottle].y + 48) * scale, width: 56, height: 50,
-                alignItems: 'center', justifyContent: 'center', zIndex: 5 }}>
-              <View style={styles.heatBadge}><Icon name="fire" color="#FFCD9A" size={20} /><UiText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={.7} style={styles.heatLabel}>{t('heat')}</UiText></View>
-            </Pressable>}
+                zIndex: 3 }} />}
+            {sideEntry && session.solid && !session.solid.melted && <View pointerEvents="none" style={{ position: 'absolute',
+              left: (layout.positions[session.solid.bottle].x + 50) * scale - 21 * scale,
+              top: (layout.positions[session.solid.bottle].y + 169) * scale, width: 42 * scale, height: 10 * scale,
+              alignItems: 'center', justifyContent: 'center', zIndex: 2 }}>
+              <View style={[styles.frozenMarker, { width: 35 * scale, height: 5 * scale, borderRadius: 3 * scale }]} />
+              <View style={[styles.frozenMarkerCenter, { width: 8 * scale, height: 8 * scale, top: 1 * scale }]} />
+            </View>}
             {animation && <View pointerEvents="none" style={[StyleSheet.absoluteFill, { zIndex: 11 }]}><PourStream plan={animation.plan} color={animation.pour.color} progress={progress} /></View>}
           </View>}
           {celebration !== null && appActive && !reduceMotion && stage.width > 0 && stage.height > 0 && <Celebration count={celebration === 'win' ? celebrationCount : celebration} width={stage.width} height={stage.height} sound={sound} onComplete={celebrationFinished} />}
@@ -474,11 +479,11 @@ export function DemoScreen() {
         </>}
       </View>
       {debugReport && <DifficultyDebug visible={difficultyVisible} report={debugReport} human={debugHuman} sample={sample} label={label} onClose={() => setDifficultyVisible(false)} />}
-      {menuVisible && <MainlineMenu visible initialSection={menuSection} play={play} saveStatus={t(saveStatus)} onClose={() => setMenuVisible(false)} onResume={resumeCurrent} onSelect={chooseNumber} onSelectSide={chooseSide} onSamples={() => { setMenuVisible(false); setPickerVisible(true); }} symbols={play.symbols} onSymbols={() => setPlay(Object.freeze({ ...play, symbols: !play.symbols }))} completionName={t(vesselCompletionEffect(vessel, completionEffect))} onLanguage={() => { setMenuVisible(false); setLanguageVisible(true); }} onCompletionEffects={() => { setMenuVisible(false); setCompletionPickerVisible(true); }} sound={sound} soundSaved={soundSaved} onSound={toggleSound} onCelebrationPreview={previewCelebration} onDebug={INTERNAL_TOOLS && !sideEntry ? openDifficulty : undefined} />}
+      {menuVisible && <MainlineMenu visible initialSection={menuSection} play={play} saveStatus={t(saveStatus)} onClose={() => setMenuVisible(false)} onResume={resumeCurrent} onSelect={chooseNumber} onSelectSide={chooseSide} onPreview={previewMainline} onSidePreview={previewSide} onSamples={() => { setMenuVisible(false); setPickerVisible(true); }} symbols={play.symbols} onSymbols={() => setPlay(Object.freeze({ ...play, symbols: !play.symbols }))} completionName={t(vesselCompletionEffect(vessel, completionEffect))} onLanguage={() => { setMenuVisible(false); setLanguageVisible(true); }} onCompletionEffects={() => { setMenuVisible(false); setCompletionPickerVisible(true); }} sound={sound} soundSaved={soundSaved} onSound={toggleSound} onCelebrationPreview={previewCelebration} onDebug={INTERNAL_TOOLS && !sideEntry ? openDifficulty : undefined} />}
       <LanguagePicker visible={languageVisible} onClose={() => { setLanguageVisible(false); openMenu('settings'); }} />
       <CompletionEffectPicker visible={completionPickerVisible} vessel={vessel} value={completionEffect} reduceMotion={reduceMotion} onSelect={effect => { setCompletionEffect(effect); setSelected(null); }} onClose={() => setCompletionPickerVisible(false)} />
       <Tutorial visible={page === 'game' && ready && !play.tutorialDone} onStart={() => setPlay(Object.freeze({ ...play, tutorialDone: true }))} onSkip={() => setPlay(Object.freeze({ ...play, tutorialDone: true }))} />
-      {INTERNAL_TOOLS && <LevelPicker visible={pickerVisible} currentCode={sample?.code ?? null} onClose={() => setPickerVisible(false)} onSelect={chooseSample} onPreview={number => { setInternalSession(createSession(MAINLINE.entries[number - 1].level)); setSelected(null); setPickerVisible(false); setPage('game'); announceStatus('tapStart'); }} onSidePreview={previewSide} />}
+      {INTERNAL_TOOLS && <LevelPicker visible={pickerVisible} currentCode={sample?.code ?? null} onClose={() => setPickerVisible(false)} onSelect={chooseSample} onPreview={previewMainline} onSidePreview={previewSide} />}
     </LinearGradient>
   );
 }
@@ -489,9 +494,6 @@ const styles = StyleSheet.create({
   loading: { color: '#BDCDD3', fontSize: 14 },
   stageSpace: { flex: 1, alignItems: 'center', justifyContent: 'center', marginHorizontal: -22, marginTop: 8, marginBottom: 4 },
   selectionDot: { position: 'absolute', alignSelf: 'center', width: 4, height: 4, borderRadius: 2, backgroundColor: '#B8F7E2' },
-  reserveBadge: { width: 28, height: 28, borderRadius: 14, backgroundColor: '#18383D', borderWidth: 1, borderColor: '#A9D6D2', alignItems: 'center', justifyContent: 'center' },
-  reservePlus: { color: '#DBF7EA', fontSize: 24, lineHeight: 26 },
-  reserveLabel: { color: '#C8EDE3', fontSize: 10, marginTop: 5, textAlign: 'center', width: '100%' },
-  heatBadge: { width: 52, height: 47, borderRadius: 17, backgroundColor: '#503022', borderWidth: 1, borderColor: '#F6B680', alignItems: 'center', justifyContent: 'center' },
-  heatLabel: { color: '#FFE2BE', fontSize: 9, lineHeight: 11, width: '100%', textAlign: 'center' },
+  frozenMarker: { backgroundColor: '#A8E9FA', shadowColor: '#A8E9FA', shadowOpacity: .8, shadowRadius: 5 },
+  frozenMarkerCenter: { position: 'absolute', backgroundColor: '#E8FBFF', borderWidth: 1, borderColor: '#84CADA', transform: [{ rotate: '45deg' }] },
 });
