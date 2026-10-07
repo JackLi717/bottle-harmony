@@ -2,6 +2,8 @@ import { clipBelow, LAYER_AREA, polygonArea, rotatedInterior, type Point } from 
 
 export const STAGE_WIDTH = 360;
 export const STAGE_HEIGHT = 430;
+export const POUR_DURATION_MS = 1900;
+export const STREAM_FADE_FRACTION = .025;
 export const FLOW_START = 0.34;
 export const FLOW_END = 0.72;
 const MARGIN = 2;
@@ -38,7 +40,7 @@ export function transferredFraction(progress: number) {
 
 export function streamOpacity(progress: number) {
   'worklet';
-  return clamp(Math.min((progress - FLOW_START) / 0.025, (FLOW_END + 0.025 - progress) / 0.025), 0, 1);
+  return clamp(Math.min((progress - FLOW_START) / STREAM_FADE_FRACTION, (FLOW_END + STREAM_FADE_FRACTION - progress) / STREAM_FADE_FRACTION), 0, 1);
 }
 
 export function rotateBottlePoint(point: Point, angle: number): Point {

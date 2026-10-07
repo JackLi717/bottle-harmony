@@ -25,6 +25,8 @@ import { GameFooter } from './GameFooter';
 import { Celebration } from './Celebration';
 import { fireworkCount } from '../art/fireworkPhysics';
 import { useSoundPreference } from './useSoundPreference';
+import { PourSound } from './PourSound';
+import { POUR_DURATION_MS } from '../art/pourGeometry';
 import { completedPreviewSession, finishPresentation } from './gamePresentation';
 import { DifficultyDebug } from './DifficultyDebug';
 import { LevelPicker } from './LevelPicker';
@@ -109,7 +111,7 @@ export function DemoScreen() {
     if (!animation) return;
     // Start after the persistent bottle views receive the new plan, rather than
     // advancing the UI clock while React is still switching their props.
-    progress.set(withTiming(1, { duration: 1900, easing: Easing.linear }, done => {
+    progress.set(withTiming(1, { duration: POUR_DURATION_MS, easing: Easing.linear }, done => {
       if (done) scheduleOnRN(finished);
     }));
     return () => cancelAnimation(progress);
@@ -310,6 +312,7 @@ export function DemoScreen() {
   return (
     <LinearGradient colors={['#11171E', '#090E16', '#070B12']} locations={[0, 0.58, 1]} style={styles.screen}>
       <StatusBar style="light" />
+      <PourSound progress={progress} pouring={!!animation} enabled={sound && appActive && !reduceMotion && page === 'game'} />
       <View pointerEvents="none" style={StyleSheet.absoluteFill}><GameBackdrop width={dimensions.width} height={dimensions.height} /></View>
       <View style={[styles.safe, { paddingTop: insets.top + (compact ? 8 : 14), paddingBottom: Math.max(insets.bottom, 14) }]}>
         {page === 'home' ? <HomeScreen current={play.current} compact={compact} notice={notice ? t(notice) : undefined} onPlay={() => chooseNumber(play.current)} onLevels={() => openMenu('levels')} onSettings={() => openMenu('settings')} /> : <>

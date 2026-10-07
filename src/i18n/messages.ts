@@ -10,7 +10,7 @@ export type LanguagePreference = Language | 'system';
 type Translations = readonly [string, string, string, string, string, string, string, string, string, string, string, string, string];
 export const MESSAGES = {
   sound: ['Sound effects','音效','音效','Efectos de sonido','Efeitos sonoros','Effets sonores','Soundeffekte','効果音','효과음','Звуковые эффекты','المؤثرات الصوتية','ध्वनि प्रभाव','Efek suara'],
-  soundNote: ['Firework launch, burst and crackle','礼花升空、绽放和余响','禮花升空、綻放和餘響','Lanzamiento, explosión y crepitar','Lançamento, explosão e estalos','Envol, explosion et crépitement','Aufstieg, Knall und Knistern','打ち上げ・開花・余韻','발사, 폭발, 잔향','Запуск, взрыв и треск','إطلاق وانفجار وطقطقة','उड़ान, विस्फोट और चटख','Peluncuran, ledakan, dan gemerisik'],
+  soundNote: ['Water pouring and celebration fireworks','倒水与通关礼花','倒水與通關禮花','Agua y fuegos artificiales','Água e fogos de artifício','Eau et feux d’artifice','Wasser und Feuerwerk','水を注ぐ音と花火','물 붓기와 축하 불꽃놀이','Переливание воды и салют','صب الماء والألعاب النارية','पानी डालना और आतिशबाज़ी','Menuang air dan kembang api'],
   levelComplete: ['Level complete!','过关了！','過關了！','¡Nivel completado!','Nível concluído!','Niveau réussi !','Level geschafft!','レベルクリア！','레벨 완료!','Уровень пройден!','اكتملت المرحلة!','स्तर पूरा!','Level selesai!'],
   fireworksPreview: ['Preview celebration','预览通关礼花','預覽通關禮花','Ver celebración','Ver celebração','Voir la célébration','Feuerwerk ansehen','花火をプレビュー','축하 미리 보기','Посмотреть салют','معاينة الاحتفال','जश्न देखें','Pratinjau perayaan'],
   languageEn: ['English','英语','英語','Inglés','Inglês','Anglais','Englisch','英語','영어','Английский','الإنجليزية','अंग्रेज़ी','Inggris'],

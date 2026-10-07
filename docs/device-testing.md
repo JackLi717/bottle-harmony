@@ -1,5 +1,18 @@
 # 竖屏试玩设备测试
 
+## 实录倒水声（2026-10-07）
+
+新增真实倒水录音片段，只有可见水流期间播放，与倒水同用 UI 动画时钟；选瓶、提瓶和回位不发出水声。音频常驻预加载，提瓶阶段静默定位，水流出现时播放；首次载入后不再把定位期间的短暂 BUFFERING 当成未加载，避免声音中断。流结束、取消、静音和后台会停止并使排队的准备失效。减少动态效果直接完成动作，不补播水声。倒水和礼花沿用已有音效开关及保存键；按用户要求不新增按键音设置，安卓原生点击反馈仍由系统控制。
+
+素材为 JohnsonBrandEditing 的 CC0《Water Pour》实录剪辑，单声道 22.05 kHz PCM，约 34 KB；没有增加合成音调。约 0.769 秒的片段对应原有 1900 毫秒动画的水流窗口，前后短渐变、峰值无削波。来源、许可、哈希和重建方法见 [音频说明](../assets/audio/README.md)。
+
+- 自动检查：91 项测试、TypeScript、ESLint 通过。新增检查覆盖一次水流只播放一次、每次从头开始、提瓶静默准备、取消/静音使未完成准备失效、旧定位不能触发新动作、卸载不触碰已释放播放器，以及录音时长、边缘和幅度。倒水规则、动画时长、千关内容及保存格式未改变。
+- 独立 Android 14 模拟器：倒水出现一次原生音轨启动与自然结束，没有中途 pause/restart；关闭音效并冷启动保持关闭，切后台停声且回前台不重播，已提交液体状态仍在且可撤销。React Native 读取 `transition_animation_scale` 判断减少动态效果，按此设置的专项检查通过：瞬间倒水无音轨。测试已恢复音效开启、第二关原局面及系统动画设置，原生错误日志为空。原生音轨 stopped 事件会早于缓冲末尾播完，不能用其状态间隔声称实际可听时长或手机同步延迟。
+- Android 与 iOS 最终 Release 构建及签名验证通过；未增加依赖。
+- iPhone 12 Pro Max：最终版本覆盖安装和启动成功，保留本地进度，未操作手机主线。安卓 T517D 当前显示 USB 调试未授权，本轮尚未安装最新版。
+
+最终包仍为 `builds/bottle-harmony-demo.apk` 和 `builds/ios-device/Build/Products/Release-iphoneos/BottleHarmony.app`。安装与启动记录为 `builds/pour-sound-iphone-install.json`、`builds/pour-sound-iphone-launch.json`。行为记录为 `builds/pour-sound-native-check.log`（倒水、后台、静音三项通过；最后的初次检查误用了 animator 开关）、`builds/pour-sound-reduced-check.log`（改用实际 transition 开关后专项通过），原生日志为 `builds/pour-sound-native-errors.log`。模拟器检查覆盖行为及原生音轨状态，不能作为真机听感、音画延迟或持续性能的定量证据。
+
 ## 双名称语言、棋盘叠加礼花与音效（2026-10-07）
 
 保留认可的墨黑背景、薄边玻璃按钮、收窄玻璃瓶与独立主页。语言列表采用固定顺序，同时显示语言自己的名字和当前界面语言中的名称；“跟随系统”固定在滚动区域外，语言入口有地球图标。

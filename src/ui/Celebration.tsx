@@ -1,6 +1,7 @@
+import { prepareGameAudio } from './gameAudio';
 import { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { setAudioModeAsync, useAudioPlayer } from 'expo-audio';
+import { useAudioPlayer } from 'expo-audio';
 import { Fireworks } from '../art/Fireworks';
 
 const AUDIO = {
@@ -15,7 +16,7 @@ export function Celebration({ count, width, height, sound, onComplete }: { count
   useEffect(() => {
     let active = true;
     if (sound) {
-      void setAudioModeAsync({ playsInSilentMode: false, shouldPlayInBackground: false, interruptionMode: 'mixWithOthers', allowsRecording: false }).then(() => {
+      void prepareGameAudio().then(() => {
         if (active) { player.volume = .65; player.play(); }
       }).catch(() => {});
     }
