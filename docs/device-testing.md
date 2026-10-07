@@ -12,7 +12,10 @@
 - 使用已验证的第 419 关（十一色、十二容器）在该模拟器构造独立测试存档：经典瓶、试管、马天尼杯、浅碟杯、皇家高脚杯和锥形瓶均通过完整显示、辅助符号、合法提示倒水与撤销检查；十二个容器均完整留在屏幕内，撤销后局面、测试存档关号与解锁位置不变。该测试存档仅用于模拟器，未写入手机。
 - 试管和皇家高脚杯分别通过真实第 1 关完整提示路线：通关后窄口瓶塞插入正常、宽口光晕稳定，下一关按钮出现，撤销恢复未完成且坐标不变。中文小屏、减少动态效果的瞬间倒水/撤销/切款式通过，原生错误日志无应用异常；模拟器原存档、尺寸、密度与动画设置已恢复。
 
-- 原生界面检查在独立 Pixel 4a / Android 14 模拟器进行；按照用户“先完成模拟器验证，手机稍后安装”的要求，本轮未安装两台手机。模拟器结果不作为低端手机帧率、听感或持续性能的定量证据。
+- 首轮按用户要求先完成独立 Pixel 4a / Android 14 模拟器检查，随后用户明确要求提交和手机安装。模拟器结果不作为低端手机帧率、听感或持续性能的定量证据。
+- 十五款实现已提交为 `950e635`。T517D / Android 15 与 iPhone 12 Pro Max 均覆盖安装成功并启动，未卸载、未清除应用数据、未操作手机主线。安卓实际安装包 SHA-256 与最终 Release 包一致（`bcf1b9006203f87f6424e94463211c317093d0bb7945b4b7c348d755608442a8`），进程运行正常且该应用错误日志无异常；安卓当前锁屏，未确认新版首页视觉。iPhone 设备工具确认安装和启动成功，本轮未采集其界面。
+
+手机安装与启动记录为 `builds/vessels-android-install.log`、`builds/vessels-android-launch.log`、`builds/vessels-android-install-check.log`、`builds/vessels-phone-errors.log`、`builds/vessels-iphone-install.json` 和 `builds/vessels-iphone-launch.json`。
 
 原生记录为 `builds/vessels-native-check.log` 与 `builds/vessels-extra-check.log`，错误日志为 `builds/vessels-native-errors.log`。初次中文检查脚本误用了不存在的旧标签“继续 · 2”，在补充检查中改用实际“继续第 2 关”后通过；未修改产品文案来迁就测试。十五款首页/棋盘截图为 `builds/vessels-home-*.png`、`builds/vessels-game-*.png`；代表款式的十二容器图为 `builds/vessels-twelve-*.png`，完成状态图为 `builds/vessels-complete-tube.png` 和 `builds/vessels-complete-chalice.png`，最终中文首页为 `builds/vessels-final-home-chalice.png`。
 
