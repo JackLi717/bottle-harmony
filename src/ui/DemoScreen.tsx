@@ -12,11 +12,14 @@ import { LIQUIDS } from '../art/palette';
 import { createPourPlan, type PourPlan } from '../art/pourGeometry';
 import { DEMO_LEVEL } from '../game/demo';
 import { getPour, type Board, type Pour } from '../game/rules';
-import { createSession, moveSession, resetSession, undoSession } from '../game/session';
+import { advancePlay, choosePlay, freezePlay, movePlay, resetPlay, undoPlay, type PlayMode } from '../game/play';
 import { createSolver, type SolveResult, type SolverTask } from '../game/solver';
 import { Icon } from './Icon';
 import { DifficultyDebug } from './DifficultyDebug';
-import { CALIBRATION_DIFFICULTY, LevelPicker } from './LevelPicker';
+import { LevelPicker } from './LevelPicker';
+import { CALIBRATION_SAMPLES, CATALOG, DIFFICULTY, LEVEL_LABELS } from './content';
+import { PlayMenu, Tutorial } from './PlayMenu';
+import { usePlayProgress } from './usePlayProgress';
 import { boardLayout, fitBoard } from './boardLayout';
 import { referenceHint, TIER_NAMES, type CalibrationSample } from '../game/calibration';
 
@@ -26,8 +29,12 @@ export function DemoScreen() {
   const insets = useSafeAreaInsets();
   const dimensions = useWindowDimensions();
   const compact = dimensions.height < 720;
-  const [session, setSession] = useState(() => createSession(DEMO_LEVEL));
-  const [sample, setSample] = useState<CalibrationSample | null>(null);
+  const { play, setPlay, ready, notice, saveStatus } = usePlayProgress();
+  const session = play.session;
+  const sample = CALIBRATION_SAMPLES.find(item => item.content.level.id === session.level.id) ?? null;
+  const entry = CATALOG.entries.find(item => item.content.level.id === session.level.id);
+  const label = LEVEL_LABELS.get(session.level.id)!;
+  const [menuVisible, setMenuVisible] = useState(false);
   const [pickerVisible, setPickerVisible] = useState(false);
   const [difficultyVisible, setDifficultyVisible] = useState(false);
   const { board, history } = session;
@@ -46,7 +53,7 @@ export function DemoScreen() {
   // above the board. Reserve at least 130 design units without crossing the notch.
   const layout = boardLayout(board.length);
   const { scale, minY } = fitBoard(layout, stage, safeTop);
-  const difficulty = CALIBRATION_DIFFICULTY.get(session.level.id)!;
+  const difficulty = DIFFICULTY.get(session.level.id)!;
   const won = session.status === 'solved';
   const finished = useCallback(() => {
     busy.current = false;
@@ -105,20 +112,26 @@ export function DemoScreen() {
 
   function chooseSample(next: CalibrationSample | null) {
     if (busy.current) return;
-    setSession(createSession(next?.content.level ?? DEMO_LEVEL));
-    setSample(next);
+    setPlay(choosePlay(play, next?.content.level ?? DEMO_LEVEL));
     setSelected(null);
     setMessage('点选有水的瓶子，再点空瓶');
     setPickerVisible(false);
   }
 
+  function nextLevel(reason: 'completed' | 'skip', mode?: PlayMode) {
+    if (busy.current) return;
+    const next = advancePlay(play, CATALOG, reason, mode);
+    setPlay(next); setSelected(null); setMenuVisible(false);
+    setMessage(next.repeated ? '本档这一轮已玩过，开始重玩' : '点选有水的瓶子，再点空瓶');
+  }
+
   function startPour(pour: Pour) {
     if (busy.current) return;
-    const accepted = moveSession(session, pour.source, pour.target);
+    const accepted = movePlay(play, pour.source, pour.target, CATALOG);
     if (!accepted) return;
     busy.current = true;
-    setSession(accepted.session);
-    setMessage(accepted.session.status === 'solved' ? '色彩归位了。再来一次？' : accepted.session.status === 'stalled' ? '暂时没有可倒的瓶子，可以撤销或重来' : '慢慢来，让相同的颜色相遇');
+    setPlay(accepted.state);
+    setMessage(accepted.state.session.status === 'solved' ? '色彩归位了，可以继续下一题' : accepted.state.session.status === 'stalled' ? '暂时没有可倒的瓶子，可以撤销或重来' : '慢慢来，让相同的颜色相遇');
     if (reduceMotion) { busy.current = false; setSelected(null); return; }
     progress.set(0);
     const { before, pour: committedPour } = accepted.event;
@@ -127,7 +140,7 @@ export function DemoScreen() {
 
   function selectBottle(index: number) {
     if (busy.current) return;
-    if (won) { setMessage('色彩归位了。可以撤销、重来或再玩一次'); return; }
+    if (won) { setMessage('色彩归位了。可以继续下一题、撤销或重来'); return; }
     if (selected === index) { setSelected(null); return; }
     if (selected === null) {
       if (!board[index].length) { setMessage('先选一个有水的瓶子'); return; }
@@ -145,20 +158,21 @@ export function DemoScreen() {
 
   function reset() {
     if (busy.current) return;
-    setSession(resetSession(session)); setSelected(null);
+    setPlay(resetPlay(play)); setSelected(null);
     setMessage('点选有水的瓶子，再点空瓶');
   }
 
   function undo() {
     if (busy.current || !history.length) return;
-    setSession(undoSession(session));
+    setPlay(undoPlay(play));
     setSelected(null); setMessage('已退回上一步');
   }
 
   async function demonstrate() {
     if (busy.current) return;
-    if (won) { reset(); return; }
-    const referencePour = sample ? referenceHint(sample.content, board) : null;
+    if (won) { nextLevel('completed'); return; }
+    const content = entry?.content ?? sample?.content;
+    const referencePour = content ? referenceHint(content, board) : null;
     if (referencePour) { startPour(referencePour); return; }
     const task = createSolver(board, { capacity: session.level.capacity, maxStates: 30000, maxMilliseconds: 200 });
     search.current = task;
@@ -183,17 +197,19 @@ export function DemoScreen() {
     ? [...bottle, ...Array(animation.pour.amount).fill(animation.pour.color)]
     : bottle) : board;
 
+  if (!ready) return <LinearGradient colors={['#102B37', '#0B1B2F']} style={[styles.screen, { alignItems: 'center', justifyContent: 'center' }]}><StatusBar style="light" /><Text style={styles.message}>正在恢复本地进度…</Text></LinearGradient>;
+
   return (
     <LinearGradient colors={['#102B37', '#0B1B2F', '#111C30']} locations={[0, 0.58, 1]} style={styles.screen}>
       <StatusBar style="light" />
       <View style={[styles.safe, { paddingTop: insets.top + (compact ? 8 : 14), paddingBottom: Math.max(insets.bottom, 14) }]}>
         <View style={styles.brandRow}>
           <View style={styles.brand}><View style={styles.emblem}><Icon name="spark" color="#DEC793" size={25} /></View><View><Text style={styles.brandTitle}>BOTTLE</Text><Text style={styles.brandSubtitle}>H A R M O N Y</Text></View></View>
-          <Pressable accessibilityRole="button" accessibilityLabel="打开关卡试玩选题" disabled={!!animation || searching} onPress={() => { if (!busy.current) setPickerVisible(true); }} style={[styles.demoBadge, (!!animation || searching) && styles.disabled]}><Text style={styles.demoBadgeText}>选题试玩</Text></Pressable>
+          <Pressable accessibilityRole="button" accessibilityLabel="打开游玩菜单" disabled={!!animation || searching} onPress={() => { if (!busy.current) setMenuVisible(true); }} style={[styles.demoBadge, (!!animation || searching) && styles.disabled]}><Text style={styles.demoBadgeText}>游玩菜单</Text></Pressable>
         </View>
         <View style={[styles.intro, compact && styles.introCompact]}>
           <Text style={[styles.title, compact && styles.titleCompact]}>让色彩，慢慢归位</Text>
-          <Text style={styles.subtitle}>{sample ? `${sample.code} · ${TIER_NAMES[sample.tier]}（试排）· ${session.level.colors.length} 色` : '一瓶色彩，一刻宁静。'}</Text>
+          <Text style={styles.subtitle}>{entry ? `${label} · ${TIER_NAMES[difficulty.tier!]} · ${session.level.colors.length} 色` : sample ? `${sample.code} · ${TIER_NAMES[sample.tier]}（试排）· ${session.level.colors.length} 色` : '一瓶色彩，一刻宁静。'}</Text>
         </View>
         <View style={styles.stageSpace} onLayout={event => {
           const layout = event.nativeEvent.layout;
@@ -218,16 +234,18 @@ export function DemoScreen() {
           </View>}
         </View>
         <View style={[styles.footer, compact && styles.footerCompact]}>
-          <Text accessibilityLiveRegion="polite" style={[styles.message, won && styles.success]}>{message}</Text>
+          <Text accessibilityLiveRegion="polite" style={[styles.message, won && styles.success]}>{notice || (won ? '色彩归位了，可以继续下一题' : session.status === 'stalled' ? '暂时没有可倒的瓶子，可以撤销或重来' : message)}</Text>
           <View style={styles.controls}>
             <Pressable onPress={undo} disabled={!history.length || !!animation || searching} accessibilityRole="button" accessibilityLabel="撤销上一步" style={({ pressed }) => [styles.secondary, (!history.length || !!animation || searching) && styles.disabled, pressed && styles.pressed]}><Icon name="undo" /><Text style={styles.secondaryText}>撤销</Text></Pressable>
-            <Pressable onPress={demonstrate} disabled={!!animation || searching} accessibilityRole="button" accessibilityLabel={won ? '再玩一次' : '演示一次倒水'} style={({ pressed }) => [styles.primaryWrap, (!!animation || searching) && styles.disabled, pressed && styles.pressed]}><LinearGradient colors={['#F0DCAD', '#CEAD72']} style={styles.primary}><Icon name={won ? 'reset' : 'play'} color="#263B3D" size={21} /><Text style={styles.primaryText}>{searching ? '正在寻找…' : won ? '再玩一次' : '演示一步'}</Text></LinearGradient></Pressable>
+            <Pressable onPress={demonstrate} disabled={!!animation || searching} accessibilityRole="button" accessibilityLabel={won ? '下一题' : '演示一次倒水'} style={({ pressed }) => [styles.primaryWrap, (!!animation || searching) && styles.disabled, pressed && styles.pressed]}><LinearGradient colors={['#F0DCAD', '#CEAD72']} style={styles.primary}><Icon name="play" color="#263B3D" size={21} /><Text style={styles.primaryText}>{searching ? '正在寻找…' : won ? '下一题' : '演示一步'}</Text></LinearGradient></Pressable>
             <Pressable onPress={reset} disabled={!!animation || searching} accessibilityRole="button" accessibilityLabel="重新开始" style={({ pressed }) => [styles.secondary, (!!animation || searching) && styles.disabled, pressed && styles.pressed]}><Icon name="reset" /><Text style={styles.secondaryText}>重来</Text></Pressable>
           </View>
           <Pressable accessibilityRole="button" accessibilityLabel="查看当前关卡的调试难度" disabled={!!animation || searching} onPress={() => { if (!busy.current) setDifficultyVisible(true); }} style={[styles.difficultyButton, (!!animation || searching) && styles.disabled]}><Text style={styles.footnote}>{history.length} 次倒水 · 调试难度：{difficulty.tier ?? '未知'}（暂定） ›</Text></Pressable>
         </View>
       </View>
-      <DifficultyDebug visible={difficultyVisible} report={difficulty} sample={sample} onClose={() => setDifficultyVisible(false)} />
+      <DifficultyDebug visible={difficultyVisible} report={difficulty} sample={sample} label={label} onClose={() => setDifficultyVisible(false)} />
+      <PlayMenu visible={menuVisible} play={play} saveStatus={saveStatus} onClose={() => setMenuVisible(false)} onStart={mode => nextLevel('skip', mode)} onSkip={() => nextLevel('skip')} onSamples={() => { setMenuVisible(false); setPickerVisible(true); }} />
+      <Tutorial visible={ready && !play.tutorialDone} notice={notice} onStart={() => setPlay(freezePlay({ ...play, tutorialDone: true }))} onSkip={() => nextLevel('skip')} />
       <LevelPicker visible={pickerVisible} currentCode={sample?.code ?? null} onClose={() => setPickerVisible(false)} onSelect={chooseSample} />
     </LinearGradient>
   );

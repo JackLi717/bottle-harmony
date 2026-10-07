@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "main": "index.ts",
   "dependencies": {
-    "expo": "~57.0.26",
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "expo": "~57.0.27",
     "expo-dev-client": "~57.0.19",
     "expo-linear-gradient": "~57.0.2",
     "expo-status-bar": "~57.0.1",
@@ -34,7 +35,9 @@
     "levels:rate": "node --experimental-strip-types scripts/difficulty.ts",
     "art": "node --experimental-strip-types scripts/render-art.ts",
     "ios:device": "expo run:ios --device --configuration Release",
-    "android:apk": "expo prebuild --platform android && cd android && ./gradlew :app:assembleRelease -PreactNativeArchitectures=arm64-v8a,armeabi-v7a --max-workers=3 \"-Dorg.gradle.jvmargs=-Xmx3g -XX:MaxMetaspaceSize=1g\""
+    "android:apk": "expo prebuild --platform android && cd android && ./gradlew :app:assembleRelease -PreactNativeArchitectures=arm64-v8a,armeabi-v7a --max-workers=3 \"-Dorg.gradle.jvmargs=-Xmx3g -XX:MaxMetaspaceSize=1g\"",
+    "catalog:build": "node --experimental-strip-types scripts/catalog.ts build",
+    "catalog:verify": "node --experimental-strip-types scripts/catalog.ts verify"
   },
   "private": true,
   "engines": {
