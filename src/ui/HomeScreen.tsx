@@ -3,8 +3,9 @@ import type { VesselDesign, VesselId } from '../art/vesselDesigns';
 import { VesselCarousel } from './VesselCarousel';
 import { UiText, useI18n } from '../i18n/I18n';
 import { GameButton } from './GameButton';
+import { MAX_HINT_CREDITS } from '../game/mainline';
 
-export function HomeScreen({ current, compact, notice, onPlay, onLevels, onSettings, vessel, vesselSaved, reduceMotion, onVessel }: { current: number; compact: boolean; notice?: string; onPlay: () => void; onLevels: () => void; onSettings: () => void; vessel: VesselDesign; vesselSaved: boolean; reduceMotion: boolean; onVessel: (id: VesselId) => void }) {
+export function HomeScreen({ current, hintCredits, compact, notice, onPlay, onLevels, onSettings, vessel, vesselSaved, reduceMotion, onVessel }: { current: number; hintCredits: number; compact: boolean; notice?: string; onPlay: () => void; onLevels: () => void; onSettings: () => void; vessel: VesselDesign; vesselSaved: boolean; reduceMotion: boolean; onVessel: (id: VesselId) => void }) {
   const { t, rtl } = useI18n();
   return <View style={styles.home}>
     <View style={[styles.top, rtl && styles.reverse]}><GameButton kind="icon" icon="settings" label={t('settings')} onPress={onSettings} /></View>
@@ -15,6 +16,7 @@ export function HomeScreen({ current, compact, notice, onPlay, onLevels, onSetti
         <GameButton kind="wide" tone="mint" icon="play" label={`Level ${current}`} accessibilityLabel={t('continueLevel', { n: current })} onPress={onPlay} />
         <GameButton kind="wide" tone="violet" icon="levels" label={t('levels')} onPress={onLevels} />
       </View>
+      <UiText style={styles.hintCredits}>{t('hintCredits', { n: hintCredits, max: MAX_HINT_CREDITS })}</UiText>
       {!!notice && <UiText style={styles.notice}>{notice}</UiText>}
     </View>
   </View>;
@@ -29,5 +31,6 @@ const styles = StyleSheet.create({
   compactBrand: { fontSize: 30 },
   subtitle: { color: '#9AAFBA', fontSize: 12, letterSpacing: 7, textAlign: 'center', writingDirection: 'ltr', marginTop: 10 },
   actions: { width: '100%', maxWidth: 280, gap: 12 },
+  hintCredits: { color: '#CEBA8D', fontSize: 12, textAlign: 'center', marginTop: 12 },
   notice: { color: '#DEC797', fontSize: 12, textAlign: 'center', marginTop: 16 },
 });

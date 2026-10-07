@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
-import { createMainline, moveMainline, nextMainline, selectMainline, editMainline, visibleSession, type MainlineState } from '../src/game/mainline.ts';
+import { createMainline, moveMainline, hintMainline, hintAvailability, MAX_HINT_CREDITS, nextMainline, selectMainline, editMainline, visibleSession, type MainlineState } from '../src/game/mainline.ts';
 import { decodeMainline, encodeMainline } from '../src/game/mainlineCodec.ts';
 import { parseProductionRecords } from '../src/game/mainlineCatalog.ts';
 import type { PlayableMainline } from '../src/game/mainlinePlayable.ts';
@@ -60,6 +60,89 @@ test('replay and mainline retain separate boards, undo histories and serialized 
   const completedReplay = complete(selectMainline(nextMainline(complete(createMainline(catalog)), catalog), catalog, 1));
   assert.equal(completedReplay.completedThrough, 1);
   assert.equal(nextMainline(completedReplay, catalog).current, 2);
+});
+test('hints charge only accepted mainline pours and stay spent after undo, reset and restore', () => {
+  let state = createMainline(catalog);
+  const first = catalog.entries[0].solution[0];
+  assert.equal(hintAvailability(state), 'free');
+  assert.equal(hintMainline(state, first.source, first.source), null);
+  assert.equal(state.freeHintUsed, false);
+  state = hintMainline(state, first.source, first.target)!.state;
+  assert.equal(state.freeHintUsed, true);
+  assert.equal(state.hintCredits, 0);
+  assert.equal(hintMainline(state, first.source, first.target), null);
+  state = editMainline(state, 'undo');
+  assert.equal(hintAvailability(state), 'none');
+  state = editMainline(state, 'reset');
+  assert.equal(hintAvailability(decodeMainline(encodeMainline(state, catalog), catalog)), 'none');
+  state = complete(state);
+  assert.equal(state.hintCredits, 1);
+  assert.equal(moveMainline(editMainline(state, 'undo'), catalog.entries[0].solution.at(-1)!.source, catalog.entries[0].solution.at(-1)!.target)!.awardedTickets, 0);
+  state = nextMainline(state, catalog);
+  assert.equal(hintAvailability(state), 'free');
+  const [a, b] = catalog.entries[1].solution;
+  state = hintMainline(state, a.source, a.target)!.state;
+  state = hintMainline(state, b.source, b.target)!.state;
+  assert.equal(state.hintCredits, 0);
+  assert.equal(hintAvailability(state), 'none');
+  assert.equal(decodeMainline(encodeMainline(state, catalog), catalog).hintCredits, 0);
+});
+test('replay hints remain free and cannot mint tickets', () => {
+  const main = nextMainline(complete(createMainline(catalog)), catalog);
+  let replay = selectMainline(main, catalog, 1);
+  const balance = replay.hintCredits;
+  assert.equal(hintAvailability(replay), 'replay');
+  for (const pour of catalog.entries[0].solution) {
+    const accepted = hintMainline(replay, pour.source, pour.target)!;
+    assert.equal(accepted.awardedTickets, 0);
+    replay = accepted.state;
+  }
+  assert.equal(replay.hintCredits, balance);
+  assert.equal(replay.completedThrough, main.completedThrough);
+  assert.equal(replay.freeHintUsed, main.freeHintUsed);
+});
+test('first clears earn one ticket, tenth levels earn two, and the balance is capped', () => {
+  const ten: PlayableMainline = { id: 'ten-level-reward-test', entries: Array.from({ length: 10 }, (_, i) => ({
+    ...catalog.entries[0], number: i + 1, level: { ...catalog.entries[0].level, id: `reward-level-${i + 1}` },
+  })) };
+  let state = createMainline(ten);
+  for (const entry of ten.entries) {
+    for (let i = 0; i < entry.solution.length; i++) {
+      const pour = entry.solution[i];
+      const accepted = entry.number > 1 && (i === 0 || i === entry.solution.length - 1)
+        ? hintMainline(state, pour.source, pour.target) : moveMainline(state, pour.source, pour.target);
+      assert.ok(accepted);
+      if (i === entry.solution.length - 1) assert.equal(accepted.awardedTickets, entry.number === 10 ? 2 : 1);
+      state = accepted.state;
+    }
+    assert.equal(state.hintCredits, entry.number === 10 ? 2 : 1);
+    if (entry.number < 10) state = nextMainline(state, ten);
+  }
+  assert.equal(state.completedThrough, 10);
+  let capped = createMainline(ten);
+  for (let i = 0; i < MAX_HINT_CREDITS + 1; i++) {
+    capped = completeUsing(capped, ten.entries[i].solution);
+    if (i < MAX_HINT_CREDITS) capped = nextMainline(capped, ten);
+  }
+  assert.equal(capped.hintCredits, MAX_HINT_CREDITS);
+});
+function completeUsing(state: MainlineState, route: readonly { source: number; target: number }[]) {
+  for (const pour of route) state = moveMainline(state, pour.source, pour.target)!.state;
+  return state;
+}
+test('current pre-release saves without hint fields keep progress and receive bounded tickets', () => {
+  const progressed = nextMainline(complete(createMainline(catalog)), catalog);
+  const old = JSON.parse(encodeMainline(progressed, catalog));
+  delete old.hintCredits;
+  delete old.freeHintUsed;
+  const restored = decodeMainline(JSON.stringify(old), catalog);
+  assert.equal(restored.current, 2);
+  assert.equal(restored.completedThrough, 1);
+  assert.equal(restored.hintCredits, 1);
+  assert.equal(restored.freeHintUsed, false);
+  assert.throws(() => decodeMainline(JSON.stringify({ ...old, hintCredits: -1 }), catalog));
+  assert.throws(() => decodeMainline(JSON.stringify({ ...old, hintCredits: MAX_HINT_CREDITS }), catalog));
+  assert.throws(() => decodeMainline(JSON.stringify({ ...old, freeHintUsed: 1 }), catalog));
 });
 test('progress refuses a skipped unlock, altered catalog, invalid move and locked replay', () => {
   const saved = JSON.parse(encodeMainline(createMainline(catalog), catalog));

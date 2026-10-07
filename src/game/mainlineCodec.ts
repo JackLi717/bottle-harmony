@@ -1,7 +1,7 @@
 import { recordObject } from './generation.ts';
 import { getLegalPours, applyPour } from './rules.ts';
 import { createSession, moveSession, type GameSession } from './session.ts';
-import { createMainline, type MainlineState } from './mainline.ts';
+import { createMainline, MAX_HINT_CREDITS, type MainlineState } from './mainline.ts';
 import type { PlayableMainline } from './mainlinePlayable.ts';
 
 export const MAINLINE_SAVE_KEY = 'bottle-harmony.mainline.v1';
@@ -24,6 +24,7 @@ function sessionMoves(session: GameSession) {
 export function encodeMainline(state: MainlineState, catalog: PlayableMainline) {
   const json = JSON.stringify({ format: 'bottle-harmony-mainline-save', version: 1, catalog: catalog.id,
     current: state.current, completedThrough: state.completedThrough, tutorialDone: state.tutorialDone, symbols: state.symbols,
+    hintCredits: state.hintCredits, freeHintUsed: state.freeHintUsed,
     main: sessionMoves(state.main), replay: state.replay ? sessionMoves(state.replay) : null });
   if (json.length > 262144) throw new Error('Progress exceeds size budget');
   decodeMainline(json, catalog);
@@ -31,12 +32,15 @@ export function encodeMainline(state: MainlineState, catalog: PlayableMainline) 
 }
 export function decodeMainline(json: string, catalog: PlayableMainline): MainlineState {
   if (json.length > 262144) throw new Error('Progress exceeds size budget');
-  const value = recordObject(JSON.parse(json), ['format', 'version', 'catalog', 'current', 'completedThrough', 'tutorialDone', 'symbols', 'main', 'replay'], 'mainline progress');
+  const value = recordObject(JSON.parse(json), ['format', 'version', 'catalog', 'current', 'completedThrough', 'tutorialDone', 'symbols', 'hintCredits', 'freeHintUsed', 'main', 'replay'], 'mainline progress');
   if (value.format !== 'bottle-harmony-mainline-save' || value.version !== 1 || value.catalog !== catalog.id
     || !Number.isInteger(value.current) || (value.current as number) < 1 || (value.current as number) > catalog.entries.length
     || !Number.isInteger(value.completedThrough) || (value.completedThrough as number) < 0 || (value.completedThrough as number) > catalog.entries.length
     || (value.current as number) < (value.completedThrough as number) || (value.current as number) > (value.completedThrough as number) + 1
-    || typeof value.tutorialDone !== 'boolean' || typeof value.symbols !== 'boolean') throw new Error('Invalid mainline progress metadata');
+    || typeof value.tutorialDone !== 'boolean' || typeof value.symbols !== 'boolean'
+    || (value.hintCredits !== undefined && (!Number.isInteger(value.hintCredits) || (value.hintCredits as number) < 0
+      || (value.hintCredits as number) > Math.min(MAX_HINT_CREDITS, (value.completedThrough as number) + Math.floor((value.completedThrough as number) / 10))))
+    || (value.freeHintUsed !== undefined && typeof value.freeHintUsed !== 'boolean')) throw new Error('Invalid mainline progress metadata');
   const restore = (input: unknown, main: boolean) => {
     const raw = recordObject(input, ['levelId', 'moves'], 'saved session');
     const entry = catalog.entries.find(e => e.level.id === raw.levelId);
@@ -52,5 +56,10 @@ export function decodeMainline(json: string, catalog: PlayableMainline): Mainlin
     return session;
   };
   return Object.freeze({ ...createMainline(catalog), current: value.current as number, completedThrough: value.completedThrough as number,
-    tutorialDone: value.tutorialDone, symbols: value.symbols, main: restore(value.main, true), replay: value.replay === null ? null : restore(value.replay, false) });
+    tutorialDone: value.tutorialDone, symbols: value.symbols,
+    // Pre-release saves from before hint tickets keep their unlocked progress and
+    // receive a bounded starting balance. No separate legacy schema is retained.
+    hintCredits: value.hintCredits === undefined ? Math.min(MAX_HINT_CREDITS, value.completedThrough as number) : value.hintCredits as number,
+    freeHintUsed: value.freeHintUsed === undefined ? false : value.freeHintUsed as boolean,
+    main: restore(value.main, true), replay: value.replay === null ? null : restore(value.replay, false) });
 }

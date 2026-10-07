@@ -16,7 +16,7 @@ import { LanguagePicker } from './LanguagePicker';
 import { createPourPlan, type PourPlan } from '../art/pourGeometry';
 import { DEMO_LEVEL } from '../game/demo';
 import { getPour, type Board, type Pour } from '../game/rules';
-import { moveMainline, editMainline, nextMainline, selectMainline, visibleSession } from '../game/mainline';
+import { moveMainline, hintMainline, hintAvailability, MAX_HINT_CREDITS, editMainline, nextMainline, selectMainline, visibleSession } from '../game/mainline';
 import { createSession, moveSession, resetSession, undoSession, type GameSession } from '../game/session';
 import { createSolver, type SolveResult, type SolverTask } from '../game/solver';
 import { HomeScreen } from './HomeScreen';
@@ -76,6 +76,7 @@ export function DemoScreen() {
   const [debugHuman, setDebugHuman] = useState<HumanDifficultyReport | null>(null);
   const { board, history } = session;
   const [searching, setSearching] = useState(false);
+  const [lastAward, setLastAward] = useState(0);
   const search = useRef<SolverTask | null>(null);
   const [selected, setSelected] = useState<number | null>(null);
   const [animation, setAnimation] = useState<Animation | null>(null);
@@ -90,6 +91,13 @@ export function DemoScreen() {
   const layout = useMemo(() => boardLayout(board.length), [board.length]);
   const { scale, minY } = fitBoard(layout, stage, safeTop);
   const won = session.status === 'solved';
+  const hintMode = internalSession ? 'replay' : hintAvailability(play);
+  const hintParams = { n: play.hintCredits, max: MAX_HINT_CREDITS };
+  const hintStatus = won && lastAward > 0 && !internalSession && !play.replay
+    ? t('hintAward', { n: lastAward, balance: play.hintCredits, max: MAX_HINT_CREDITS })
+    : hintMode === 'replay' ? t('replayHintStatus')
+    : won ? t('hintCredits', hintParams)
+    : t(hintMode === 'free' ? 'freeHintStatus' : hintMode === 'ticket' ? 'paidHintStatus' : 'emptyHintStatus', hintParams);
   const [stalledNotice, setStalledNotice] = useState(INITIAL_STALLED_NOTICE);
   const stalledEligible = ready && languageReady && soundReady && vesselReady && play.tutorialDone && appActive && !animation && !searching;
   const nextNotice = advanceStalledNotice(stalledNotice, {
@@ -189,6 +197,7 @@ export function DemoScreen() {
     setSelected(null);
     setPendingCelebration(null);
     setCelebration(null);
+    setLastAward(0);
     setPage('home');
   }, [setSelected, setPage, setPendingCelebration, setCelebration]);
   useEffect(() => {
@@ -203,6 +212,7 @@ export function DemoScreen() {
   function chooseSample(next: CalibrationSample | null) {
     if (busy.current) return;
     setPendingCelebration(null); setCelebration(null);
+    setLastAward(0);
     setInternalSession(createSession(next?.content.level ?? DEMO_LEVEL));
     setSelected(null);
     announceStatus('tapStart');
@@ -233,6 +243,7 @@ export function DemoScreen() {
   function nextLevel() {
     if (busy.current) return;
     setPendingCelebration(null); setCelebration(null);
+    setLastAward(0);
     setInternalSession(null);
     if (!internalSession) setPlay(nextMainline(play, MAINLINE));
     setSelected(null); setMenuVisible(false);
@@ -242,17 +253,21 @@ export function DemoScreen() {
   function chooseNumber(number: number) {
     if (busy.current) return;
     setPendingCelebration(null); setCelebration(null);
+    setLastAward(0);
     setInternalSession(null); setPlay(selectMainline(play, MAINLINE, number));
     setSelected(null); setMenuVisible(false); setPage('game'); announceStatus('tapStart');
   }
 
-  function startPour(pour: Pour) {
+  function startPour(pour: Pour, hinted = false) {
     if (busy.current) return;
-    const accepted = internalSession ? moveSession(internalSession, pour.source, pour.target) : moveMainline(play, pour.source, pour.target);
+    const accepted = internalSession ? moveSession(internalSession, pour.source, pour.target)
+      : hinted ? hintMainline(play, pour.source, pour.target) : moveMainline(play, pour.source, pour.target);
     if (!accepted) return;
     busy.current = true;
-    if ('state' in accepted) setPlay(accepted.state);
-    else setInternalSession(accepted.session);
+    if ('state' in accepted) {
+      setPlay(accepted.state);
+      if (visibleSession(accepted.state).status === 'solved') setLastAward(accepted.awardedTickets);
+    } else { setInternalSession(accepted.session); setLastAward(0); }
     const resultingSession = 'state' in accepted ? visibleSession(accepted.state) : accepted.session;
     if (resultingSession.status === 'solved') setPendingCelebration(resultingSession.level.id);
     if (resultingSession.status !== 'stalled') announceStatus(resultingSession.status === 'solved' ? 'finished' : 'gentle');
@@ -284,6 +299,7 @@ export function DemoScreen() {
     if (busy.current) return;
     setStalledNotice(value => closeStalledNotice(value, true));
     setPendingCelebration(null); setCelebration(null);
+    setLastAward(0);
     if (internalSession) setInternalSession(resetSession(internalSession)); else setPlay(editMainline(play, 'reset')); setSelected(null);
     announceStatus('tapStart');
   }
@@ -292,6 +308,7 @@ export function DemoScreen() {
     if (busy.current || !history.length) return;
     setStalledNotice(value => closeStalledNotice(value, true));
     setPendingCelebration(null); setCelebration(null);
+    setLastAward(0);
     if (internalSession) setInternalSession(undoSession(internalSession)); else setPlay(editMainline(play, 'undo'));
     setSelected(null); announceStatus('undone');
   }
@@ -300,9 +317,10 @@ export function DemoScreen() {
     if (busy.current) return;
     if (won) { nextLevel(); return; }
     if (session.status === 'stalled') { setStalledNotice(value => showUnsolvableNotice(value)); return; }
+    if (hintMode === 'none') { Alert.alert(t('hint'), t('emptyHintStatus'), [{ text: t('close') }]); return; }
     const content = entry ?? sample?.content;
     const referencePour = content ? referenceHint(content, board) : null;
-    if (referencePour) { startPour(referencePour); return; }
+    if (referencePour) { startPour(referencePour, true); return; }
     const task = createSolver(board, { capacity: session.level.capacity, maxStates: 30000, maxMilliseconds: 200 });
     search.current = task;
     busy.current = true;
@@ -317,7 +335,7 @@ export function DemoScreen() {
     search.current = null;
     busy.current = false;
     setSearching(false);
-    if (result.status === 'solved' && result.route.length) startPour(result.route[0]);
+    if (result.status === 'solved' && result.route.length) startPour(result.route[0], true);
     else if (result.status === 'unsolvable') setStalledNotice(value => showUnsolvableNotice(value));
     else Alert.alert(t('hint'), t('searchLimit'), [{ text: t('close') }]);
   }
@@ -342,7 +360,7 @@ export function DemoScreen() {
       <PourSound progress={progress} pouring={!!animation} enabled={sound && appActive && !reduceMotion && page === 'game'} />
       <View pointerEvents="none" style={StyleSheet.absoluteFill}><GameBackdrop width={dimensions.width} height={dimensions.height} /></View>
       <View style={[styles.safe, { paddingTop: insets.top + (compact ? 8 : 14), paddingBottom: Math.max(insets.bottom, 14) }]}>
-        {page === 'home' ? <HomeScreen current={play.current} compact={compact} notice={notice ? t(notice) : undefined} onPlay={() => chooseNumber(play.current)} onLevels={() => openMenu('levels')} onSettings={() => openMenu('settings')} vessel={vessel} vesselSaved={vesselSaved} reduceMotion={reduceMotion} onVessel={chooseVessel} /> : <>
+        {page === 'home' ? <HomeScreen current={play.current} hintCredits={play.hintCredits} compact={compact} notice={notice ? t(notice) : undefined} onPlay={() => chooseNumber(play.current)} onLevels={() => openMenu('levels')} onSettings={() => openMenu('settings')} vessel={vessel} vesselSaved={vesselSaved} reduceMotion={reduceMotion} onVessel={chooseVessel} /> : <>
         <GameHeader label={label} compact={compact} disabled={!!animation || searching} onBack={goHome} />
         <View style={styles.stageSpace} onLayout={event => {
           const layout = event.nativeEvent.layout;
@@ -372,7 +390,7 @@ export function DemoScreen() {
         </View>
         <GameFooter won={won} continueVisible={won && !animation && !pendingCelebration && celebration === null} compact={compact}
           disabled={!!animation || searching} undoDisabled={!history.length || !!animation || searching} searching={searching} reduceMotion={reduceMotion}
-          nextLabel={t(finish.label)} onUndo={undo} onReset={reset} onHint={demonstrate}
+          nextLabel={t(finish.label)} hintStatus={hintStatus} onUndo={undo} onReset={reset} onHint={demonstrate}
           stalledReason={stalledReason} onCloseStalled={() => setStalledNotice(value => closeStalledNotice(value))}
           onContinue={continueAfterWin} />
         </>}

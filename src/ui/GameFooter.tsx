@@ -1,4 +1,4 @@
-import { useI18n } from '../i18n/I18n';
+import { UiText, useI18n } from '../i18n/I18n';
 import { useEffect } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StyleSheet, View } from 'react-native';
@@ -7,8 +7,8 @@ import { GameButton } from './GameButton';
 import { StalledNotice } from './StalledNotice';
 import type { StalledReason } from './stalledNoticePolicy';
 
-type Props = { won: boolean; continueVisible: boolean; compact: boolean; disabled: boolean; undoDisabled: boolean; searching: boolean; reduceMotion: boolean; nextLabel: string; onUndo: () => void; onHint: () => void; onReset: () => void; onContinue: () => void; stalledReason: StalledReason | null; onCloseStalled: () => void };
-export function GameFooter({ won, continueVisible, compact, disabled, undoDisabled, searching, reduceMotion, nextLabel, onUndo, onHint, onReset, onContinue, stalledReason, onCloseStalled }: Props) {
+type Props = { won: boolean; continueVisible: boolean; compact: boolean; disabled: boolean; undoDisabled: boolean; searching: boolean; reduceMotion: boolean; nextLabel: string; hintStatus: string; onUndo: () => void; onHint: () => void; onReset: () => void; onContinue: () => void; stalledReason: StalledReason | null; onCloseStalled: () => void };
+export function GameFooter({ won, continueVisible, compact, disabled, undoDisabled, searching, reduceMotion, nextLabel, hintStatus, onUndo, onHint, onReset, onContinue, stalledReason, onCloseStalled }: Props) {
   const { t, rtl } = useI18n();
   const entrance = useSharedValue(continueVisible ? 1 : 0);
   useEffect(() => {
@@ -22,6 +22,7 @@ export function GameFooter({ won, continueVisible, compact, disabled, undoDisabl
       {continueVisible && <Animated.View style={[styles.continueButton, celebrationStyle]}>
         <GameButton compact={compact} kind="wide" tone="mint" icon="play" label={nextLabel} disabled={disabled} onPress={onContinue} />
       </Animated.View>}
+      {(!continueVisible || !compact) && <UiText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={.75} style={styles.hintStatus}>{hintStatus}</UiText>}
     </View>
     <LinearGradient colors={['#17313C99', '#11263199']} style={[styles.dock, compact && styles.compactDock, rtl && styles.reverse, stalledReason && styles.hiddenDock]}>
       {stalledReason ? <View style={[styles.toolSpace, compact && styles.compactToolSpace]} /> : <>
@@ -40,9 +41,10 @@ const styles = StyleSheet.create({
   toolSpace: { width: 254, height: 68 },
   compactToolSpace: { height: 56 },
   content: { width: '100%', alignItems: 'center' },
-  continueArea: { height: 66, width: '100%', alignItems: 'center', justifyContent: 'center', paddingBottom: 9 },
-  compactContinueArea: { height: 52, paddingBottom: 3 },
+  continueArea: { height: 66, width: '100%', alignItems: 'center', justifyContent: 'center' },
+  compactContinueArea: { height: 52 },
   continueButton: { width: '100%', maxWidth: 280 },
+  hintStatus: { color: '#CEBA8D', fontSize: 11, lineHeight: 13, textAlign: 'center', width: '100%' },
   reverse: { flexDirection: 'row-reverse' },
   dock: { flexDirection: 'row', gap: 16, padding: 10, borderWidth: .5, borderColor: '#C7AD7833', borderRadius: 22 },
   compactDock: { padding: 6 },
