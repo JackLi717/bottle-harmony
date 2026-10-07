@@ -7,6 +7,7 @@
     "backgroundColor": "#0B1B2F",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "extra": { "internalTools": true },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.bottleharmony.app"

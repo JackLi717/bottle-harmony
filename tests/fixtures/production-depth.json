@@ -1,0 +1,2248 @@
+{
+  "format": "bottle-harmony-production-fixtures",
+  "version": 1,
+  "records": [
+    {
+      "content": {
+        "format": "bottle-harmony-content",
+        "version": 1,
+        "origin": {
+          "generator": "balanced-shuffle-v1",
+          "seed": 718,
+          "candidateIndex": 0,
+          "config": {
+            "colors": [
+              "jade",
+              "coral",
+              "amber",
+              "azure",
+              "violet",
+              "rose"
+            ],
+            "emptyBottles": 2,
+            "minSolutionMoves": 1,
+            "maxSolutionMoves": 60,
+            "mixing": "relaxed"
+          }
+        },
+        "level": {
+          "format": "bottle-harmony",
+          "version": 1,
+          "rules": "water-sort",
+          "id": "g-v1-000002ce-0-6c-2e",
+          "capacity": 4,
+          "colors": [
+            "jade",
+            "coral",
+            "amber",
+            "azure",
+            "violet",
+            "rose"
+          ],
+          "bottles": [
+            {
+              "id": "bottle-1",
+              "layers": [
+                "rose",
+                "violet",
+                "coral",
+                "rose"
+              ]
+            },
+            {
+              "id": "bottle-2",
+              "layers": [
+                "amber",
+                "jade",
+                "rose",
+                "amber"
+              ]
+            },
+            {
+              "id": "bottle-3",
+              "layers": [
+                "jade",
+                "azure",
+                "violet",
+                "jade"
+              ]
+            },
+            {
+              "id": "bottle-4",
+              "layers": [
+                "coral",
+                "coral",
+                "coral",
+                "azure"
+              ]
+            },
+            {
+              "id": "bottle-5",
+              "layers": [
+                "violet",
+                "azure",
+                "rose",
+                "jade"
+              ]
+            },
+            {
+              "id": "bottle-6",
+              "layers": [
+                "violet",
+                "azure",
+                "amber",
+                "amber"
+              ]
+            },
+            {
+              "id": "spare-1",
+              "layers": []
+            },
+            {
+              "id": "spare-2",
+              "layers": []
+            }
+          ]
+        },
+        "structureKey": "water-sort:4:6:8://AAAB/CBDC/DBEC/DBFF/EDAE/FCEF",
+        "solution": [
+          {
+            "source": 5,
+            "target": 6,
+            "color": "amber",
+            "amount": 2
+          },
+          {
+            "source": 3,
+            "target": 5,
+            "color": "azure",
+            "amount": 1
+          },
+          {
+            "source": 1,
+            "target": 6,
+            "color": "amber",
+            "amount": 1
+          },
+          {
+            "source": 0,
+            "target": 1,
+            "color": "rose",
+            "amount": 1
+          },
+          {
+            "source": 0,
+            "target": 3,
+            "color": "coral",
+            "amount": 1
+          },
+          {
+            "source": 5,
+            "target": 7,
+            "color": "azure",
+            "amount": 2
+          },
+          {
+            "source": 0,
+            "target": 5,
+            "color": "violet",
+            "amount": 1
+          },
+          {
+            "source": 1,
+            "target": 0,
+            "color": "rose",
+            "amount": 2
+          },
+          {
+            "source": 4,
+            "target": 1,
+            "color": "jade",
+            "amount": 1
+          },
+          {
+            "source": 4,
+            "target": 0,
+            "color": "rose",
+            "amount": 1
+          },
+          {
+            "source": 4,
+            "target": 7,
+            "color": "azure",
+            "amount": 1
+          },
+          {
+            "source": 4,
+            "target": 5,
+            "color": "violet",
+            "amount": 1
+          },
+          {
+            "source": 2,
+            "target": 1,
+            "color": "jade",
+            "amount": 1
+          },
+          {
+            "source": 2,
+            "target": 5,
+            "color": "violet",
+            "amount": 1
+          },
+          {
+            "source": 2,
+            "target": 7,
+            "color": "azure",
+            "amount": 1
+          },
+          {
+            "source": 1,
+            "target": 2,
+            "color": "jade",
+            "amount": 3
+          },
+          {
+            "source": 1,
+            "target": 6,
+            "color": "amber",
+            "amount": 1
+          }
+        ],
+        "metrics": {
+          "colorCount": 6,
+          "bottleCount": 8,
+          "mixedBottles": 6,
+          "colorRuns": 21,
+          "solutionMoves": 17
+        }
+      },
+      "rating": {
+        "model": "planning-load-v1",
+        "evidence": {
+          "format": "bottle-harmony-difficulty",
+          "version": 1,
+          "policy": "planning-depth-v1",
+          "levelId": "g-v1-000002ce-0-6c-2e",
+          "structureKey": "water-sort:4:6:8://AAAB/CBDC/DBEC/DBFF/EDAE/FCEF",
+          "status": "rated",
+          "tier": "D1",
+          "reason": null,
+          "metrics": {
+            "colors": 6,
+            "bottles": 8,
+            "initialEmptyBottles": 2,
+            "spareColorRatio": 0.3333333333333333,
+            "colorRuns": 21,
+            "shortestMoves": 17,
+            "minimumEmptyBottlesOnRoute": 0,
+            "maximumPreparationMovesOnRoute": 1,
+            "minimumLegalChoicesOnRoute": 1
+          },
+          "policies": [
+            {
+              "tier": "P1",
+              "chainLimit": 2,
+              "lookahead": 0,
+              "status": "passed",
+              "checkedStates": 452,
+              "branchingStates": 296,
+              "maximumChoices": 8,
+              "excludedChoices": 0,
+              "witness": [
+                {
+                  "source": 2,
+                  "target": 6,
+                  "color": "jade",
+                  "amount": 1
+                },
+                {
+                  "source": 4,
+                  "target": 6,
+                  "color": "jade",
+                  "amount": 1
+                },
+                {
+                  "source": 0,
+                  "target": 4,
+                  "color": "rose",
+                  "amount": 1
+                },
+                {
+                  "source": 2,
+                  "target": 7,
+                  "color": "violet",
+                  "amount": 1
+                },
+                {
+                  "source": 3,
+                  "target": 2,
+                  "color": "azure",
+                  "amount": 1
+                },
+                {
+                  "source": 0,
+                  "target": 3,
+                  "color": "coral",
+                  "amount": 1
+                },
+                {
+                  "source": 0,
+                  "target": 7,
+                  "color": "violet",
+                  "amount": 1
+                },
+                {
+                  "source": 4,
+                  "target": 0,
+                  "color": "rose",
+                  "amount": 2
+                },
+                {
+                  "source": 4,
+                  "target": 2,
+                  "color": "azure",
+                  "amount": 1
+                },
+                {
+                  "source": 4,
+                  "target": 7,
+                  "color": "violet",
+                  "amount": 1
+                },
+                {
+                  "source": 1,
+                  "target": 4,
+                  "color": "amber",
+                  "amount": 1
+                },
+                {
+                  "source": 5,
+                  "target": 4,
+                  "color": "amber",
+                  "amount": 2
+                },
+                {
+                  "source": 1,
+                  "target": 0,
+                  "color": "rose",
+                  "amount": 1
+                },
+                {
+                  "source": 1,
+                  "target": 6,
+                  "color": "jade",
+                  "amount": 1
+                },
+                {
+                  "source": 1,
+                  "target": 4,
+                  "color": "amber",
+                  "amount": 1
+                },
+                {
+                  "source": 2,
+                  "target": 1,
+                  "color": "azure",
+                  "amount": 3
+                },
+                {
+                  "source": 5,
+                  "target": 1,
+                  "color": "azure",
+                  "amount": 1
+                },
+                {
+                  "source": 2,
+                  "target": 6,
+                  "color": "jade",
+                  "amount": 1
+                },
+                {
+                  "source": 5,
+                  "target": 7,
+                  "color": "violet",
+                  "amount": 1
+                }
+              ],
+              "stallReason": null
+            }
+          ],
+          "referenceSolution": [
+            {
+              "source": 5,
+              "target": 6,
+              "color": "amber",
+              "amount": 2
+            },
+            {
+              "source": 3,
+              "target": 5,
+              "color": "azure",
+              "amount": 1
+            },
+            {
+              "source": 1,
+              "target": 6,
+              "color": "amber",
+              "amount": 1
+            },
+            {
+              "source": 0,
+              "target": 1,
+              "color": "rose",
+              "amount": 1
+            },
+            {
+              "source": 0,
+              "target": 3,
+              "color": "coral",
+              "amount": 1
+            },
+            {
+              "source": 5,
+              "target": 7,
+              "color": "azure",
+              "amount": 2
+            },
+            {
+              "source": 0,
+              "target": 5,
+              "color": "violet",
+              "amount": 1
+            },
+            {
+              "source": 1,
+              "target": 0,
+              "color": "rose",
+              "amount": 2
+            },
+            {
+              "source": 4,
+              "target": 1,
+              "color": "jade",
+              "amount": 1
+            },
+            {
+              "source": 4,
+              "target": 0,
+              "color": "rose",
+              "amount": 1
+            },
+            {
+              "source": 4,
+              "target": 7,
+              "color": "azure",
+              "amount": 1
+            },
+            {
+              "source": 4,
+              "target": 5,
+              "color": "violet",
+              "amount": 1
+            },
+            {
+              "source": 2,
+              "target": 1,
+              "color": "jade",
+              "amount": 1
+            },
+            {
+              "source": 2,
+              "target": 5,
+              "color": "violet",
+              "amount": 1
+            },
+            {
+              "source": 2,
+              "target": 7,
+              "color": "azure",
+              "amount": 1
+            },
+            {
+              "source": 1,
+              "target": 2,
+              "color": "jade",
+              "amount": 3
+            },
+            {
+              "source": 1,
+              "target": 6,
+              "color": "amber",
+              "amount": 1
+            }
+          ],
+          "work": 8412,
+          "rank": 1,
+          "decisionLoad": {
+            "peakDecision": 80,
+            "branchingDecisions": 13,
+            "maximumMoves": 22
+          }
+        },
+        "score": {
+          "planning": 0,
+          "peakDecision": 320,
+          "repeatedDecisions": 78,
+          "operations": 22,
+          "total": 420
+        }
+      }
+    },
+    {
+      "content": {
+        "format": "bottle-harmony-content",
+        "version": 1,
+        "origin": {
+          "generator": "balanced-shuffle-v1",
+          "seed": 719,
+          "candidateIndex": 0,
+          "config": {
+            "colors": [
+              "jade",
+              "coral",
+              "amber",
+              "azure",
+              "violet",
+              "rose"
+            ],
+            "emptyBottles": 2,
+            "minSolutionMoves": 1,
+            "maxSolutionMoves": 60,
+            "mixing": "diverse"
+          }
+        },
+        "level": {
+          "format": "bottle-harmony",
+          "version": 1,
+          "rules": "water-sort",
+          "id": "g-v1-000002cf-0-6c-2e",
+          "capacity": 4,
+          "colors": [
+            "jade",
+            "coral",
+            "amber",
+            "azure",
+            "violet",
+            "rose"
+          ],
+          "bottles": [
+            {
+              "id": "bottle-1",
+              "layers": [
+                "azure",
+                "jade",
+                "rose",
+                "rose"
+              ]
+            },
+            {
+              "id": "bottle-2",
+              "layers": [
+                "jade",
+                "azure",
+                "amber",
+                "jade"
+              ]
+            },
+            {
+              "id": "bottle-3",
+              "layers": [
+                "violet",
+                "coral",
+                "rose",
+                "jade"
+              ]
+            },
+            {
+              "id": "bottle-4",
+              "layers": [
+                "amber",
+                "azure",
+                "violet",
+                "coral"
+              ]
+            },
+            {
+              "id": "bottle-5",
+              "layers": [
+                "violet",
+                "coral",
+                "azure",
+                "amber"
+              ]
+            },
+            {
+              "id": "bottle-6",
+              "layers": [
+                "violet",
+                "rose",
+                "coral",
+                "amber"
+              ]
+            },
+            {
+              "id": "spare-1",
+              "layers": []
+            },
+            {
+              "id": "spare-2",
+              "layers": []
+            }
+          ]
+        },
+        "structureKey": "water-sort:4:6:8://ABCA/BADD/CBEF/EDFC/EFBC/EFDA",
+        "solution": [
+          {
+            "source": 0,
+            "target": 6,
+            "color": "rose",
+            "amount": 2
+          },
+          {
+            "source": 1,
+            "target": 0,
+            "color": "jade",
+            "amount": 1
+          },
+          {
+            "source": 4,
+            "target": 1,
+            "color": "amber",
+            "amount": 1
+          },
+          {
+            "source": 2,
+            "target": 0,
+            "color": "jade",
+            "amount": 1
+          },
+          {
+            "source": 2,
+            "target": 6,
+            "color": "rose",
+            "amount": 1
+          },
+          {
+            "source": 3,
+            "target": 2,
+            "color": "coral",
+            "amount": 1
+          },
+          {
+            "source": 2,
+            "target": 7,
+            "color": "coral",
+            "amount": 2
+          },
+          {
+            "source": 3,
+            "target": 2,
+            "color": "violet",
+            "amount": 1
+          },
+          {
+            "source": 3,
+            "target": 4,
+            "color": "azure",
+            "amount": 1
+          },
+          {
+            "source": 1,
+            "target": 3,
+            "color": "amber",
+            "amount": 2
+          },
+          {
+            "source": 5,
+            "target": 3,
+            "color": "amber",
+            "amount": 1
+          },
+          {
+            "source": 5,
+            "target": 7,
+            "color": "coral",
+            "amount": 1
+          },
+          {
+            "source": 5,
+            "target": 6,
+            "color": "rose",
+            "amount": 1
+          },
+          {
+            "source": 5,
+            "target": 2,
+            "color": "violet",
+            "amount": 1
+          },
+          {
+            "source": 4,
+            "target": 1,
+            "color": "azure",
+            "amount": 2
+          },
+          {
+            "source": 4,
+            "target": 7,
+            "color": "coral",
+            "amount": 1
+          },
+          {
+            "source": 4,
+            "target": 2,
+            "color": "violet",
+            "amount": 1
+          },
+          {
+            "source": 0,
+            "target": 4,
+            "color": "jade",
+            "amount": 3
+          },
+          {
+            "source": 1,
+            "target": 0,
+            "color": "azure",
+            "amount": 3
+          },
+          {
+            "source": 1,
+            "target": 4,
+            "color": "jade",
+            "amount": 1
+          }
+        ],
+        "metrics": {
+          "colorCount": 6,
+          "bottleCount": 8,
+          "mixedBottles": 6,
+          "colorRuns": 23,
+          "solutionMoves": 20
+        }
+      },
+      "rating": {
+        "model": "planning-load-v1",
+        "evidence": {
+          "format": "bottle-harmony-difficulty",
+          "version": 1,
+          "policy": "planning-depth-v1",
+          "levelId": "g-v1-000002cf-0-6c-2e",
+          "structureKey": "water-sort:4:6:8://ABCA/BADD/CBEF/EDFC/EFBC/EFDA",
+          "status": "rated",
+          "tier": "D3",
+          "reason": null,
+          "metrics": {
+            "colors": 6,
+            "bottles": 8,
+            "initialEmptyBottles": 2,
+            "spareColorRatio": 0.3333333333333333,
+            "colorRuns": 23,
+            "shortestMoves": 20,
+            "minimumEmptyBottlesOnRoute": 0,
+            "maximumPreparationMovesOnRoute": 1,
+            "minimumLegalChoicesOnRoute": 1
+          },
+          "policies": [
+            {
+              "tier": "P1",
+              "chainLimit": 2,
+              "lookahead": 0,
+              "status": "failed",
+              "checkedStates": 41,
+              "branchingStates": 20,
+              "maximumChoices": 8,
+              "excludedChoices": 0,
+              "witness": [
+                {
+                  "source": 1,
+                  "target": 6,
+                  "color": "jade",
+                  "amount": 1
+                },
+                {
+                  "source": 2,
+                  "target": 6,
+                  "color": "jade",
+                  "amount": 1
+                },
+                {
+                  "source": 5,
+                  "target": 1,
+                  "color": "amber",
+                  "amount": 1
+                },
+                {
+                  "source": 3,
+                  "target": 5,
+                  "color": "coral",
+                  "amount": 1
+                },
+                {
+                  "source": 0,
+                  "target": 7,
+                  "color": "rose",
+                  "amount": 2
+                },
+                {
+                  "source": 0,
+                  "target": 6,
+                  "color": "jade",
+                  "amount": 1
+                },
+                {
+                  "source": 2,
+                  "target": 7,
+                  "color": "rose",
+                  "amount": 1
+                },
+                {
+                  "source": 5,
+                  "target": 2,
+                  "color": "coral",
+                  "amount": 2
+                },
+                {
+                  "source": 5,
+                  "target": 7,
+                  "color": "rose",
+                  "amount": 1
+                },
+                {
+                  "source": 3,
+                  "target": 5,
+                  "color": "violet",
+                  "amount": 1
+                },
+                {
+                  "source": 0,
+                  "target": 3,
+                  "color": "azure",
+                  "amount": 1
+                },
+                {
+                  "source": 4,
+                  "target": 0,
+                  "color": "amber",
+                  "amount": 1
+                },
+                {
+                  "source": 4,
+                  "target": 3,
+                  "color": "azure",
+                  "amount": 1
+                },
+                {
+                  "source": 1,
+                  "target": 0,
+                  "color": "amber",
+                  "amount": 2
+                }
+              ],
+              "stallReason": "no-local-progress"
+            },
+            {
+              "tier": "P2",
+              "chainLimit": 4,
+              "lookahead": 1,
+              "status": "failed",
+              "checkedStates": 40,
+              "branchingStates": 20,
+              "maximumChoices": 8,
+              "excludedChoices": 3,
+              "witness": [
+                {
+                  "source": 1,
+                  "target": 6,
+                  "color": "jade",
+                  "amount": 1
+                },
+                {
+                  "source": 2,
+                  "target": 6,
+                  "color": "jade",
+                  "amount": 1
+                },
+                {
+                  "source": 5,
+                  "target": 1,
+                  "color": "amber",
+                  "amount": 1
+                },
+                {
+                  "source": 3,
+                  "target": 5,
+                  "color": "coral",
+                  "amount": 1
+                },
+                {
+                  "source": 0,
+                  "target": 7,
+                  "color": "rose",
+                  "amount": 2
+                },
+                {
+                  "source": 0,
+                  "target": 6,
+                  "color": "jade",
+                  "amount": 1
+                },
+                {
+                  "source": 2,
+                  "target": 7,
+                  "color": "rose",
+                  "amount": 1
+                },
+                {
+                  "source": 5,
+                  "target": 2,
+                  "color": "coral",
+                  "amount": 2
+                },
+                {
+                  "source": 5,
+                  "target": 7,
+                  "color": "rose",
+                  "amount": 1
+                },
+                {
+                  "source": 3,
+                  "target": 5,
+                  "color": "violet",
+                  "amount": 1
+                },
+                {
+                  "source": 0,
+                  "target": 3,
+                  "color": "azure",
+                  "amount": 1
+                },
+                {
+                  "source": 4,
+                  "target": 0,
+                  "color": "amber",
+                  "amount": 1
+                },
+                {
+                  "source": 4,
+                  "target": 3,
+                  "color": "azure",
+                  "amount": 1
+                }
+              ],
+              "stallReason": "lookahead-excludes-all"
+            },
+            {
+              "tier": "P3",
+              "chainLimit": 6,
+              "lookahead": 2,
+              "status": "passed",
+              "checkedStates": 1188,
+              "branchingStates": 785,
+              "maximumChoices": 11,
+              "excludedChoices": 73,
+              "witness": [
+                {
+                  "source": 1,
+                  "target": 6,
+                  "color": "jade",
+                  "amount": 1
+                },
+                {
+                  "source": 2,
+                  "target": 6,
+                  "color": "jade",
+                  "amount": 1
+                },
+                {
+                  "source": 5,
+                  "target": 1,
+                  "color": "amber",
+                  "amount": 1
+                },
+                {
+                  "source": 3,
+                  "target": 5,
+                  "color": "coral",
+                  "amount": 1
+                },
+                {
+                  "source": 0,
+                  "target": 7,
+                  "color": "rose",
+                  "amount": 2
+                },
+                {
+                  "source": 0,
+                  "target": 6,
+                  "color": "jade",
+                  "amount": 1
+                },
+                {
+                  "source": 2,
+                  "target": 7,
+                  "color": "rose",
+                  "amount": 1
+                },
+                {
+                  "source": 5,
+                  "target": 2,
+                  "color": "coral",
+                  "amount": 2
+                },
+                {
+                  "source": 5,
+                  "target": 7,
+                  "color": "rose",
+                  "amount": 1
+                },
+                {
+                  "source": 3,
+                  "target": 5,
+                  "color": "violet",
+                  "amount": 1
+                },
+                {
+                  "source": 3,
+                  "target": 0,
+                  "color": "azure",
+                  "amount": 1
+                },
+                {
+                  "source": 4,
+                  "target": 3,
+                  "color": "amber",
+                  "amount": 1
+                },
+                {
+                  "source": 4,
+                  "target": 0,
+                  "color": "azure",
+                  "amount": 1
+                },
+                {
+                  "source": 1,
+                  "target": 3,
+                  "color": "amber",
+                  "amount": 2
+                },
+                {
+                  "source": 1,
+                  "target": 0,
+                  "color": "azure",
+                  "amount": 1
+                },
+                {
+                  "source": 1,
+                  "target": 6,
+                  "color": "jade",
+                  "amount": 1
+                },
+                {
+                  "source": 4,
+                  "target": 1,
+                  "color": "coral",
+                  "amount": 1
+                },
+                {
+                  "source": 2,
+                  "target": 1,
+                  "color": "coral",
+                  "amount": 3
+                },
+                {
+                  "source": 2,
+                  "target": 4,
+                  "color": "violet",
+                  "amount": 1
+                },
+                {
+                  "source": 4,
+                  "target": 5,
+                  "color": "violet",
+                  "amount": 2
+                }
+              ],
+              "stallReason": null
+            }
+          ],
+          "referenceSolution": [
+            {
+              "source": 0,
+              "target": 6,
+              "color": "rose",
+              "amount": 2
+            },
+            {
+              "source": 1,
+              "target": 0,
+              "color": "jade",
+              "amount": 1
+            },
+            {
+              "source": 4,
+              "target": 1,
+              "color": "amber",
+              "amount": 1
+            },
+            {
+              "source": 2,
+              "target": 0,
+              "color": "jade",
+              "amount": 1
+            },
+            {
+              "source": 2,
+              "target": 6,
+              "color": "rose",
+              "amount": 1
+            },
+            {
+              "source": 3,
+              "target": 2,
+              "color": "coral",
+              "amount": 1
+            },
+            {
+              "source": 2,
+              "target": 7,
+              "color": "coral",
+              "amount": 2
+            },
+            {
+              "source": 3,
+              "target": 2,
+              "color": "violet",
+              "amount": 1
+            },
+            {
+              "source": 3,
+              "target": 4,
+              "color": "azure",
+              "amount": 1
+            },
+            {
+              "source": 1,
+              "target": 3,
+              "color": "amber",
+              "amount": 2
+            },
+            {
+              "source": 5,
+              "target": 3,
+              "color": "amber",
+              "amount": 1
+            },
+            {
+              "source": 5,
+              "target": 7,
+              "color": "coral",
+              "amount": 1
+            },
+            {
+              "source": 5,
+              "target": 6,
+              "color": "rose",
+              "amount": 1
+            },
+            {
+              "source": 5,
+              "target": 2,
+              "color": "violet",
+              "amount": 1
+            },
+            {
+              "source": 4,
+              "target": 1,
+              "color": "azure",
+              "amount": 2
+            },
+            {
+              "source": 4,
+              "target": 7,
+              "color": "coral",
+              "amount": 1
+            },
+            {
+              "source": 4,
+              "target": 2,
+              "color": "violet",
+              "amount": 1
+            },
+            {
+              "source": 0,
+              "target": 4,
+              "color": "jade",
+              "amount": 3
+            },
+            {
+              "source": 1,
+              "target": 0,
+              "color": "azure",
+              "amount": 3
+            },
+            {
+              "source": 1,
+              "target": 4,
+              "color": "jade",
+              "amount": 1
+            }
+          ],
+          "work": 44053,
+          "rank": 3,
+          "decisionLoad": {
+            "peakDecision": 96,
+            "branchingDecisions": 16,
+            "maximumMoves": 26
+          }
+        },
+        "score": {
+          "planning": 2000,
+          "peakDecision": 384,
+          "repeatedDecisions": 96,
+          "operations": 26,
+          "total": 2506
+        }
+      }
+    },
+    {
+      "content": {
+        "format": "bottle-harmony-content",
+        "version": 1,
+        "origin": {
+          "generator": "balanced-shuffle-v1",
+          "seed": 1018,
+          "candidateIndex": 0,
+          "config": {
+            "colors": [
+              "jade",
+              "coral",
+              "amber",
+              "azure",
+              "violet",
+              "rose"
+            ],
+            "emptyBottles": 1,
+            "minSolutionMoves": 1,
+            "maxSolutionMoves": 60,
+            "mixing": "diverse"
+          }
+        },
+        "level": {
+          "format": "bottle-harmony",
+          "version": 1,
+          "rules": "water-sort",
+          "id": "g-v1-000003fa-0-6c-1e",
+          "capacity": 4,
+          "colors": [
+            "jade",
+            "coral",
+            "amber",
+            "azure",
+            "violet",
+            "rose"
+          ],
+          "bottles": [
+            {
+              "id": "bottle-1",
+              "layers": [
+                "jade",
+                "violet",
+                "azure",
+                "rose"
+              ]
+            },
+            {
+              "id": "bottle-2",
+              "layers": [
+                "azure",
+                "coral",
+                "violet",
+                "jade"
+              ]
+            },
+            {
+              "id": "bottle-3",
+              "layers": [
+                "rose",
+                "amber",
+                "jade",
+                "coral"
+              ]
+            },
+            {
+              "id": "bottle-4",
+              "layers": [
+                "amber",
+                "azure",
+                "rose",
+                "violet"
+              ]
+            },
+            {
+              "id": "bottle-5",
+              "layers": [
+                "azure",
+                "jade",
+                "coral",
+                "rose"
+              ]
+            },
+            {
+              "id": "bottle-6",
+              "layers": [
+                "amber",
+                "violet",
+                "amber",
+                "coral"
+              ]
+            },
+            {
+              "id": "spare-1",
+              "layers": []
+            }
+          ]
+        },
+        "structureKey": "water-sort:4:6:7:/ABAC/ADEB/DCBF/DFCE/EAFC/FBDE",
+        "solution": [
+          {
+            "source": 2,
+            "target": 6,
+            "color": "coral",
+            "amount": 1
+          },
+          {
+            "source": 1,
+            "target": 2,
+            "color": "jade",
+            "amount": 1
+          },
+          {
+            "source": 5,
+            "target": 6,
+            "color": "coral",
+            "amount": 1
+          },
+          {
+            "source": 3,
+            "target": 1,
+            "color": "violet",
+            "amount": 1
+          },
+          {
+            "source": 4,
+            "target": 3,
+            "color": "rose",
+            "amount": 1
+          },
+          {
+            "source": 4,
+            "target": 6,
+            "color": "coral",
+            "amount": 1
+          },
+          {
+            "source": 2,
+            "target": 4,
+            "color": "jade",
+            "amount": 2
+          },
+          {
+            "source": 2,
+            "target": 5,
+            "color": "amber",
+            "amount": 1
+          },
+          {
+            "source": 0,
+            "target": 2,
+            "color": "rose",
+            "amount": 1
+          },
+          {
+            "source": 3,
+            "target": 2,
+            "color": "rose",
+            "amount": 2
+          },
+          {
+            "source": 0,
+            "target": 3,
+            "color": "azure",
+            "amount": 1
+          },
+          {
+            "source": 1,
+            "target": 0,
+            "color": "violet",
+            "amount": 2
+          },
+          {
+            "source": 1,
+            "target": 6,
+            "color": "coral",
+            "amount": 1
+          },
+          {
+            "source": 1,
+            "target": 3,
+            "color": "azure",
+            "amount": 1
+          },
+          {
+            "source": 0,
+            "target": 1,
+            "color": "violet",
+            "amount": 3
+          },
+          {
+            "source": 4,
+            "target": 0,
+            "color": "jade",
+            "amount": 3
+          },
+          {
+            "source": 3,
+            "target": 4,
+            "color": "azure",
+            "amount": 3
+          },
+          {
+            "source": 5,
+            "target": 3,
+            "color": "amber",
+            "amount": 2
+          },
+          {
+            "source": 5,
+            "target": 1,
+            "color": "violet",
+            "amount": 1
+          },
+          {
+            "source": 5,
+            "target": 3,
+            "color": "amber",
+            "amount": 1
+          }
+        ],
+        "metrics": {
+          "colorCount": 6,
+          "bottleCount": 7,
+          "mixedBottles": 6,
+          "colorRuns": 24,
+          "solutionMoves": 20
+        }
+      },
+      "rating": {
+        "model": "planning-load-v1",
+        "evidence": {
+          "format": "bottle-harmony-difficulty",
+          "version": 1,
+          "policy": "planning-depth-v1",
+          "levelId": "g-v1-000003fa-0-6c-1e",
+          "structureKey": "water-sort:4:6:7:/ABAC/ADEB/DCBF/DFCE/EAFC/FBDE",
+          "status": "rated",
+          "tier": "D4",
+          "reason": null,
+          "metrics": {
+            "colors": 6,
+            "bottles": 7,
+            "initialEmptyBottles": 1,
+            "spareColorRatio": 0.16666666666666666,
+            "colorRuns": 24,
+            "shortestMoves": 20,
+            "minimumEmptyBottlesOnRoute": 0,
+            "maximumPreparationMovesOnRoute": 1,
+            "minimumLegalChoicesOnRoute": 1
+          },
+          "policies": [
+            {
+              "tier": "P1",
+              "chainLimit": 2,
+              "lookahead": 0,
+              "status": "failed",
+              "checkedStates": 15,
+              "branchingStates": 5,
+              "maximumChoices": 8,
+              "excludedChoices": 0,
+              "witness": [
+                {
+                  "source": 5,
+                  "target": 6,
+                  "color": "coral",
+                  "amount": 1
+                },
+                {
+                  "source": 2,
+                  "target": 6,
+                  "color": "coral",
+                  "amount": 1
+                },
+                {
+                  "source": 1,
+                  "target": 2,
+                  "color": "jade",
+                  "amount": 1
+                },
+                {
+                  "source": 3,
+                  "target": 1,
+                  "color": "violet",
+                  "amount": 1
+                },
+                {
+                  "source": 4,
+                  "target": 3,
+                  "color": "rose",
+                  "amount": 1
+                },
+                {
+                  "source": 4,
+                  "target": 6,
+                  "color": "coral",
+                  "amount": 1
+                },
+                {
+                  "source": 2,
+                  "target": 4,
+                  "color": "jade",
+                  "amount": 2
+                },
+                {
+                  "source": 2,
+                  "target": 5,
+                  "color": "amber",
+                  "amount": 1
+                },
+                {
+                  "source": 3,
+                  "target": 2,
+                  "color": "rose",
+                  "amount": 2
+                },
+                {
+                  "source": 0,
+                  "target": 2,
+                  "color": "rose",
+                  "amount": 1
+                },
+                {
+                  "source": 3,
+                  "target": 0,
+                  "color": "azure",
+                  "amount": 1
+                },
+                {
+                  "source": 5,
+                  "target": 3,
+                  "color": "amber",
+                  "amount": 2
+                },
+                {
+                  "source": 1,
+                  "target": 5,
+                  "color": "violet",
+                  "amount": 2
+                },
+                {
+                  "source": 1,
+                  "target": 6,
+                  "color": "coral",
+                  "amount": 1
+                },
+                {
+                  "source": 0,
+                  "target": 1,
+                  "color": "azure",
+                  "amount": 2
+                }
+              ],
+              "stallReason": "no-local-progress"
+            },
+            {
+              "tier": "P2",
+              "chainLimit": 4,
+              "lookahead": 1,
+              "status": "failed",
+              "checkedStates": 14,
+              "branchingStates": 4,
+              "maximumChoices": 7,
+              "excludedChoices": 3,
+              "witness": [
+                {
+                  "source": 5,
+                  "target": 6,
+                  "color": "coral",
+                  "amount": 1
+                },
+                {
+                  "source": 2,
+                  "target": 6,
+                  "color": "coral",
+                  "amount": 1
+                },
+                {
+                  "source": 1,
+                  "target": 2,
+                  "color": "jade",
+                  "amount": 1
+                },
+                {
+                  "source": 3,
+                  "target": 1,
+                  "color": "violet",
+                  "amount": 1
+                },
+                {
+                  "source": 4,
+                  "target": 3,
+                  "color": "rose",
+                  "amount": 1
+                },
+                {
+                  "source": 4,
+                  "target": 6,
+                  "color": "coral",
+                  "amount": 1
+                },
+                {
+                  "source": 2,
+                  "target": 4,
+                  "color": "jade",
+                  "amount": 2
+                },
+                {
+                  "source": 2,
+                  "target": 5,
+                  "color": "amber",
+                  "amount": 1
+                },
+                {
+                  "source": 3,
+                  "target": 2,
+                  "color": "rose",
+                  "amount": 2
+                },
+                {
+                  "source": 0,
+                  "target": 2,
+                  "color": "rose",
+                  "amount": 1
+                },
+                {
+                  "source": 3,
+                  "target": 0,
+                  "color": "azure",
+                  "amount": 1
+                },
+                {
+                  "source": 5,
+                  "target": 3,
+                  "color": "amber",
+                  "amount": 2
+                },
+                {
+                  "source": 1,
+                  "target": 5,
+                  "color": "violet",
+                  "amount": 2
+                },
+                {
+                  "source": 1,
+                  "target": 6,
+                  "color": "coral",
+                  "amount": 1
+                }
+              ],
+              "stallReason": "lookahead-excludes-all"
+            },
+            {
+              "tier": "P3",
+              "chainLimit": 6,
+              "lookahead": 2,
+              "status": "failed",
+              "checkedStates": 13,
+              "branchingStates": 4,
+              "maximumChoices": 6,
+              "excludedChoices": 4,
+              "witness": [
+                {
+                  "source": 5,
+                  "target": 6,
+                  "color": "coral",
+                  "amount": 1
+                },
+                {
+                  "source": 2,
+                  "target": 6,
+                  "color": "coral",
+                  "amount": 1
+                },
+                {
+                  "source": 1,
+                  "target": 2,
+                  "color": "jade",
+                  "amount": 1
+                },
+                {
+                  "source": 3,
+                  "target": 1,
+                  "color": "violet",
+                  "amount": 1
+                },
+                {
+                  "source": 4,
+                  "target": 3,
+                  "color": "rose",
+                  "amount": 1
+                },
+                {
+                  "source": 4,
+                  "target": 6,
+                  "color": "coral",
+                  "amount": 1
+                },
+                {
+                  "source": 2,
+                  "target": 4,
+                  "color": "jade",
+                  "amount": 2
+                },
+                {
+                  "source": 2,
+                  "target": 5,
+                  "color": "amber",
+                  "amount": 1
+                },
+                {
+                  "source": 3,
+                  "target": 2,
+                  "color": "rose",
+                  "amount": 2
+                },
+                {
+                  "source": 0,
+                  "target": 2,
+                  "color": "rose",
+                  "amount": 1
+                },
+                {
+                  "source": 3,
+                  "target": 0,
+                  "color": "azure",
+                  "amount": 1
+                },
+                {
+                  "source": 5,
+                  "target": 3,
+                  "color": "amber",
+                  "amount": 2
+                },
+                {
+                  "source": 1,
+                  "target": 5,
+                  "color": "violet",
+                  "amount": 2
+                }
+              ],
+              "stallReason": "lookahead-excludes-all"
+            },
+            {
+              "tier": "P3",
+              "chainLimit": 6,
+              "lookahead": 3,
+              "status": "failed",
+              "checkedStates": 12,
+              "branchingStates": 3,
+              "maximumChoices": 6,
+              "excludedChoices": 5,
+              "witness": [
+                {
+                  "source": 5,
+                  "target": 6,
+                  "color": "coral",
+                  "amount": 1
+                },
+                {
+                  "source": 2,
+                  "target": 6,
+                  "color": "coral",
+                  "amount": 1
+                },
+                {
+                  "source": 1,
+                  "target": 2,
+                  "color": "jade",
+                  "amount": 1
+                },
+                {
+                  "source": 3,
+                  "target": 1,
+                  "color": "violet",
+                  "amount": 1
+                },
+                {
+                  "source": 4,
+                  "target": 3,
+                  "color": "rose",
+                  "amount": 1
+                },
+                {
+                  "source": 4,
+                  "target": 6,
+                  "color": "coral",
+                  "amount": 1
+                },
+                {
+                  "source": 2,
+                  "target": 4,
+                  "color": "jade",
+                  "amount": 2
+                },
+                {
+                  "source": 2,
+                  "target": 5,
+                  "color": "amber",
+                  "amount": 1
+                },
+                {
+                  "source": 3,
+                  "target": 2,
+                  "color": "rose",
+                  "amount": 2
+                },
+                {
+                  "source": 0,
+                  "target": 2,
+                  "color": "rose",
+                  "amount": 1
+                },
+                {
+                  "source": 3,
+                  "target": 0,
+                  "color": "azure",
+                  "amount": 1
+                },
+                {
+                  "source": 5,
+                  "target": 3,
+                  "color": "amber",
+                  "amount": 2
+                }
+              ],
+              "stallReason": "lookahead-excludes-all"
+            },
+            {
+              "tier": "P4",
+              "chainLimit": 8,
+              "lookahead": 4,
+              "status": "failed",
+              "checkedStates": 11,
+              "branchingStates": 3,
+              "maximumChoices": 6,
+              "excludedChoices": 5,
+              "witness": [
+                {
+                  "source": 5,
+                  "target": 6,
+                  "color": "coral",
+                  "amount": 1
+                },
+                {
+                  "source": 2,
+                  "target": 6,
+                  "color": "coral",
+                  "amount": 1
+                },
+                {
+                  "source": 1,
+                  "target": 2,
+                  "color": "jade",
+                  "amount": 1
+                },
+                {
+                  "source": 3,
+                  "target": 1,
+                  "color": "violet",
+                  "amount": 1
+                },
+                {
+                  "source": 4,
+                  "target": 3,
+                  "color": "rose",
+                  "amount": 1
+                },
+                {
+                  "source": 4,
+                  "target": 6,
+                  "color": "coral",
+                  "amount": 1
+                },
+                {
+                  "source": 2,
+                  "target": 4,
+                  "color": "jade",
+                  "amount": 2
+                },
+                {
+                  "source": 2,
+                  "target": 5,
+                  "color": "amber",
+                  "amount": 1
+                },
+                {
+                  "source": 3,
+                  "target": 2,
+                  "color": "rose",
+                  "amount": 2
+                },
+                {
+                  "source": 0,
+                  "target": 2,
+                  "color": "rose",
+                  "amount": 1
+                },
+                {
+                  "source": 3,
+                  "target": 0,
+                  "color": "azure",
+                  "amount": 1
+                }
+              ],
+              "stallReason": "lookahead-excludes-all"
+            },
+            {
+              "tier": "P4",
+              "chainLimit": 10,
+              "lookahead": 6,
+              "status": "failed",
+              "checkedStates": 30,
+              "branchingStates": 9,
+              "maximumChoices": 6,
+              "excludedChoices": 16,
+              "witness": [
+                {
+                  "source": 4,
+                  "target": 6,
+                  "color": "rose",
+                  "amount": 1
+                },
+                {
+                  "source": 2,
+                  "target": 4,
+                  "color": "coral",
+                  "amount": 1
+                },
+                {
+                  "source": 1,
+                  "target": 2,
+                  "color": "jade",
+                  "amount": 1
+                },
+                {
+                  "source": 0,
+                  "target": 6,
+                  "color": "rose",
+                  "amount": 1
+                }
+              ],
+              "stallReason": "lookahead-excludes-all"
+            },
+            {
+              "tier": "P4",
+              "chainLimit": 12,
+              "lookahead": 8,
+              "status": "failed",
+              "checkedStates": 33,
+              "branchingStates": 7,
+              "maximumChoices": 6,
+              "excludedChoices": 21,
+              "witness": [
+                {
+                  "source": 0,
+                  "target": 6,
+                  "color": "rose",
+                  "amount": 1
+                },
+                {
+                  "source": 4,
+                  "target": 6,
+                  "color": "rose",
+                  "amount": 1
+                }
+              ],
+              "stallReason": "lookahead-excludes-all"
+            },
+            {
+              "tier": "P4",
+              "chainLimit": null,
+              "lookahead": null,
+              "status": "passed",
+              "checkedStates": 78,
+              "branchingStates": 0,
+              "maximumChoices": 0,
+              "excludedChoices": 0,
+              "witness": [
+                {
+                  "source": 2,
+                  "target": 6,
+                  "color": "coral",
+                  "amount": 1
+                },
+                {
+                  "source": 1,
+                  "target": 2,
+                  "color": "jade",
+                  "amount": 1
+                },
+                {
+                  "source": 5,
+                  "target": 6,
+                  "color": "coral",
+                  "amount": 1
+                },
+                {
+                  "source": 3,
+                  "target": 1,
+                  "color": "violet",
+                  "amount": 1
+                },
+                {
+                  "source": 4,
+                  "target": 3,
+                  "color": "rose",
+                  "amount": 1
+                },
+                {
+                  "source": 4,
+                  "target": 6,
+                  "color": "coral",
+                  "amount": 1
+                },
+                {
+                  "source": 2,
+                  "target": 4,
+                  "color": "jade",
+                  "amount": 2
+                },
+                {
+                  "source": 2,
+                  "target": 5,
+                  "color": "amber",
+                  "amount": 1
+                },
+                {
+                  "source": 0,
+                  "target": 2,
+                  "color": "rose",
+                  "amount": 1
+                },
+                {
+                  "source": 3,
+                  "target": 2,
+                  "color": "rose",
+                  "amount": 2
+                },
+                {
+                  "source": 0,
+                  "target": 3,
+                  "color": "azure",
+                  "amount": 1
+                },
+                {
+                  "source": 1,
+                  "target": 0,
+                  "color": "violet",
+                  "amount": 2
+                },
+                {
+                  "source": 1,
+                  "target": 6,
+                  "color": "coral",
+                  "amount": 1
+                },
+                {
+                  "source": 1,
+                  "target": 3,
+                  "color": "azure",
+                  "amount": 1
+                },
+                {
+                  "source": 0,
+                  "target": 1,
+                  "color": "violet",
+                  "amount": 3
+                },
+                {
+                  "source": 4,
+                  "target": 0,
+                  "color": "jade",
+                  "amount": 3
+                },
+                {
+                  "source": 3,
+                  "target": 4,
+                  "color": "azure",
+                  "amount": 3
+                },
+                {
+                  "source": 5,
+                  "target": 3,
+                  "color": "amber",
+                  "amount": 2
+                },
+                {
+                  "source": 5,
+                  "target": 1,
+                  "color": "violet",
+                  "amount": 1
+                },
+                {
+                  "source": 5,
+                  "target": 3,
+                  "color": "amber",
+                  "amount": 1
+                }
+              ],
+              "stallReason": null
+            }
+          ],
+          "referenceSolution": [
+            {
+              "source": 2,
+              "target": 6,
+              "color": "coral",
+              "amount": 1
+            },
+            {
+              "source": 1,
+              "target": 2,
+              "color": "jade",
+              "amount": 1
+            },
+            {
+              "source": 5,
+              "target": 6,
+              "color": "coral",
+              "amount": 1
+            },
+            {
+              "source": 3,
+              "target": 1,
+              "color": "violet",
+              "amount": 1
+            },
+            {
+              "source": 4,
+              "target": 3,
+              "color": "rose",
+              "amount": 1
+            },
+            {
+              "source": 4,
+              "target": 6,
+              "color": "coral",
+              "amount": 1
+            },
+            {
+              "source": 2,
+              "target": 4,
+              "color": "jade",
+              "amount": 2
+            },
+            {
+              "source": 2,
+              "target": 5,
+              "color": "amber",
+              "amount": 1
+            },
+            {
+              "source": 0,
+              "target": 2,
+              "color": "rose",
+              "amount": 1
+            },
+            {
+              "source": 3,
+              "target": 2,
+              "color": "rose",
+              "amount": 2
+            },
+            {
+              "source": 0,
+              "target": 3,
+              "color": "azure",
+              "amount": 1
+            },
+            {
+              "source": 1,
+              "target": 0,
+              "color": "violet",
+              "amount": 2
+            },
+            {
+              "source": 1,
+              "target": 6,
+              "color": "coral",
+              "amount": 1
+            },
+            {
+              "source": 1,
+              "target": 3,
+              "color": "azure",
+              "amount": 1
+            },
+            {
+              "source": 0,
+              "target": 1,
+              "color": "violet",
+              "amount": 3
+            },
+            {
+              "source": 4,
+              "target": 0,
+              "color": "jade",
+              "amount": 3
+            },
+            {
+              "source": 3,
+              "target": 4,
+              "color": "azure",
+              "amount": 3
+            },
+            {
+              "source": 5,
+              "target": 3,
+              "color": "amber",
+              "amount": 2
+            },
+            {
+              "source": 5,
+              "target": 1,
+              "color": "violet",
+              "amount": 1
+            },
+            {
+              "source": 5,
+              "target": 3,
+              "color": "amber",
+              "amount": 1
+            }
+          ],
+          "work": 2693,
+          "rank": 8,
+          "decisionLoad": null
+        },
+        "score": {
+          "planning": 7000,
+          "peakDecision": 0,
+          "repeatedDecisions": 0,
+          "operations": 20,
+          "total": 7020
+        }
+      }
+    }
+  ]
+}

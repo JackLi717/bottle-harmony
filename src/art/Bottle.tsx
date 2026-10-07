@@ -1,9 +1,9 @@
 import { memo } from 'react';
 import Animated, { useAnimatedProps, useAnimatedStyle, useDerivedValue, type SharedValue } from 'react-native-reanimated';
-import Svg, { ClipPath, Defs, Ellipse, G, LinearGradient, Path, Stop } from 'react-native-svg';
+import Svg, { ClipPath, Defs, Ellipse, G, LinearGradient, Path, Stop, Text as SvgText } from 'react-native-svg';
 import type { ColorId, Pour } from '../game/rules';
 import { liquidPath } from './liquidGeometry';
-import { LIQUIDS } from './palette';
+import { LIQUIDS, LIQUID_SYMBOLS } from './palette';
 import { BOTTLE_INSIDE, BOTTLE_SHELL } from './bottleDesign';
 import type { Point } from './liquidGeometry';
 import { sourcePose, streamOpacity, transferredFraction, type PourPlan } from './pourGeometry';
@@ -39,10 +39,11 @@ export type BottleProps = {
   position: Point;
   pour: Pour | null;
   progress: SharedValue<number>;
+  symbols?: boolean;
 };
 
 /** Glass art remains static; liquid paths and transforms update on the UI thread. */
-export const Bottle = memo(function Bottle({ index, colors, selected, completed, width, scale, plan, pour, progress, position }: BottleProps) {
+export const Bottle = memo(function Bottle({ index, colors, selected, completed, width, scale, plan, pour, progress, position, symbols = false }: BottleProps) {
   const isSource = pour?.source === index;
   const isTarget = pour?.target === index;
   const id = `bottle-${index}`;
@@ -114,6 +115,7 @@ export const Bottle = memo(function Bottle({ index, colors, selected, completed,
           }).filter(({ color, layer }) => colors[layer + 1] !== color).reverse().map(({ color, layer, firstLayer }) => (
             <LiquidLayer key={layer} color={color} layer={layer} firstLayer={firstLayer} count={count} angle={angle} id={id} />
           ))}
+          {symbols && !isSource && !isTarget && colors.map((color, layer) => <SvgText key={`symbol-${layer}`} x={50} y={155 - layer * 24} textAnchor="middle" fontSize={16} fill="#142F39" opacity={0.8}>{LIQUID_SYMBOLS[color]}</SvgText>)}
           <AnimatedEllipse cx={50} rx={27.5} ry={3.5} fill="#FFFFFF" animatedProps={surface} />
           <AnimatedPath animatedProps={innerStream} fill="none" stroke={flowColor.main} strokeWidth={3.3} strokeLinecap="round" />
           <AnimatedPath animatedProps={innerStream} fill="none" stroke={flowColor.light} strokeWidth={0.9} strokeLinecap="round" />

@@ -1,15 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AppState } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createPlay, type PlayState } from '../game/play';
-import { decodePlay, encodePlay, SAVE_KEY } from '../game/playCodec';
-import { DEMO_LEVEL } from '../game/demo';
+import { createMainline, type MainlineState } from '../game/mainline';
+import { decodeMainline, encodeMainline, MAINLINE_SAVE_KEY } from '../game/mainlineCodec';
 import { createProgressWriter } from '../storage/progressWriter';
-import { CATALOG, PLAY_LEVELS } from './content';
+import { MAINLINE } from './mainlineContent';
 
-const write = createProgressWriter(value => AsyncStorage.setItem(SAVE_KEY, value));
+const write = createProgressWriter(value => AsyncStorage.setItem(MAINLINE_SAVE_KEY, value));
 export function usePlayProgress() {
-  const [play, updatePlay] = useState(() => createPlay(DEMO_LEVEL));
+  const [play, updatePlay] = useState(() => createMainline(MAINLINE));
   const [ready, setReady] = useState(false);
   const [notice, setNotice] = useState('');
   const [saveStatus, setSaveStatus] = useState('本地进度');
@@ -21,24 +20,25 @@ export function usePlayProgress() {
     alive.current = true;
     let cancelled = false;
     (async () => {
-      let restored = createPlay(DEMO_LEVEL);
+      let restored = createMainline(MAINLINE);
       try {
-        const json = await AsyncStorage.getItem(SAVE_KEY);
+        const json = await AsyncStorage.getItem(MAINLINE_SAVE_KEY);
+        if (!json && await AsyncStorage.getItem('bottle-harmony.play.v1') && !cancelled) setNotice('已升级为千关主线，从第一关开始解锁。');
         if (json) {
-          try { restored = decodePlay(json, PLAY_LEVELS, CATALOG); }
+          try { restored = decodeMainline(json, MAINLINE); }
           catch { if (!cancelled) setNotice('保存记录无法恢复，已回到初次体验。新的操作会建立新记录。'); }
         }
       } catch { if (!cancelled) setNotice('暂时读不到本地进度，已进入初次体验。新的操作会重试保存。'); }
       if (cancelled) return;
       // Do not overwrite a failed read or invalid save merely by mounting the app.
-      lastRequested.current = encodePlay(restored);
+      lastRequested.current = encodeMainline(restored, MAINLINE);
       latest.current = lastRequested.current;
       updatePlay(restored); setSaveStatus('本地进度就绪'); setReady(true);
     })();
     return () => { cancelled = true; alive.current = false; };
   }, []);
   const encoded = useMemo(() => {
-    try { return encodePlay(play); } catch { return null; }
+    try { return encodeMainline(play, MAINLINE); } catch { return null; }
   }, [play]);
   useEffect(() => {
     if (!ready || encoded === null) return;
@@ -61,7 +61,7 @@ export function usePlayProgress() {
     });
     return () => subscription.remove();
   }, [ready]);
-  function setPlay(next: PlayState) {
+  function setPlay(next: MainlineState) {
     updatePlay(next); setNotice('');
   }
   return { play, setPlay, ready, notice, saveStatus: encoded === null ? '本次进度过长，未保存' : saveStatus };

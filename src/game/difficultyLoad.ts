@@ -33,14 +33,30 @@ export type LoadReport = {
  * except the verified shortest operation count. Empty space remains descriptive. */
 export function evaluateLoad(level: LevelDefinition, options: DifficultyOptions = {}): LoadReport {
   const evidence = evaluatePlanningDepth(level, options);
-  if (evidence.rank === null) return { model: LOAD_MODEL, evidence, score: null };
+  return { model: LOAD_MODEL, evidence, score: scorePlanningDepth(evidence) };
+}
+
+export function scorePlanningDepth(evidence: PlanningDepthReport): LoadScore | null {
+  if (evidence.rank === null) return null;
   const load = evidence.decisionLoad;
   const planning = (evidence.rank - 1) * 1000;
   const peakDecision = load ? Math.min(749, load.peakDecision * 4) : 0;
   const repeatedDecisions = load ? Math.min(150, load.branchingDecisions * 6) : 0;
   const operations = Math.min(99, load?.maximumMoves ?? evidence.metrics.shortestMoves!);
-  return {
-    model: LOAD_MODEL, evidence,
-    score: { planning, peakDecision, repeatedDecisions, operations, total: planning + peakDecision + repeatedDecisions + operations },
-  };
+  return { planning, peakDecision, repeatedDecisions, operations, total: planning + peakDecision + repeatedDecisions + operations };
+}
+
+class AboveTarget extends Error {}
+/** Rejection screen only: once the requested policy has a complete failure
+ * proof, the candidate cannot have that rank. Never emits a substitute grade.
+ * Accepted records still contain exactly the complete ordinary evaluator data. */
+export function evaluateLoadForTarget(level: LevelDefinition, rank: number, options: DifficultyOptions = {}): LoadReport | 'above-target' {
+  if (!Number.isInteger(rank) || rank < 1 || rank > 8) throw new Error('Invalid target rank');
+  let checked = 0;
+  try {
+    return evaluateLoad(level, { ...options, onPolicyChecked: policy => {
+      checked++;
+      if (checked === rank && policy.status === 'failed') throw new AboveTarget();
+    } });
+  } catch (error) { if (error instanceof AboveTarget) return 'above-target'; throw error; }
 }

@@ -1,12 +1,12 @@
 import { parseGeneratedContent, recordObject, type GeneratedContent } from './generation.ts';
 import { LevelValidationError } from './model.ts';
 
-const MAX_POOL_CHARACTERS = 2000000;
-const MAX_RECORDS = 100;
+const MAX_POOL_CHARACTERS = 32000000;
+const MAX_RECORDS = 1000;
 
 function parsePool(input: unknown): readonly GeneratedContent[] {
   const value = recordObject(input, ['format', 'version', 'records'], 'pool');
-  if (value.format !== 'bottle-harmony-pool' || value.version !== 1 || !Array.isArray(value.records) || value.records.length < 1 || value.records.length > MAX_RECORDS) throw new LevelValidationError(['Invalid pool format or record count (1 to 100)']);
+  if (value.format !== 'bottle-harmony-pool' || value.version !== 1 || !Array.isArray(value.records) || value.records.length < 1 || value.records.length > MAX_RECORDS) throw new LevelValidationError(['Invalid pool format or record count (1 to 1000)']);
   const records = value.records.map(parseGeneratedContent);
   const keys = new Set<string>(), ids = new Set<string>();
   for (const record of records) {

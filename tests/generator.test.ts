@@ -137,7 +137,8 @@ test('state/time/attempt budgets are distinct; cancellation preserves the bounde
 test('invalid generator settings reject before candidate creation or search', () => {
   const changes = [
     { seed: -1 }, { seed: 2 ** 32 }, { seed: 0.5 }, { seed: NaN },
-    { colors: ['jade'] }, { colors: ['jade', 'jade'] }, { colors: ['jade', 'bad color'] }, { colors: [...colors, 'six'] },
+    { colors: ['jade'] }, { colors: ['jade', 'jade'] }, { colors: ['jade', 'bad color'] }, { colors: Array.from({ length: 12 }, (_, i) => `c${i}`) },
+    { colors: Array.from({ length: 11 }, (_, i) => `c${i}`), emptyBottles: 2 },
     { emptyBottles: 0 }, { maxAttempts: 0 }, { maxAttempts: 1001 }, { maxStates: Infinity }, { maxTotalStates: 0 },
     { maxMilliseconds: 0 }, { maxMilliseconds: 60001 }, { minSolutionMoves: 5, maxSolutionMoves: 3 },
     { excludedKeys: ['x'.repeat(257)] },
@@ -175,8 +176,8 @@ test('pool import verifies actual layout, origin, full route, metrics and unique
   ];
   for (const change of changes) assert.throws(() => parseGeneratedContent({ ...first, ...change }));
   assert.throws(() => encodeContentPool([first, first]));
-  for (const bad of ['{', 'null', ' '.repeat(2000001), JSON.stringify({ format: 'bottle-harmony-pool', version: 1, records: [] }),
-    JSON.stringify({ format: 'bottle-harmony-pool', version: 1, records: Array(101).fill(first) })]) assert.throws(() => decodeContentPool(bad));
+  for (const bad of ['{', 'null', ' '.repeat(32000001), JSON.stringify({ format: 'bottle-harmony-pool', version: 1, records: [] }),
+    JSON.stringify({ format: 'bottle-harmony-pool', version: 1, records: Array(1001).fill(first) })]) assert.throws(() => decodeContentPool(bad));
 });
 
 test('CLI generates a reproducible pool, verifies serialized replay and preserves output on failure', async () => {

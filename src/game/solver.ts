@@ -1,7 +1,8 @@
 import { validateBoard } from './model.ts';
 import { applyPour, CAPACITY, getPour, isSolved, type Board, type Pour } from './rules.ts';
+import { createAStarSolver } from './solverAStar.ts';
 
-export type SolverOptions = { capacity?: number; maxStates?: number; maxMilliseconds?: number };
+export type SolverOptions = { capacity?: number; maxStates?: number; maxMilliseconds?: number; algorithm?: 'bfs' | 'astar' };
 export type SearchStats = {
   readonly visitedStates: number;
   readonly expandedStates: number;
@@ -24,12 +25,17 @@ export interface SolverTask {
 type SearchNode = { board: Board | null; parent: number; pour: Pour | null; nextPair: number };
 const now = () => performance.now();
 
-/** BFS with uniform-bottle symmetry. Keep actual boards/predecessors for real-index replay. */
+/** Bounded shortest-path task. BFS below six colors; admissible A* above it.
+ * Both use uniform-bottle symmetry and return pours with actual bottle indices. */
 export function createSolver(input: Board, options: SolverOptions = {}): SolverTask {
+  // Keep the established small-board BFS evidence stable. Larger boards use an
+  // admissible search; callers can explicitly select either for comparisons.
+  if (options.algorithm === 'astar' || (options.algorithm === undefined && Array.isArray(input) && input.every(Array.isArray) && new Set(input.flat()).size > 5)) return createAStarSolver(input, options);
   const capacity = options.capacity ?? CAPACITY;
   const maxStates = options.maxStates ?? 30000;
   const maxMilliseconds = options.maxMilliseconds ?? 250;
   const issues = validateBoard(input, capacity);
+  if (options.algorithm !== undefined && options.algorithm !== 'bfs') issues.push('Unsupported solver algorithm');
   if (!Number.isInteger(maxStates) || maxStates < 1 || maxStates > 1000000) issues.push('maxStates must be an integer from 1 to 1000000');
   if (!Number.isFinite(maxMilliseconds) || maxMilliseconds <= 0 || maxMilliseconds > 60000) issues.push('maxMilliseconds must be positive and at most 60000');
   let visitedStates = 0, expandedStates = 0, generatedMoves = 0, peakFrontier = 0, elapsed = 0;

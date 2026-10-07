@@ -1,5 +1,19 @@
 # 竖屏试玩设备测试
 
+## 当前千关内测包（2026-10-07）
+
+一千关实际资源已接入两个平台的独立 Release 安装包，离线运行，不需要 Metro。Android APK 位于 `builds/bottle-harmony-demo.apk`；iPhone 真机包位于 `builds/ios-device/Build/Products/Release-iphoneos/BottleHarmony.app`。两个构建成功，APK 与 iPhone 包的签名验证通过。当前仍为版本 0.0.1、应用标识 `com.bottleharmony.app`，内部工具开关开启。
+
+- iPhone 12 Pro Max / iOS 17.4.1：设备工具确认新版安装成功、应用启动成功。本轮没有采集 iPhone 真机画面或量化渲染性能。
+- T517D / Android 15：USB 更新安装成功，观察到千关主线第六关、已通过五关与本地保存状态；后续关卡显示未解锁。
+- 安卓内部第 419 关预览：十一色、十二瓶、两排各六瓶，完整显示；辅助符号开启后各层可见。执行一步参考提示、等待动画回位并撤销成功。内部预览未增加主线解锁进度。
+- 返回第六关，恢复原先关闭辅助符号的偏好；停止游戏进程并重新启动后，第六关和原来的初始局面恢复。检查期间的当前运行日志未发现 AndroidRuntime / ReactNativeJS 异常。
+
+本机检查截图为 `builds/mainline-menu-android.png`、`builds/mainline-twelve-android.png`、`builds/mainline-after-pour-android.png` 和 `builds/mainline-restored-android.png`。这些检查覆盖安装、启动、显示、一次大棋盘提示/撤销和冷启动恢复；没有完成连续十至十五分钟试玩、低端设备量化性能、小屏或平板的新版验收。后续仍按下方测试顺序检查，桌面测试不代替手机测量。
+
+以下记录中的四瓶及八题画面属于此前已认可的视觉基线，不能直接作为千关新增内容的全部设备验证。
+
+
 当前试玩只用于确认画面、操作、难度与性能，不是商店发行版本。游戏菜单提供四档共 80 道正式试玩题及八道内测校准题，支持连续游玩与本地进度恢复。评级与校准说明见[校准说明](difficulty-calibration.md)。
 
 ## 当前纯玩版安装（2026-10-07）

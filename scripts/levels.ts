@@ -2,12 +2,12 @@ import { mkdir, open, readFile, rename, stat, unlink } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { decodeContentPool, encodeContentPool } from '../src/game/contentCodec.ts';
 import { generateContent } from '../src/game/generator.ts';
-import type { GeneratedContent } from '../src/game/generation.ts';
+import { PRODUCTION_COLORS, type GeneratedContent } from '../src/game/generation.ts';
 
 const HELP = `Usage:
   npm run levels:generate -- --seed 717 --colors 3 --count 10 --output builds/levels.json
   npm run levels:verify -- --input builds/levels.json
-Generate options: --seed, --colors (2..5), --count (1..100), --empty-bottles (1..2),
+Generate options: --seed, --colors (2..11; colors + empty bottles <=12), --count (1..1000), --empty-bottles (1..2),
   --min-moves, --max-moves, --max-attempts, --max-states, --max-total-states, --max-ms, --output
   --mixing (relaxed|diverse; diverse requires >=3 colors per initial filled bottle, <=2 layers per color)
 Generation validates every record before atomically replacing the output. Existing output survives a failed batch.
@@ -41,24 +41,25 @@ async function main() {
     const input = values.get('input');
     if (!input) throw new Error('--input is required');
     const path = resolve(input);
-    if ((await stat(path)).size > 2000000) throw new Error('Pool file exceeds 2 MB input limit');
+    if ((await stat(path)).size > 32000000) throw new Error('Pool file exceeds 32 MB input limit');
     const records = decodeContentPool(await readFile(path, 'utf8'));
     console.log(`Verified ${records.length} distinct records by candidate reconstruction and full legal replay: ${path}`);
     return;
   }
   const colorCount = integer(values, 'colors', 3), count = integer(values, 'count', 10);
-  if (colorCount < 2 || colorCount > 5 || count < 1 || count > 100) throw new Error('--colors must be 2..5 and --count must be 1..100');
+  if (colorCount < 2 || colorCount > 11 || count < 1 || count > 1000) throw new Error('--colors must be 2..11 and --count must be 1..1000');
   const seed = integer(values, 'seed', 717);
   if (seed > 0xffffffff) throw new Error('--seed must be an unsigned 32-bit integer');
   const emptyBottles = integer(values, 'empty-bottles', 2);
   if (emptyBottles !== 1 && emptyBottles !== 2) throw new Error('--empty-bottles must be 1 or 2');
+  if (colorCount + emptyBottles > 12) throw new Error('Colors plus empty bottles must not exceed 12');
   const mixing = values.get('mixing') ?? 'relaxed';
   if (mixing !== 'relaxed' && mixing !== 'diverse') throw new Error('--mixing must be relaxed or diverse');
   const records: GeneratedContent[] = [];
   let visitedStates = 0, attempts = 0, elapsedMilliseconds = 0;
   for (let index = 0; index < count; index++) {
     const result = generateContent({ seed: (seed + index) >>> 0,
-      colors: ['jade', 'coral', 'amber', 'azure', 'violet'].slice(0, colorCount), emptyBottles, mixing,
+      colors: PRODUCTION_COLORS.slice(0, colorCount), emptyBottles, mixing,
       minSolutionMoves: integer(values, 'min-moves', 3), maxSolutionMoves: integer(values, 'max-moves', 80),
       maxAttempts: integer(values, 'max-attempts', 64), maxStates: integer(values, 'max-states', 30000),
       maxTotalStates: integer(values, 'max-total-states', 150000), maxMilliseconds: integer(values, 'max-ms', 5000),

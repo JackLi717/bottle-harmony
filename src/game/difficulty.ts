@@ -51,7 +51,7 @@ export type DifficultyReport = {
   readonly referenceSolution: readonly Pour[];
   readonly work: number;
 };
-export type DifficultyOptions = { maxSolveStates?: number; maxWork?: number; maxMilliseconds?: number };
+export type DifficultyOptions = { maxSolveStates?: number; maxWork?: number; maxMilliseconds?: number; onPolicyChecked?: (policy: PolicyResult) => void };
 export type PlanningPolicy = { readonly tier: PlanningTier; readonly chainLimit: number; readonly lookahead: number };
 export const DEPTH_POLICIES: readonly PlanningPolicy[] = Object.freeze(([
   ...PLANNING_POLICIES,
@@ -79,9 +79,23 @@ export function colorRuns(board: Board): number {
 /** Equal movable bottles only. Canonical moves are later mapped back to real indices. */
 function boardSpace(level: LevelDefinition) {
   const codes = new Map(level.colors.map((color, i) => [color, String.fromCharCode(65 + i)]));
-  const encode = (bottle: readonly string[]) => bottle.map(color => codes.get(color)!).join('');
+  // Rule moves keep unchanged bottles by reference. Cache only immutable local
+  // search arrays; no policy edges, ordering, work charges or score terms change.
+  const bottleCodes = new WeakMap<readonly string[], string>();
+  const boardKeys = new WeakMap<Board, string>();
+  const encode = (bottle: readonly string[]) => {
+    const previous = bottleCodes.get(bottle);
+    if (previous !== undefined) return previous;
+    const code = bottle.map(color => codes.get(color)!).join('');
+    bottleCodes.set(bottle, code); return code;
+  };
   const canonical = (board: Board): Board => [...board].sort((a, b) => compareKeys(encode(a), encode(b)));
-  const key = (board: Board) => board.map(encode).sort().join('|');
+  const key = (board: Board) => {
+    const previous = boardKeys.get(board);
+    if (previous !== undefined) return previous;
+    const result = board.map(encode).sort().join('|');
+    boardKeys.set(board, result); return result;
+  };
   const toRealRoute = (path: readonly Pour[]): readonly Pour[] => {
     let real = initialBoard(level);
     const result: Pour[] = [];
@@ -241,6 +255,7 @@ function evaluateWithPolicies(definition: LevelDefinition, options: DifficultyOp
       const witness = space.toRealRoute(outcome.path);
       if (outcome.passed) replaySolution(start, witness, level.capacity);
       policies.push({ ...policy, status: outcome.passed ? 'passed' : 'failed', ...stats, witness, stallReason: outcome.stallReason });
+      options.onPolicyChecked?.(policies.at(-1)!);
       if (outcome.passed) {
         onLoad?.(outcome.load);
         return report('rated', policy.tier === 'P1' ? 'D1' : policy.tier === 'P2' ? 'D2' : policy.tier === 'P3' ? 'D3' : 'D4', null, solved.route);

@@ -41,7 +41,7 @@ export function loadCalibrationSamples(json: string): readonly CalibrationSample
 
 /** Reuse a proven suffix only when the actual bottle arrangement matches.
  * Off-route play still uses the bounded solver; move count alone is insufficient. */
-export function referenceHint(content: GeneratedContent, current: Board): Pour | null {
+export function referenceHint(content: Pick<GeneratedContent, 'level' | 'solution'>, current: Board): Pour | null {
   let board = initialBoard(content.level);
   const key = JSON.stringify(current);
   for (const pour of content.solution) {

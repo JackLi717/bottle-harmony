@@ -1,9 +1,9 @@
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TIER_NAMES, type CalibrationSample } from '../game/calibration';
-import type { DifficultyReport } from '../game/difficulty';
+import type { DifficultyReport, PlanningDepthReport } from '../game/difficulty';
 
-type Props = { visible: boolean; report: DifficultyReport; sample: CalibrationSample | null; label?: string; onClose: () => void };
+type Props = { visible: boolean; report: DifficultyReport | PlanningDepthReport; sample: CalibrationSample | null; label?: string; onClose: () => void };
 const PLANNING_NAMES = { P1: '直接整理', P2: '短程取舍', P3: '多步协调', P4: '全局规划' };
 const STATUS_NAMES = { passed: '通过', failed: '未通过', unknown: '未知' };
 
@@ -18,7 +18,7 @@ export function DifficultyDebug({ visible, report, sample, label, onClose }: Pro
         <View style={styles.heading}><Text accessibilityRole="header" style={styles.title}>难度调试</Text><Pressable accessibilityRole="button" accessibilityLabel="关闭难度调试" onPress={onClose} style={styles.close}><Text style={styles.closeText}>关闭</Text></Pressable></View>
         <ScrollView contentContainerStyle={styles.list}>
           <Text style={styles.rating}>{label ?? sample?.code ?? '原始体验'} · {report.tier ? `${report.tier} ${TIER_NAMES[report.tier]}` : report.status === 'unsolvable' ? '已证明无解' : '评级未知'}（自动暂定）</Text>
-          <Text style={styles.note}>针对初始关卡，倒水后评级不变。策略模型待试玩校准；综合分数与权重尚未确定。</Text>
+          <Text style={styles.note}>针对初始关卡，倒水后评级不变。{'rank' in report ? `内部规划级：${report.rank} / 8。` : '对照题使用原始四档报告。'}策略模型待试玩校准。</Text>
           {sample && <Text style={styles.note}>人工试排：{sample.tier} {TIER_NAMES[sample.tier]}。分类仍保留试排，便于对照。</Text>}
           <View style={styles.card}>
             <Text style={styles.section}>空间与操作量</Text>
@@ -33,7 +33,7 @@ export function DifficultyDebug({ visible, report, sample, label, onClose }: Pro
           <Text style={styles.section}>规划层次验证</Text>
           {report.policies.map((policy, index) => <View key={index} style={styles.card}>
             <Text style={styles.section}>{policy.tier} {PLANNING_NAMES[policy.tier]} · {STATUS_NAMES[policy.status]}</Text>
-            {policy.tier === 'P4' ? <Text style={styles.detail}>低层均有失败反例；完整规则解法已回放。</Text> : <>
+            {policy.chainLimit === null ? <Text style={styles.detail}>低层均有失败反例；完整规则解法已回放。</Text> : <>
               <Text style={styles.detail}>整理段 ≤ {policy.chainLimit} 次倒水 · 前瞻 {policy.lookahead} 个整理段</Text>
               <Text style={styles.detail}>检查 {policy.checkedStates} 个局面 · 最多 {policy.maximumChoices} 个前沿选择</Text>
               <Text style={styles.detail}>排除 {policy.excludedChoices} 个短程卡点选择</Text>

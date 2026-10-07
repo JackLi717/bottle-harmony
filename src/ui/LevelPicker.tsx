@@ -3,19 +3,23 @@ import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-nati
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TIER_NAMES, TRIAL_TIERS, type CalibrationSample, type TrialTier } from '../game/calibration';
 import { CALIBRATION_SAMPLES, DIFFICULTY } from './content';
+import { MAINLINE } from './mainlineContent';
 
-type Props = { visible: boolean; currentCode: string | null; onClose: () => void; onSelect: (sample: CalibrationSample | null) => void };
+type Props = { visible: boolean; currentCode: string | null; onClose: () => void; onSelect: (sample: CalibrationSample | null) => void; onPreview: (number: number) => void };
 
-export function LevelPicker({ visible, currentCode, onClose, onSelect }: Props) {
+export function LevelPicker({ visible, currentCode, onClose, onSelect, onPreview }: Props) {
   const insets = useSafeAreaInsets();
   const [tier, setTier] = useState<TrialTier>('D1');
   return <Modal visible={visible} animationType="fade" transparent onRequestClose={onClose}>
     <View style={[styles.backdrop, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 12 }]}>
       <View style={styles.panel}>
         <View style={styles.heading}><Text accessibilityRole="header" style={styles.title}>选一题，慢慢玩</Text><Pressable accessibilityRole="button" accessibilityLabel="关闭选题" onPress={onClose} style={styles.close}><Text style={styles.closeText}>关闭</Text></Pressable></View>
-        <Text style={styles.note}>分类保留人工试排，自动评级另列。切换将开始新题；当前局面只保存一题。</Text>
+        <Text style={styles.note}>内部题可用于对照，不解锁主线。关闭后在游玩菜单继续原来的主线局面。</Text>
         <View accessibilityRole="tablist" style={styles.filters}>{TRIAL_TIERS.map(value => <Pressable key={value} accessibilityRole="tab" accessibilityState={{ selected: tier === value }} accessibilityLabel={`${value} ${TIER_NAMES[value]}试排题`} onPress={() => setTier(value)} style={[styles.filter, tier === value && styles.selected]}><Text style={styles.filterText}>{value}</Text><Text style={styles.filterText}>{TIER_NAMES[value]}</Text></Pressable>)}</View>
         <ScrollView contentContainerStyle={styles.list}>
+          {[MAINLINE.entries.find(e => e.level.colors.length === 11)!, MAINLINE.entries.find(e => e.level.colors.length === 10 && e.level.bottles.length === 12)!, MAINLINE.entries[999]].map(entry => <Pressable key={entry.number} accessibilityRole="button" onPress={() => onPreview(entry.number)} style={styles.card}>
+            <Text style={styles.name}>内部预览 · 第 {entry.number} 关</Text><Text style={styles.detail}>{entry.level.colors.length} 色 · {entry.level.bottles.length} 瓶 · 内部 {entry.rank} 级</Text>
+          </Pressable>)}
           <Pressable accessibilityRole="button" accessibilityState={{ selected: currentCode === null }} onPress={() => onSelect(null)} style={[styles.card, currentCode === null && styles.selected]}>
             <Text style={styles.name}>原始体验 · 两色四瓶</Text><Text style={styles.detail}>保留已验证的倒水与画面基线</Text>
           </Pressable>

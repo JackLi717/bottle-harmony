@@ -30,6 +30,7 @@
     "lint": "eslint .",
     "test": "node --experimental-strip-types --test tests/*.test.ts",
     "benchmark:solver": "node --expose-gc --experimental-strip-types scripts/benchmark-solver.ts",
+    "benchmark:production": "node --expose-gc --experimental-strip-types scripts/benchmark-production.ts",
     "levels:generate": "node --experimental-strip-types scripts/levels.ts generate",
     "levels:verify": "node --experimental-strip-types scripts/levels.ts verify",
     "levels:rate": "node --experimental-strip-types scripts/difficulty.ts",
@@ -40,7 +41,9 @@
     "catalog:verify": "node --experimental-strip-types scripts/catalog.ts verify",
     "production:plan": "node --experimental-strip-types scripts/production.ts plan",
     "production:rate": "node --experimental-strip-types scripts/production.ts rate",
-    "production:verify": "node --experimental-strip-types scripts/production.ts verify"
+    "production:verify": "node --experimental-strip-types scripts/production.ts verify",
+    "mainline:build": "node --experimental-strip-types scripts/mainline.ts build",
+    "mainline:verify": "node --experimental-strip-types scripts/mainline.ts verify"
   },
   "private": true,
   "engines": {

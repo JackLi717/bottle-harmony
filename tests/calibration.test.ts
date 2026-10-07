@@ -73,8 +73,8 @@ test('reference hints follow exact verified states, including undo, and never tr
   }
 });
 
-test('multi-bottle pour geometry contains all pairs and aligns streams, including the wider seven-bottle stage', () => {
-  for (let count = 4; count <= 7; count++) {
+test('multi-bottle pour geometry contains all pairs and aligns streams through twelve bottles', () => {
+  for (let count = 4; count <= 12; count++) {
     const layout = boardLayout(count);
     assert.equal(layout.positions.length, count);
     for (const source of layout.positions) for (const target of layout.positions) {
@@ -114,5 +114,5 @@ test('small phone and tablet layouts keep touch targets, slots and moving art in
       }
     }
   }
-  assert.throws(() => boardLayout(8));
+  assert.throws(() => boardLayout(13));
 });

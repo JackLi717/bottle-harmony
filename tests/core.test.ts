@@ -164,12 +164,14 @@ test('symmetry pruning preserves solvability and shortest distance across all 90
     }
     const board = [prefix.slice(0, 2), prefix.slice(2, 4), prefix.slice(4, 6), []];
     const expected = exhaustiveDistance(board);
-    const result = solveBoard(board, { capacity: 2, maxMilliseconds: 2000 });
-    if (expected === null) assert.equal(result.status, 'unsolvable');
-    else {
-      assert.ok(result.status === 'solved');
-      assert.equal(result.route.length, expected);
-      replaySolution(board, result.route, 2);
+    for (const algorithm of ['bfs', 'astar'] as const) {
+      const result = solveBoard(board, { capacity: 2, maxMilliseconds: 2000, algorithm });
+      if (expected === null) assert.equal(result.status, 'unsolvable');
+      else {
+        assert.ok(result.status === 'solved');
+        assert.equal(result.route.length, expected);
+        replaySolution(board, result.route, 2);
+      }
     }
     checked++;
   };
