@@ -4,12 +4,14 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TIER_NAMES, TRIAL_TIERS, type CalibrationSample, type TrialTier } from '../game/calibration';
 import { CALIBRATION_SAMPLES, DIFFICULTY } from './content';
 import { MAINLINE } from './mainlineContent';
+import { SOLID_SIDES } from './solidSideContent';
 
-type Props = { visible: boolean; currentCode: string | null; onClose: () => void; onSelect: (sample: CalibrationSample | null) => void; onPreview: (number: number) => void };
+type Props = { visible: boolean; currentCode: string | null; onClose: () => void; onSelect: (sample: CalibrationSample | null) => void; onPreview: (number: number) => void; onSidePreview: (number: number) => void };
 
-export function LevelPicker({ visible, currentCode, onClose, onSelect, onPreview }: Props) {
+export function LevelPicker({ visible, currentCode, onClose, onSelect, onPreview, onSidePreview }: Props) {
   const insets = useSafeAreaInsets();
   const [tier, setTier] = useState<TrialTier>('D1');
+  const [sideVisible, setSideVisible] = useState(false);
   return <Modal visible={visible} animationType="fade" transparent onRequestClose={onClose}>
     <View style={[styles.backdrop, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 12 }]}>
       <View style={styles.panel}>
@@ -19,6 +21,14 @@ export function LevelPicker({ visible, currentCode, onClose, onSelect, onPreview
         <ScrollView contentContainerStyle={styles.list}>
           {[MAINLINE.entries.find(e => e.level.colors.length === 11)!, MAINLINE.entries.find(e => e.level.colors.length === 10 && e.level.bottles.length === 12)!, MAINLINE.entries[999]].map(entry => <Pressable key={entry.number} accessibilityRole="button" onPress={() => onPreview(entry.number)} style={styles.card}>
             <Text style={styles.name}>内部预览 · 第 {entry.number} 关</Text><Text style={styles.detail}>{entry.level.colors.length} 色 · {entry.level.bottles.length} 瓶 · 内部 {entry.rank} 级</Text>
+          </Pressable>)}
+          <Pressable accessibilityRole="button" accessibilityState={{ expanded: sideVisible }} onPress={() => setSideVisible(value => !value)} style={styles.card}>
+            <Text style={styles.name}>凝固目标瓶 · 50 道副关卡 {sideVisible ? '⌃' : '⌄'}</Text>
+            <Text style={styles.detail}>可直接试玩任意一题；独立预览，不计入进度。</Text>
+          </Pressable>
+          {sideVisible && SOLID_SIDES.entries.map(entry => <Pressable key={entry.number} accessibilityRole="button" onPress={() => onSidePreview(entry.number)} style={styles.card}>
+            <Text style={styles.name}>副关卡 {entry.number} · 主线 {entry.afterMainline} 后</Text>
+            <Text style={styles.detail}>{entry.level.colors.length} 色 · {entry.level.bottles.length} 瓶 · 凝固最短 {entry.difficulty.frozenMoves} 步</Text>
           </Pressable>)}
           <Pressable accessibilityRole="button" accessibilityState={{ selected: currentCode === null }} onPress={() => onSelect(null)} style={[styles.card, currentCode === null && styles.selected]}>
             <Text style={styles.name}>原始体验 · 两色四瓶</Text><Text style={styles.detail}>保留已验证的倒水与画面基线</Text>

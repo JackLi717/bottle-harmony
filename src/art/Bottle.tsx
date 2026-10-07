@@ -96,16 +96,21 @@ export type BottleProps = {
   completionReplay?: number;
   completionAnimations?: boolean;
   vessel?: VesselDesign;
+  frozenBottom?: boolean;
 };
 
 /** Glass art remains static; liquid paths and transforms update on the UI thread. */
-export const Bottle = memo(function Bottle({ index, colors, selected, completed, width, scale, plan, pour, progress, position, symbols = false, completionEffect = 'gold', completionScene = 'preview', completionReplay = 0, completionAnimations = true, vessel = DEFAULT_VESSEL }: BottleProps) {
+export const Bottle = memo(function Bottle({ index, colors, selected, completed, width, scale, plan, pour, progress, position, symbols = false, completionEffect = 'gold', completionScene = 'preview', completionReplay = 0, completionAnimations = true, vessel = DEFAULT_VESSEL, frozenBottom = false }: BottleProps) {
   const isSource = pour?.source === index;
   const isTarget = pour?.target === index;
   const id = `bottle-${index}-${vessel.id}`;
   const effect = vesselCompletionEffect(vessel, completionEffect);
   const scene = `${completionScene}:${vessel.id}`;
   const mouth = vessel.mouth;
+  const iceTop = liquidSurface(1, vessel).y;
+  const iceBottom = liquidSurface(0, vessel).y;
+  const iceMiddle = (iceTop + iceBottom) / 2;
+  const iceRadius = Math.min(8, Math.max(3, (iceBottom - iceTop) * .28));
   const angle = useDerivedValue(() => isSource && plan ? sourcePose(plan, progress.value).angle : 0);
   const count = useDerivedValue(() => {
     const transferred = pour ? transferredFraction(progress.value) * pour.amount : 0;
@@ -186,6 +191,11 @@ export const Bottle = memo(function Bottle({ index, colors, selected, completed,
           }).filter(({ color, layer }) => colors[layer + 1] !== color).reverse().map(({ color, layer, firstLayer }) => (
             <LiquidLayer key={layer} color={color} layer={layer} firstLayer={firstLayer} count={count} angle={angle} id={id} vessel={vessel} />
           ))}
+          {frozenBottom && colors.length > 0 && <G>
+            <Path d={liquidPath(1, 0, vessel)} fill="#C6F3FF" fillOpacity={0.35} stroke="#E8FCFF" strokeOpacity={0.8} strokeWidth={1.2} />
+            <Path d={`M50 ${iceMiddle - iceRadius} V${iceMiddle + iceRadius} M${50 - iceRadius} ${iceMiddle} H${50 + iceRadius} M${50 - iceRadius * .7} ${iceMiddle - iceRadius * .7} L${50 + iceRadius * .7} ${iceMiddle + iceRadius * .7} M${50 + iceRadius * .7} ${iceMiddle - iceRadius * .7} L${50 - iceRadius * .7} ${iceMiddle + iceRadius * .7}`}
+              fill="none" stroke="#F2FDFF" strokeOpacity={0.85} strokeWidth={1.5} strokeLinecap="round" />
+          </G>}
           {symbols && !isSource && !isTarget && colors.map((color, layer) => {
             const bottom = liquidSurface(layer, vessel).y, top = liquidSurface(layer + 1, vessel).y;
             const size = Math.min(16, (bottom - top) * .7);

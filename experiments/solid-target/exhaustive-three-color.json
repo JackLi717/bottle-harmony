@@ -1,0 +1,43 @@
+{
+  "colors": 3,
+  "capacity": 4,
+  "totalBottles": 4,
+  "ordinaryStructures": 34074,
+  "frozenStructures": 41932,
+  "longerFrozen": 12,
+  "maxExtraMoves": 1,
+  "byEmpty": {
+    "0": {
+      "states": 37512,
+      "longerFrozen": 12,
+      "maxExtraMoves": 1
+    },
+    "1": {
+      "states": 4420,
+      "longerFrozen": 0,
+      "maxExtraMoves": 0
+    }
+  },
+  "example": [
+    [
+      "A",
+      "C",
+      "C"
+    ],
+    [
+      "B",
+      "C",
+      "B"
+    ],
+    [
+      "A",
+      "B",
+      "A",
+      "C"
+    ],
+    [
+      "A",
+      "B"
+    ]
+  ]
+}

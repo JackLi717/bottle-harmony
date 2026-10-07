@@ -1,0 +1,1182 @@
+[
+  {
+    "number": 971,
+    "colors": 5,
+    "priorTrapPeak": 16,
+    "meltedMoves": 14,
+    "frozenMoves": 14,
+    "meltedPoints": [
+      {
+        "index": 0,
+        "legal": 5,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 3,
+        "unknown": 0
+      },
+      {
+        "index": 4,
+        "legal": 3,
+        "safe": 1,
+        "detours": 0,
+        "deadEnds": 2,
+        "unknown": 0
+      },
+      {
+        "index": 9,
+        "legal": 1,
+        "safe": 1,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    ],
+    "frozenPoints": [
+      {
+        "index": 0,
+        "legal": 5,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 3,
+        "unknown": 0
+      },
+      {
+        "index": 4,
+        "legal": 3,
+        "safe": 1,
+        "detours": 0,
+        "deadEnds": 2,
+        "unknown": 0
+      },
+      {
+        "index": 9,
+        "legal": 1,
+        "safe": 1,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    ]
+  },
+  {
+    "number": 910,
+    "colors": 6,
+    "priorTrapPeak": 14,
+    "meltedMoves": 19,
+    "frozenMoves": 19,
+    "meltedPoints": [
+      {
+        "index": 0,
+        "legal": 6,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 4,
+        "unknown": 0
+      },
+      {
+        "index": 6,
+        "legal": 2,
+        "safe": 1,
+        "detours": 0,
+        "deadEnds": 1,
+        "unknown": 0
+      },
+      {
+        "index": 12,
+        "legal": 6,
+        "safe": 3,
+        "detours": 0,
+        "deadEnds": 3,
+        "unknown": 0
+      }
+    ],
+    "frozenPoints": [
+      {
+        "index": 0,
+        "legal": 6,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 4,
+        "unknown": 0
+      },
+      {
+        "index": 6,
+        "legal": 2,
+        "safe": 1,
+        "detours": 0,
+        "deadEnds": 1,
+        "unknown": 0
+      },
+      {
+        "index": 12,
+        "legal": 6,
+        "safe": 3,
+        "detours": 0,
+        "deadEnds": 3,
+        "unknown": 0
+      }
+    ]
+  },
+  {
+    "number": 708,
+    "colors": 4,
+    "priorTrapPeak": 13,
+    "meltedMoves": 12,
+    "frozenMoves": 12,
+    "meltedPoints": [
+      {
+        "index": 0,
+        "legal": 4,
+        "safe": 1,
+        "detours": 0,
+        "deadEnds": 3,
+        "unknown": 0
+      },
+      {
+        "index": 4,
+        "legal": 2,
+        "safe": 1,
+        "detours": 0,
+        "deadEnds": 1,
+        "unknown": 0
+      },
+      {
+        "index": 8,
+        "legal": 2,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    ],
+    "frozenPoints": [
+      {
+        "index": 0,
+        "legal": 4,
+        "safe": 1,
+        "detours": 0,
+        "deadEnds": 3,
+        "unknown": 0
+      },
+      {
+        "index": 4,
+        "legal": 2,
+        "safe": 1,
+        "detours": 0,
+        "deadEnds": 1,
+        "unknown": 0
+      },
+      {
+        "index": 8,
+        "legal": 1,
+        "safe": 1,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    ]
+  },
+  {
+    "number": 765,
+    "colors": 5,
+    "priorTrapPeak": 13,
+    "meltedMoves": 16,
+    "frozenMoves": 16,
+    "meltedPoints": [
+      {
+        "index": 0,
+        "legal": 5,
+        "safe": 4,
+        "detours": 0,
+        "deadEnds": 1,
+        "unknown": 0
+      },
+      {
+        "index": 5,
+        "legal": 4,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 2,
+        "unknown": 0
+      },
+      {
+        "index": 10,
+        "legal": 1,
+        "safe": 1,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    ],
+    "frozenPoints": [
+      {
+        "index": 0,
+        "legal": 5,
+        "safe": 4,
+        "detours": 0,
+        "deadEnds": 1,
+        "unknown": 0
+      },
+      {
+        "index": 5,
+        "legal": 4,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 2,
+        "unknown": 0
+      },
+      {
+        "index": 10,
+        "legal": 1,
+        "safe": 1,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    ]
+  },
+  {
+    "number": 850,
+    "colors": 6,
+    "priorTrapPeak": 13,
+    "meltedMoves": 19,
+    "frozenMoves": 19,
+    "meltedPoints": [
+      {
+        "index": 0,
+        "legal": 6,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 4,
+        "unknown": 0
+      },
+      {
+        "index": 6,
+        "legal": 3,
+        "safe": 3,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      {
+        "index": 12,
+        "legal": 6,
+        "safe": 3,
+        "detours": 0,
+        "deadEnds": 3,
+        "unknown": 0
+      }
+    ],
+    "frozenPoints": [
+      {
+        "index": 0,
+        "legal": 6,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 4,
+        "unknown": 0
+      },
+      {
+        "index": 6,
+        "legal": 3,
+        "safe": 3,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      {
+        "index": 12,
+        "legal": 6,
+        "safe": 3,
+        "detours": 0,
+        "deadEnds": 3,
+        "unknown": 0
+      }
+    ]
+  },
+  {
+    "number": 860,
+    "colors": 6,
+    "priorTrapPeak": 13,
+    "meltedMoves": 19,
+    "frozenMoves": 19,
+    "meltedPoints": [
+      {
+        "index": 0,
+        "legal": 6,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 4,
+        "unknown": 0
+      },
+      {
+        "index": 6,
+        "legal": 2,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      {
+        "index": 12,
+        "legal": 6,
+        "safe": 3,
+        "detours": 0,
+        "deadEnds": 3,
+        "unknown": 0
+      }
+    ],
+    "frozenPoints": [
+      {
+        "index": 0,
+        "legal": 6,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 4,
+        "unknown": 0
+      },
+      {
+        "index": 6,
+        "legal": 2,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      {
+        "index": 12,
+        "legal": 6,
+        "safe": 3,
+        "detours": 0,
+        "deadEnds": 3,
+        "unknown": 0
+      }
+    ]
+  },
+  {
+    "number": 914,
+    "colors": 6,
+    "priorTrapPeak": 13,
+    "meltedMoves": 17,
+    "frozenMoves": 17,
+    "meltedPoints": [
+      {
+        "index": 0,
+        "legal": 6,
+        "safe": 1,
+        "detours": 0,
+        "deadEnds": 5,
+        "unknown": 0
+      },
+      {
+        "index": 5,
+        "legal": 2,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      {
+        "index": 11,
+        "legal": 2,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    ],
+    "frozenPoints": [
+      {
+        "index": 0,
+        "legal": 6,
+        "safe": 1,
+        "detours": 0,
+        "deadEnds": 5,
+        "unknown": 0
+      },
+      {
+        "index": 5,
+        "legal": 2,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      {
+        "index": 11,
+        "legal": 1,
+        "safe": 1,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    ]
+  },
+  {
+    "number": 786,
+    "colors": 5,
+    "priorTrapPeak": 12,
+    "meltedMoves": 16,
+    "frozenMoves": 16,
+    "meltedPoints": [
+      {
+        "index": 0,
+        "legal": 5,
+        "safe": 4,
+        "detours": 0,
+        "deadEnds": 1,
+        "unknown": 0
+      },
+      {
+        "index": 5,
+        "legal": 2,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      {
+        "index": 10,
+        "legal": 5,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 3,
+        "unknown": 0
+      }
+    ],
+    "frozenPoints": [
+      {
+        "index": 0,
+        "legal": 5,
+        "safe": 4,
+        "detours": 0,
+        "deadEnds": 1,
+        "unknown": 0
+      },
+      {
+        "index": 5,
+        "legal": 2,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      {
+        "index": 10,
+        "legal": 5,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 3,
+        "unknown": 0
+      }
+    ]
+  },
+  {
+    "number": 790,
+    "colors": 6,
+    "priorTrapPeak": 12,
+    "meltedMoves": 16,
+    "frozenMoves": 16,
+    "meltedPoints": [
+      {
+        "index": 0,
+        "legal": 6,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 4,
+        "unknown": 0
+      },
+      {
+        "index": 5,
+        "legal": 2,
+        "safe": 1,
+        "detours": 0,
+        "deadEnds": 1,
+        "unknown": 0
+      },
+      {
+        "index": 10,
+        "legal": 2,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    ],
+    "frozenPoints": [
+      {
+        "index": 0,
+        "legal": 6,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 4,
+        "unknown": 0
+      },
+      {
+        "index": 5,
+        "legal": 2,
+        "safe": 1,
+        "detours": 0,
+        "deadEnds": 1,
+        "unknown": 0
+      },
+      {
+        "index": 10,
+        "legal": 2,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    ]
+  },
+  {
+    "number": 800,
+    "colors": 6,
+    "priorTrapPeak": 12,
+    "meltedMoves": 20,
+    "frozenMoves": 20,
+    "meltedPoints": [
+      {
+        "index": 0,
+        "legal": 6,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 4,
+        "unknown": 0
+      },
+      {
+        "index": 6,
+        "legal": 2,
+        "safe": 1,
+        "detours": 0,
+        "deadEnds": 1,
+        "unknown": 0
+      },
+      {
+        "index": 13,
+        "legal": 1,
+        "safe": 1,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    ],
+    "frozenPoints": [
+      {
+        "index": 0,
+        "legal": 6,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 4,
+        "unknown": 0
+      },
+      {
+        "index": 6,
+        "legal": 2,
+        "safe": 1,
+        "detours": 0,
+        "deadEnds": 1,
+        "unknown": 0
+      },
+      {
+        "index": 13,
+        "legal": 1,
+        "safe": 1,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    ]
+  },
+  {
+    "number": 865,
+    "colors": 5,
+    "priorTrapPeak": 12,
+    "meltedMoves": 15,
+    "frozenMoves": 15,
+    "meltedPoints": [
+      {
+        "index": 0,
+        "legal": 5,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 3,
+        "unknown": 0
+      },
+      {
+        "index": 5,
+        "legal": 5,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 3,
+        "unknown": 0
+      },
+      {
+        "index": 10,
+        "legal": 5,
+        "safe": 3,
+        "detours": 0,
+        "deadEnds": 2,
+        "unknown": 0
+      }
+    ],
+    "frozenPoints": [
+      {
+        "index": 0,
+        "legal": 5,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 3,
+        "unknown": 0
+      },
+      {
+        "index": 5,
+        "legal": 5,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 3,
+        "unknown": 0
+      },
+      {
+        "index": 10,
+        "legal": 5,
+        "safe": 3,
+        "detours": 0,
+        "deadEnds": 2,
+        "unknown": 0
+      }
+    ]
+  },
+  {
+    "number": 929,
+    "colors": 6,
+    "priorTrapPeak": 12,
+    "meltedMoves": 18,
+    "frozenMoves": 18,
+    "meltedPoints": [
+      {
+        "index": 0,
+        "legal": 6,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 4,
+        "unknown": 0
+      },
+      {
+        "index": 6,
+        "legal": 2,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      {
+        "index": 12,
+        "legal": 2,
+        "safe": 1,
+        "detours": 0,
+        "deadEnds": 1,
+        "unknown": 0
+      }
+    ],
+    "frozenPoints": [
+      {
+        "index": 0,
+        "legal": 6,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 4,
+        "unknown": 0
+      },
+      {
+        "index": 6,
+        "legal": 2,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      {
+        "index": 12,
+        "legal": 2,
+        "safe": 1,
+        "detours": 0,
+        "deadEnds": 1,
+        "unknown": 0
+      }
+    ]
+  },
+  {
+    "number": 972,
+    "colors": 6,
+    "priorTrapPeak": 12,
+    "meltedMoves": 21,
+    "frozenMoves": 21,
+    "meltedPoints": [
+      {
+        "index": 0,
+        "legal": 6,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 4,
+        "unknown": 0
+      },
+      {
+        "index": 7,
+        "legal": 6,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 4,
+        "unknown": 0
+      },
+      {
+        "index": 14,
+        "legal": 2,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    ],
+    "frozenPoints": [
+      {
+        "index": 0,
+        "legal": 6,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 4,
+        "unknown": 0
+      },
+      {
+        "index": 7,
+        "legal": 6,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 4,
+        "unknown": 0
+      },
+      {
+        "index": 14,
+        "legal": 2,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    ]
+  },
+  {
+    "number": 611,
+    "colors": 6,
+    "priorTrapPeak": 11,
+    "meltedMoves": 15,
+    "frozenMoves": 15,
+    "meltedPoints": [
+      {
+        "index": 0,
+        "legal": 6,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 4,
+        "unknown": 0
+      },
+      {
+        "index": 5,
+        "legal": 2,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      {
+        "index": 10,
+        "legal": 1,
+        "safe": 1,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    ],
+    "frozenPoints": [
+      {
+        "index": 0,
+        "legal": 6,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 4,
+        "unknown": 0
+      },
+      {
+        "index": 5,
+        "legal": 2,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      {
+        "index": 10,
+        "legal": 1,
+        "safe": 1,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    ]
+  },
+  {
+    "number": 634,
+    "colors": 6,
+    "priorTrapPeak": 11,
+    "meltedMoves": 13,
+    "frozenMoves": 13,
+    "meltedPoints": [
+      {
+        "index": 0,
+        "legal": 6,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 4,
+        "unknown": 0
+      },
+      {
+        "index": 4,
+        "legal": 2,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      {
+        "index": 8,
+        "legal": 2,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    ],
+    "frozenPoints": [
+      {
+        "index": 0,
+        "legal": 6,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 4,
+        "unknown": 0
+      },
+      {
+        "index": 4,
+        "legal": 2,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      {
+        "index": 8,
+        "legal": 1,
+        "safe": 1,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    ]
+  },
+  {
+    "number": 671,
+    "colors": 6,
+    "priorTrapPeak": 11,
+    "meltedMoves": 17,
+    "frozenMoves": 17,
+    "meltedPoints": [
+      {
+        "index": 0,
+        "legal": 6,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 4,
+        "unknown": 0
+      },
+      {
+        "index": 5,
+        "legal": 2,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      {
+        "index": 11,
+        "legal": 1,
+        "safe": 1,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    ],
+    "frozenPoints": [
+      {
+        "index": 0,
+        "legal": 6,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 4,
+        "unknown": 0
+      },
+      {
+        "index": 5,
+        "legal": 2,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      {
+        "index": 11,
+        "legal": 1,
+        "safe": 1,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    ]
+  },
+  {
+    "number": 678,
+    "colors": 6,
+    "priorTrapPeak": 11,
+    "meltedMoves": 15,
+    "frozenMoves": 15,
+    "meltedPoints": [
+      {
+        "index": 0,
+        "legal": 6,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 4,
+        "unknown": 0
+      },
+      {
+        "index": 5,
+        "legal": 2,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      {
+        "index": 10,
+        "legal": 1,
+        "safe": 1,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    ],
+    "frozenPoints": [
+      {
+        "index": 0,
+        "legal": 6,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 4,
+        "unknown": 0
+      },
+      {
+        "index": 5,
+        "legal": 2,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      {
+        "index": 10,
+        "legal": 1,
+        "safe": 1,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    ]
+  },
+  {
+    "number": 711,
+    "colors": 5,
+    "priorTrapPeak": 11,
+    "meltedMoves": 13,
+    "frozenMoves": 13,
+    "meltedPoints": [
+      {
+        "index": 0,
+        "legal": 5,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 3,
+        "unknown": 0
+      },
+      {
+        "index": 4,
+        "legal": 2,
+        "safe": 1,
+        "detours": 0,
+        "deadEnds": 1,
+        "unknown": 0
+      },
+      {
+        "index": 8,
+        "legal": 2,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    ],
+    "frozenPoints": [
+      {
+        "index": 0,
+        "legal": 5,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 3,
+        "unknown": 0
+      },
+      {
+        "index": 4,
+        "legal": 2,
+        "safe": 1,
+        "detours": 0,
+        "deadEnds": 1,
+        "unknown": 0
+      },
+      {
+        "index": 8,
+        "legal": 2,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    ]
+  },
+  {
+    "number": 715,
+    "colors": 6,
+    "priorTrapPeak": 11,
+    "meltedMoves": 16,
+    "frozenMoves": 16,
+    "meltedPoints": [
+      {
+        "index": 0,
+        "legal": 6,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 4,
+        "unknown": 0
+      },
+      {
+        "index": 5,
+        "legal": 3,
+        "safe": 3,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      {
+        "index": 10,
+        "legal": 2,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    ],
+    "frozenPoints": [
+      {
+        "index": 0,
+        "legal": 6,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 4,
+        "unknown": 0
+      },
+      {
+        "index": 5,
+        "legal": 3,
+        "safe": 3,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      {
+        "index": 10,
+        "legal": 1,
+        "safe": 1,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    ]
+  },
+  {
+    "number": 716,
+    "colors": 6,
+    "priorTrapPeak": 11,
+    "meltedMoves": 17,
+    "frozenMoves": 17,
+    "meltedPoints": [
+      {
+        "index": 0,
+        "legal": 6,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 4,
+        "unknown": 0
+      },
+      {
+        "index": 5,
+        "legal": 2,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      {
+        "index": 11,
+        "legal": 2,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    ],
+    "frozenPoints": [
+      {
+        "index": 0,
+        "legal": 6,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 4,
+        "unknown": 0
+      },
+      {
+        "index": 5,
+        "legal": 2,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      {
+        "index": 11,
+        "legal": 2,
+        "safe": 2,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    ]
+  }
+]

@@ -1,8 +1,9 @@
 import { validateBoard } from './model.ts';
 import { applyPour, CAPACITY, getPour, isSolved, type Board, type Pour } from './rules.ts';
 import { createAStarSolver } from './solverAStar.ts';
+import { applySolidPour, getSolidPour, type SolidRule } from './solidRules.ts';
 
-export type SolverOptions = { capacity?: number; maxStates?: number; maxMilliseconds?: number; algorithm?: 'bfs' | 'astar' };
+export type SolverOptions = { capacity?: number; maxStates?: number; maxMilliseconds?: number; algorithm?: 'bfs' | 'astar'; solid?: SolidRule };
 export type SearchStats = {
   readonly visitedStates: number;
   readonly expandedStates: number;
@@ -35,6 +36,8 @@ export function createSolver(input: Board, options: SolverOptions = {}): SolverT
   const maxStates = options.maxStates ?? 30000;
   const maxMilliseconds = options.maxMilliseconds ?? 250;
   const issues = validateBoard(input, capacity);
+  if (options.solid && (options.solid.depth !== 1 || !Number.isInteger(options.solid.bottle)
+    || options.solid.bottle < 0 || options.solid.bottle >= input.length)) issues.push('Invalid solid bottle');
   if (options.algorithm !== undefined && options.algorithm !== 'bfs') issues.push('Unsupported solver algorithm');
   if (!Number.isInteger(maxStates) || maxStates < 1 || maxStates > 1000000) issues.push('maxStates must be an integer from 1 to 1000000');
   if (!Number.isFinite(maxMilliseconds) || maxMilliseconds <= 0 || maxMilliseconds > 60000) issues.push('maxMilliseconds must be positive and at most 60000');
@@ -46,7 +49,12 @@ export function createSolver(input: Board, options: SolverOptions = {}): SolverT
   const colorCodes = new Map<string, string>();
   const stats = (): SearchStats => ({ visitedStates, expandedStates, generatedMoves, peakFrontier, elapsedMilliseconds: elapsed });
   // Only ordinary, movable, equal-capacity bottles are interchangeable.
-  const key = (board: Board) => board.map(bottle => bottle.map(color => colorCodes.get(color)!).join('')).sort().join('|');
+  const key = (board: Board) => {
+    const coded = board.map(bottle => bottle.map(color => colorCodes.get(color)!).join(''));
+    return options.solid && !options.solid.melted
+      ? coded.filter((_, index) => index !== options.solid!.bottle).sort().join('|') + '#' + coded[options.solid.bottle]
+      : coded.sort().join('|');
+  };
   if (issues.length) result = { status: 'invalid', issues, stats: stats() };
   else {
     const board = input.map(bottle => [...bottle]);
@@ -89,10 +97,11 @@ export function createSolver(input: Board, options: SolverOptions = {}): SolverT
           if (elapsed + now() - start >= maxMilliseconds) return finish({ status: 'limitReached', reason: 'time' });
           if (now() - start >= sliceMilliseconds) return endSlice();
           const pair = current.nextPair++;
-          const pour = getPour(board, Math.floor(pair / board.length), pair % board.length, capacity);
+          const source = Math.floor(pair / board.length), target = pair % board.length;
+          const pour = options.solid ? getSolidPour(board, source, target, capacity, options.solid) : getPour(board, source, target, capacity);
           if (!pour) continue;
           generatedMoves++;
-          const next = applyPour(board, pour, capacity);
+          const next = options.solid ? applySolidPour(board, pour, capacity, options.solid) : applyPour(board, pour, capacity);
           const stateKey = key(next);
           if (seen.has(stateKey)) continue;
           if (visitedStates >= maxStates) return finish({ status: 'limitReached', reason: 'states' });

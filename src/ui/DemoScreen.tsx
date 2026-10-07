@@ -16,8 +16,9 @@ import { LanguagePicker } from './LanguagePicker';
 import { createPourPlan, type PourPlan } from '../art/pourGeometry';
 import { DEMO_LEVEL } from '../game/demo';
 import { getPour, type Board, type Pour } from '../game/rules';
-import { moveMainline, hintMainline, hintAvailability, MAX_HINT_CREDITS, editMainline, nextMainline, selectMainline, visibleSession, reserveIsLocked, unlockReserveMainline } from '../game/mainline';
-import { createSession, moveSession, resetSession, undoSession, type GameSession } from '../game/session';
+import { getSolidPour } from '../game/solidRules';
+import { moveMainline, hintMainline, hintAvailability, MAX_HINT_CREDITS, editMainline, meltSideMainline, nextMainline, selectMainline, selectSideMainline, resumeMainline, visibleSession, reserveIsLocked, unlockReserveMainline } from '../game/mainline';
+import { createSession, moveSession, resetSession, undoSession, meltSession, type GameSession } from '../game/session';
 import { createSolver, type SolveResult, type SolverTask } from '../game/solver';
 import { HomeScreen } from './HomeScreen';
 import { GameHeader } from './GameHeader';
@@ -34,6 +35,7 @@ import { DifficultyDebug } from './DifficultyDebug';
 import { LevelPicker } from './LevelPicker';
 import { CALIBRATION_SAMPLES, DIFFICULTY, LEVEL_LABELS } from './content';
 import { MAINLINE, mainlineReport } from './mainlineContent';
+import { SOLID_SIDES } from './solidSideContent';
 import type { DifficultyReport, PlanningDepthReport } from '../game/difficulty';
 import type { HumanDifficultyReport } from '../game/humanDifficulty';
 import { MainlineMenu } from './MainlineMenu';
@@ -42,6 +44,7 @@ import { INTERNAL_TOOLS } from './buildConfig';
 import { Tutorial } from './PlayMenu';
 import { usePlayProgress } from './usePlayProgress';
 import { boardLayout, bottleHitWidth, fitBoard } from './boardLayout';
+import { Icon } from './Icon';
 import { referenceHint, type CalibrationSample } from '../game/calibration';
 import { advanceStalledNotice, closeStalledNotice, INITIAL_STALLED_NOTICE, showUnsolvableNotice } from './stalledNoticePolicy';
 
@@ -60,7 +63,8 @@ export function DemoScreen() {
   const session = internalSession ?? visibleSession(play);
   const sample = CALIBRATION_SAMPLES.find(item => item.content.level.id === session.level.id) ?? null;
   const entry = MAINLINE.entries.find(item => item.level.id === session.level.id);
-  const label = entry ? `Level ${entry.number}` : LEVEL_LABELS.get(session.level.id)!;
+  const sideEntry = SOLID_SIDES.entries.find(item => item.level.id === session.level.id);
+  const label = sideEntry ? t('solidSideLabel', { n: sideEntry.number }) : entry ? `Level ${entry.number}` : LEVEL_LABELS.get(session.level.id)!;
   const [menuVisible, setMenuVisible] = useState(false);
   const [menuSection, setMenuSection] = useState<'levels' | 'settings'>('levels');
   const [pickerVisible, setPickerVisible] = useState(false);
@@ -95,7 +99,8 @@ export function DemoScreen() {
   const won = session.status === 'solved';
   const hintMode = internalSession ? 'replay' : hintAvailability(play);
   const hintParams = { n: play.hintCredits, max: MAX_HINT_CREDITS };
-  const hintStatus = won && lastAward > 0 && !internalSession && !play.replay
+  const hintStatus = sideEntry && session.solid && !session.solid.melted && !won ? t('solidInstruction')
+    : won && lastAward > 0 && !internalSession && !play.replay
     ? t('hintAward', { n: lastAward, balance: play.hintCredits, max: MAX_HINT_CREDITS })
     : hintMode === 'replay' ? t('replayHintStatus')
     : won ? t('hintCredits', hintParams)
@@ -103,14 +108,19 @@ export function DemoScreen() {
   const [stalledNotice, setStalledNotice] = useState(INITIAL_STALLED_NOTICE);
   const stalledEligible = ready && languageReady && soundReady && vesselReady && play.tutorialDone && appActive && !animation && !searching;
   const nextNotice = advanceStalledNotice(stalledNotice, {
-    scope: `${internalSession ? 'preview' : play.replay ? 'replay' : 'mainline'}:${session.level.id}`,
+    scope: `${internalSession ? 'preview' : play.replay ? 'replay' : sideEntry ? 'side' : 'mainline'}:${session.level.id}`,
     board, status: session.status, entered: page === 'game', eligible: stalledEligible,
   });
   // React supports conditional state adjustment during render. This avoids a frame
   // with a stale notice after undo, switching sessions, or committing a new move.
   if (nextNotice !== stalledNotice) setStalledNotice(nextNotice);
   const stalledReason = stalledEligible && page === 'game' ? nextNotice.reason : null;
-  const finish = finishPresentation(internalSession ? 'preview' : play.replay ? 'replay' : 'mainline', entry?.number ?? play.current);
+  const finish = !internalSession && !play.replay && sideEntry
+    ? play.current === MAINLINE.entries.length ? { title: 'finalFinished' as const, label: 'replayLevels' as const, action: 'levels' as const }
+      : { title: 'finished' as const, label: 'next' as const, action: 'next' as const }
+    : !internalSession && !play.replay && entry?.number === MAINLINE.entries.length && play.sideCompletedThrough < SOLID_SIDES.entries.length
+      ? { title: 'finished' as const, label: 'next' as const, action: 'next' as const }
+      : finishPresentation(internalSession ? 'preview' : play.replay ? 'replay' : 'mainline', entry?.number ?? play.current);
   const celebrationCount = fireworkCount(entry?.tier ?? sample?.tier ?? 'D1');
   useEffect(() => {
     if (!pendingCelebration || animation || !appActive || page !== 'game' || session.level.id !== pendingCelebration || !won) return;
@@ -222,6 +232,15 @@ export function DemoScreen() {
     setPage('game');
   }
 
+  function previewSide(number: number) {
+    if (busy.current) return;
+    const extra = SOLID_SIDES.entries[number - 1];
+    if (!extra) return;
+    setPendingCelebration(null); setCelebration(null); setLastAward(0);
+    setInternalSession(createSession(extra.level, { bottle: extra.frozenBottle, depth: 1, melted: false, meltAt: null }));
+    setSelected(null); setPickerVisible(false); setPage('game'); announceStatus('tapStart');
+  }
+
   function openMenu(section: 'levels' | 'settings') {
     if (busy.current) return;
     setMenuSection(section);
@@ -230,6 +249,7 @@ export function DemoScreen() {
 
   function openDifficulty() {
     if (busy.current) return;
+    if (sideEntry) return;
     setMenuVisible(false);
     if (entry) {
       const full = mainlineReport(entry.number);
@@ -247,7 +267,7 @@ export function DemoScreen() {
     setPendingCelebration(null); setCelebration(null);
     setLastAward(0);
     setInternalSession(null);
-    if (!internalSession) setPlay(nextMainline(play, MAINLINE));
+    if (!internalSession) setPlay(nextMainline(play, MAINLINE, SOLID_SIDES));
     setSelected(null); setMenuVisible(false);
     announceStatus('tapStart');
   }
@@ -257,6 +277,20 @@ export function DemoScreen() {
     setPendingCelebration(null); setCelebration(null);
     setLastAward(0);
     setInternalSession(null); setPlay(selectMainline(play, MAINLINE, number));
+    setSelected(null); setMenuVisible(false); setPage('game'); announceStatus('tapStart');
+  }
+
+  function resumeCurrent() {
+    if (busy.current) return;
+    setPendingCelebration(null); setCelebration(null); setLastAward(0);
+    setInternalSession(null); setPlay(resumeMainline(play));
+    setSelected(null); setMenuVisible(false); setPage('game'); announceStatus('tapStart');
+  }
+
+  function chooseSide(number: number) {
+    if (busy.current) return;
+    setPendingCelebration(null); setCelebration(null); setLastAward(0);
+    setInternalSession(null); setPlay(selectSideMainline(play, SOLID_SIDES, number));
     setSelected(null); setMenuVisible(false); setPage('game'); announceStatus('tapStart');
   }
 
@@ -289,9 +323,11 @@ export function DemoScreen() {
       announceStatus('pourTarget');
       return;
     }
-    const pour = getPour(board, selected, index, session.level.capacity);
+    const pour = session.solid ? getSolidPour(board, selected, index, session.level.capacity, session.solid)
+      : getPour(board, selected, index, session.level.capacity);
     if (!pour) {
-      announceStatus(board[index].length === session.level.capacity ? 'fullBottle' : 'pourTarget');
+      announceStatus(session.solid && !session.solid.melted && selected === session.solid.bottle && board[selected].length === 1
+        ? 'solidLocked' : board[index].length === session.level.capacity ? 'fullBottle' : 'pourTarget');
       return;
     }
     startPour(pour);
@@ -303,6 +339,15 @@ export function DemoScreen() {
     setPlay(unlockReserveMainline(play, MAINLINE));
     setSelected(null);
     announceStatus('reserveEnabled');
+  }
+
+  function heatSide() {
+    if (busy.current || searching || won || !session.solid || session.solid.melted) return;
+    setStalledNotice(value => closeStalledNotice(value, true));
+    if (internalSession) setInternalSession(meltSession(internalSession));
+    else setPlay(meltSideMainline(play));
+    setSelected(null);
+    AccessibilityInfo.announceForAccessibility(t('heat'));
   }
 
   function reset() {
@@ -331,7 +376,9 @@ export function DemoScreen() {
     const content = entry ?? sample?.content;
     const referencePour = content ? referenceHint(content, board) : null;
     if (referencePour) { startPour(referencePour, true); return; }
-    const task = createSolver(board, { capacity: session.level.capacity, maxStates: 30000, maxMilliseconds: 200 });
+    const task = createSolver(board, { capacity: session.level.capacity,
+      maxStates: sideEntry ? 100000 : 30000, maxMilliseconds: sideEntry ? 700 : 200,
+      solid: session.solid ?? undefined });
     search.current = task;
     busy.current = true;
     setSearching(true);
@@ -358,7 +405,10 @@ export function DemoScreen() {
     if (busy.current) return;
     setPendingCelebration(null); setCelebration(null);
     if (finish.action === 'home') goHome();
-    else if (finish.action === 'levels') { goHome(); openMenu('levels'); }
+    else if (finish.action === 'levels') {
+      if (play.side && !play.replay) setPlay(nextMainline(play, MAINLINE, SOLID_SIDES));
+      goHome(); openMenu('levels');
+    }
     else nextLevel();
   }
 
@@ -370,7 +420,7 @@ export function DemoScreen() {
       <PourSound progress={progress} pouring={!!animation} enabled={sound && appActive && !reduceMotion && page === 'game'} />
       <View pointerEvents="none" style={StyleSheet.absoluteFill}><GameBackdrop width={dimensions.width} height={dimensions.height} /></View>
       <View style={[styles.safe, { paddingTop: insets.top + (compact ? 8 : 14), paddingBottom: Math.max(insets.bottom, 14) }]}>
-        {page === 'home' ? <HomeScreen current={play.current} hintCredits={play.hintCredits} compact={compact} onPlay={() => chooseNumber(play.current)} onLevels={() => openMenu('levels')} onSettings={() => openMenu('settings')} vessel={vessel} vesselSaved={vesselSaved} reduceMotion={reduceMotion} onVessel={chooseVessel} /> : <>
+        {page === 'home' ? <HomeScreen current={play.current} sideNumber={play.side ? play.current / 20 : null} hintCredits={play.hintCredits} compact={compact} onPlay={resumeCurrent} onLevels={() => openMenu('levels')} onSettings={() => openMenu('settings')} vessel={vessel} vesselSaved={vesselSaved} reduceMotion={reduceMotion} onVessel={chooseVessel} /> : <>
         <GameHeader label={label} compact={compact} disabled={!!animation || searching} onBack={goHome} />
         <View style={styles.stageSpace} onLayout={event => {
           const layout = event.nativeEvent.layout;
@@ -384,7 +434,7 @@ export function DemoScreen() {
               const bottle = displayBoard[index];
               // A view belongs to a visual slot; logical bottle IDs stay in the session.
               // Reuse glass/SVG/worklet bindings when the next level replaces its contents.
-              return <Bottle key={index} index={index} vessel={vessel} position={position} colors={bottle} selected={selected === index} completed={isBottleComplete(bottle, session.level.capacity)} width={100 * scale} scale={scale} plan={animation?.plan ?? null} pour={animation?.pour ?? null} progress={progress} symbols={play.symbols} completionEffect={completionEffect} completionScene={`${session.level.id}:${completionEpoch}`} completionAnimations={appActive && !reduceMotion} />;
+              return <Bottle key={index} index={index} vessel={vessel} position={position} colors={bottle} selected={selected === index} completed={isBottleComplete(bottle, session.level.capacity)} width={100 * scale} scale={scale} plan={animation?.plan ?? null} pour={animation?.pour ?? null} progress={progress} symbols={play.symbols} frozenBottom={!!session.solid && !session.solid.melted && session.solid.bottle === index} completionEffect={completionEffect} completionScene={`${session.level.id}:${completionEpoch}`} completionAnimations={appActive && !reduceMotion} />;
             })}
             {reserveLocked && <View pointerEvents="none" style={[StyleSheet.absoluteFill, { opacity: 0.25 }]}>
               <Bottle index={board.length} vessel={vessel} position={layout.positions[board.length]} colors={[]} selected={false} completed={false} width={100 * scale} scale={scale} plan={null} pour={null} progress={progress} completionAnimations={false} />
@@ -405,6 +455,13 @@ export function DemoScreen() {
               <View style={styles.reserveBadge}><UiText style={styles.reservePlus}>+</UiText></View>
               <UiText numberOfLines={1} adjustsFontSizeToFit style={styles.reserveLabel}>{t('reserveUse')}</UiText>
             </Pressable>}
+            {sideEntry && session.solid && !session.solid.melted && !won && <Pressable accessibilityRole="button"
+              accessibilityLabel={t('heat')} accessibilityHint={t('solidInstruction')} disabled={!!animation || searching}
+              onPress={heatSide} style={{ position: 'absolute', left: (layout.positions[session.solid.bottle].x + 50) * scale - 28,
+                top: (layout.positions[session.solid.bottle].y + 48) * scale, width: 56, height: 50,
+                alignItems: 'center', justifyContent: 'center', zIndex: 5 }}>
+              <View style={styles.heatBadge}><Icon name="fire" color="#FFCD9A" size={20} /><UiText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={.7} style={styles.heatLabel}>{t('heat')}</UiText></View>
+            </Pressable>}
             {animation && <View pointerEvents="none" style={[StyleSheet.absoluteFill, { zIndex: 11 }]}><PourStream plan={animation.plan} color={animation.pour.color} progress={progress} /></View>}
           </View>}
           {celebration !== null && appActive && !reduceMotion && stage.width > 0 && stage.height > 0 && <Celebration count={celebration === 'win' ? celebrationCount : celebration} width={stage.width} height={stage.height} sound={sound} onComplete={celebrationFinished} />}
@@ -412,16 +469,16 @@ export function DemoScreen() {
         <GameFooter won={won} continueVisible={won && !animation && !pendingCelebration && celebration === null} compact={compact}
           disabled={!!animation || searching} undoDisabled={!history.length || !!animation || searching} searching={searching} reduceMotion={reduceMotion}
           nextLabel={t(finish.label)} hintStatus={hintStatus} onUndo={undo} onReset={reset} onHint={demonstrate}
-          stalledReason={stalledReason} reserveAvailable={reserveLocked} onCloseStalled={() => setStalledNotice(value => closeStalledNotice(value))}
+          stalledReason={stalledReason} reserveAvailable={reserveLocked} heatAvailable={!!session.solid && !session.solid.melted} onHeat={heatSide} onCloseStalled={() => setStalledNotice(value => closeStalledNotice(value))}
           onContinue={continueAfterWin} />
         </>}
       </View>
       {debugReport && <DifficultyDebug visible={difficultyVisible} report={debugReport} human={debugHuman} sample={sample} label={label} onClose={() => setDifficultyVisible(false)} />}
-      {menuVisible && <MainlineMenu visible initialSection={menuSection} play={play} saveStatus={t(saveStatus)} onClose={() => setMenuVisible(false)} onResume={() => chooseNumber(play.current)} onSelect={chooseNumber} onSamples={() => { setMenuVisible(false); setPickerVisible(true); }} symbols={play.symbols} onSymbols={() => setPlay(Object.freeze({ ...play, symbols: !play.symbols }))} completionName={t(vesselCompletionEffect(vessel, completionEffect))} onLanguage={() => { setMenuVisible(false); setLanguageVisible(true); }} onCompletionEffects={() => { setMenuVisible(false); setCompletionPickerVisible(true); }} sound={sound} soundSaved={soundSaved} onSound={toggleSound} onCelebrationPreview={previewCelebration} onDebug={INTERNAL_TOOLS ? openDifficulty : undefined} />}
+      {menuVisible && <MainlineMenu visible initialSection={menuSection} play={play} saveStatus={t(saveStatus)} onClose={() => setMenuVisible(false)} onResume={resumeCurrent} onSelect={chooseNumber} onSelectSide={chooseSide} onSamples={() => { setMenuVisible(false); setPickerVisible(true); }} symbols={play.symbols} onSymbols={() => setPlay(Object.freeze({ ...play, symbols: !play.symbols }))} completionName={t(vesselCompletionEffect(vessel, completionEffect))} onLanguage={() => { setMenuVisible(false); setLanguageVisible(true); }} onCompletionEffects={() => { setMenuVisible(false); setCompletionPickerVisible(true); }} sound={sound} soundSaved={soundSaved} onSound={toggleSound} onCelebrationPreview={previewCelebration} onDebug={INTERNAL_TOOLS && !sideEntry ? openDifficulty : undefined} />}
       <LanguagePicker visible={languageVisible} onClose={() => { setLanguageVisible(false); openMenu('settings'); }} />
       <CompletionEffectPicker visible={completionPickerVisible} vessel={vessel} value={completionEffect} reduceMotion={reduceMotion} onSelect={effect => { setCompletionEffect(effect); setSelected(null); }} onClose={() => setCompletionPickerVisible(false)} />
       <Tutorial visible={page === 'game' && ready && !play.tutorialDone} onStart={() => setPlay(Object.freeze({ ...play, tutorialDone: true }))} onSkip={() => setPlay(Object.freeze({ ...play, tutorialDone: true }))} />
-      {INTERNAL_TOOLS && <LevelPicker visible={pickerVisible} currentCode={sample?.code ?? null} onClose={() => setPickerVisible(false)} onSelect={chooseSample} onPreview={number => { setInternalSession(createSession(MAINLINE.entries[number - 1].level)); setSelected(null); setPickerVisible(false); setPage('game'); announceStatus('tapStart'); }} />}
+      {INTERNAL_TOOLS && <LevelPicker visible={pickerVisible} currentCode={sample?.code ?? null} onClose={() => setPickerVisible(false)} onSelect={chooseSample} onPreview={number => { setInternalSession(createSession(MAINLINE.entries[number - 1].level)); setSelected(null); setPickerVisible(false); setPage('game'); announceStatus('tapStart'); }} onSidePreview={previewSide} />}
     </LinearGradient>
   );
 }
@@ -435,4 +492,6 @@ const styles = StyleSheet.create({
   reserveBadge: { width: 28, height: 28, borderRadius: 14, backgroundColor: '#18383D', borderWidth: 1, borderColor: '#A9D6D2', alignItems: 'center', justifyContent: 'center' },
   reservePlus: { color: '#DBF7EA', fontSize: 24, lineHeight: 26 },
   reserveLabel: { color: '#C8EDE3', fontSize: 10, marginTop: 5, textAlign: 'center', width: '100%' },
+  heatBadge: { width: 52, height: 47, borderRadius: 17, backgroundColor: '#503022', borderWidth: 1, borderColor: '#F6B680', alignItems: 'center', justifyContent: 'center' },
+  heatLabel: { color: '#FFE2BE', fontSize: 9, lineHeight: 11, width: '100%', textAlign: 'center' },
 });

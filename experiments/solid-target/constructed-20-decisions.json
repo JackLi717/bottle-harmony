@@ -1,0 +1,698 @@
+[
+  {
+    "number": 1,
+    "colors": 3,
+    "choices": [
+      {
+        "source": 0,
+        "target": 1,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      },
+      {
+        "source": 0,
+        "target": 3,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      },
+      {
+        "source": 1,
+        "target": 3,
+        "color": "C",
+        "amount": 1,
+        "outcome": "solvable",
+        "deceptive": true
+      },
+      {
+        "source": 3,
+        "target": 1,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      }
+    ]
+  },
+  {
+    "number": 2,
+    "colors": 3,
+    "choices": [
+      {
+        "source": 0,
+        "target": 2,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      },
+      {
+        "source": 1,
+        "target": 3,
+        "color": "B",
+        "amount": 1,
+        "outcome": "solvable",
+        "deceptive": true
+      },
+      {
+        "source": 3,
+        "target": 1,
+        "color": "B",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      }
+    ]
+  },
+  {
+    "number": 3,
+    "colors": 3,
+    "choices": [
+      {
+        "source": 0,
+        "target": 1,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      },
+      {
+        "source": 2,
+        "target": 3,
+        "color": "B",
+        "amount": 1,
+        "outcome": "solvable",
+        "deceptive": true
+      },
+      {
+        "source": 3,
+        "target": 2,
+        "color": "B",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      }
+    ]
+  },
+  {
+    "number": 4,
+    "colors": 3,
+    "choices": [
+      {
+        "source": 1,
+        "target": 3,
+        "color": "B",
+        "amount": 1,
+        "outcome": "solvable",
+        "deceptive": true
+      },
+      {
+        "source": 2,
+        "target": 0,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      },
+      {
+        "source": 3,
+        "target": 1,
+        "color": "B",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      }
+    ]
+  },
+  {
+    "number": 5,
+    "colors": 3,
+    "choices": [
+      {
+        "source": 0,
+        "target": 3,
+        "color": "B",
+        "amount": 1,
+        "outcome": "solvable",
+        "deceptive": true
+      },
+      {
+        "source": 2,
+        "target": 1,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      },
+      {
+        "source": 3,
+        "target": 0,
+        "color": "B",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      }
+    ]
+  },
+  {
+    "number": 6,
+    "colors": 4,
+    "choices": [
+      {
+        "source": 1,
+        "target": 4,
+        "color": "C",
+        "amount": 1,
+        "outcome": "solvable",
+        "deceptive": true
+      },
+      {
+        "source": 3,
+        "target": 1,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      },
+      {
+        "source": 3,
+        "target": 4,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      },
+      {
+        "source": 4,
+        "target": 1,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      }
+    ]
+  },
+  {
+    "number": 7,
+    "colors": 4,
+    "choices": [
+      {
+        "source": 0,
+        "target": 2,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      },
+      {
+        "source": 1,
+        "target": 4,
+        "color": "D",
+        "amount": 2,
+        "outcome": "solvable",
+        "deceptive": true
+      },
+      {
+        "source": 4,
+        "target": 1,
+        "color": "D",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      }
+    ]
+  },
+  {
+    "number": 8,
+    "colors": 4,
+    "choices": [
+      {
+        "source": 1,
+        "target": 4,
+        "color": "D",
+        "amount": 1,
+        "outcome": "solvable",
+        "deceptive": true
+      },
+      {
+        "source": 3,
+        "target": 2,
+        "color": "B",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      },
+      {
+        "source": 4,
+        "target": 1,
+        "color": "D",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      }
+    ]
+  },
+  {
+    "number": 9,
+    "colors": 4,
+    "choices": [
+      {
+        "source": 0,
+        "target": 2,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      },
+      {
+        "source": 1,
+        "target": 4,
+        "color": "D",
+        "amount": 1,
+        "outcome": "solvable",
+        "deceptive": true
+      },
+      {
+        "source": 4,
+        "target": 1,
+        "color": "D",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      }
+    ]
+  },
+  {
+    "number": 10,
+    "colors": 4,
+    "choices": [
+      {
+        "source": 1,
+        "target": 4,
+        "color": "D",
+        "amount": 1,
+        "outcome": "solvable",
+        "deceptive": true
+      },
+      {
+        "source": 3,
+        "target": 2,
+        "color": "B",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      },
+      {
+        "source": 4,
+        "target": 1,
+        "color": "D",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      }
+    ]
+  },
+  {
+    "number": 11,
+    "colors": 5,
+    "choices": [
+      {
+        "source": 1,
+        "target": 5,
+        "color": "C",
+        "amount": 1,
+        "outcome": "solvable",
+        "deceptive": true
+      },
+      {
+        "source": 3,
+        "target": 1,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      },
+      {
+        "source": 3,
+        "target": 5,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      },
+      {
+        "source": 5,
+        "target": 1,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      }
+    ]
+  },
+  {
+    "number": 12,
+    "colors": 5,
+    "choices": [
+      {
+        "source": 1,
+        "target": 5,
+        "color": "C",
+        "amount": 1,
+        "outcome": "solvable",
+        "deceptive": true
+      },
+      {
+        "source": 3,
+        "target": 1,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      },
+      {
+        "source": 3,
+        "target": 5,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      },
+      {
+        "source": 5,
+        "target": 1,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      }
+    ]
+  },
+  {
+    "number": 13,
+    "colors": 5,
+    "choices": [
+      {
+        "source": 1,
+        "target": 5,
+        "color": "C",
+        "amount": 1,
+        "outcome": "solvable",
+        "deceptive": true
+      },
+      {
+        "source": 3,
+        "target": 1,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      },
+      {
+        "source": 3,
+        "target": 5,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      },
+      {
+        "source": 5,
+        "target": 1,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      }
+    ]
+  },
+  {
+    "number": 14,
+    "colors": 5,
+    "choices": [
+      {
+        "source": 1,
+        "target": 5,
+        "color": "C",
+        "amount": 1,
+        "outcome": "solvable",
+        "deceptive": true
+      },
+      {
+        "source": 3,
+        "target": 1,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      },
+      {
+        "source": 3,
+        "target": 5,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      },
+      {
+        "source": 5,
+        "target": 1,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      }
+    ]
+  },
+  {
+    "number": 15,
+    "colors": 5,
+    "choices": [
+      {
+        "source": 1,
+        "target": 5,
+        "color": "C",
+        "amount": 1,
+        "outcome": "solvable",
+        "deceptive": true
+      },
+      {
+        "source": 3,
+        "target": 1,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      },
+      {
+        "source": 3,
+        "target": 5,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      },
+      {
+        "source": 5,
+        "target": 1,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      }
+    ]
+  },
+  {
+    "number": 16,
+    "colors": 6,
+    "choices": [
+      {
+        "source": 1,
+        "target": 6,
+        "color": "C",
+        "amount": 1,
+        "outcome": "solvable",
+        "deceptive": true
+      },
+      {
+        "source": 3,
+        "target": 1,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      },
+      {
+        "source": 3,
+        "target": 6,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      },
+      {
+        "source": 6,
+        "target": 1,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      }
+    ]
+  },
+  {
+    "number": 17,
+    "colors": 6,
+    "choices": [
+      {
+        "source": 1,
+        "target": 6,
+        "color": "C",
+        "amount": 1,
+        "outcome": "solvable",
+        "deceptive": true
+      },
+      {
+        "source": 3,
+        "target": 1,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      },
+      {
+        "source": 3,
+        "target": 6,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      },
+      {
+        "source": 6,
+        "target": 1,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      }
+    ]
+  },
+  {
+    "number": 18,
+    "colors": 6,
+    "choices": [
+      {
+        "source": 1,
+        "target": 6,
+        "color": "C",
+        "amount": 1,
+        "outcome": "solvable",
+        "deceptive": true
+      },
+      {
+        "source": 3,
+        "target": 1,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      },
+      {
+        "source": 3,
+        "target": 6,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      },
+      {
+        "source": 6,
+        "target": 1,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      }
+    ]
+  },
+  {
+    "number": 19,
+    "colors": 6,
+    "choices": [
+      {
+        "source": 1,
+        "target": 6,
+        "color": "C",
+        "amount": 1,
+        "outcome": "solvable",
+        "deceptive": true
+      },
+      {
+        "source": 3,
+        "target": 1,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      },
+      {
+        "source": 3,
+        "target": 6,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      },
+      {
+        "source": 6,
+        "target": 1,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      }
+    ]
+  },
+  {
+    "number": 20,
+    "colors": 6,
+    "choices": [
+      {
+        "source": 1,
+        "target": 6,
+        "color": "C",
+        "amount": 1,
+        "outcome": "solvable",
+        "deceptive": true
+      },
+      {
+        "source": 3,
+        "target": 1,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      },
+      {
+        "source": 3,
+        "target": 6,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      },
+      {
+        "source": 6,
+        "target": 1,
+        "color": "C",
+        "amount": 1,
+        "outcome": "dead",
+        "deceptive": true
+      }
+    ]
+  }
+]

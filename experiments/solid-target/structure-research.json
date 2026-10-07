@@ -1,0 +1,110 @@
+{
+  "seed": 918431,
+  "trialsPerColor": 1500,
+  "reports": [
+    {
+      "name": "one-layer-no-empty",
+      "lockedDepths": [
+        1
+      ],
+      "reserveEmpty": false,
+      "counts": {
+        "attempted": 4500,
+        "accepted": 439,
+        "unsolved": 0,
+        "unknown": 0,
+        "positive": 0,
+        "atLeastThree": 0,
+        "maxExtraMoves": 0
+      },
+      "examples": []
+    },
+    {
+      "name": "two-layers-no-empty",
+      "lockedDepths": [
+        2
+      ],
+      "reserveEmpty": false,
+      "counts": {
+        "attempted": 4500,
+        "accepted": 399,
+        "unsolved": 0,
+        "unknown": 0,
+        "positive": 0,
+        "atLeastThree": 0,
+        "maxExtraMoves": 0
+      },
+      "examples": []
+    },
+    {
+      "name": "one-layer-real-empty",
+      "lockedDepths": [
+        1
+      ],
+      "reserveEmpty": true,
+      "counts": {
+        "attempted": 4500,
+        "accepted": 441,
+        "unsolved": 0,
+        "unknown": 0,
+        "positive": 0,
+        "atLeastThree": 0,
+        "maxExtraMoves": 0
+      },
+      "examples": []
+    },
+    {
+      "name": "two-layers-real-empty",
+      "lockedDepths": [
+        2
+      ],
+      "reserveEmpty": true,
+      "counts": {
+        "attempted": 4500,
+        "accepted": 406,
+        "unsolved": 0,
+        "unknown": 0,
+        "positive": 0,
+        "atLeastThree": 0,
+        "maxExtraMoves": 0
+      },
+      "examples": []
+    },
+    {
+      "name": "two-bottles-no-empty",
+      "lockedDepths": [
+        1,
+        1
+      ],
+      "reserveEmpty": false,
+      "counts": {
+        "attempted": 4500,
+        "accepted": 468,
+        "unsolved": 0,
+        "unknown": 0,
+        "positive": 0,
+        "atLeastThree": 0,
+        "maxExtraMoves": 0
+      },
+      "examples": []
+    },
+    {
+      "name": "two-bottles-real-empty",
+      "lockedDepths": [
+        1,
+        1
+      ],
+      "reserveEmpty": true,
+      "counts": {
+        "attempted": 4500,
+        "accepted": 471,
+        "unsolved": 0,
+        "unknown": 0,
+        "positive": 0,
+        "atLeastThree": 0,
+        "maxExtraMoves": 0
+      },
+      "examples": []
+    }
+  ]
+}

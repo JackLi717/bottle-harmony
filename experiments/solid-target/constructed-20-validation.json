@@ -1,0 +1,782 @@
+[
+  {
+    "number": 1,
+    "original": {
+      "meltedMoves": 9,
+      "frozenMoves": 9,
+      "ordinaryChoices": {
+        "choices": 4,
+        "safe": 4,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      },
+      "frozenChoices": {
+        "choices": 4,
+        "safe": 1,
+        "costly": 0,
+        "dead": 3,
+        "unknown": 0
+      }
+    },
+    "withEmpty": {
+      "meltedMoves": 9,
+      "frozenMoves": 9,
+      "ordinaryChoices": {
+        "choices": 8,
+        "safe": 8,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      },
+      "frozenChoices": {
+        "choices": 8,
+        "safe": 8,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      }
+    }
+  },
+  {
+    "number": 2,
+    "original": {
+      "meltedMoves": 8,
+      "frozenMoves": 8,
+      "ordinaryChoices": {
+        "choices": 3,
+        "safe": 3,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      },
+      "frozenChoices": {
+        "choices": 3,
+        "safe": 1,
+        "costly": 0,
+        "dead": 2,
+        "unknown": 0
+      }
+    },
+    "withEmpty": {
+      "meltedMoves": 8,
+      "frozenMoves": 8,
+      "ordinaryChoices": {
+        "choices": 7,
+        "safe": 7,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      },
+      "frozenChoices": {
+        "choices": 7,
+        "safe": 7,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      }
+    }
+  },
+  {
+    "number": 3,
+    "original": {
+      "meltedMoves": 8,
+      "frozenMoves": 8,
+      "ordinaryChoices": {
+        "choices": 3,
+        "safe": 3,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      },
+      "frozenChoices": {
+        "choices": 3,
+        "safe": 1,
+        "costly": 0,
+        "dead": 2,
+        "unknown": 0
+      }
+    },
+    "withEmpty": {
+      "meltedMoves": 8,
+      "frozenMoves": 8,
+      "ordinaryChoices": {
+        "choices": 7,
+        "safe": 7,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      },
+      "frozenChoices": {
+        "choices": 7,
+        "safe": 7,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      }
+    }
+  },
+  {
+    "number": 4,
+    "original": {
+      "meltedMoves": 9,
+      "frozenMoves": 10,
+      "ordinaryChoices": {
+        "choices": 3,
+        "safe": 3,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      },
+      "frozenChoices": {
+        "choices": 3,
+        "safe": 1,
+        "costly": 0,
+        "dead": 2,
+        "unknown": 0
+      }
+    },
+    "withEmpty": {
+      "meltedMoves": 9,
+      "frozenMoves": 9,
+      "ordinaryChoices": {
+        "choices": 7,
+        "safe": 7,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      },
+      "frozenChoices": {
+        "choices": 7,
+        "safe": 7,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      }
+    }
+  },
+  {
+    "number": 5,
+    "original": {
+      "meltedMoves": 9,
+      "frozenMoves": 10,
+      "ordinaryChoices": {
+        "choices": 3,
+        "safe": 3,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      },
+      "frozenChoices": {
+        "choices": 3,
+        "safe": 1,
+        "costly": 0,
+        "dead": 2,
+        "unknown": 0
+      }
+    },
+    "withEmpty": {
+      "meltedMoves": 9,
+      "frozenMoves": 9,
+      "ordinaryChoices": {
+        "choices": 7,
+        "safe": 7,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      },
+      "frozenChoices": {
+        "choices": 7,
+        "safe": 7,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      }
+    }
+  },
+  {
+    "number": 6,
+    "original": {
+      "meltedMoves": 13,
+      "frozenMoves": 13,
+      "ordinaryChoices": {
+        "choices": 4,
+        "safe": 4,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      },
+      "frozenChoices": {
+        "choices": 4,
+        "safe": 1,
+        "costly": 0,
+        "dead": 3,
+        "unknown": 0
+      }
+    },
+    "withEmpty": {
+      "meltedMoves": 13,
+      "frozenMoves": 13,
+      "ordinaryChoices": {
+        "choices": 9,
+        "safe": 9,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      },
+      "frozenChoices": {
+        "choices": 9,
+        "safe": 9,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      }
+    }
+  },
+  {
+    "number": 7,
+    "original": {
+      "meltedMoves": 10,
+      "frozenMoves": 10,
+      "ordinaryChoices": {
+        "choices": 3,
+        "safe": 3,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      },
+      "frozenChoices": {
+        "choices": 3,
+        "safe": 1,
+        "costly": 0,
+        "dead": 2,
+        "unknown": 0
+      }
+    },
+    "withEmpty": {
+      "meltedMoves": 10,
+      "frozenMoves": 10,
+      "ordinaryChoices": {
+        "choices": 8,
+        "safe": 8,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      },
+      "frozenChoices": {
+        "choices": 8,
+        "safe": 8,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      }
+    }
+  },
+  {
+    "number": 8,
+    "original": {
+      "meltedMoves": 10,
+      "frozenMoves": 10,
+      "ordinaryChoices": {
+        "choices": 3,
+        "safe": 3,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      },
+      "frozenChoices": {
+        "choices": 3,
+        "safe": 1,
+        "costly": 0,
+        "dead": 2,
+        "unknown": 0
+      }
+    },
+    "withEmpty": {
+      "meltedMoves": 10,
+      "frozenMoves": 10,
+      "ordinaryChoices": {
+        "choices": 8,
+        "safe": 8,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      },
+      "frozenChoices": {
+        "choices": 8,
+        "safe": 8,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      }
+    }
+  },
+  {
+    "number": 9,
+    "original": {
+      "meltedMoves": 11,
+      "frozenMoves": 11,
+      "ordinaryChoices": {
+        "choices": 3,
+        "safe": 3,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      },
+      "frozenChoices": {
+        "choices": 3,
+        "safe": 1,
+        "costly": 0,
+        "dead": 2,
+        "unknown": 0
+      }
+    },
+    "withEmpty": {
+      "meltedMoves": 11,
+      "frozenMoves": 11,
+      "ordinaryChoices": {
+        "choices": 8,
+        "safe": 8,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      },
+      "frozenChoices": {
+        "choices": 8,
+        "safe": 8,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      }
+    }
+  },
+  {
+    "number": 10,
+    "original": {
+      "meltedMoves": 11,
+      "frozenMoves": 11,
+      "ordinaryChoices": {
+        "choices": 3,
+        "safe": 3,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      },
+      "frozenChoices": {
+        "choices": 3,
+        "safe": 1,
+        "costly": 0,
+        "dead": 2,
+        "unknown": 0
+      }
+    },
+    "withEmpty": {
+      "meltedMoves": 11,
+      "frozenMoves": 11,
+      "ordinaryChoices": {
+        "choices": 8,
+        "safe": 8,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      },
+      "frozenChoices": {
+        "choices": 8,
+        "safe": 8,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      }
+    }
+  },
+  {
+    "number": 11,
+    "original": {
+      "meltedMoves": 14,
+      "frozenMoves": 14,
+      "ordinaryChoices": {
+        "choices": 4,
+        "safe": 4,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      },
+      "frozenChoices": {
+        "choices": 4,
+        "safe": 1,
+        "costly": 0,
+        "dead": 3,
+        "unknown": 0
+      }
+    },
+    "withEmpty": {
+      "meltedMoves": 14,
+      "frozenMoves": 14,
+      "ordinaryChoices": {
+        "choices": 10,
+        "safe": 10,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      },
+      "frozenChoices": {
+        "choices": 10,
+        "safe": 10,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      }
+    }
+  },
+  {
+    "number": 12,
+    "original": {
+      "meltedMoves": 15,
+      "frozenMoves": 15,
+      "ordinaryChoices": {
+        "choices": 4,
+        "safe": 4,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      },
+      "frozenChoices": {
+        "choices": 4,
+        "safe": 1,
+        "costly": 0,
+        "dead": 3,
+        "unknown": 0
+      }
+    },
+    "withEmpty": {
+      "meltedMoves": 15,
+      "frozenMoves": 15,
+      "ordinaryChoices": {
+        "choices": 10,
+        "safe": 10,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      },
+      "frozenChoices": {
+        "choices": 10,
+        "safe": 10,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      }
+    }
+  },
+  {
+    "number": 13,
+    "original": {
+      "meltedMoves": 15,
+      "frozenMoves": 15,
+      "ordinaryChoices": {
+        "choices": 4,
+        "safe": 4,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      },
+      "frozenChoices": {
+        "choices": 4,
+        "safe": 1,
+        "costly": 0,
+        "dead": 3,
+        "unknown": 0
+      }
+    },
+    "withEmpty": {
+      "meltedMoves": 15,
+      "frozenMoves": 15,
+      "ordinaryChoices": {
+        "choices": 10,
+        "safe": 10,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      },
+      "frozenChoices": {
+        "choices": 10,
+        "safe": 10,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      }
+    }
+  },
+  {
+    "number": 14,
+    "original": {
+      "meltedMoves": 15,
+      "frozenMoves": 15,
+      "ordinaryChoices": {
+        "choices": 4,
+        "safe": 4,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      },
+      "frozenChoices": {
+        "choices": 4,
+        "safe": 1,
+        "costly": 0,
+        "dead": 3,
+        "unknown": 0
+      }
+    },
+    "withEmpty": {
+      "meltedMoves": 15,
+      "frozenMoves": 15,
+      "ordinaryChoices": {
+        "choices": 10,
+        "safe": 10,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      },
+      "frozenChoices": {
+        "choices": 10,
+        "safe": 10,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      }
+    }
+  },
+  {
+    "number": 15,
+    "original": {
+      "meltedMoves": 15,
+      "frozenMoves": 15,
+      "ordinaryChoices": {
+        "choices": 4,
+        "safe": 4,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      },
+      "frozenChoices": {
+        "choices": 4,
+        "safe": 1,
+        "costly": 0,
+        "dead": 3,
+        "unknown": 0
+      }
+    },
+    "withEmpty": {
+      "meltedMoves": 15,
+      "frozenMoves": 15,
+      "ordinaryChoices": {
+        "choices": 10,
+        "safe": 10,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      },
+      "frozenChoices": {
+        "choices": 10,
+        "safe": 10,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      }
+    }
+  },
+  {
+    "number": 16,
+    "original": {
+      "meltedMoves": 16,
+      "frozenMoves": 16,
+      "ordinaryChoices": {
+        "choices": 4,
+        "safe": 4,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      },
+      "frozenChoices": {
+        "choices": 4,
+        "safe": 1,
+        "costly": 0,
+        "dead": 3,
+        "unknown": 0
+      }
+    },
+    "withEmpty": {
+      "meltedMoves": 16,
+      "frozenMoves": 16,
+      "ordinaryChoices": {
+        "choices": 11,
+        "safe": 11,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      },
+      "frozenChoices": {
+        "choices": 11,
+        "safe": 11,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      }
+    }
+  },
+  {
+    "number": 17,
+    "original": {
+      "meltedMoves": 17,
+      "frozenMoves": 17,
+      "ordinaryChoices": {
+        "choices": 4,
+        "safe": 4,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      },
+      "frozenChoices": {
+        "choices": 4,
+        "safe": 1,
+        "costly": 0,
+        "dead": 3,
+        "unknown": 0
+      }
+    },
+    "withEmpty": {
+      "meltedMoves": 17,
+      "frozenMoves": 17,
+      "ordinaryChoices": {
+        "choices": 11,
+        "safe": 11,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      },
+      "frozenChoices": {
+        "choices": 11,
+        "safe": 11,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      }
+    }
+  },
+  {
+    "number": 18,
+    "original": {
+      "meltedMoves": 17,
+      "frozenMoves": 17,
+      "ordinaryChoices": {
+        "choices": 4,
+        "safe": 4,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      },
+      "frozenChoices": {
+        "choices": 4,
+        "safe": 1,
+        "costly": 0,
+        "dead": 3,
+        "unknown": 0
+      }
+    },
+    "withEmpty": {
+      "meltedMoves": 17,
+      "frozenMoves": 17,
+      "ordinaryChoices": {
+        "choices": 11,
+        "safe": 11,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      },
+      "frozenChoices": {
+        "choices": 11,
+        "safe": 11,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      }
+    }
+  },
+  {
+    "number": 19,
+    "original": {
+      "meltedMoves": 17,
+      "frozenMoves": 17,
+      "ordinaryChoices": {
+        "choices": 4,
+        "safe": 4,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      },
+      "frozenChoices": {
+        "choices": 4,
+        "safe": 1,
+        "costly": 0,
+        "dead": 3,
+        "unknown": 0
+      }
+    },
+    "withEmpty": {
+      "meltedMoves": 17,
+      "frozenMoves": 17,
+      "ordinaryChoices": {
+        "choices": 11,
+        "safe": 11,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      },
+      "frozenChoices": {
+        "choices": 11,
+        "safe": 11,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      }
+    }
+  },
+  {
+    "number": 20,
+    "original": {
+      "meltedMoves": 17,
+      "frozenMoves": 17,
+      "ordinaryChoices": {
+        "choices": 4,
+        "safe": 4,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      },
+      "frozenChoices": {
+        "choices": 4,
+        "safe": 1,
+        "costly": 0,
+        "dead": 3,
+        "unknown": 0
+      }
+    },
+    "withEmpty": {
+      "meltedMoves": 17,
+      "frozenMoves": 17,
+      "ordinaryChoices": {
+        "choices": 11,
+        "safe": 11,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      },
+      "frozenChoices": {
+        "choices": 11,
+        "safe": 11,
+        "costly": 0,
+        "dead": 0,
+        "unknown": 0
+      }
+    }
+  }
+]

@@ -1,6 +1,7 @@
 import { validateBoard } from './model.ts';
 import { applyPour, CAPACITY, getPour, isSolved, type Board, type Pour } from './rules.ts';
 import type { SearchStats, SolveResult, SolverOptions, SolverTask } from './solver.ts';
+import { applySolidPour, getSolidPour } from './solidRules.ts';
 
 type Node = { key: string; g: number; h: number; parent: number; pour: Pour | null };
 
@@ -14,6 +15,8 @@ export function createAStarSolver(input: Board, options: SolverOptions = {}): So
   const capacity = options.capacity ?? CAPACITY;
   const maxStates = options.maxStates ?? 30000, maxMilliseconds = options.maxMilliseconds ?? 250;
   const issues = validateBoard(input, capacity);
+  if (options.solid && (options.solid.depth !== 1 || !Number.isInteger(options.solid.bottle)
+    || options.solid.bottle < 0 || options.solid.bottle >= input.length)) issues.push('Invalid solid bottle');
   if (!Number.isInteger(maxStates) || maxStates < 1 || maxStates > 1000000) issues.push('maxStates must be an integer from 1 to 1000000');
   if (!Number.isFinite(maxMilliseconds) || maxMilliseconds <= 0 || maxMilliseconds > 60000) issues.push('maxMilliseconds must be positive and at most 60000');
   if (options.algorithm !== undefined && options.algorithm !== 'astar') issues.push('Unsupported solver algorithm');
@@ -21,7 +24,14 @@ export function createAStarSolver(input: Board, options: SolverOptions = {}): So
   const colors = [...new Set(initialBoard.flat())];
   const codes = new Map(colors.map((color, index) => [color, String.fromCharCode(65 + index)]));
   const encode = (board: Board) => board.map(bottle => bottle.map(color => codes.get(color)!).join(''));
-  const key = (board: Board) => encode(board).sort().join('|');
+  const fixed = options.solid && !options.solid.melted ? options.solid.bottle : null;
+  const key = (board: Board) => {
+    const coded = encode(board);
+    if (fixed === null) return coded.sort().join('|');
+    const ordinary = coded.filter((_, index) => index !== fixed).sort();
+    ordinary.splice(fixed, 0, coded[fixed]);
+    return ordinary.join('|');
+  };
   const decode = (state: string): Board => state.split('|').map(bottle => [...bottle].map(code => colors[code.charCodeAt(0) - 65]));
   const heuristic = (state: string) => {
     let runs = 0;
@@ -75,14 +85,15 @@ export function createAStarSolver(input: Board, options: SolverOptions = {}): So
     for (const index of path.reverse()) {
       const node = nodes[index], canonical = nodes[node.parent].key.split('|'), actual = encode(current);
       const used = new Set<number>();
-      const mapping = canonical.map(bottle => {
-        const i = actual.findIndex((value, j) => value === bottle && !used.has(j));
+      const mapping = canonical.map((bottle, canonicalIndex) => {
+        const i = fixed === canonicalIndex ? fixed : actual.findIndex((value, j) => j !== fixed && value === bottle && !used.has(j));
         if (i < 0) throw new Error('Solver predecessor cannot map to actual bottles');
         used.add(i); return i;
       });
-      const move = getPour(current, mapping[node.pour!.source], mapping[node.pour!.target], capacity);
+      const move = options.solid ? getSolidPour(current, mapping[node.pour!.source], mapping[node.pour!.target], capacity, options.solid)
+        : getPour(current, mapping[node.pour!.source], mapping[node.pour!.target], capacity);
       if (!move || move.color !== node.pour!.color || move.amount !== node.pour!.amount) throw new Error('Solver predecessor is not a legal maximal pour');
-      moves.push(move); current = applyPour(current, move, capacity);
+      moves.push(move); current = options.solid ? applySolidPour(current, move, capacity, options.solid) : applyPour(current, move, capacity);
     }
     if (!isSolved(current, capacity)) throw new Error('Solver route did not complete');
     return moves;
@@ -116,10 +127,11 @@ export function createAStarSolver(input: Board, options: SolverOptions = {}): So
         if (elapsed + spent >= maxMilliseconds) return finish({ status: 'limitReached', reason: 'time' });
         if (spent >= sliceMilliseconds) { elapsed += spent; return null; }
         const pair = nextPair++;
-        const pour = getPour(liquid, Math.floor(pair / liquid.length), pair % liquid.length, capacity);
+        const source = Math.floor(pair / liquid.length), target = pair % liquid.length;
+        const pour = options.solid ? getSolidPour(liquid, source, target, capacity, options.solid) : getPour(liquid, source, target, capacity);
         if (!pour) continue;
         generatedMoves++;
-        const state = key(applyPour(liquid, pour, capacity)), g = current.g + 1;
+        const state = key(options.solid ? applySolidPour(liquid, pour, capacity, options.solid) : applyPour(liquid, pour, capacity)), g = current.g + 1;
         const previous = best.get(state);
         if (previous !== undefined && nodes[previous].g <= g) continue;
         // Count reopened labels too: the cap bounds all predecessor allocations.

@@ -9,8 +9,8 @@ import { GameButton } from './GameButton';
 import { Icon } from './Icon';
 
 const NUMBERS = Array.from({ length: 1000 }, (_, i) => i + 1);
-type Props = { visible: boolean; initialSection: 'levels' | 'settings'; play: MainlineState; saveStatus: string; onClose: () => void; onResume: () => void; onSelect: (number: number) => void; onSamples: () => void; onSymbols: () => void; symbols: boolean; completionName: string; onLanguage: () => void; onCompletionEffects: () => void; sound: boolean; soundSaved: boolean; onSound: () => void; onCelebrationPreview: (count: 2 | 3 | 4 | 5) => void; onDebug?: () => void };
-export function MainlineMenu({ visible, initialSection, play, saveStatus, onClose, onResume, onSelect, onSamples, onSymbols, symbols, completionName, onLanguage, onCompletionEffects, sound, soundSaved, onSound, onCelebrationPreview, onDebug }: Props) {
+type Props = { visible: boolean; initialSection: 'levels' | 'settings'; play: MainlineState; saveStatus: string; onClose: () => void; onResume: () => void; onSelect: (number: number) => void; onSelectSide: (number: number) => void; onSamples: () => void; onSymbols: () => void; symbols: boolean; completionName: string; onLanguage: () => void; onCompletionEffects: () => void; sound: boolean; soundSaved: boolean; onSound: () => void; onCelebrationPreview: (count: 2 | 3 | 4 | 5) => void; onDebug?: () => void };
+export function MainlineMenu({ visible, initialSection, play, saveStatus, onClose, onResume, onSelect, onSelectSide, onSamples, onSymbols, symbols, completionName, onLanguage, onCompletionEffects, sound, soundSaved, onSound, onCelebrationPreview, onDebug }: Props) {
   const { t, rtl, languageName } = useI18n();
   const insets = useSafeAreaInsets();
   const [section, setSection] = useState(initialSection);
@@ -23,8 +23,14 @@ export function MainlineMenu({ visible, initialSection, play, saveStatus, onClos
         {section === 'levels' ? <>
           <View style={[styles.progressHeading, rtl && styles.reverse]}><UiText style={styles.progressText}>{t('completedCount', { n: play.completedThrough })}</UiText><UiText style={styles.note}>{t('totalLevels')}</UiText></View>
           <View style={styles.progressTrack}><View style={[styles.progressFill, { width: `${play.completedThrough / 10}%` }]} /></View>
-          <GameButton kind="wide" tone="mint" icon="play" label={t('continueLevel', { n: play.current })} onPress={onResume} style={styles.resume} />
+          <GameButton kind="wide" tone="mint" icon="play" label={play.side ? t('solidSideLabel', { n: play.current / 20 }) : t('continueLevel', { n: play.current })} onPress={onResume} style={styles.resume} />
           <UiText style={styles.help}>{t('replayNote')}</UiText>
+          {play.sideCompletedThrough > 0 && <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.sideList} contentContainerStyle={styles.sideListContent}>
+            {Array.from({ length: play.sideCompletedThrough }, (_, index) => index + 1).map(number => <Pressable key={number} accessibilityRole="button"
+              accessibilityLabel={t('solidSideLabel', { n: number })} onPress={() => onSelectSide(number)} style={styles.sideCell}>
+              <UiText style={styles.sideText}>{t('solidSideLabel', { n: number })}</UiText>
+            </Pressable>)}
+          </ScrollView>}
           <FlatList data={NUMBERS} numColumns={5} keyExtractor={number => String(number)} initialScrollIndex={Math.floor((play.current - 1) / 5)}
             getItemLayout={(_, index) => ({ length: 60, offset: 60 * index, index })} initialNumToRender={10} maxToRenderPerBatch={10} windowSize={5}
             style={styles.list} renderItem={({ item: number }) => {
@@ -44,7 +50,7 @@ export function MainlineMenu({ visible, initialSection, play, saveStatus, onClos
           <UiText style={styles.saveStatus}>{saveStatus}</UiText>
           {INTERNAL_TOOLS && <View style={styles.tools}>
             <Pressable accessibilityRole="button" accessibilityState={{ expanded: toolsVisible }} onPress={() => setToolsVisible(value => !value)} style={styles.toolsButton}><UiText style={styles.note}>开发工具 {toolsVisible ? '⌃' : '⌄'}</UiText></Pressable>
-            {toolsVisible && <><Pressable accessibilityRole="button" onPress={onDebug} style={styles.toolsButton}><UiText style={styles.toolText}>当前关卡诊断 ›</UiText></Pressable><Pressable accessibilityRole="button" onPress={onSamples} style={styles.toolsButton}><UiText style={styles.toolText}>内部对照题 ›</UiText></Pressable>{([2, 3, 4, 5] as const).map(count => <Pressable key={count} accessibilityRole="button" onPress={() => onCelebrationPreview(count)} style={styles.toolsButton}><UiText style={styles.toolText}>{t('fireworksPreview')} · D{count - 1} ›</UiText></Pressable>)}</>}
+            {toolsVisible && <>{onDebug && <Pressable accessibilityRole="button" onPress={onDebug} style={styles.toolsButton}><UiText style={styles.toolText}>当前关卡诊断 ›</UiText></Pressable>}<Pressable accessibilityRole="button" onPress={onSamples} style={styles.toolsButton}><UiText style={styles.toolText}>内部对照题 ›</UiText></Pressable>{([2, 3, 4, 5] as const).map(count => <Pressable key={count} accessibilityRole="button" onPress={() => onCelebrationPreview(count)} style={styles.toolsButton}><UiText style={styles.toolText}>{t('fireworksPreview')} · D{count - 1} ›</UiText></Pressable>)}</>}
           </View>}
         </ScrollView>}
         <UiText style={styles.brand}>BOTTLE HARMONY</UiText>
@@ -71,6 +77,10 @@ const styles = StyleSheet.create({
   progressFill: { height: '100%', backgroundColor: '#BCA36F', borderRadius: 4 },
   resume: { marginTop: 14 },
   help: { color: '#9AAFBA', fontSize: 11, marginTop: 14, marginBottom: 8 },
+  sideList: { flexGrow: 0, maxHeight: 42, marginBottom: 6 },
+  sideListContent: { gap: 6, alignItems: 'center' },
+  sideCell: { minHeight: 36, paddingHorizontal: 10, borderRadius: 10, borderWidth: 1, borderColor: '#A7BCC166', backgroundColor: '#263E4D', justifyContent: 'center' },
+  sideText: { color: '#EBD8AD', fontSize: 11 },
   list: { flex: 1 },
   cell: { flex: 1, height: 52, margin: 4, borderWidth: 1, borderColor: '#A7BCC144', borderRadius: 14, justifyContent: 'center', alignItems: 'center', backgroundColor: '#263E4D' },
   selected: { borderColor: '#DEC797', backgroundColor: '#32515B' },

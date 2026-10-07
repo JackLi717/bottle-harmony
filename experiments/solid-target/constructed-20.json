@@ -1,0 +1,4243 @@
+{
+  "experiment": "solid-target-distributed-space-v1",
+  "capacity": 4,
+  "actualEmptyBottles": 0,
+  "emptyCapacity": 4,
+  "frozenDepth": 1,
+  "samples": [
+    {
+      "number": 1,
+      "colors": 3,
+      "bottles": [
+        [
+          "B",
+          "A",
+          "A",
+          "C"
+        ],
+        [
+          "B",
+          "C"
+        ],
+        [
+          "A",
+          "B",
+          "C",
+          "B"
+        ],
+        [
+          "A",
+          "C"
+        ]
+      ],
+      "frozenBottle": 3,
+      "frozenBottomColor": "A",
+      "meltedMoves": 9,
+      "frozenMoves": 9,
+      "meltedFirstChoices": {
+        "choices": 4,
+        "safe": 4,
+        "costly": 0,
+        "dead": 0
+      },
+      "frozenFirstChoices": {
+        "choices": 4,
+        "safe": 1,
+        "costly": 0,
+        "dead": 3
+      },
+      "meltedRoute": [
+        {
+          "source": 0,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 0,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 3,
+          "color": "C",
+          "amount": 3
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "A",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "B",
+          "amount": 1
+        }
+      ],
+      "frozenRoute": [
+        {
+          "source": 1,
+          "target": 3,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "C",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 3,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 0,
+          "color": "B",
+          "amount": 3
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "A",
+          "amount": 1
+        }
+      ],
+      "sourceFile": "risk-gap-20.json"
+    },
+    {
+      "number": 2,
+      "colors": 3,
+      "bottles": [
+        [
+          "B",
+          "A",
+          "A",
+          "C"
+        ],
+        [
+          "B",
+          "C",
+          "B"
+        ],
+        [
+          "A",
+          "C",
+          "C"
+        ],
+        [
+          "A",
+          "B"
+        ]
+      ],
+      "frozenBottle": 3,
+      "frozenBottomColor": "A",
+      "meltedMoves": 8,
+      "frozenMoves": 8,
+      "meltedFirstChoices": {
+        "choices": 3,
+        "safe": 3,
+        "costly": 0,
+        "dead": 0
+      },
+      "frozenFirstChoices": {
+        "choices": 3,
+        "safe": 1,
+        "costly": 0,
+        "dead": 2
+      },
+      "meltedRoute": [
+        {
+          "source": 0,
+          "target": 2,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 0,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "C",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "A",
+          "amount": 3
+        },
+        {
+          "source": 1,
+          "target": 0,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 3,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "B",
+          "amount": 3
+        }
+      ],
+      "frozenRoute": [
+        {
+          "source": 1,
+          "target": 3,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 3,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "C",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 0,
+          "color": "B",
+          "amount": 3
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "A",
+          "amount": 3
+        }
+      ],
+      "sourceFile": "risk-gap-20.json"
+    },
+    {
+      "number": 3,
+      "colors": 3,
+      "bottles": [
+        [
+          "B",
+          "A",
+          "A",
+          "C"
+        ],
+        [
+          "B",
+          "C",
+          "C"
+        ],
+        [
+          "A",
+          "C",
+          "B"
+        ],
+        [
+          "A",
+          "B"
+        ]
+      ],
+      "frozenBottle": 3,
+      "frozenBottomColor": "A",
+      "meltedMoves": 8,
+      "frozenMoves": 8,
+      "meltedFirstChoices": {
+        "choices": 3,
+        "safe": 3,
+        "costly": 0,
+        "dead": 0
+      },
+      "frozenFirstChoices": {
+        "choices": 3,
+        "safe": 1,
+        "costly": 0,
+        "dead": 2
+      },
+      "meltedRoute": [
+        {
+          "source": 0,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 2,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 0,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 3,
+          "color": "C",
+          "amount": 3
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "A",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "B",
+          "amount": 1
+        }
+      ],
+      "frozenRoute": [
+        {
+          "source": 2,
+          "target": 3,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 3,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "C",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 0,
+          "color": "B",
+          "amount": 3
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "A",
+          "amount": 3
+        }
+      ],
+      "sourceFile": "risk-gap-20.json"
+    },
+    {
+      "number": 4,
+      "colors": 3,
+      "bottles": [
+        [
+          "A",
+          "C",
+          "C"
+        ],
+        [
+          "B",
+          "C",
+          "B"
+        ],
+        [
+          "A",
+          "B",
+          "A",
+          "C"
+        ],
+        [
+          "A",
+          "B"
+        ]
+      ],
+      "frozenBottle": 3,
+      "frozenBottomColor": "A",
+      "meltedMoves": 9,
+      "frozenMoves": 10,
+      "meltedFirstChoices": {
+        "choices": 3,
+        "safe": 3,
+        "costly": 0,
+        "dead": 0
+      },
+      "frozenFirstChoices": {
+        "choices": 3,
+        "safe": 1,
+        "costly": 0,
+        "dead": 2
+      },
+      "meltedRoute": [
+        {
+          "source": 2,
+          "target": 0,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 2,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 3,
+          "color": "C",
+          "amount": 3
+        },
+        {
+          "source": 2,
+          "target": 0,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 3,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "B",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "A",
+          "amount": 3
+        }
+      ],
+      "frozenRoute": [
+        {
+          "source": 1,
+          "target": 3,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 0,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 3,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "C",
+          "amount": 3
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 0,
+          "color": "B",
+          "amount": 3
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 0,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "A",
+          "amount": 1
+        }
+      ],
+      "sourceFile": "risk-gap-20.json"
+    },
+    {
+      "number": 5,
+      "colors": 3,
+      "bottles": [
+        [
+          "A",
+          "C",
+          "B"
+        ],
+        [
+          "B",
+          "C",
+          "C"
+        ],
+        [
+          "A",
+          "B",
+          "A",
+          "C"
+        ],
+        [
+          "A",
+          "B"
+        ]
+      ],
+      "frozenBottle": 3,
+      "frozenBottomColor": "A",
+      "meltedMoves": 9,
+      "frozenMoves": 10,
+      "meltedFirstChoices": {
+        "choices": 3,
+        "safe": 3,
+        "costly": 0,
+        "dead": 0
+      },
+      "frozenFirstChoices": {
+        "choices": 3,
+        "safe": 1,
+        "costly": 0,
+        "dead": 2
+      },
+      "meltedRoute": [
+        {
+          "source": 2,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 0,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 2,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 3,
+          "color": "C",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 3,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 0,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "A",
+          "amount": 3
+        }
+      ],
+      "frozenRoute": [
+        {
+          "source": 0,
+          "target": 3,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 0,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 3,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "C",
+          "amount": 3
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 0,
+          "color": "B",
+          "amount": 3
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 0,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "A",
+          "amount": 1
+        }
+      ],
+      "sourceFile": "risk-gap-20.json"
+    },
+    {
+      "number": 6,
+      "colors": 4,
+      "bottles": [
+        [
+          "B",
+          "D",
+          "A"
+        ],
+        [
+          "A",
+          "C"
+        ],
+        [
+          "D",
+          "A",
+          "D",
+          "B"
+        ],
+        [
+          "B",
+          "C",
+          "B",
+          "C"
+        ],
+        [
+          "A",
+          "D",
+          "C"
+        ]
+      ],
+      "frozenBottle": 4,
+      "frozenBottomColor": "A",
+      "meltedMoves": 13,
+      "frozenMoves": 13,
+      "meltedFirstChoices": {
+        "legal": 4,
+        "safe": 4,
+        "dead": 0,
+        "costly": 0,
+        "unknown": 0
+      },
+      "frozenFirstChoices": {
+        "legal": 4,
+        "safe": 1,
+        "dead": 3,
+        "costly": 0,
+        "unknown": 0
+      },
+      "meltedRoute": [
+        {
+          "source": 3,
+          "target": 4,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 1,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 0,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 4,
+          "target": 2,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 4,
+          "color": "C",
+          "amount": 3
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "A",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "D",
+          "amount": 3
+        },
+        {
+          "source": 3,
+          "target": 0,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 4,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 0,
+          "color": "B",
+          "amount": 1
+        }
+      ],
+      "frozenRoute": [
+        {
+          "source": 1,
+          "target": 4,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 0,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 1,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 4,
+          "target": 0,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "A",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "D",
+          "amount": 3
+        },
+        {
+          "source": 3,
+          "target": 0,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 3,
+          "color": "B",
+          "amount": 3
+        }
+      ],
+      "sourceFile": "lifted-four-color.json"
+    },
+    {
+      "number": 7,
+      "colors": 4,
+      "bottles": [
+        [
+          "B",
+          "A",
+          "A",
+          "C"
+        ],
+        [
+          "B",
+          "D",
+          "D"
+        ],
+        [
+          "D",
+          "B",
+          "C"
+        ],
+        [
+          "A",
+          "C",
+          "C",
+          "B"
+        ],
+        [
+          "A",
+          "D"
+        ]
+      ],
+      "frozenBottle": 4,
+      "frozenBottomColor": "A",
+      "meltedMoves": 10,
+      "frozenMoves": 10,
+      "meltedFirstChoices": {
+        "legal": 3,
+        "safe": 3,
+        "dead": 0,
+        "costly": 0,
+        "unknown": 0
+      },
+      "frozenFirstChoices": {
+        "legal": 3,
+        "safe": 1,
+        "dead": 2,
+        "costly": 0,
+        "unknown": 0
+      },
+      "meltedRoute": [
+        {
+          "source": 1,
+          "target": 4,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "C",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 3,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 0,
+          "color": "B",
+          "amount": 3
+        },
+        {
+          "source": 4,
+          "target": 2,
+          "color": "D",
+          "amount": 3
+        },
+        {
+          "source": 4,
+          "target": 3,
+          "color": "A",
+          "amount": 1
+        }
+      ],
+      "frozenRoute": [
+        {
+          "source": 1,
+          "target": 4,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "C",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 3,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 0,
+          "color": "B",
+          "amount": 3
+        },
+        {
+          "source": 4,
+          "target": 2,
+          "color": "D",
+          "amount": 3
+        },
+        {
+          "source": 3,
+          "target": 4,
+          "color": "A",
+          "amount": 3
+        }
+      ],
+      "sourceFile": "lifted-four-color.json"
+    },
+    {
+      "number": 8,
+      "colors": 4,
+      "bottles": [
+        [
+          "B",
+          "D",
+          "B",
+          "C"
+        ],
+        [
+          "D",
+          "C",
+          "D"
+        ],
+        [
+          "A",
+          "A",
+          "B"
+        ],
+        [
+          "C",
+          "C",
+          "A",
+          "B"
+        ],
+        [
+          "A",
+          "D"
+        ]
+      ],
+      "frozenBottle": 4,
+      "frozenBottomColor": "A",
+      "meltedMoves": 10,
+      "frozenMoves": 10,
+      "meltedFirstChoices": {
+        "legal": 3,
+        "safe": 3,
+        "dead": 0,
+        "costly": 0,
+        "unknown": 0
+      },
+      "frozenFirstChoices": {
+        "legal": 3,
+        "safe": 1,
+        "dead": 2,
+        "costly": 0,
+        "unknown": 0
+      },
+      "meltedRoute": [
+        {
+          "source": 1,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 0,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 0,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 2,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 3,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 4,
+          "target": 1,
+          "color": "D",
+          "amount": 3
+        },
+        {
+          "source": 4,
+          "target": 2,
+          "color": "A",
+          "amount": 1
+        }
+      ],
+      "frozenRoute": [
+        {
+          "source": 1,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 0,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 0,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 2,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 3,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 4,
+          "target": 1,
+          "color": "D",
+          "amount": 3
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "A",
+          "amount": 3
+        }
+      ],
+      "sourceFile": "lifted-four-color.json"
+    },
+    {
+      "number": 9,
+      "colors": 4,
+      "bottles": [
+        [
+          "D",
+          "A",
+          "A",
+          "C"
+        ],
+        [
+          "D",
+          "B",
+          "D"
+        ],
+        [
+          "A",
+          "B",
+          "C"
+        ],
+        [
+          "B",
+          "C",
+          "C",
+          "B"
+        ],
+        [
+          "A",
+          "D"
+        ]
+      ],
+      "frozenBottle": 4,
+      "frozenBottomColor": "A",
+      "meltedMoves": 11,
+      "frozenMoves": 11,
+      "meltedFirstChoices": {
+        "legal": 3,
+        "safe": 3,
+        "dead": 0,
+        "costly": 0,
+        "unknown": 0
+      },
+      "frozenFirstChoices": {
+        "legal": 3,
+        "safe": 1,
+        "dead": 2,
+        "costly": 0,
+        "unknown": 0
+      },
+      "meltedRoute": [
+        {
+          "source": 1,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "C",
+          "amount": 3
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "B",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 4,
+          "target": 0,
+          "color": "D",
+          "amount": 3
+        },
+        {
+          "source": 4,
+          "target": 2,
+          "color": "A",
+          "amount": 1
+        }
+      ],
+      "frozenRoute": [
+        {
+          "source": 1,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "C",
+          "amount": 3
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "B",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 4,
+          "target": 0,
+          "color": "D",
+          "amount": 3
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "A",
+          "amount": 3
+        }
+      ],
+      "sourceFile": "lifted-four-color.json"
+    },
+    {
+      "number": 10,
+      "colors": 4,
+      "bottles": [
+        [
+          "B",
+          "C",
+          "B",
+          "C"
+        ],
+        [
+          "D",
+          "C",
+          "D"
+        ],
+        [
+          "A",
+          "D",
+          "B"
+        ],
+        [
+          "C",
+          "A",
+          "A",
+          "B"
+        ],
+        [
+          "A",
+          "D"
+        ]
+      ],
+      "frozenBottle": 4,
+      "frozenBottomColor": "A",
+      "meltedMoves": 11,
+      "frozenMoves": 11,
+      "meltedFirstChoices": {
+        "legal": 3,
+        "safe": 3,
+        "dead": 0,
+        "costly": 0,
+        "unknown": 0
+      },
+      "frozenFirstChoices": {
+        "legal": 3,
+        "safe": 1,
+        "dead": 2,
+        "costly": 0,
+        "unknown": 0
+      },
+      "meltedRoute": [
+        {
+          "source": 1,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 0,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 0,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 2,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 3,
+          "color": "C",
+          "amount": 3
+        },
+        {
+          "source": 4,
+          "target": 1,
+          "color": "D",
+          "amount": 3
+        },
+        {
+          "source": 4,
+          "target": 2,
+          "color": "A",
+          "amount": 1
+        }
+      ],
+      "frozenRoute": [
+        {
+          "source": 1,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 0,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 0,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 2,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 3,
+          "color": "C",
+          "amount": 3
+        },
+        {
+          "source": 4,
+          "target": 1,
+          "color": "D",
+          "amount": 3
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "A",
+          "amount": 3
+        }
+      ],
+      "sourceFile": "lifted-four-color.json"
+    },
+    {
+      "number": 11,
+      "colors": 5,
+      "bottles": [
+        [
+          "E",
+          "D",
+          "A"
+        ],
+        [
+          "A",
+          "C"
+        ],
+        [
+          "D",
+          "E",
+          "E",
+          "B"
+        ],
+        [
+          "B",
+          "C",
+          "B",
+          "C"
+        ],
+        [
+          "A",
+          "B",
+          "D",
+          "D"
+        ],
+        [
+          "A",
+          "E",
+          "C"
+        ]
+      ],
+      "frozenBottle": 5,
+      "frozenBottomColor": "A",
+      "meltedMoves": 14,
+      "frozenMoves": 14,
+      "meltedFirstChoices": {
+        "legal": 4,
+        "safe": 4,
+        "dead": 0,
+        "costly": 0,
+        "unknown": 0
+      },
+      "frozenFirstChoices": {
+        "legal": 4,
+        "safe": 1,
+        "dead": 3,
+        "costly": 0,
+        "unknown": 0
+      },
+      "meltedRoute": [
+        {
+          "source": 1,
+          "target": 5,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 0,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 1,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 5,
+          "color": "E",
+          "amount": 2
+        },
+        {
+          "source": 4,
+          "target": 2,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 4,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 3,
+          "color": "B",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 4,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 0,
+          "color": "E",
+          "amount": 3
+        },
+        {
+          "source": 5,
+          "target": 4,
+          "color": "A",
+          "amount": 1
+        }
+      ],
+      "frozenRoute": [
+        {
+          "source": 1,
+          "target": 5,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 0,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 1,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 5,
+          "color": "E",
+          "amount": 2
+        },
+        {
+          "source": 4,
+          "target": 2,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 4,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 3,
+          "color": "B",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 4,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 0,
+          "color": "E",
+          "amount": 3
+        },
+        {
+          "source": 4,
+          "target": 5,
+          "color": "A",
+          "amount": 3
+        }
+      ],
+      "sourceFile": "lifted-five-color.json"
+    },
+    {
+      "number": 12,
+      "colors": 5,
+      "bottles": [
+        [
+          "E",
+          "D",
+          "A"
+        ],
+        [
+          "A",
+          "C"
+        ],
+        [
+          "E",
+          "A",
+          "D",
+          "B"
+        ],
+        [
+          "B",
+          "C",
+          "E",
+          "C"
+        ],
+        [
+          "D",
+          "B",
+          "B",
+          "D"
+        ],
+        [
+          "A",
+          "E",
+          "C"
+        ]
+      ],
+      "frozenBottle": 5,
+      "frozenBottomColor": "A",
+      "meltedMoves": 15,
+      "frozenMoves": 15,
+      "meltedFirstChoices": {
+        "legal": 4,
+        "safe": 4,
+        "dead": 0,
+        "costly": 0,
+        "unknown": 0
+      },
+      "frozenFirstChoices": {
+        "legal": 4,
+        "safe": 1,
+        "dead": 3,
+        "costly": 0,
+        "unknown": 0
+      },
+      "meltedRoute": [
+        {
+          "source": 5,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 3,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 5,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 0,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 0,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 2,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 5,
+          "color": "C",
+          "amount": 3
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "A",
+          "amount": 3
+        },
+        {
+          "source": 3,
+          "target": 2,
+          "color": "E",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 5,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 3,
+          "color": "B",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 4,
+          "color": "D",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "E",
+          "amount": 1
+        }
+      ],
+      "frozenRoute": [
+        {
+          "source": 1,
+          "target": 5,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 0,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 0,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 1,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 5,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 3,
+          "color": "B",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 4,
+          "color": "D",
+          "amount": 3
+        },
+        {
+          "source": 5,
+          "target": 0,
+          "color": "E",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 5,
+          "color": "A",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "E",
+          "amount": 3
+        }
+      ],
+      "sourceFile": "lifted-five-color.json"
+    },
+    {
+      "number": 13,
+      "colors": 5,
+      "bottles": [
+        [
+          "E",
+          "E",
+          "A"
+        ],
+        [
+          "A",
+          "C"
+        ],
+        [
+          "D",
+          "A",
+          "D",
+          "B"
+        ],
+        [
+          "B",
+          "C",
+          "E",
+          "C"
+        ],
+        [
+          "D",
+          "B",
+          "D",
+          "B"
+        ],
+        [
+          "A",
+          "E",
+          "C"
+        ]
+      ],
+      "frozenBottle": 5,
+      "frozenBottomColor": "A",
+      "meltedMoves": 15,
+      "frozenMoves": 15,
+      "meltedFirstChoices": {
+        "legal": 4,
+        "safe": 4,
+        "dead": 0,
+        "costly": 0,
+        "unknown": 0
+      },
+      "frozenFirstChoices": {
+        "legal": 4,
+        "safe": 1,
+        "dead": 3,
+        "costly": 0,
+        "unknown": 0
+      },
+      "meltedRoute": [
+        {
+          "source": 5,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 3,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 0,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 5,
+          "color": "C",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 0,
+          "color": "E",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 5,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 3,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 2,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 4,
+          "target": 3,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 2,
+          "color": "D",
+          "amount": 1
+        }
+      ],
+      "frozenRoute": [
+        {
+          "source": 1,
+          "target": 5,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 0,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 1,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 5,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 3,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 5,
+          "target": 0,
+          "color": "E",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 5,
+          "color": "A",
+          "amount": 3
+        },
+        {
+          "source": 4,
+          "target": 2,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 4,
+          "target": 3,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "D",
+          "amount": 3
+        }
+      ],
+      "sourceFile": "lifted-five-color.json"
+    },
+    {
+      "number": 14,
+      "colors": 5,
+      "bottles": [
+        [
+          "B",
+          "D",
+          "A"
+        ],
+        [
+          "A",
+          "C"
+        ],
+        [
+          "D",
+          "E",
+          "E",
+          "B"
+        ],
+        [
+          "E",
+          "C",
+          "B",
+          "C"
+        ],
+        [
+          "B",
+          "D",
+          "A",
+          "D"
+        ],
+        [
+          "A",
+          "E",
+          "C"
+        ]
+      ],
+      "frozenBottle": 5,
+      "frozenBottomColor": "A",
+      "meltedMoves": 15,
+      "frozenMoves": 15,
+      "meltedFirstChoices": {
+        "legal": 4,
+        "safe": 4,
+        "dead": 0,
+        "costly": 0,
+        "unknown": 0
+      },
+      "frozenFirstChoices": {
+        "legal": 4,
+        "safe": 1,
+        "dead": 3,
+        "costly": 0,
+        "unknown": 0
+      },
+      "meltedRoute": [
+        {
+          "source": 5,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 2,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 0,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 5,
+          "color": "C",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 4,
+          "target": 0,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 1,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 0,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 4,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 5,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "E",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "D",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 4,
+          "color": "B",
+          "amount": 1
+        }
+      ],
+      "frozenRoute": [
+        {
+          "source": 1,
+          "target": 5,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 0,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 1,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 2,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 5,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 4,
+          "target": 0,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 5,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 4,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 0,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "E",
+          "amount": 3
+        },
+        {
+          "source": 4,
+          "target": 2,
+          "color": "D",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 4,
+          "color": "B",
+          "amount": 3
+        }
+      ],
+      "sourceFile": "lifted-five-color.json"
+    },
+    {
+      "number": 15,
+      "colors": 5,
+      "bottles": [
+        [
+          "B",
+          "E",
+          "D",
+          "E"
+        ],
+        [
+          "D",
+          "C"
+        ],
+        [
+          "E",
+          "B",
+          "D",
+          "B"
+        ],
+        [
+          "E",
+          "A",
+          "A",
+          "C"
+        ],
+        [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        [
+          "A",
+          "C"
+        ]
+      ],
+      "frozenBottle": 5,
+      "frozenBottomColor": "A",
+      "meltedMoves": 15,
+      "frozenMoves": 15,
+      "meltedFirstChoices": {
+        "legal": 4,
+        "safe": 4,
+        "dead": 0,
+        "costly": 0,
+        "unknown": 0
+      },
+      "frozenFirstChoices": {
+        "legal": 4,
+        "safe": 1,
+        "dead": 3,
+        "costly": 0,
+        "unknown": 0
+      },
+      "meltedRoute": [
+        {
+          "source": 1,
+          "target": 5,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 1,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 5,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 0,
+          "color": "E",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 2,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 2,
+          "color": "C",
+          "amount": 3
+        },
+        {
+          "source": 3,
+          "target": 5,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 3,
+          "color": "E",
+          "amount": 3
+        },
+        {
+          "source": 4,
+          "target": 0,
+          "color": "B",
+          "amount": 3
+        },
+        {
+          "source": 4,
+          "target": 5,
+          "color": "A",
+          "amount": 1
+        }
+      ],
+      "frozenRoute": [
+        {
+          "source": 1,
+          "target": 5,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 1,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 5,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 0,
+          "color": "E",
+          "amount": 2
+        },
+        {
+          "source": 5,
+          "target": 2,
+          "color": "C",
+          "amount": 3
+        },
+        {
+          "source": 3,
+          "target": 2,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 5,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 3,
+          "color": "E",
+          "amount": 3
+        },
+        {
+          "source": 4,
+          "target": 0,
+          "color": "B",
+          "amount": 3
+        },
+        {
+          "source": 4,
+          "target": 5,
+          "color": "A",
+          "amount": 1
+        }
+      ],
+      "sourceFile": "lifted-five-color.json"
+    },
+    {
+      "number": 16,
+      "colors": 6,
+      "bottles": [
+        [
+          "E",
+          "E",
+          "A"
+        ],
+        [
+          "A",
+          "C"
+        ],
+        [
+          "F",
+          "F",
+          "D",
+          "B"
+        ],
+        [
+          "B",
+          "C",
+          "E",
+          "C"
+        ],
+        [
+          "D",
+          "F",
+          "D",
+          "F"
+        ],
+        [
+          "A",
+          "D",
+          "B",
+          "B"
+        ],
+        [
+          "A",
+          "E",
+          "C"
+        ]
+      ],
+      "frozenBottle": 6,
+      "frozenBottomColor": "A",
+      "meltedMoves": 16,
+      "frozenMoves": 16,
+      "meltedFirstChoices": {
+        "legal": 4,
+        "safe": 4,
+        "dead": 0,
+        "costly": 0,
+        "unknown": 0
+      },
+      "frozenFirstChoices": {
+        "legal": 4,
+        "safe": 1,
+        "dead": 3,
+        "costly": 0,
+        "unknown": 0
+      },
+      "meltedRoute": [
+        {
+          "source": 6,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 6,
+          "target": 3,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 6,
+          "target": 0,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 6,
+          "color": "C",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 0,
+          "color": "E",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 6,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 3,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 5,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 2,
+          "color": "F",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 5,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 2,
+          "color": "F",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 4,
+          "color": "D",
+          "amount": 3
+        },
+        {
+          "source": 5,
+          "target": 1,
+          "color": "A",
+          "amount": 1
+        }
+      ],
+      "frozenRoute": [
+        {
+          "source": 1,
+          "target": 6,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 0,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 6,
+          "target": 1,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 6,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 3,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 5,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 2,
+          "color": "F",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 5,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 2,
+          "color": "F",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 4,
+          "color": "D",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 5,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 6,
+          "target": 0,
+          "color": "E",
+          "amount": 2
+        },
+        {
+          "source": 5,
+          "target": 6,
+          "color": "A",
+          "amount": 3
+        }
+      ],
+      "sourceFile": "lifted-six-color.json"
+    },
+    {
+      "number": 17,
+      "colors": 6,
+      "bottles": [
+        [
+          "E",
+          "F",
+          "A"
+        ],
+        [
+          "A",
+          "C"
+        ],
+        [
+          "E",
+          "A",
+          "D",
+          "F"
+        ],
+        [
+          "B",
+          "F",
+          "E",
+          "C"
+        ],
+        [
+          "F",
+          "B",
+          "B",
+          "D"
+        ],
+        [
+          "C",
+          "B",
+          "D",
+          "D"
+        ],
+        [
+          "A",
+          "E",
+          "C"
+        ]
+      ],
+      "frozenBottle": 6,
+      "frozenBottomColor": "A",
+      "meltedMoves": 17,
+      "frozenMoves": 17,
+      "meltedFirstChoices": {
+        "legal": 4,
+        "safe": 4,
+        "dead": 0,
+        "costly": 0,
+        "unknown": 0
+      },
+      "frozenFirstChoices": {
+        "legal": 4,
+        "safe": 1,
+        "dead": 3,
+        "costly": 0,
+        "unknown": 0
+      },
+      "meltedRoute": [
+        {
+          "source": 6,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 6,
+          "target": 3,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 6,
+          "target": 0,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 6,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 6,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 4,
+          "target": 5,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "F",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 6,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 4,
+          "color": "F",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 0,
+          "color": "E",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 4,
+          "color": "F",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 3,
+          "color": "B",
+          "amount": 3
+        },
+        {
+          "source": 1,
+          "target": 5,
+          "color": "C",
+          "amount": 3
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "A",
+          "amount": 3
+        },
+        {
+          "source": 2,
+          "target": 0,
+          "color": "E",
+          "amount": 1
+        }
+      ],
+      "frozenRoute": [
+        {
+          "source": 1,
+          "target": 6,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 0,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 1,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 4,
+          "target": 1,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 4,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 5,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 6,
+          "target": 5,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 6,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "F",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 0,
+          "color": "F",
+          "amount": 2
+        },
+        {
+          "source": 4,
+          "target": 3,
+          "color": "B",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 4,
+          "color": "F",
+          "amount": 3
+        },
+        {
+          "source": 6,
+          "target": 0,
+          "color": "E",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 6,
+          "color": "A",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "E",
+          "amount": 3
+        }
+      ],
+      "sourceFile": "lifted-six-color.json"
+    },
+    {
+      "number": 18,
+      "colors": 6,
+      "bottles": [
+        [
+          "E",
+          "E",
+          "A"
+        ],
+        [
+          "A",
+          "C"
+        ],
+        [
+          "F",
+          "A",
+          "F",
+          "B"
+        ],
+        [
+          "F",
+          "C",
+          "E",
+          "C"
+        ],
+        [
+          "D",
+          "B",
+          "D",
+          "F"
+        ],
+        [
+          "B",
+          "B",
+          "D",
+          "D"
+        ],
+        [
+          "A",
+          "E",
+          "C"
+        ]
+      ],
+      "frozenBottle": 6,
+      "frozenBottomColor": "A",
+      "meltedMoves": 17,
+      "frozenMoves": 17,
+      "meltedFirstChoices": {
+        "legal": 4,
+        "safe": 4,
+        "dead": 0,
+        "costly": 0,
+        "unknown": 0
+      },
+      "frozenFirstChoices": {
+        "legal": 4,
+        "safe": 1,
+        "dead": 3,
+        "costly": 0,
+        "unknown": 0
+      },
+      "meltedRoute": [
+        {
+          "source": 6,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 6,
+          "target": 3,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 6,
+          "target": 0,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 6,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 5,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 2,
+          "color": "F",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 6,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 5,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 6,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 4,
+          "color": "C",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 0,
+          "color": "E",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 4,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "F",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "F",
+          "amount": 1
+        }
+      ],
+      "frozenRoute": [
+        {
+          "source": 1,
+          "target": 6,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 0,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 1,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 5,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 2,
+          "color": "F",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 1,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 5,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 4,
+          "color": "D",
+          "amount": 3
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 6,
+          "target": 1,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 6,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "F",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 6,
+          "target": 0,
+          "color": "E",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 6,
+          "color": "A",
+          "amount": 3
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "F",
+          "amount": 1
+        }
+      ],
+      "sourceFile": "lifted-six-color.json"
+    },
+    {
+      "number": 19,
+      "colors": 6,
+      "bottles": [
+        [
+          "B",
+          "F",
+          "A"
+        ],
+        [
+          "A",
+          "C"
+        ],
+        [
+          "F",
+          "E",
+          "E",
+          "B"
+        ],
+        [
+          "E",
+          "C",
+          "F",
+          "C"
+        ],
+        [
+          "B",
+          "D",
+          "A",
+          "D"
+        ],
+        [
+          "D",
+          "D",
+          "B",
+          "E"
+        ],
+        [
+          "A",
+          "F",
+          "C"
+        ]
+      ],
+      "frozenBottle": 6,
+      "frozenBottomColor": "A",
+      "meltedMoves": 17,
+      "frozenMoves": 17,
+      "meltedFirstChoices": {
+        "legal": 4,
+        "safe": 4,
+        "dead": 0,
+        "costly": 0,
+        "unknown": 0
+      },
+      "frozenFirstChoices": {
+        "legal": 4,
+        "safe": 1,
+        "dead": 3,
+        "costly": 0,
+        "unknown": 0
+      },
+      "meltedRoute": [
+        {
+          "source": 6,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 6,
+          "target": 3,
+          "color": "F",
+          "amount": 1
+        },
+        {
+          "source": 6,
+          "target": 0,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 6,
+          "color": "C",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 0,
+          "color": "F",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 6,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 3,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 5,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "E",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "F",
+          "amount": 3
+        },
+        {
+          "source": 5,
+          "target": 0,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 4,
+          "target": 5,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 1,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 5,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 0,
+          "color": "B",
+          "amount": 1
+        }
+      ],
+      "frozenRoute": [
+        {
+          "source": 1,
+          "target": 6,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 0,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 6,
+          "target": 1,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 6,
+          "color": "F",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 3,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 5,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "E",
+          "amount": 2
+        },
+        {
+          "source": 6,
+          "target": 2,
+          "color": "F",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 6,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "F",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 0,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 4,
+          "target": 5,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 6,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 5,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 4,
+          "color": "B",
+          "amount": 3
+        }
+      ],
+      "sourceFile": "lifted-six-color.json"
+    },
+    {
+      "number": 20,
+      "colors": 6,
+      "bottles": [
+        [
+          "B",
+          "D",
+          "A"
+        ],
+        [
+          "A",
+          "C"
+        ],
+        [
+          "F",
+          "E",
+          "E",
+          "B"
+        ],
+        [
+          "E",
+          "F",
+          "B",
+          "C"
+        ],
+        [
+          "B",
+          "D",
+          "F",
+          "F"
+        ],
+        [
+          "D",
+          "A",
+          "C",
+          "D"
+        ],
+        [
+          "A",
+          "E",
+          "C"
+        ]
+      ],
+      "frozenBottle": 6,
+      "frozenBottomColor": "A",
+      "meltedMoves": 17,
+      "frozenMoves": 17,
+      "meltedFirstChoices": {
+        "legal": 4,
+        "safe": 4,
+        "dead": 0,
+        "costly": 0,
+        "unknown": 0
+      },
+      "frozenFirstChoices": {
+        "legal": 4,
+        "safe": 1,
+        "dead": 3,
+        "costly": 0,
+        "unknown": 0
+      },
+      "meltedRoute": [
+        {
+          "source": 1,
+          "target": 6,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 0,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 6,
+          "target": 1,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 6,
+          "color": "E",
+          "amount": 2
+        },
+        {
+          "source": 4,
+          "target": 2,
+          "color": "F",
+          "amount": 2
+        },
+        {
+          "source": 5,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 5,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 0,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 2,
+          "color": "F",
+          "amount": 1
+        },
+        {
+          "source": 6,
+          "target": 3,
+          "color": "E",
+          "amount": 3
+        },
+        {
+          "source": 5,
+          "target": 6,
+          "color": "A",
+          "amount": 3
+        },
+        {
+          "source": 4,
+          "target": 5,
+          "color": "D",
+          "amount": 3
+        },
+        {
+          "source": 4,
+          "target": 0,
+          "color": "B",
+          "amount": 1
+        }
+      ],
+      "frozenRoute": [
+        {
+          "source": 1,
+          "target": 6,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 0,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 6,
+          "target": 1,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 6,
+          "color": "E",
+          "amount": 2
+        },
+        {
+          "source": 4,
+          "target": 2,
+          "color": "F",
+          "amount": 2
+        },
+        {
+          "source": 5,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 5,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 0,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 2,
+          "color": "F",
+          "amount": 1
+        },
+        {
+          "source": 6,
+          "target": 3,
+          "color": "E",
+          "amount": 3
+        },
+        {
+          "source": 5,
+          "target": 6,
+          "color": "A",
+          "amount": 3
+        },
+        {
+          "source": 4,
+          "target": 5,
+          "color": "D",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 4,
+          "color": "B",
+          "amount": 3
+        }
+      ],
+      "sourceFile": "lifted-six-color.json"
+    }
+  ]
+}

@@ -5,7 +5,7 @@ import { UiText, useI18n } from '../i18n/I18n';
 import { GameButton } from './GameButton';
 import { MAX_HINT_CREDITS } from '../game/mainline';
 
-export function HomeScreen({ current, hintCredits, compact, onPlay, onLevels, onSettings, vessel, vesselSaved, reduceMotion, onVessel }: { current: number; hintCredits: number; compact: boolean; onPlay: () => void; onLevels: () => void; onSettings: () => void; vessel: VesselDesign; vesselSaved: boolean; reduceMotion: boolean; onVessel: (id: VesselId) => void }) {
+export function HomeScreen({ current, sideNumber, hintCredits, compact, onPlay, onLevels, onSettings, vessel, vesselSaved, reduceMotion, onVessel }: { current: number; sideNumber?: number | null; hintCredits: number; compact: boolean; onPlay: () => void; onLevels: () => void; onSettings: () => void; vessel: VesselDesign; vesselSaved: boolean; reduceMotion: boolean; onVessel: (id: VesselId) => void }) {
   const { t, rtl } = useI18n();
   return <View style={styles.home}>
     <View style={[styles.top, rtl && styles.reverse]}><GameButton kind="icon" icon="settings" label={t('settings')} onPress={onSettings} /></View>
@@ -13,7 +13,7 @@ export function HomeScreen({ current, hintCredits, compact, onPlay, onLevels, on
       <UiText style={[styles.brand, compact && styles.compactBrand]}>BOTTLE</UiText><UiText style={styles.subtitle}>HARMONY</UiText>
       <VesselCarousel vessel={vessel} compact={compact} saved={vesselSaved} reduceMotion={reduceMotion} onSelect={onVessel} />
       <View style={styles.actions}>
-        <GameButton kind="wide" tone="mint" icon="play" label={`Level ${current}`} accessibilityLabel={t('continueLevel', { n: current })} onPress={onPlay} />
+        <GameButton kind="wide" tone="mint" icon="play" label={sideNumber ? t('solidSideLabel', { n: sideNumber }) : `Level ${current}`} accessibilityLabel={sideNumber ? t('solidSideLabel', { n: sideNumber }) : t('continueLevel', { n: current })} onPress={onPlay} />
         <GameButton kind="wide" tone="violet" icon="levels" label={t('levels')} onPress={onLevels} />
       </View>
       <UiText style={styles.hintCredits}>{t('hintCredits', { n: hintCredits, max: MAX_HINT_CREDITS })}</UiText>

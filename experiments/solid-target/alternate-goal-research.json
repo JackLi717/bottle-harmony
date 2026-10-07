@@ -1,0 +1,28 @@
+[
+  {
+    "reserveEmpty": false,
+    "counts": {
+      "attempted": 18000,
+      "accepted": 1106,
+      "unsolvedFrozen": 0,
+      "unknown": 0,
+      "positive": 0,
+      "atLeastThree": 0,
+      "maxExtraMoves": 0
+    },
+    "examples": []
+  },
+  {
+    "reserveEmpty": true,
+    "counts": {
+      "attempted": 18000,
+      "accepted": 1142,
+      "unsolvedFrozen": 0,
+      "unknown": 0,
+      "positive": 0,
+      "atLeastThree": 0,
+      "maxExtraMoves": 0
+    },
+    "examples": []
+  }
+]

@@ -8,13 +8,13 @@ import { Icon } from './Icon';
 import type { StalledReason } from './stalledNoticePolicy';
 
 /** Fits over the existing footer, keeping all bottle coordinates unchanged. */
-export function StalledNotice({ reason, compact, canUndo, reserveAvailable, reduceMotion, onClose, onUndo, onReset }: {
-  reason: StalledReason; compact: boolean; canUndo: boolean; reserveAvailable: boolean; reduceMotion: boolean; onClose: () => void; onUndo: () => void; onReset: () => void;
+export function StalledNotice({ reason, compact, canUndo, reserveAvailable, heatAvailable, reduceMotion, onClose, onUndo, onReset, onHeat }: {
+  reason: StalledReason; compact: boolean; canUndo: boolean; reserveAvailable: boolean; heatAvailable: boolean; reduceMotion: boolean; onClose: () => void; onUndo: () => void; onReset: () => void; onHeat: () => void;
 }) {
   const { t, rtl } = useI18n();
   const entrance = useSharedValue(reduceMotion ? 1 : 0);
   const title = t(reason === 'noMoves' ? 'noMovesTitle' : 'unsolvableTitle');
-  const help = reserveAvailable
+  const help = heatAvailable ? 'solidInstruction' : reserveAvailable
     ? canUndo ? 'reserveStalledHelp' : 'reserveStalledRestartHelp'
     : canUndo ? 'stalledHelp' : 'stalledRestartHelp';
   useEffect(() => {
@@ -30,6 +30,7 @@ export function StalledNotice({ reason, compact, canUndo, reserveAvailable, redu
       </View>
       <UiText numberOfLines={2} adjustsFontSizeToFit minimumFontScale={.8} style={[styles.note, compact && styles.compactNote]}>{t(help)}</UiText>
       <View style={[styles.actions, rtl && styles.reverse]}>
+        {heatAvailable && <View style={styles.action}><GameButton compact={compact} kind="wide" tone="gold" icon="fire" label={t('heat')} onPress={onHeat} /></View>}
         {canUndo && <View style={styles.action}><GameButton compact={compact} kind="wide" tone="mint" icon="undo" label={t(compact ? 'undo' : 'undoStep')} accessibilityLabel={t('undoStep')} onPress={onUndo} /></View>}
         <View style={styles.action}><GameButton compact={compact} kind="wide" tone="blue" icon="reset" label={t('reset')} accessibilityLabel={t('resetHint')} onPress={onReset} /></View>
       </View>

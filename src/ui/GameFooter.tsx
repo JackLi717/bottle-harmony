@@ -7,8 +7,8 @@ import { GameButton } from './GameButton';
 import { StalledNotice } from './StalledNotice';
 import type { StalledReason } from './stalledNoticePolicy';
 
-type Props = { won: boolean; continueVisible: boolean; compact: boolean; disabled: boolean; undoDisabled: boolean; searching: boolean; reduceMotion: boolean; nextLabel: string; hintStatus: string; onUndo: () => void; onHint: () => void; onReset: () => void; onContinue: () => void; stalledReason: StalledReason | null; reserveAvailable?: boolean; onCloseStalled: () => void };
-export function GameFooter({ won, continueVisible, compact, disabled, undoDisabled, searching, reduceMotion, nextLabel, hintStatus, onUndo, onHint, onReset, onContinue, stalledReason, reserveAvailable = false, onCloseStalled }: Props) {
+type Props = { won: boolean; continueVisible: boolean; compact: boolean; disabled: boolean; undoDisabled: boolean; searching: boolean; reduceMotion: boolean; nextLabel: string; hintStatus: string; onUndo: () => void; onHint: () => void; onReset: () => void; onContinue: () => void; stalledReason: StalledReason | null; reserveAvailable?: boolean; heatAvailable?: boolean; onHeat?: () => void; onCloseStalled: () => void };
+export function GameFooter({ won, continueVisible, compact, disabled, undoDisabled, searching, reduceMotion, nextLabel, hintStatus, onUndo, onHint, onReset, onContinue, stalledReason, reserveAvailable = false, heatAvailable = false, onHeat = () => {}, onCloseStalled }: Props) {
   const { t, rtl } = useI18n();
   const entrance = useSharedValue(continueVisible ? 1 : 0);
   useEffect(() => {
@@ -32,7 +32,7 @@ export function GameFooter({ won, continueVisible, compact, disabled, undoDisabl
       </>}
     </LinearGradient>
     </View>
-    {stalledReason && <StalledNotice reason={stalledReason} compact={compact} canUndo={!undoDisabled} reserveAvailable={reserveAvailable} reduceMotion={reduceMotion} onClose={onCloseStalled} onUndo={onUndo} onReset={onReset} />}
+    {stalledReason && <StalledNotice reason={stalledReason} compact={compact} canUndo={!undoDisabled} reserveAvailable={reserveAvailable} heatAvailable={heatAvailable} reduceMotion={reduceMotion} onClose={onCloseStalled} onUndo={onUndo} onReset={onReset} onHeat={onHeat} />}
   </View>;
 }
 const styles = StyleSheet.create({

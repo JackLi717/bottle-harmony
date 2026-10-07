@@ -6,6 +6,7 @@ import { createMainline, type MainlineState } from '../game/mainline';
 import { decodeMainline, encodeMainline, MAINLINE_SAVE_KEY } from '../game/mainlineCodec';
 import { createProgressWriter } from '../storage/progressWriter';
 import { MAINLINE } from './mainlineContent';
+import { SOLID_SIDES } from './solidSideContent';
 
 const write = createProgressWriter(value => AsyncStorage.setItem(MAINLINE_SAVE_KEY, value));
 export function usePlayProgress() {
@@ -24,20 +25,20 @@ export function usePlayProgress() {
       try {
         const json = await AsyncStorage.getItem(MAINLINE_SAVE_KEY);
         if (json) {
-          try { restored = decodeMainline(json, MAINLINE); }
+          try { restored = decodeMainline(json, MAINLINE, SOLID_SIDES); }
           catch { /* An incompatible pre-release board starts fresh; retain its bytes until the next explicit action. */ }
         }
       } catch { /* Keep the fresh in-memory session without exposing a storage diagnostic in play. */ }
       if (cancelled) return;
       // Do not overwrite a failed read or invalid save merely by mounting the app.
-      lastRequested.current = encodeMainline(restored, MAINLINE);
+      lastRequested.current = encodeMainline(restored, MAINLINE, SOLID_SIDES);
       latest.current = lastRequested.current;
       updatePlay(restored); setSaveStatus('localProgress'); setReady(true);
     })();
     return () => { cancelled = true; alive.current = false; };
   }, []);
   const encoded = useMemo(() => {
-    try { return encodeMainline(play, MAINLINE); } catch { return null; }
+    try { return encodeMainline(play, MAINLINE, SOLID_SIDES); } catch { return null; }
   }, [play]);
   useEffect(() => {
     if (!ready || encoded === null) return;

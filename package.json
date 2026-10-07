@@ -48,7 +48,9 @@
     "mainline:build": "node --experimental-strip-types scripts/mainline.ts build",
     "mainline:verify": "node --experimental-strip-types scripts/mainline.ts verify",
     "mainline:audit": "node --experimental-strip-types scripts/audit-mainline.ts",
-    "mainline:human": "node --experimental-strip-types scripts/human-difficulty.ts"
+    "mainline:human": "node --experimental-strip-types scripts/human-difficulty.ts",
+    "side:build": "node --experimental-strip-types scripts/solid-structure-research.ts --assemble-side50",
+    "side:verify": "node --experimental-strip-types --test tests/solidSide.test.ts"
   },
   "private": true,
   "engines": {

@@ -1,0 +1,4739 @@
+{
+  "experiment": "solid-bottom-v1",
+  "seed": 927451,
+  "attempts": 33,
+  "capacity": 4,
+  "rule": "Only the bottom layer of frozenBottle cannot leave; upper layers pour normally. Heating restores ordinary pours.",
+  "samples": [
+    {
+      "number": 1,
+      "colors": 4,
+      "bottles": [
+        [
+          "B",
+          "B",
+          "D"
+        ],
+        [
+          "B",
+          "A",
+          "D"
+        ],
+        [
+          "C",
+          "A",
+          "D",
+          "A"
+        ],
+        [
+          "C",
+          "A",
+          "C",
+          "D"
+        ],
+        [],
+        [
+          "B",
+          "C"
+        ]
+      ],
+      "frozenBottle": 5,
+      "frozenColor": "B",
+      "meltedMoves": 13,
+      "frozenMoves": 13,
+      "extraMoves": 0,
+      "meltedRoute": [
+        {
+          "source": 1,
+          "target": 0,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 2,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 5,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 3,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 4,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 5,
+          "target": 0,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 5,
+          "color": "A",
+          "amount": 3
+        },
+        {
+          "source": 1,
+          "target": 0,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 5,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "C",
+          "amount": 1
+        }
+      ],
+      "frozenRoute": [
+        {
+          "source": 1,
+          "target": 0,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 2,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 5,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 4,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 2,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 5,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 0,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 0,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 5,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "C",
+          "amount": 3
+        }
+      ],
+      "meltedVisited": 633,
+      "frozenVisited": 645,
+      "meltedFirstChoices": {
+        "legal": 9,
+        "safe": 9,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      "frozenFirstChoices": {
+        "legal": 9,
+        "safe": 9,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    },
+    {
+      "number": 2,
+      "colors": 4,
+      "bottles": [
+        [
+          "A",
+          "B",
+          "C",
+          "C"
+        ],
+        [
+          "A",
+          "D"
+        ],
+        [
+          "D",
+          "B",
+          "C",
+          "A"
+        ],
+        [
+          "D",
+          "D",
+          "B"
+        ],
+        [],
+        [
+          "B",
+          "C",
+          "A"
+        ]
+      ],
+      "frozenBottle": 5,
+      "frozenColor": "B",
+      "meltedMoves": 11,
+      "frozenMoves": 11,
+      "extraMoves": 0,
+      "meltedRoute": [
+        {
+          "source": 2,
+          "target": 5,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 4,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 3,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 0,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 5,
+          "target": 4,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 5,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 0,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 5,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "D",
+          "amount": 2
+        }
+      ],
+      "frozenRoute": [
+        {
+          "source": 2,
+          "target": 5,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 4,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 2,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 3,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 1,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 5,
+          "target": 4,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 5,
+          "color": "B",
+          "amount": 3
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "D",
+          "amount": 1
+        }
+      ],
+      "meltedVisited": 43,
+      "frozenVisited": 109,
+      "meltedFirstChoices": {
+        "legal": 6,
+        "safe": 6,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      "frozenFirstChoices": {
+        "legal": 6,
+        "safe": 6,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    },
+    {
+      "number": 3,
+      "colors": 4,
+      "bottles": [
+        [
+          "C",
+          "D",
+          "B"
+        ],
+        [
+          "A",
+          "C",
+          "C"
+        ],
+        [
+          "D",
+          "A",
+          "D"
+        ],
+        [
+          "D",
+          "B",
+          "A",
+          "B"
+        ],
+        [],
+        [
+          "C",
+          "B",
+          "A"
+        ]
+      ],
+      "frozenBottle": 5,
+      "frozenColor": "C",
+      "meltedMoves": 12,
+      "frozenMoves": 12,
+      "extraMoves": 0,
+      "meltedRoute": [
+        {
+          "source": 3,
+          "target": 0,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 3,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 5,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 0,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 5,
+          "target": 4,
+          "color": "B",
+          "amount": 3
+        },
+        {
+          "source": 5,
+          "target": 0,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 4,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "D",
+          "amount": 1
+        }
+      ],
+      "frozenRoute": [
+        {
+          "source": 3,
+          "target": 0,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 5,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 3,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 0,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 5,
+          "target": 1,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 4,
+          "color": "B",
+          "amount": 3
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 4,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 5,
+          "color": "C",
+          "amount": 3
+        }
+      ],
+      "meltedVisited": 105,
+      "frozenVisited": 106,
+      "meltedFirstChoices": {
+        "legal": 6,
+        "safe": 6,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      "frozenFirstChoices": {
+        "legal": 6,
+        "safe": 6,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    },
+    {
+      "number": 4,
+      "colors": 4,
+      "bottles": [
+        [
+          "C",
+          "D",
+          "A",
+          "D"
+        ],
+        [
+          "C",
+          "A"
+        ],
+        [
+          "A",
+          "B",
+          "B",
+          "D"
+        ],
+        [
+          "D",
+          "C",
+          "B"
+        ],
+        [],
+        [
+          "B",
+          "A",
+          "C"
+        ]
+      ],
+      "frozenBottle": 5,
+      "frozenColor": "B",
+      "meltedMoves": 12,
+      "frozenMoves": 12,
+      "extraMoves": 0,
+      "meltedRoute": [
+        {
+          "source": 0,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 5,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 2,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 3,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 5,
+          "target": 1,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 5,
+          "color": "B",
+          "amount": 3
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "A",
+          "amount": 3
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "C",
+          "amount": 3
+        },
+        {
+          "source": 3,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        }
+      ],
+      "frozenRoute": [
+        {
+          "source": 0,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 5,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 2,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 3,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 5,
+          "target": 1,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 5,
+          "color": "B",
+          "amount": 3
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "A",
+          "amount": 3
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "C",
+          "amount": 3
+        },
+        {
+          "source": 3,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        }
+      ],
+      "meltedVisited": 55,
+      "frozenVisited": 57,
+      "meltedFirstChoices": {
+        "legal": 5,
+        "safe": 5,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      "frozenFirstChoices": {
+        "legal": 5,
+        "safe": 5,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    },
+    {
+      "number": 5,
+      "colors": 4,
+      "bottles": [
+        [
+          "A",
+          "C",
+          "B"
+        ],
+        [
+          "B",
+          "D",
+          "B",
+          "A"
+        ],
+        [
+          "C",
+          "C",
+          "B"
+        ],
+        [
+          "C",
+          "D",
+          "A"
+        ],
+        [],
+        [
+          "D",
+          "A",
+          "D"
+        ]
+      ],
+      "frozenBottle": 5,
+      "frozenColor": "D",
+      "meltedMoves": 11,
+      "frozenMoves": 11,
+      "extraMoves": 0,
+      "meltedRoute": [
+        {
+          "source": 1,
+          "target": 3,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 0,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 5,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 0,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 5,
+          "target": 3,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 5,
+          "target": 0,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 5,
+          "color": "D",
+          "amount": 3
+        },
+        {
+          "source": 3,
+          "target": 2,
+          "color": "C",
+          "amount": 1
+        }
+      ],
+      "frozenRoute": [
+        {
+          "source": 1,
+          "target": 3,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 0,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 5,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 0,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 5,
+          "target": 3,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 5,
+          "target": 0,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 5,
+          "color": "D",
+          "amount": 3
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "C",
+          "amount": 3
+        }
+      ],
+      "meltedVisited": 83,
+      "frozenVisited": 80,
+      "meltedFirstChoices": {
+        "legal": 8,
+        "safe": 8,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      "frozenFirstChoices": {
+        "legal": 8,
+        "safe": 8,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    },
+    {
+      "number": 6,
+      "colors": 4,
+      "bottles": [
+        [
+          "C",
+          "B",
+          "D"
+        ],
+        [
+          "C",
+          "A",
+          "D",
+          "C"
+        ],
+        [
+          "D",
+          "A"
+        ],
+        [
+          "D",
+          "B",
+          "A",
+          "B"
+        ],
+        [],
+        [
+          "A",
+          "B",
+          "C"
+        ]
+      ],
+      "frozenBottle": 5,
+      "frozenColor": "A",
+      "meltedMoves": 13,
+      "frozenMoves": 13,
+      "extraMoves": 0,
+      "meltedRoute": [
+        {
+          "source": 1,
+          "target": 5,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 0,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 1,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 5,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 2,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 3,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 5,
+          "color": "A",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 4,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 4,
+          "color": "B",
+          "amount": 3
+        },
+        {
+          "source": 3,
+          "target": 2,
+          "color": "D",
+          "amount": 1
+        }
+      ],
+      "frozenRoute": [
+        {
+          "source": 1,
+          "target": 5,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 0,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 1,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 5,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 2,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 3,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 5,
+          "color": "A",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 4,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 4,
+          "color": "B",
+          "amount": 3
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "D",
+          "amount": 3
+        }
+      ],
+      "meltedVisited": 151,
+      "frozenVisited": 154,
+      "meltedFirstChoices": {
+        "legal": 6,
+        "safe": 6,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      "frozenFirstChoices": {
+        "legal": 6,
+        "safe": 6,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    },
+    {
+      "number": 7,
+      "colors": 4,
+      "bottles": [
+        [
+          "D",
+          "C",
+          "C",
+          "B"
+        ],
+        [
+          "C",
+          "A",
+          "D"
+        ],
+        [
+          "A",
+          "C",
+          "B"
+        ],
+        [
+          "D",
+          "A",
+          "A"
+        ],
+        [],
+        [
+          "B",
+          "D",
+          "B"
+        ]
+      ],
+      "frozenBottle": 5,
+      "frozenColor": "B",
+      "meltedMoves": 10,
+      "frozenMoves": 10,
+      "extraMoves": 0,
+      "meltedRoute": [
+        {
+          "source": 5,
+          "target": 2,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 5,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 5,
+          "target": 3,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 5,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 5,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 0,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "A",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "C",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 3,
+          "color": "D",
+          "amount": 1
+        }
+      ],
+      "frozenRoute": [
+        {
+          "source": 5,
+          "target": 2,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 5,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 5,
+          "target": 3,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 5,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 5,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 0,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "A",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "C",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 3,
+          "color": "D",
+          "amount": 1
+        }
+      ],
+      "meltedVisited": 66,
+      "frozenVisited": 70,
+      "meltedFirstChoices": {
+        "legal": 9,
+        "safe": 9,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      "frozenFirstChoices": {
+        "legal": 9,
+        "safe": 9,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    },
+    {
+      "number": 8,
+      "colors": 5,
+      "bottles": [
+        [
+          "B",
+          "D",
+          "C",
+          "E"
+        ],
+        [
+          "B",
+          "E",
+          "C",
+          "C"
+        ],
+        [
+          "D",
+          "D",
+          "B"
+        ],
+        [
+          "A",
+          "B",
+          "A"
+        ],
+        [
+          "A",
+          "D",
+          "A"
+        ],
+        [],
+        [
+          "C",
+          "E",
+          "E"
+        ]
+      ],
+      "frozenBottle": 6,
+      "frozenColor": "C",
+      "meltedMoves": 13,
+      "frozenMoves": 13,
+      "extraMoves": 0,
+      "meltedRoute": [
+        {
+          "source": 0,
+          "target": 6,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 4,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 2,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 3,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 6,
+          "target": 5,
+          "color": "E",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 6,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 6,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 5,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 4,
+          "target": 2,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 4,
+          "target": 3,
+          "color": "A",
+          "amount": 1
+        }
+      ],
+      "frozenRoute": [
+        {
+          "source": 0,
+          "target": 6,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 4,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 2,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 3,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 6,
+          "target": 5,
+          "color": "E",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 6,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 6,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 5,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 4,
+          "target": 2,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 4,
+          "color": "A",
+          "amount": 3
+        }
+      ],
+      "meltedVisited": 152,
+      "frozenVisited": 146,
+      "meltedFirstChoices": {
+        "legal": 9,
+        "safe": 9,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      "frozenFirstChoices": {
+        "legal": 9,
+        "safe": 9,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    },
+    {
+      "number": 9,
+      "colors": 5,
+      "bottles": [
+        [
+          "D",
+          "D"
+        ],
+        [
+          "E",
+          "C",
+          "A"
+        ],
+        [
+          "D",
+          "C",
+          "D",
+          "B"
+        ],
+        [
+          "C",
+          "A",
+          "A",
+          "E"
+        ],
+        [
+          "B",
+          "B",
+          "E",
+          "C"
+        ],
+        [],
+        [
+          "A",
+          "B",
+          "E"
+        ]
+      ],
+      "frozenBottle": 6,
+      "frozenColor": "A",
+      "meltedMoves": 13,
+      "frozenMoves": 13,
+      "extraMoves": 0,
+      "meltedRoute": [
+        {
+          "source": 3,
+          "target": 6,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 3,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 5,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 0,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 6,
+          "target": 1,
+          "color": "E",
+          "amount": 2
+        },
+        {
+          "source": 6,
+          "target": 5,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 6,
+          "color": "A",
+          "amount": 3
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "C",
+          "amount": 3
+        },
+        {
+          "source": 2,
+          "target": 0,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 1,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 5,
+          "color": "B",
+          "amount": 2
+        }
+      ],
+      "frozenRoute": [
+        {
+          "source": 3,
+          "target": 6,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 3,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 5,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 4,
+          "target": 1,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 0,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 5,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "D",
+          "amount": 3
+        },
+        {
+          "source": 6,
+          "target": 1,
+          "color": "E",
+          "amount": 2
+        },
+        {
+          "source": 6,
+          "target": 4,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 6,
+          "color": "A",
+          "amount": 3
+        },
+        {
+          "source": 3,
+          "target": 5,
+          "color": "C",
+          "amount": 1
+        }
+      ],
+      "meltedVisited": 62,
+      "frozenVisited": 53,
+      "meltedFirstChoices": {
+        "legal": 7,
+        "safe": 7,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      "frozenFirstChoices": {
+        "legal": 7,
+        "safe": 7,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    },
+    {
+      "number": 10,
+      "colors": 5,
+      "bottles": [
+        [
+          "A",
+          "A",
+          "E",
+          "C"
+        ],
+        [
+          "A",
+          "D",
+          "B",
+          "E"
+        ],
+        [
+          "E",
+          "C",
+          "B",
+          "A"
+        ],
+        [
+          "C",
+          "B"
+        ],
+        [
+          "D",
+          "D",
+          "C"
+        ],
+        [],
+        [
+          "D",
+          "E",
+          "B"
+        ]
+      ],
+      "frozenBottle": 6,
+      "frozenColor": "D",
+      "meltedMoves": 14,
+      "frozenMoves": 14,
+      "extraMoves": 0,
+      "meltedRoute": [
+        {
+          "source": 0,
+          "target": 4,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 0,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 6,
+          "target": 1,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 6,
+          "color": "E",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 0,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 2,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 5,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 0,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 5,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "C",
+          "amount": 3
+        },
+        {
+          "source": 6,
+          "target": 2,
+          "color": "E",
+          "amount": 3
+        },
+        {
+          "source": 6,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        }
+      ],
+      "frozenRoute": [
+        {
+          "source": 0,
+          "target": 4,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 0,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 6,
+          "target": 3,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 6,
+          "color": "E",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 0,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 2,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 5,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "A",
+          "amount": 3
+        },
+        {
+          "source": 3,
+          "target": 5,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "C",
+          "amount": 3
+        },
+        {
+          "source": 6,
+          "target": 2,
+          "color": "E",
+          "amount": 3
+        },
+        {
+          "source": 4,
+          "target": 6,
+          "color": "D",
+          "amount": 3
+        }
+      ],
+      "meltedVisited": 268,
+      "frozenVisited": 275,
+      "meltedFirstChoices": {
+        "legal": 9,
+        "safe": 9,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      "frozenFirstChoices": {
+        "legal": 9,
+        "safe": 9,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    },
+    {
+      "number": 11,
+      "colors": 5,
+      "bottles": [
+        [
+          "D",
+          "D",
+          "B",
+          "A"
+        ],
+        [
+          "D",
+          "B",
+          "C",
+          "B"
+        ],
+        [
+          "C",
+          "A",
+          "B"
+        ],
+        [
+          "A",
+          "C",
+          "E"
+        ],
+        [
+          "C",
+          "E",
+          "E",
+          "D"
+        ],
+        [],
+        [
+          "A",
+          "E"
+        ]
+      ],
+      "frozenBottle": 6,
+      "frozenColor": "A",
+      "meltedMoves": 15,
+      "frozenMoves": 15,
+      "extraMoves": 0,
+      "meltedRoute": [
+        {
+          "source": 1,
+          "target": 2,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 6,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 3,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 5,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 5,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 5,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 0,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 0,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 6,
+          "target": 1,
+          "color": "E",
+          "amount": 2
+        },
+        {
+          "source": 6,
+          "target": 3,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 1,
+          "color": "E",
+          "amount": 2
+        },
+        {
+          "source": 4,
+          "target": 2,
+          "color": "C",
+          "amount": 1
+        }
+      ],
+      "frozenRoute": [
+        {
+          "source": 1,
+          "target": 2,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 6,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 3,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 5,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 5,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 5,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 4,
+          "target": 1,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 6,
+          "target": 0,
+          "color": "E",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 6,
+          "color": "A",
+          "amount": 3
+        },
+        {
+          "source": 4,
+          "target": 0,
+          "color": "E",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "C",
+          "amount": 3
+        }
+      ],
+      "meltedVisited": 910,
+      "frozenVisited": 860,
+      "meltedFirstChoices": {
+        "legal": 9,
+        "safe": 9,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      "frozenFirstChoices": {
+        "legal": 9,
+        "safe": 9,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    },
+    {
+      "number": 12,
+      "colors": 5,
+      "bottles": [
+        [
+          "B",
+          "A",
+          "E",
+          "D"
+        ],
+        [
+          "D",
+          "B",
+          "C",
+          "E"
+        ],
+        [
+          "B",
+          "B"
+        ],
+        [
+          "C",
+          "D",
+          "E",
+          "E"
+        ],
+        [
+          "D",
+          "C",
+          "A"
+        ],
+        [],
+        [
+          "A",
+          "A",
+          "C"
+        ]
+      ],
+      "frozenBottle": 6,
+      "frozenColor": "A",
+      "meltedMoves": 13,
+      "frozenMoves": 13,
+      "extraMoves": 0,
+      "meltedRoute": [
+        {
+          "source": 1,
+          "target": 5,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 6,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 6,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 4,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 5,
+          "color": "E",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 3,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 5,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 6,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 0,
+          "color": "B",
+          "amount": 3
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 4,
+          "target": 3,
+          "color": "C",
+          "amount": 3
+        },
+        {
+          "source": 4,
+          "target": 1,
+          "color": "D",
+          "amount": 1
+        }
+      ],
+      "frozenRoute": [
+        {
+          "source": 3,
+          "target": 5,
+          "color": "E",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 3,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 5,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 4,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 5,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 6,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 6,
+          "target": 3,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 4,
+          "target": 6,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 4,
+          "target": 3,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 4,
+          "color": "D",
+          "amount": 3
+        }
+      ],
+      "meltedVisited": 96,
+      "frozenVisited": 82,
+      "meltedFirstChoices": {
+        "legal": 6,
+        "safe": 6,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      "frozenFirstChoices": {
+        "legal": 6,
+        "safe": 6,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    },
+    {
+      "number": 13,
+      "colors": 5,
+      "bottles": [
+        [
+          "B",
+          "A",
+          "C",
+          "A"
+        ],
+        [
+          "E",
+          "E",
+          "A",
+          "B"
+        ],
+        [
+          "C",
+          "A",
+          "B"
+        ],
+        [
+          "E",
+          "D",
+          "D"
+        ],
+        [
+          "D",
+          "B",
+          "E"
+        ],
+        [],
+        [
+          "C",
+          "D",
+          "C"
+        ]
+      ],
+      "frozenBottle": 6,
+      "frozenColor": "C",
+      "meltedMoves": 14,
+      "frozenMoves": 14,
+      "extraMoves": 0,
+      "meltedRoute": [
+        {
+          "source": 1,
+          "target": 2,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 6,
+          "target": 0,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 6,
+          "target": 3,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 6,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 0,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 4,
+          "target": 1,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 5,
+          "color": "A",
+          "amount": 3
+        },
+        {
+          "source": 2,
+          "target": 5,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 6,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 0,
+          "color": "B",
+          "amount": 3
+        },
+        {
+          "source": 3,
+          "target": 4,
+          "color": "D",
+          "amount": 3
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "E",
+          "amount": 1
+        }
+      ],
+      "frozenRoute": [
+        {
+          "source": 1,
+          "target": 2,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 6,
+          "target": 0,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 6,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 4,
+          "target": 3,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 3,
+          "color": "E",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "A",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 0,
+          "color": "B",
+          "amount": 3
+        },
+        {
+          "source": 6,
+          "target": 4,
+          "color": "D",
+          "amount": 3
+        },
+        {
+          "source": 2,
+          "target": 6,
+          "color": "C",
+          "amount": 3
+        }
+      ],
+      "meltedVisited": 126,
+      "frozenVisited": 143,
+      "meltedFirstChoices": {
+        "legal": 7,
+        "safe": 7,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      "frozenFirstChoices": {
+        "legal": 7,
+        "safe": 7,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    },
+    {
+      "number": 14,
+      "colors": 5,
+      "bottles": [
+        [
+          "D",
+          "E",
+          "A",
+          "A"
+        ],
+        [
+          "D",
+          "B",
+          "C"
+        ],
+        [
+          "D",
+          "E",
+          "C"
+        ],
+        [
+          "E",
+          "C",
+          "E",
+          "B"
+        ],
+        [
+          "D",
+          "B",
+          "A"
+        ],
+        [],
+        [
+          "B",
+          "A",
+          "C"
+        ]
+      ],
+      "frozenBottle": 6,
+      "frozenColor": "B",
+      "meltedMoves": 16,
+      "frozenMoves": 16,
+      "extraMoves": 0,
+      "meltedRoute": [
+        {
+          "source": 6,
+          "target": 2,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 6,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 4,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 5,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 0,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 0,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 6,
+          "target": 5,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 4,
+          "target": 6,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 6,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 2,
+          "color": "C",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 3,
+          "color": "E",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        }
+      ],
+      "frozenRoute": [
+        {
+          "source": 6,
+          "target": 2,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 6,
+          "target": 4,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 6,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 5,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 5,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 0,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 3,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 4,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 6,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "E",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "E",
+          "amount": 3
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        }
+      ],
+      "meltedVisited": 1442,
+      "frozenVisited": 1291,
+      "meltedFirstChoices": {
+        "legal": 13,
+        "safe": 13,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      "frozenFirstChoices": {
+        "legal": 13,
+        "safe": 13,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    },
+    {
+      "number": 15,
+      "colors": 6,
+      "bottles": [
+        [
+          "B",
+          "C",
+          "F",
+          "A"
+        ],
+        [
+          "F",
+          "B",
+          "C"
+        ],
+        [
+          "E",
+          "A",
+          "C"
+        ],
+        [
+          "A",
+          "A",
+          "D",
+          "B"
+        ],
+        [
+          "E",
+          "E",
+          "B",
+          "F"
+        ],
+        [
+          "F",
+          "D",
+          "D",
+          "E"
+        ],
+        [],
+        [
+          "D",
+          "C"
+        ]
+      ],
+      "frozenBottle": 7,
+      "frozenColor": "D",
+      "meltedMoves": 16,
+      "frozenMoves": 16,
+      "extraMoves": 0,
+      "meltedRoute": [
+        {
+          "source": 1,
+          "target": 2,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 7,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 0,
+          "color": "F",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 1,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 4,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 5,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 7,
+          "target": 2,
+          "color": "C",
+          "amount": 3
+        },
+        {
+          "source": 5,
+          "target": 7,
+          "color": "D",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 5,
+          "color": "F",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 0,
+          "color": "B",
+          "amount": 3
+        },
+        {
+          "source": 1,
+          "target": 5,
+          "color": "F",
+          "amount": 1
+        }
+      ],
+      "frozenRoute": [
+        {
+          "source": 1,
+          "target": 2,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 7,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 0,
+          "color": "F",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 1,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 4,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 5,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 7,
+          "target": 2,
+          "color": "C",
+          "amount": 3
+        },
+        {
+          "source": 5,
+          "target": 7,
+          "color": "D",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 5,
+          "color": "F",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 0,
+          "color": "B",
+          "amount": 3
+        },
+        {
+          "source": 1,
+          "target": 5,
+          "color": "F",
+          "amount": 1
+        }
+      ],
+      "meltedVisited": 255,
+      "frozenVisited": 248,
+      "meltedFirstChoices": {
+        "legal": 13,
+        "safe": 13,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      "frozenFirstChoices": {
+        "legal": 13,
+        "safe": 13,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    },
+    {
+      "number": 16,
+      "colors": 6,
+      "bottles": [
+        [
+          "D",
+          "B",
+          "C",
+          "B"
+        ],
+        [
+          "E",
+          "F",
+          "E",
+          "A"
+        ],
+        [
+          "D",
+          "A",
+          "F",
+          "C"
+        ],
+        [
+          "B",
+          "A"
+        ],
+        [
+          "E",
+          "A",
+          "C",
+          "B"
+        ],
+        [
+          "F",
+          "C",
+          "F",
+          "D"
+        ],
+        [],
+        [
+          "E",
+          "D"
+        ]
+      ],
+      "frozenBottle": 7,
+      "frozenColor": "E",
+      "meltedMoves": 20,
+      "frozenMoves": 20,
+      "extraMoves": 0,
+      "meltedRoute": [
+        {
+          "source": 1,
+          "target": 3,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 7,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 6,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 5,
+          "color": "F",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 2,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 3,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 6,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 3,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 7,
+          "target": 0,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 7,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 3,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 6,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 1,
+          "color": "F",
+          "amount": 2
+        },
+        {
+          "source": 5,
+          "target": 6,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 5,
+          "color": "F",
+          "amount": 3
+        },
+        {
+          "source": 1,
+          "target": 7,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "A",
+          "amount": 3
+        },
+        {
+          "source": 2,
+          "target": 0,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 1,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 7,
+          "color": "E",
+          "amount": 1
+        }
+      ],
+      "frozenRoute": [
+        {
+          "source": 1,
+          "target": 3,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 7,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 6,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 5,
+          "color": "F",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 2,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 3,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 6,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 3,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 3,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 6,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 7,
+          "target": 0,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 7,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 1,
+          "color": "F",
+          "amount": 2
+        },
+        {
+          "source": 5,
+          "target": 6,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 5,
+          "color": "F",
+          "amount": 3
+        },
+        {
+          "source": 1,
+          "target": 7,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "A",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "D",
+          "amount": 3
+        },
+        {
+          "source": 4,
+          "target": 1,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 7,
+          "color": "E",
+          "amount": 1
+        }
+      ],
+      "meltedVisited": 2104,
+      "frozenVisited": 1973,
+      "meltedFirstChoices": {
+        "legal": 9,
+        "safe": 9,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      "frozenFirstChoices": {
+        "legal": 9,
+        "safe": 9,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    },
+    {
+      "number": 17,
+      "colors": 6,
+      "bottles": [
+        [
+          "A",
+          "A"
+        ],
+        [
+          "B",
+          "D",
+          "E",
+          "C"
+        ],
+        [
+          "E",
+          "F",
+          "F",
+          "B"
+        ],
+        [
+          "A",
+          "E",
+          "F",
+          "D"
+        ],
+        [
+          "F",
+          "B",
+          "D",
+          "C"
+        ],
+        [
+          "C",
+          "C",
+          "B",
+          "A"
+        ],
+        [],
+        [
+          "D",
+          "E"
+        ]
+      ],
+      "frozenBottle": 7,
+      "frozenColor": "D",
+      "meltedMoves": 16,
+      "frozenMoves": 16,
+      "extraMoves": 0,
+      "meltedRoute": [
+        {
+          "source": 5,
+          "target": 0,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 5,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 6,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 7,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 2,
+          "color": "F",
+          "amount": 1
+        },
+        {
+          "source": 7,
+          "target": 3,
+          "color": "E",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 7,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 5,
+          "target": 1,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 6,
+          "target": 5,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 5,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 7,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 1,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "F",
+          "amount": 3
+        },
+        {
+          "source": 3,
+          "target": 2,
+          "color": "E",
+          "amount": 3
+        },
+        {
+          "source": 3,
+          "target": 0,
+          "color": "A",
+          "amount": 1
+        }
+      ],
+      "frozenRoute": [
+        {
+          "source": 5,
+          "target": 0,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 5,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 6,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 7,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 2,
+          "color": "F",
+          "amount": 1
+        },
+        {
+          "source": 7,
+          "target": 3,
+          "color": "E",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 7,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 4,
+          "target": 6,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 7,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 1,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "F",
+          "amount": 3
+        },
+        {
+          "source": 3,
+          "target": 2,
+          "color": "E",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 3,
+          "color": "A",
+          "amount": 3
+        },
+        {
+          "source": 5,
+          "target": 1,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 5,
+          "target": 6,
+          "color": "C",
+          "amount": 2
+        }
+      ],
+      "meltedVisited": 113,
+      "frozenVisited": 97,
+      "meltedFirstChoices": {
+        "legal": 8,
+        "safe": 8,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      "frozenFirstChoices": {
+        "legal": 8,
+        "safe": 8,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    },
+    {
+      "number": 18,
+      "colors": 6,
+      "bottles": [
+        [
+          "D",
+          "C",
+          "B",
+          "D"
+        ],
+        [
+          "E",
+          "E",
+          "D"
+        ],
+        [
+          "B",
+          "A",
+          "E",
+          "C"
+        ],
+        [
+          "F",
+          "F",
+          "B"
+        ],
+        [
+          "A",
+          "F",
+          "B"
+        ],
+        [
+          "A",
+          "C",
+          "F",
+          "A"
+        ],
+        [],
+        [
+          "E",
+          "C",
+          "D"
+        ]
+      ],
+      "frozenBottle": 7,
+      "frozenColor": "E",
+      "meltedMoves": 18,
+      "frozenMoves": 18,
+      "extraMoves": 0,
+      "meltedRoute": [
+        {
+          "source": 0,
+          "target": 7,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 4,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 0,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 6,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 6,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 3,
+          "color": "F",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 4,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 3,
+          "color": "F",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 5,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 7,
+          "target": 0,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 0,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 6,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 7,
+          "target": 2,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 7,
+          "target": 1,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 2,
+          "color": "C",
+          "amount": 3
+        },
+        {
+          "source": 5,
+          "target": 4,
+          "color": "A",
+          "amount": 1
+        }
+      ],
+      "frozenRoute": [
+        {
+          "source": 4,
+          "target": 3,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 7,
+          "target": 1,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 7,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 6,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 6,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 1,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 2,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 5,
+          "color": "F",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 2,
+          "color": "B",
+          "amount": 2
+        },
+        {
+          "source": 5,
+          "target": 3,
+          "color": "F",
+          "amount": 2
+        },
+        {
+          "source": 7,
+          "target": 5,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 7,
+          "color": "E",
+          "amount": 3
+        },
+        {
+          "source": 5,
+          "target": 1,
+          "color": "C",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 1,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 6,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 5,
+          "color": "A",
+          "amount": 3
+        }
+      ],
+      "meltedVisited": 1779,
+      "frozenVisited": 1680,
+      "meltedFirstChoices": {
+        "legal": 13,
+        "safe": 13,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      "frozenFirstChoices": {
+        "legal": 13,
+        "safe": 13,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    },
+    {
+      "number": 19,
+      "colors": 6,
+      "bottles": [
+        [
+          "E",
+          "F",
+          "C",
+          "B"
+        ],
+        [
+          "A",
+          "B",
+          "F",
+          "E"
+        ],
+        [
+          "C",
+          "D",
+          "A"
+        ],
+        [
+          "F",
+          "D",
+          "F"
+        ],
+        [
+          "A",
+          "B",
+          "B",
+          "D"
+        ],
+        [
+          "E",
+          "E",
+          "C"
+        ],
+        [],
+        [
+          "C",
+          "D",
+          "A"
+        ]
+      ],
+      "frozenBottle": 7,
+      "frozenColor": "C",
+      "meltedMoves": 18,
+      "frozenMoves": 18,
+      "extraMoves": 0,
+      "meltedRoute": [
+        {
+          "source": 2,
+          "target": 7,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 2,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 4,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 0,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 5,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "F",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 0,
+          "color": "F",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 6,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 7,
+          "target": 1,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 4,
+          "target": 6,
+          "color": "B",
+          "amount": 3
+        },
+        {
+          "source": 4,
+          "target": 1,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 4,
+          "color": "D",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 3,
+          "color": "F",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 5,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 7,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 7,
+          "target": 2,
+          "color": "C",
+          "amount": 1
+        }
+      ],
+      "frozenRoute": [
+        {
+          "source": 2,
+          "target": 7,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 2,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 4,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 5,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 0,
+          "color": "F",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 3,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 5,
+          "target": 2,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 1,
+          "target": 5,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 0,
+          "color": "F",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 6,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 6,
+          "color": "B",
+          "amount": 3
+        },
+        {
+          "source": 1,
+          "target": 4,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 7,
+          "target": 4,
+          "color": "A",
+          "amount": 2
+        },
+        {
+          "source": 7,
+          "target": 1,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 7,
+          "color": "C",
+          "amount": 3
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "color": "D",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 3,
+          "color": "F",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 5,
+          "color": "E",
+          "amount": 1
+        }
+      ],
+      "meltedVisited": 1511,
+      "frozenVisited": 2843,
+      "meltedFirstChoices": {
+        "legal": 9,
+        "safe": 9,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      "frozenFirstChoices": {
+        "legal": 9,
+        "safe": 9,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    },
+    {
+      "number": 20,
+      "colors": 6,
+      "bottles": [
+        [
+          "B",
+          "E",
+          "F",
+          "E"
+        ],
+        [
+          "A",
+          "D",
+          "E",
+          "C"
+        ],
+        [
+          "B",
+          "A",
+          "C",
+          "D"
+        ],
+        [
+          "D",
+          "A",
+          "F"
+        ],
+        [
+          "B",
+          "D"
+        ],
+        [
+          "A",
+          "F",
+          "C",
+          "F"
+        ],
+        [],
+        [
+          "C",
+          "B",
+          "E"
+        ]
+      ],
+      "frozenBottle": 7,
+      "frozenColor": "C",
+      "meltedMoves": 20,
+      "frozenMoves": 20,
+      "extraMoves": 0,
+      "meltedRoute": [
+        {
+          "source": 0,
+          "target": 7,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 0,
+          "color": "F",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 2,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 5,
+          "color": "F",
+          "amount": 2
+        },
+        {
+          "source": 7,
+          "target": 0,
+          "color": "E",
+          "amount": 2
+        },
+        {
+          "source": 5,
+          "target": 6,
+          "color": "F",
+          "amount": 3
+        },
+        {
+          "source": 3,
+          "target": 6,
+          "color": "F",
+          "amount": 1
+        },
+        {
+          "source": 3,
+          "target": 5,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 3,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 7,
+          "target": 4,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 7,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 5,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 7,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "E",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 4,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 3,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 5,
+          "color": "A",
+          "amount": 1
+        }
+      ],
+      "frozenRoute": [
+        {
+          "source": 0,
+          "target": 7,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 0,
+          "color": "F",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 2,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 5,
+          "color": "F",
+          "amount": 2
+        },
+        {
+          "source": 7,
+          "target": 0,
+          "color": "E",
+          "amount": 2
+        },
+        {
+          "source": 3,
+          "target": 6,
+          "color": "F",
+          "amount": 1
+        },
+        {
+          "source": 5,
+          "target": 6,
+          "color": "F",
+          "amount": 3
+        },
+        {
+          "source": 3,
+          "target": 5,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 4,
+          "target": 3,
+          "color": "D",
+          "amount": 2
+        },
+        {
+          "source": 7,
+          "target": 4,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 7,
+          "color": "C",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 7,
+          "color": "C",
+          "amount": 2
+        },
+        {
+          "source": 2,
+          "target": 5,
+          "color": "A",
+          "amount": 1
+        },
+        {
+          "source": 2,
+          "target": 4,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 2,
+          "color": "E",
+          "amount": 1
+        },
+        {
+          "source": 0,
+          "target": 2,
+          "color": "E",
+          "amount": 3
+        },
+        {
+          "source": 0,
+          "target": 4,
+          "color": "B",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 3,
+          "color": "D",
+          "amount": 1
+        },
+        {
+          "source": 1,
+          "target": 5,
+          "color": "A",
+          "amount": 1
+        }
+      ],
+      "meltedVisited": 2881,
+      "frozenVisited": 2905,
+      "meltedFirstChoices": {
+        "legal": 10,
+        "safe": 10,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      },
+      "frozenFirstChoices": {
+        "legal": 10,
+        "safe": 10,
+        "detours": 0,
+        "deadEnds": 0,
+        "unknown": 0
+      }
+    }
+  ]
+}

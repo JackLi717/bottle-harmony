@@ -1,0 +1,252 @@
+{
+  "ordinaryStructures": 34074,
+  "reports": [
+    {
+      "name": "one-layer",
+      "frozenStructures": 41932,
+      "maxExtraMoves": 1,
+      "byEmpty": {
+        "0": {
+          "count": 37512,
+          "positive": 12,
+          "maxExtra": 1
+        },
+        "1": {
+          "count": 4420,
+          "positive": 0,
+          "maxExtra": 0
+        }
+      },
+      "example": [
+        [
+          "A",
+          "C",
+          "C"
+        ],
+        [
+          "B",
+          "C",
+          "B"
+        ],
+        [
+          "A",
+          "B",
+          "A",
+          "C"
+        ],
+        [
+          "A",
+          "B"
+        ]
+      ],
+      "riskIncreased": 410,
+      "riskRaisedByQuarter": 380,
+      "maxRiskIncrease": 0.75,
+      "riskByEmpty": {
+        "0": {
+          "checked": 24583,
+          "increased": 410,
+          "quarter": 380,
+          "maxIncrease": 0.75
+        },
+        "1": {
+          "checked": 2280,
+          "increased": 0,
+          "quarter": 0,
+          "maxIncrease": 0
+        }
+      },
+      "strongByTargetLength": {
+        "2": 106,
+        "3": 62,
+        "4": 12
+      },
+      "riskExample": {
+        "board": [
+          [
+            "A",
+            "B"
+          ],
+          [
+            "C",
+            "C",
+            "B"
+          ],
+          [
+            "A",
+            "B",
+            "A"
+          ],
+          [
+            "A",
+            "C",
+            "C",
+            "B"
+          ]
+        ],
+        "ordinary": {
+          "choices": 4,
+          "safe": 4,
+          "costly": 0,
+          "dead": 0
+        },
+        "frozen": {
+          "choices": 4,
+          "safe": 1,
+          "costly": 0,
+          "dead": 3
+        }
+      }
+    },
+    {
+      "name": "two-layers",
+      "frozenStructures": 11026,
+      "maxExtraMoves": 0,
+      "byEmpty": {
+        "0": {
+          "count": 9736,
+          "positive": 0,
+          "maxExtra": 0
+        },
+        "1": {
+          "count": 1290,
+          "positive": 0,
+          "maxExtra": 0
+        }
+      },
+      "example": null,
+      "riskIncreased": 14,
+      "riskRaisedByQuarter": 8,
+      "maxRiskIncrease": 0.6666666666666666,
+      "riskByEmpty": {
+        "0": {
+          "checked": 5005,
+          "increased": 14,
+          "quarter": 8,
+          "maxIncrease": 0.6666666666666666
+        },
+        "1": {
+          "checked": 466,
+          "increased": 0,
+          "quarter": 0,
+          "maxIncrease": 0
+        }
+      },
+      "strongByTargetLength": {
+        "3": 4
+      },
+      "riskExample": {
+        "board": [
+          [
+            "B",
+            "A",
+            "C"
+          ],
+          [
+            "B",
+            "C"
+          ],
+          [
+            "A",
+            "B",
+            "C",
+            "B"
+          ],
+          [
+            "A",
+            "A",
+            "C"
+          ]
+        ],
+        "ordinary": {
+          "choices": 6,
+          "safe": 6,
+          "costly": 0,
+          "dead": 0
+        },
+        "frozen": {
+          "choices": 6,
+          "safe": 2,
+          "costly": 0,
+          "dead": 4
+        }
+      }
+    },
+    {
+      "name": "two-bottles",
+      "frozenStructures": 45857,
+      "maxExtraMoves": 0,
+      "byEmpty": {
+        "0": {
+          "count": 42453,
+          "positive": 0,
+          "maxExtra": 0
+        },
+        "1": {
+          "count": 3404,
+          "positive": 0,
+          "maxExtra": 0
+        }
+      },
+      "example": null,
+      "riskIncreased": 596,
+      "riskRaisedByQuarter": 542,
+      "maxRiskIncrease": 0.75,
+      "riskByEmpty": {
+        "0": {
+          "checked": 27413,
+          "increased": 596,
+          "quarter": 542,
+          "maxIncrease": 0.75
+        },
+        "1": {
+          "checked": 1714,
+          "increased": 0,
+          "quarter": 0,
+          "maxIncrease": 0
+        }
+      },
+      "strongByTargetLength": {
+        "2": 78,
+        "3": 118,
+        "4": 52
+      },
+      "riskExample": {
+        "board": [
+          [
+            "A",
+            "C"
+          ],
+          [
+            "A",
+            "C",
+            "A"
+          ],
+          [
+            "A",
+            "B",
+            "B",
+            "C"
+          ],
+          [
+            "B",
+            "B",
+            "C"
+          ]
+        ],
+        "ordinary": {
+          "choices": 4,
+          "safe": 4,
+          "costly": 0,
+          "dead": 0
+        },
+        "frozen": {
+          "choices": 4,
+          "safe": 1,
+          "costly": 0,
+          "dead": 3
+        }
+      }
+    }
+  ]
+}
