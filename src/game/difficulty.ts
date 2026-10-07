@@ -52,6 +52,25 @@ export type DifficultyReport = {
   readonly work: number;
 };
 export type DifficultyOptions = { maxSolveStates?: number; maxWork?: number; maxMilliseconds?: number };
+export type PlanningPolicy = { readonly tier: PlanningTier; readonly chainLimit: number; readonly lookahead: number };
+export const DEPTH_POLICIES: readonly PlanningPolicy[] = Object.freeze(([
+  ...PLANNING_POLICIES,
+  { tier: 'P4', chainLimit: 8, lookahead: 4 },
+  { tier: 'P4', chainLimit: 10, lookahead: 6 },
+  { tier: 'P4', chainLimit: 12, lookahead: 8 },
+] satisfies PlanningPolicy[]).map(policy => Object.freeze(policy)));
+export type DecisionLoad = {
+  /** Peak at a single decision: 32 per preparation pour + 16 per choice bit (capped at 6). */
+  readonly peakDecision: number;
+  /** Maximum along any retained strategy path, not evaluator search work. */
+  readonly branchingDecisions: number;
+  readonly maximumMoves: number;
+};
+export type PlanningDepthReport = Omit<DifficultyReport, 'policy'> & {
+  readonly policy: 'planning-depth-v1';
+  readonly rank: number | null;
+  readonly decisionLoad: DecisionLoad | null;
+};
 
 export function colorRuns(board: Board): number {
   return board.reduce((total, bottle) => total + bottle.filter((color, i) => i === 0 || color !== bottle[i - 1]).length, 0);
@@ -88,8 +107,21 @@ const compareKeys = (a: string, b: string) => a < b ? -1 : a > b ? 1 : 0;
 
 /** Offline only. No oracle is consulted while choosing P1–P3 frontiers. */
 export function evaluateDifficulty(definition: LevelDefinition, options: DifficultyOptions = {}): DifficultyReport {
+  return evaluateWithPolicies(definition, options, PLANNING_POLICIES);
+}
+
+/** Offline fine grading uses the same rules/frontier verification as D1–D4.
+ * A higher rank requires complete failure evidence for every lower policy.
+ * Complete-rule fallback is rank 8, not a claim of a measured infinite depth. */
+export function evaluatePlanningDepth(definition: LevelDefinition, options: DifficultyOptions = {}): PlanningDepthReport {
+  let decisionLoad: DecisionLoad | null = null;
+  const result = evaluateWithPolicies(definition, options, DEPTH_POLICIES, load => { decisionLoad = load; });
+  return { ...result, policy: 'planning-depth-v1', rank: result.status === 'rated' ? result.policies.length : null, decisionLoad };
+}
+
+function evaluateWithPolicies(definition: LevelDefinition, options: DifficultyOptions, policiesToCheck: readonly PlanningPolicy[], onLoad?: (load: DecisionLoad) => void): DifficultyReport {
   const level = parseLevel(definition);
-  const structuralKey = structureKey(level); // Restricts this policy to ordinary 4-layer, 2–5-color boards.
+  const structuralKey = structureKey(level); // Ordinary four-layer boards only.
   const maxSolveStates = options.maxSolveStates ?? 100000;
   const maxWork = options.maxWork ?? 1000000;
   const maxMilliseconds = options.maxMilliseconds ?? 30000;
@@ -155,7 +187,7 @@ export function evaluateDifficulty(definition: LevelDefinition, options: Difficu
     macroCache.set(cacheKey, result);
     return result;
   }
-  for (const policy of PLANNING_POLICIES) {
+  for (const policy of policiesToCheck) {
     const stats = { checkedStates: 0, branchingStates: 0, maximumChoices: 0, excludedChoices: 0 };
     const viability = new Map<string, boolean>();
     function viable(board: Board, depth: number): boolean {
@@ -167,11 +199,12 @@ export function evaluateDifficulty(definition: LevelDefinition, options: Difficu
       viability.set(key, value);
       return value;
     }
-    type Outcome = { passed: boolean; path: readonly Pour[]; stallReason: PolicyResult['stallReason'] };
+    type Outcome = { passed: boolean; path: readonly Pour[]; stallReason: PolicyResult['stallReason']; load: DecisionLoad };
+    const emptyLoad = { peakDecision: 0, branchingDecisions: 0, maximumMoves: 0 };
     const checked = new Map<string, Outcome>();
     function verify(board: Board): Outcome {
       charge();
-      if (isSolved(board, level.capacity)) return { passed: true, path: [], stallReason: null };
+      if (isSolved(board, level.capacity)) return { passed: true, path: [], stallReason: null, load: emptyLoad };
       const key = space.key(board);
       const previous = checked.get(key);
       if (previous) return previous;
@@ -184,16 +217,21 @@ export function evaluateDifficulty(definition: LevelDefinition, options: Difficu
       stats.maximumChoices = Math.max(stats.maximumChoices, frontier.length);
       if (frontier.length > 1) stats.branchingStates++;
       let outcome: Outcome;
-      if (!frontier.length) outcome = { passed: false, path: [], stallReason: choices.length ? 'lookahead-excludes-all' : 'no-local-progress' };
+      if (!frontier.length) outcome = { passed: false, path: [], stallReason: choices.length ? 'lookahead-excludes-all' : 'no-local-progress', load: emptyLoad };
       else {
         let example: readonly Pour[] | null = null;
+        const load = { ...emptyLoad };
+        const localLoad = 32 * (shortest! - 1) + 16 * Math.min(6, Math.ceil(Math.log2(frontier.length)));
         for (const edge of frontier) {
           const continuation = verify(edge.board);
           const path = [...edge.moves, ...continuation.path];
-          if (!continuation.passed) { outcome = { passed: false, path, stallReason: continuation.stallReason }; checked.set(key, outcome); return outcome; }
+          if (!continuation.passed) { outcome = { passed: false, path, stallReason: continuation.stallReason, load: emptyLoad }; checked.set(key, outcome); return outcome; }
+          load.peakDecision = Math.max(load.peakDecision, localLoad, continuation.load.peakDecision);
+          load.branchingDecisions = Math.max(load.branchingDecisions, (frontier.length > 1 ? 1 : 0) + continuation.load.branchingDecisions);
+          load.maximumMoves = Math.max(load.maximumMoves, edge.moves.length + continuation.load.maximumMoves);
           if (!example) example = path;
         }
-        outcome = { passed: true, path: example!, stallReason: null };
+        outcome = { passed: true, path: example!, stallReason: null, load };
       }
       checked.set(key, outcome);
       return outcome;
@@ -203,7 +241,10 @@ export function evaluateDifficulty(definition: LevelDefinition, options: Difficu
       const witness = space.toRealRoute(outcome.path);
       if (outcome.passed) replaySolution(start, witness, level.capacity);
       policies.push({ ...policy, status: outcome.passed ? 'passed' : 'failed', ...stats, witness, stallReason: outcome.stallReason });
-      if (outcome.passed) return report('rated', policy.tier === 'P1' ? 'D1' : policy.tier === 'P2' ? 'D2' : 'D3', null, solved.route);
+      if (outcome.passed) {
+        onLoad?.(outcome.load);
+        return report('rated', policy.tier === 'P1' ? 'D1' : policy.tier === 'P2' ? 'D2' : policy.tier === 'P3' ? 'D3' : 'D4', null, solved.route);
+      }
     } catch (error) {
       if (!(error instanceof PolicyLimit)) throw error;
       policies.push({ ...policy, status: 'unknown', ...stats, witness: [], stallReason: null });

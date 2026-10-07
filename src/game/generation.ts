@@ -1,6 +1,7 @@
 import { initialBoard, LevelValidationError, parseLevel, type LevelDefinition } from './model.ts';
 import { isSolved, type Pour } from './rules.ts';
 import { replaySolution } from './solver.ts';
+import { canonicalBottleStrings } from './structure.ts';
 
 export const GENERATOR_ID = 'balanced-shuffle-v1' as const;
 export type MixingPolicy = 'relaxed' | 'diverse';
@@ -82,22 +83,12 @@ export function makeCandidate(seed: number, candidateIndex: number, config: Gene
     id: `g-v1-${seed.toString(16).padStart(8, '0')}-${candidateIndex}-${settings.colors.length}c-${settings.emptyBottles}e`, capacity: 4, colors: settings.colors, bottles });
 }
 
-/** Exact equivalence under bottle permutation and color renaming, bounded to at most 5! mappings. */
+/** Exact equivalence under bottle permutation and color renaming. */
 export function structureKey(definition: LevelDefinition): string {
   const level = parseLevel(definition);
-  if (level.capacity !== 4 || level.colors.length < 2 || level.colors.length > 5) throw new LevelValidationError(['Structure key supports ordinary four-layer, 2 to 5 color levels']);
+  if (level.capacity !== 4 || level.colors.length < 2 || level.colors.length > 12) throw new LevelValidationError(['Structure key supports ordinary four-layer, 2 to 12 color levels']);
   const bottles = level.bottles.map(bottle => bottle.layers.map(color => level.colors.indexOf(color)));
-  let best: string | null = null;
-  const mappings = (prefix: number[], remaining: number[]) => {
-    if (remaining.length) {
-      for (const next of remaining) mappings([...prefix, next], remaining.filter(color => color !== next));
-      return;
-    }
-    const key = bottles.map(bottle => bottle.map(color => String.fromCharCode(65 + prefix[color])).join('')).sort().join('/');
-    if (best === null || key < best) best = key;
-  };
-  mappings([], level.colors.map((_, i) => i));
-  return `water-sort:4:${level.colors.length}:${level.bottles.length}:${best}`;
+  return `water-sort:4:${level.colors.length}:${level.bottles.length}:${canonicalBottleStrings(bottles)}`;
 }
 
 export function contentMetrics(level: LevelDefinition, solutionMoves: number): ContentMetrics {

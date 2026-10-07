@@ -37,7 +37,10 @@
     "ios:device": "expo run:ios --device --configuration Release",
     "android:apk": "expo prebuild --platform android && cd android && ./gradlew :app:assembleRelease -PreactNativeArchitectures=arm64-v8a,armeabi-v7a --max-workers=3 \"-Dorg.gradle.jvmargs=-Xmx3g -XX:MaxMetaspaceSize=1g\"",
     "catalog:build": "node --experimental-strip-types scripts/catalog.ts build",
-    "catalog:verify": "node --experimental-strip-types scripts/catalog.ts verify"
+    "catalog:verify": "node --experimental-strip-types scripts/catalog.ts verify",
+    "production:plan": "node --experimental-strip-types scripts/production.ts plan",
+    "production:rate": "node --experimental-strip-types scripts/production.ts rate",
+    "production:verify": "node --experimental-strip-types scripts/production.ts verify"
   },
   "private": true,
   "engines": {
