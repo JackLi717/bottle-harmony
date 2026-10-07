@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
   compactFace: { paddingVertical: 4 },
   shine: { position: 'absolute', top: 0, left: 12, right: 12, height: .5, backgroundColor: '#FFFFFF22' },
   label: { fontSize: 12, fontWeight: '500', textAlign: 'center' },
-  wideLabel: { fontSize: 17, fontWeight: '600' },
+  wideLabel: { fontSize: 17, fontWeight: '600', flexShrink: 1 },
   compactLabel: { fontSize: 11 },
   compactWideLabel: { fontSize: 16 },
   disabled: { opacity: 0.45 },

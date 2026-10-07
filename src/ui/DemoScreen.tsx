@@ -40,6 +40,7 @@ import { Tutorial } from './PlayMenu';
 import { usePlayProgress } from './usePlayProgress';
 import { boardLayout, bottleHitWidth, fitBoard } from './boardLayout';
 import { referenceHint, type CalibrationSample } from '../game/calibration';
+import { advanceStalledNotice, closeStalledNotice, INITIAL_STALLED_NOTICE, showUnsolvableNotice } from './stalledNoticePolicy';
 
 type Animation = { before: Board; pour: Pour; plan: PourPlan };
 
@@ -84,6 +85,16 @@ export function DemoScreen() {
   const layout = useMemo(() => boardLayout(board.length), [board.length]);
   const { scale, minY } = fitBoard(layout, stage, safeTop);
   const won = session.status === 'solved';
+  const [stalledNotice, setStalledNotice] = useState(INITIAL_STALLED_NOTICE);
+  const stalledEligible = ready && languageReady && soundReady && play.tutorialDone && appActive && !animation && !searching;
+  const nextNotice = advanceStalledNotice(stalledNotice, {
+    scope: `${internalSession ? 'preview' : play.replay ? 'replay' : 'mainline'}:${session.level.id}`,
+    board, status: session.status, entered: page === 'game', eligible: stalledEligible,
+  });
+  // React supports conditional state adjustment during render. This avoids a frame
+  // with a stale notice after undo, switching sessions, or committing a new move.
+  if (nextNotice !== stalledNotice) setStalledNotice(nextNotice);
+  const stalledReason = stalledEligible && page === 'game' ? nextNotice.reason : null;
   const finish = finishPresentation(internalSession ? 'preview' : play.replay ? 'replay' : 'mainline', entry?.number ?? play.current);
   const celebrationCount = fireworkCount(entry?.tier ?? sample?.tier ?? 'D1');
   useEffect(() => {
@@ -232,7 +243,7 @@ export function DemoScreen() {
     else setInternalSession(accepted.session);
     const resultingSession = 'state' in accepted ? visibleSession(accepted.state) : accepted.session;
     if (resultingSession.status === 'solved') setPendingCelebration(resultingSession.level.id);
-    announceStatus(resultingSession.status === 'solved' ? 'finished' : resultingSession.status === 'stalled' ? 'stalled' : 'gentle');
+    if (resultingSession.status !== 'stalled') announceStatus(resultingSession.status === 'solved' ? 'finished' : 'gentle');
     if (reduceMotion) { busy.current = false; setSelected(null); return; }
     progress.set(0);
     const { before, pour: committedPour } = accepted.event;
@@ -259,6 +270,7 @@ export function DemoScreen() {
 
   function reset() {
     if (busy.current) return;
+    setStalledNotice(value => closeStalledNotice(value, true));
     setPendingCelebration(null); setCelebration(null);
     if (internalSession) setInternalSession(resetSession(internalSession)); else setPlay(editMainline(play, 'reset')); setSelected(null);
     announceStatus('tapStart');
@@ -266,6 +278,7 @@ export function DemoScreen() {
 
   function undo() {
     if (busy.current || !history.length) return;
+    setStalledNotice(value => closeStalledNotice(value, true));
     setPendingCelebration(null); setCelebration(null);
     if (internalSession) setInternalSession(undoSession(internalSession)); else setPlay(editMainline(play, 'undo'));
     setSelected(null); announceStatus('undone');
@@ -274,6 +287,7 @@ export function DemoScreen() {
   async function demonstrate() {
     if (busy.current) return;
     if (won) { nextLevel(); return; }
+    if (session.status === 'stalled') { setStalledNotice(value => showUnsolvableNotice(value)); return; }
     const content = entry ?? sample?.content;
     const referencePour = content ? referenceHint(content, board) : null;
     if (referencePour) { startPour(referencePour); return; }
@@ -292,7 +306,8 @@ export function DemoScreen() {
     busy.current = false;
     setSearching(false);
     if (result.status === 'solved' && result.route.length) startPour(result.route[0]);
-    else Alert.alert(t('hint'), t(result.status === 'limitReached' ? 'searchLimit' : 'stalled'), [{ text: t('close') }]);
+    else if (result.status === 'unsolvable') setStalledNotice(value => showUnsolvableNotice(value));
+    else Alert.alert(t('hint'), t('searchLimit'), [{ text: t('close') }]);
   }
 
   const displayBoard = animation ? animation.before.map((bottle, index) => index === animation.pour.target
@@ -346,6 +361,7 @@ export function DemoScreen() {
         <GameFooter won={won} continueVisible={won && !animation && !pendingCelebration && celebration === null} compact={compact}
           disabled={!!animation || searching} undoDisabled={!history.length || !!animation || searching} searching={searching} reduceMotion={reduceMotion}
           nextLabel={t(finish.label)} onUndo={undo} onReset={reset} onHint={demonstrate}
+          stalledReason={stalledReason} onCloseStalled={() => setStalledNotice(value => closeStalledNotice(value))}
           onContinue={continueAfterWin} />
         </>}
       </View>
