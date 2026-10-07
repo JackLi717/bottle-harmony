@@ -6,7 +6,7 @@ import { useSharedValue } from 'react-native-reanimated';
 import { Bottle } from '../art/Bottle';
 import { GameButton } from './GameButton';
 
-export function Tutorial({ visible, notice, onStart, onSkip }: { visible: boolean; notice?: string; onStart: () => void; onSkip: () => void }) {
+export function Tutorial({ visible, onStart, onSkip }: { visible: boolean; onStart: () => void; onSkip: () => void }) {
   const { t, rtl } = useI18n();
   const insets = useSafeAreaInsets();
   const progress = useSharedValue(1);
@@ -22,7 +22,6 @@ export function Tutorial({ visible, notice, onStart, onSkip }: { visible: boolea
           <Bottle index={201} colors={['jade', 'jade', 'jade', 'jade']} selected={false} completed width={100 * bottleScale} scale={bottleScale} position={{ x: 144 / bottleScale, y: 0 }} plan={null} pour={null} progress={progress} completionEffect="cork" completionAnimations={false} />
         </View>
         {[[t('step1'), t('step1Note')], [t('step2'), t('pourTarget')], [t('step3'), t('objective')]].map(([title, note], index) => <View key={title} style={[styles.step, compact && styles.compactStep, rtl && styles.reverse]}><View style={styles.stepNumber}><UiText style={styles.number}>{index + 1}</UiText></View><View style={styles.stepCopy}><UiText style={styles.stepTitle}>{title}</UiText><UiText style={[styles.note, compact && styles.compactNote]}>{note}</UiText></View></View>)}
-        {!!notice && <UiText style={styles.notice}>{notice}</UiText>}
         <UiText style={[styles.tip, compact && styles.compactTip]}>{t('tutorialTip')}</UiText>
       </ScrollView>
         <GameButton kind="wide" tone="mint" icon="play" label={t('start')} onPress={onStart} />
@@ -52,7 +51,6 @@ const styles = StyleSheet.create({
   number: { color: '#EBD8AD', fontSize: 15, fontWeight: '600' },
   stepTitle: { color: '#D7E3E7', fontSize: 15, fontWeight: '500' },
   note: { color: '#9AAFBA', fontSize: 12, lineHeight: 19, marginTop: 3 },
-  notice: { color: '#F4D38C', fontSize: 12, lineHeight: 19, marginVertical: 8 },
   tip: { color: '#ADBFCA', fontSize: 11, marginVertical: 14, textAlign: 'center' },
   compactTip: { marginVertical: 8 },
   skip: { minHeight: 44, justifyContent: 'center', alignItems: 'center' },

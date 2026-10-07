@@ -52,7 +52,7 @@ export function DemoScreen() {
   const insets = useSafeAreaInsets();
   const dimensions = useWindowDimensions();
   const compact = dimensions.height < 720;
-  const { play, setPlay, ready, notice, saveStatus } = usePlayProgress();
+  const { play, setPlay, ready, saveStatus } = usePlayProgress();
   const { sound, ready: soundReady, saved: soundSaved, toggleSound } = useSoundPreference();
   const { vessel, ready: vesselReady, saved: vesselSaved, chooseVessel } = useVesselPreference();
   const [page, setPage] = useState<'home' | 'game'>('home');
@@ -360,7 +360,7 @@ export function DemoScreen() {
       <PourSound progress={progress} pouring={!!animation} enabled={sound && appActive && !reduceMotion && page === 'game'} />
       <View pointerEvents="none" style={StyleSheet.absoluteFill}><GameBackdrop width={dimensions.width} height={dimensions.height} /></View>
       <View style={[styles.safe, { paddingTop: insets.top + (compact ? 8 : 14), paddingBottom: Math.max(insets.bottom, 14) }]}>
-        {page === 'home' ? <HomeScreen current={play.current} hintCredits={play.hintCredits} compact={compact} notice={notice ? t(notice) : undefined} onPlay={() => chooseNumber(play.current)} onLevels={() => openMenu('levels')} onSettings={() => openMenu('settings')} vessel={vessel} vesselSaved={vesselSaved} reduceMotion={reduceMotion} onVessel={chooseVessel} /> : <>
+        {page === 'home' ? <HomeScreen current={play.current} hintCredits={play.hintCredits} compact={compact} onPlay={() => chooseNumber(play.current)} onLevels={() => openMenu('levels')} onSettings={() => openMenu('settings')} vessel={vessel} vesselSaved={vesselSaved} reduceMotion={reduceMotion} onVessel={chooseVessel} /> : <>
         <GameHeader label={label} compact={compact} disabled={!!animation || searching} onBack={goHome} />
         <View style={styles.stageSpace} onLayout={event => {
           const layout = event.nativeEvent.layout;
@@ -399,7 +399,7 @@ export function DemoScreen() {
       {menuVisible && <MainlineMenu visible initialSection={menuSection} play={play} saveStatus={t(saveStatus)} onClose={() => setMenuVisible(false)} onResume={() => chooseNumber(play.current)} onSelect={chooseNumber} onSamples={() => { setMenuVisible(false); setPickerVisible(true); }} symbols={play.symbols} onSymbols={() => setPlay(Object.freeze({ ...play, symbols: !play.symbols }))} completionName={t(vesselCompletionEffect(vessel, completionEffect))} onLanguage={() => { setMenuVisible(false); setLanguageVisible(true); }} onCompletionEffects={() => { setMenuVisible(false); setCompletionPickerVisible(true); }} sound={sound} soundSaved={soundSaved} onSound={toggleSound} onCelebrationPreview={previewCelebration} onDebug={INTERNAL_TOOLS ? openDifficulty : undefined} />}
       <LanguagePicker visible={languageVisible} onClose={() => { setLanguageVisible(false); openMenu('settings'); }} />
       <CompletionEffectPicker visible={completionPickerVisible} vessel={vessel} value={completionEffect} reduceMotion={reduceMotion} onSelect={effect => { setCompletionEffect(effect); setSelected(null); }} onClose={() => setCompletionPickerVisible(false)} />
-      <Tutorial visible={page === 'game' && ready && !play.tutorialDone} notice={notice ? t(notice) : undefined} onStart={() => setPlay(Object.freeze({ ...play, tutorialDone: true }))} onSkip={() => setPlay(Object.freeze({ ...play, tutorialDone: true }))} />
+      <Tutorial visible={page === 'game' && ready && !play.tutorialDone} onStart={() => setPlay(Object.freeze({ ...play, tutorialDone: true }))} onSkip={() => setPlay(Object.freeze({ ...play, tutorialDone: true }))} />
       {INTERNAL_TOOLS && <LevelPicker visible={pickerVisible} currentCode={sample?.code ?? null} onClose={() => setPickerVisible(false)} onSelect={chooseSample} onPreview={number => { setInternalSession(createSession(MAINLINE.entries[number - 1].level)); setSelected(null); setPickerVisible(false); setPage('game'); announceStatus('tapStart'); }} />}
     </LinearGradient>
   );

@@ -11,7 +11,6 @@ const write = createProgressWriter(value => AsyncStorage.setItem(MAINLINE_SAVE_K
 export function usePlayProgress() {
   const [play, updatePlay] = useState(() => createMainline(MAINLINE));
   const [ready, setReady] = useState(false);
-  const [notice, setNotice] = useState<MessageKey | null>(null);
   const [saveStatus, setSaveStatus] = useState<MessageKey>('localProgress');
   const latest = useRef<string | null>(null);
   const lastRequested = useRef<string | null>(null);
@@ -24,12 +23,11 @@ export function usePlayProgress() {
       let restored = createMainline(MAINLINE);
       try {
         const json = await AsyncStorage.getItem(MAINLINE_SAVE_KEY);
-        if (!json && await AsyncStorage.getItem('bottle-harmony.play.v1') && !cancelled) setNotice('upgraded');
         if (json) {
           try { restored = decodeMainline(json, MAINLINE); }
-          catch { if (!cancelled) setNotice('restoreFailed'); }
+          catch { /* An incompatible pre-release board starts fresh; retain its bytes until the next explicit action. */ }
         }
-      } catch { if (!cancelled) setNotice('readFailed'); }
+      } catch { /* Keep the fresh in-memory session without exposing a storage diagnostic in play. */ }
       if (cancelled) return;
       // Do not overwrite a failed read or invalid save merely by mounting the app.
       lastRequested.current = encodeMainline(restored, MAINLINE);
@@ -63,7 +61,7 @@ export function usePlayProgress() {
     return () => subscription.remove();
   }, [ready]);
   function setPlay(next: MainlineState) {
-    updatePlay(next); setNotice(null);
+    updatePlay(next);
   }
-  return { play, setPlay, ready, notice, saveStatus: encoded === null ? 'saveTooLong' as const : saveStatus };
+  return { play, setPlay, ready, saveStatus: encoded === null ? 'saveTooLong' as const : saveStatus };
 }
