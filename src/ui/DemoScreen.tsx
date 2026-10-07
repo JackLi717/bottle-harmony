@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { AccessibilityInfo, AppState, Dimensions, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { cancelAnimation, Easing, useSharedValue, withTiming } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 import { Bottle } from '../art/Bottle';
+import { isBottleComplete, COMPLETION_EFFECTS, type CompletionEffect } from '../art/bottleCompletion';
 import { PourStream } from '../art/PourStream';
 import { StageArt } from '../art/StageArt';
 import { LIQUIDS } from '../art/palette';
@@ -22,6 +23,7 @@ import { CALIBRATION_SAMPLES, DIFFICULTY, LEVEL_LABELS } from './content';
 import { MAINLINE, mainlineReport } from './mainlineContent';
 import type { DifficultyReport, PlanningDepthReport } from '../game/difficulty';
 import { MainlineMenu } from './MainlineMenu';
+import { CompletionEffectPicker } from './CompletionEffectPicker';
 import { INTERNAL_TOOLS } from './buildConfig';
 import { Tutorial } from './PlayMenu';
 import { usePlayProgress } from './usePlayProgress';
@@ -43,6 +45,10 @@ export function DemoScreen() {
   const [menuVisible, setMenuVisible] = useState(false);
   const [pickerVisible, setPickerVisible] = useState(false);
   const [difficultyVisible, setDifficultyVisible] = useState(false);
+  const [completionPickerVisible, setCompletionPickerVisible] = useState(false);
+  const [completionEffect, setCompletionEffect] = useState<CompletionEffect>('cork');
+  const [appActive, setAppActive] = useState(AppState.currentState === 'active');
+  const [completionEpoch, setCompletionEpoch] = useState(0);
   const [debugReport, setDebugReport] = useState<DifficultyReport | PlanningDepthReport | null>(null);
   const { board, history } = session;
   const [searching, setSearching] = useState(false);
@@ -56,9 +62,9 @@ export function DemoScreen() {
   const busy = useRef(false);
   const progress = useSharedValue(1);
   const safeTop = insets.top + (compact ? 8 : 14);
-  // Keep the current bottle slots, while allowing art to use existing space
-  // above the board. Reserve at least 130 design units without crossing the notch.
-  const layout = boardLayout(board.length);
+  // Use the full screen width for resting bottles. Pouring art may cross the
+  // horizontal screen edge and is clipped by the screen, not by a bottle slot.
+  const layout = useMemo(() => boardLayout(board.length), [board.length]);
   const { scale, minY } = fitBoard(layout, stage, safeTop);
   const difficulty = entry ?? DIFFICULTY.get(session.level.id)!;
   const won = session.status === 'solved';
@@ -83,7 +89,9 @@ export function DemoScreen() {
     AccessibilityInfo.isReduceMotionEnabled().then(value => { if (mounted) setReduceMotion(value); }).catch(() => {});
     const preference = AccessibilityInfo.addEventListener('reduceMotionChanged', setReduceMotion);
     const subscription = AppState.addEventListener('change', state => {
+      setAppActive(state === 'active');
       if (state !== 'active') {
+        setCompletionEpoch(epoch => epoch + 1);
         search.current?.cancel();
         search.current = null;
         setSearching(false);
@@ -108,6 +116,7 @@ export function DemoScreen() {
   useEffect(() => {
     // A window resize ends the visual move; it never rolls back accepted liquid state.
     const subscription = Dimensions.addEventListener('change', () => {
+      setCompletionEpoch(epoch => epoch + 1);
       cancelAnimation(progress);
       progress.set(1);
       setAnimation(null);
@@ -218,7 +227,7 @@ export function DemoScreen() {
   return (
     <LinearGradient colors={['#102B37', '#0B1B2F', '#111C30']} locations={[0, 0.58, 1]} style={styles.screen}>
       <StatusBar style="light" />
-      <View style={[styles.safe, { paddingTop: insets.top + (compact ? 8 : 14), paddingHorizontal: board.length >= 9 ? 8 : 22, paddingBottom: Math.max(insets.bottom, 14) }]}>
+      <View style={[styles.safe, { paddingTop: insets.top + (compact ? 8 : 14), paddingBottom: Math.max(insets.bottom, 14) }]}>
         <View style={styles.brandRow}>
           <View style={styles.brand}><View style={styles.emblem}><Icon name="spark" color="#DEC793" size={25} /></View><View><Text style={styles.brandTitle}>BOTTLE</Text><Text style={styles.brandSubtitle}>H A R M O N Y</Text></View></View>
           <Pressable accessibilityRole="button" accessibilityLabel="打开游玩菜单" disabled={!!animation || searching} onPress={() => { if (!busy.current) setMenuVisible(true); }} style={[styles.demoBadge, (!!animation || searching) && styles.disabled]}><Text style={styles.demoBadgeText}>游玩菜单</Text></Pressable>
@@ -237,12 +246,15 @@ export function DemoScreen() {
                 Fixed hit areas below never reparent or reposition the artwork. */}
             {layout.positions.map((position, index) => {
               const bottle = displayBoard[index];
-              return <Bottle key={`${session.level.id}-${session.level.bottles[index].id}`} index={index} position={position} colors={bottle} selected={selected === index} completed={!animation && bottle.length === session.level.capacity && bottle.every(c => c === bottle[0])} width={100 * scale} scale={scale} plan={animation?.plan ?? null} pour={animation?.pour ?? null} progress={progress} symbols={play.symbols} />;
+              // A view belongs to a visual slot; logical bottle IDs stay in the session.
+              // Reuse glass/SVG/worklet bindings when the next level replaces its contents.
+              return <Bottle key={index} index={index} position={position} colors={bottle} selected={selected === index} completed={isBottleComplete(bottle, session.level.capacity)} width={100 * scale} scale={scale} plan={animation?.plan ?? null} pour={animation?.pour ?? null} progress={progress} symbols={play.symbols} completionEffect={completionEffect} completionScene={`${session.level.id}:${completionEpoch}`} completionAnimations={appActive && !reduceMotion} />;
             })}
             {layout.positions.map((position, index) => {
               const bottle = displayBoard[index];
               const label = `${index + 1}号瓶，${bottle.length ? [...bottle].reverse().map(c => LIQUIDS[c as keyof typeof LIQUIDS].name).join('、') : '空瓶'}`;
-              return <Pressable key={index} accessibilityRole="button" accessibilityLabel={label} accessibilityHint="先选源瓶，再选目标瓶" accessibilityState={{ selected: selected === index, disabled: !!animation || searching }} disabled={!!animation || searching} onPress={() => selectBottle(index)} style={{ position: 'absolute', left: position.x * scale - Math.max(0, (44 - 100 * scale) / 2), top: position.y * scale, width: Math.max(44, 100 * scale), height: 180 * scale, zIndex: 3 }}>
+              const hitWidth = Math.max(44, layout.slotWidth * scale);
+              return <Pressable key={index} accessibilityRole="button" accessibilityLabel={label} accessibilityHint="先选源瓶，再选目标瓶" accessibilityState={{ selected: selected === index, disabled: !!animation || searching }} disabled={!!animation || searching} onPress={() => selectBottle(index)} style={{ position: 'absolute', left: (position.x + 50) * scale - hitWidth / 2, top: position.y * scale, width: hitWidth, height: 180 * scale, zIndex: 3 }}>
                 {selected === index && !animation && <View style={[styles.selectionDot, { bottom: -5 * scale }]} />}
               </Pressable>;
             })}
@@ -260,7 +272,8 @@ export function DemoScreen() {
         </View>
       </View>
       {debugReport && <DifficultyDebug visible={difficultyVisible} report={debugReport} sample={sample} label={label} onClose={() => setDifficultyVisible(false)} />}
-      <MainlineMenu visible={menuVisible} play={play} saveStatus={saveStatus} onClose={() => setMenuVisible(false)} onResume={() => chooseNumber(play.current)} onSelect={chooseNumber} onSamples={() => { setMenuVisible(false); setPickerVisible(true); }} symbols={play.symbols} onSymbols={() => setPlay(Object.freeze({ ...play, symbols: !play.symbols }))} />
+      <MainlineMenu visible={menuVisible} play={play} saveStatus={saveStatus} onClose={() => setMenuVisible(false)} onResume={() => chooseNumber(play.current)} onSelect={chooseNumber} onSamples={() => { setMenuVisible(false); setPickerVisible(true); }} symbols={play.symbols} onSymbols={() => setPlay(Object.freeze({ ...play, symbols: !play.symbols }))} completionName={COMPLETION_EFFECTS.find(effect => effect.id === completionEffect)!.name} onCompletionEffects={() => { setMenuVisible(false); setCompletionPickerVisible(true); }} />
+      <CompletionEffectPicker visible={completionPickerVisible} value={completionEffect} reduceMotion={reduceMotion} onSelect={effect => { setCompletionEffect(effect); setSelected(null); }} onClose={() => setCompletionPickerVisible(false)} />
       <Tutorial visible={ready && !play.tutorialDone} notice={notice} onStart={() => setPlay(Object.freeze({ ...play, tutorialDone: true }))} onSkip={() => setPlay(Object.freeze({ ...play, tutorialDone: true }))} />
       {INTERNAL_TOOLS && <LevelPicker visible={pickerVisible} currentCode={sample?.code ?? null} onClose={() => setPickerVisible(false)} onSelect={chooseSample} onPreview={number => { setInternalSession(createSession(MAINLINE.entries[number - 1].level)); setSelected(null); setPickerVisible(false); setMessage('内部预览，不改变主线进度'); }} />}
     </LinearGradient>
@@ -268,7 +281,7 @@ export function DemoScreen() {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1 },
+  screen: { flex: 1, overflow: 'hidden' },
   safe: { flex: 1, paddingHorizontal: 22 },
   brandRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   brand: { flexDirection: 'row', alignItems: 'center', gap: 10 },
@@ -282,7 +295,7 @@ const styles = StyleSheet.create({
   title: { color: '#F2EAD7', fontSize: 27, fontWeight: '600', letterSpacing: 2 },
   titleCompact: { fontSize: 23 },
   subtitle: { marginTop: 10, color: '#A0B6B5', fontSize: 12, letterSpacing: 2 },
-  stageSpace: { flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: 8, marginBottom: 4 },
+  stageSpace: { flex: 1, alignItems: 'center', justifyContent: 'center', marginHorizontal: -22, marginTop: 8, marginBottom: 4 },
   selectionDot: { position: 'absolute', alignSelf: 'center', width: 4, height: 4, borderRadius: 2, backgroundColor: '#B8F7E2' },
   footer: { alignSelf: 'center', width: '100%', maxWidth: 480, paddingTop: 10 },
   footerCompact: { paddingTop: 3 },

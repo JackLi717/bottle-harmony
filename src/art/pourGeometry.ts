@@ -105,7 +105,8 @@ export function createPourPlan(source: Point, target: Point, sourceCount: number
 }
 
 /** The renderer and stream use this same rigid transform; neither guesses where
- * the mouth moved after rotation. Clamp transit frames as well as pouring frames. */
+ * the mouth moved after rotation. The screen clips horizontal overhang; only
+ * vertical movement is constrained to the available headroom. */
 export function sourcePose(plan: PourPlan, progress: number) {
   'worklet';
   const initialAngle = plan.angles[0];
@@ -135,7 +136,7 @@ export function sourcePose(plan: PourPlan, progress: number) {
   }
   const lip = rotateBottlePoint(outletPoint(plan.direction), angle);
   const bounds = bottleBounds(angle);
-  const left = clamp(x - lip.x, MARGIN - bounds.minX, plan.width - MARGIN - bounds.maxX);
+  const left = x - lip.x;
   const top = clamp(y - lip.y, plan.minY + MARGIN - bounds.minY, plan.height - MARGIN - bounds.maxY);
   return { angle, dx: left - plan.source.x, dy: top - plan.source.y, outlet: { x: left + lip.x, y: top + lip.y } };
 }

@@ -1,7 +1,8 @@
+import { memo } from 'react';
 import Svg, { Circle, Defs, Ellipse, G, Line, Path, RadialGradient, Stop } from 'react-native-svg';
 import type { BoardLayout } from '../ui/boardLayout';
 
-export function StageArt({ layout }: { layout: BoardLayout }) {
+export const StageArt = memo(function StageArt({ layout }: { layout: BoardLayout }) {
   return (
     <Svg width="100%" height="100%" viewBox={`0 0 ${layout.width} ${layout.height}`} pointerEvents="none">
       <Defs>
@@ -28,4 +29,4 @@ export function StageArt({ layout }: { layout: BoardLayout }) {
       ))}
     </Svg>
   );
-}
+});

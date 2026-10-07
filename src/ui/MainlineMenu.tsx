@@ -4,8 +4,8 @@ import type { MainlineState } from '../game/mainline';
 import { INTERNAL_TOOLS } from './buildConfig';
 
 const NUMBERS = Array.from({ length: 1000 }, (_, i) => i + 1);
-type Props = { visible: boolean; play: MainlineState; saveStatus: string; onClose: () => void; onResume: () => void; onSelect: (number: number) => void; onSamples: () => void; onSymbols: () => void; symbols: boolean };
-export function MainlineMenu({ visible, play, saveStatus, onClose, onResume, onSelect, onSamples, onSymbols, symbols }: Props) {
+type Props = { visible: boolean; play: MainlineState; saveStatus: string; onClose: () => void; onResume: () => void; onSelect: (number: number) => void; onSamples: () => void; onSymbols: () => void; symbols: boolean; completionName: string; onCompletionEffects: () => void };
+export function MainlineMenu({ visible, play, saveStatus, onClose, onResume, onSelect, onSamples, onSymbols, symbols, completionName, onCompletionEffects }: Props) {
   const insets = useSafeAreaInsets();
   return <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
     <View style={[styles.backdrop, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 12 }]}><View style={styles.panel}>
@@ -23,6 +23,7 @@ export function MainlineMenu({ visible, play, saveStatus, onClose, onResume, onS
             <Text style={[styles.number, number % 10 === 0 && styles.challenge]}>{number}</Text><Text style={styles.mark}>{number <= play.completedThrough ? '✓' : unlocked ? '继续' : '·'}</Text>
           </Pressable>;
         }} />
+      <Pressable accessibilityRole="button" onPress={onCompletionEffects} style={styles.close}><Text style={styles.gold}>完成效果：{completionName} ›</Text></Pressable>
       <View style={styles.heading}><Pressable accessibilityRole="button" onPress={onSymbols} style={styles.close}><Text style={styles.gold}>辅助符号：{symbols ? '开' : '关'}</Text></Pressable>
         {INTERNAL_TOOLS && <Pressable accessibilityRole="button" onPress={onSamples} style={styles.close}><Text style={styles.note}>内部对照题</Text></Pressable>}</View>
     </View></View>

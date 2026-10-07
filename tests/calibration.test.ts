@@ -73,7 +73,7 @@ test('reference hints follow exact verified states, including undo, and never tr
   }
 });
 
-test('multi-bottle pour geometry contains all pairs and aligns streams through twelve bottles', () => {
+test('multi-bottle pours preserve vertical bounds and align streams through twelve bottles', () => {
   for (let count = 4; count <= 12; count++) {
     const layout = boardLayout(count);
     assert.equal(layout.positions.length, count);
@@ -83,8 +83,7 @@ test('multi-bottle pour geometry contains all pairs and aligns streams through t
         const plan = createPourPlan(source, target, layers, amount, -130, 12, layout.width, layout.height);
         for (let frame = 0; frame <= 100; frame++) {
           const progress = frame / 100, pose = sourcePose(plan, progress), bounds = bottleBounds(pose.angle);
-          const left = source.x + pose.dx, top = source.y + pose.dy;
-          assert.ok(left + bounds.minX >= 1.99 && left + bounds.maxX <= layout.width - 1.99);
+          const top = source.y + pose.dy;
           assert.ok(top + bounds.minY >= plan.minY + 1.99 && top + bounds.maxY <= layout.height - 1.99);
           if (progress >= FLOW_START && progress <= FLOW_END) {
             assert.ok(Math.abs(pose.outlet.x - (target.x + 50)) < 0.01);
@@ -98,7 +97,7 @@ test('multi-bottle pour geometry contains all pairs and aligns streams through t
   }
 });
 
-test('small phone and tablet layouts keep touch targets, slots and moving art inside the safe screen', () => {
+test('small phone and tablet layouts fit resting glass and keep touch targets separate', () => {
   for (const stage of [{ width: 276, height: 264, y: 155 }, { width: 331, height: 350, y: 155 }, { width: 680, height: 700, y: 180 }]) {
     const safeTop = 35;
     for (let count = 4; count <= 7; count++) {
@@ -108,9 +107,12 @@ test('small phone and tablet layouts keep touch targets, slots and moving art in
       assert.ok(layout.width * scale <= stage.width);
       assert.ok(layout.height * scale <= stage.height);
       assert.ok(stage.y + (stage.height - layout.height * scale) / 2 + minY * scale >= safeTop - 0.01);
+      for (const p of layout.positions) {
+        assert.ok(p.x + 18 >= 0 && p.x + 82 <= layout.width);
+      }
       for (let i = 0; i < layout.positions.length; i++) for (let j = i + 1; j < layout.positions.length; j++) {
         const a = layout.positions[i], b = layout.positions[j];
-        assert.ok(Math.abs(a.x - b.x) >= 100 || Math.abs(a.y - b.y) >= 180);
+        assert.ok(Math.abs(a.x - b.x) >= layout.slotWidth - 0.01 || Math.abs(a.y - b.y) >= 180);
       }
     }
   }

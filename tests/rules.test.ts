@@ -61,7 +61,7 @@ test('pouring tilt follows the remaining volume to the lower bottle lip', () => 
   }
 });
 
-test('every pairing fits the screen headroom and pours vertically into a stationary recipient', () => {
+test('every pairing fits vertical headroom and pours vertically into a stationary recipient', () => {
   const positions = [{ x: 38, y: 14 }, { x: 222, y: 14 }, { x: 38, y: 228 }, { x: 222, y: 228 }];
   for (const source of positions) for (const target of positions) {
     if (source === target) continue;
@@ -71,9 +71,7 @@ test('every pairing fits the screen headroom and pours vertically into a station
         const progress = frame / 200;
         const pose = sourcePose(plan, progress);
         const bounds = bottleBounds(pose.angle);
-        const left = source.x + pose.dx;
         const top = source.y + pose.dy;
-        assert.ok(left + bounds.minX >= 1.99 && left + bounds.maxX <= 358.01);
         assert.ok(top + bounds.minY >= plan.minY + 1.99 && top + bounds.maxY <= 428.01);
         const recipientY = target.y;
         assert.ok(recipientY >= 2 && recipientY + 180 <= 428);
@@ -83,6 +81,26 @@ test('every pairing fits the screen headroom and pours vertically into a station
         }
       }
     }
+  }
+});
+
+test('edge pours may cross the horizontal screen bounds while their mouths stay aligned', () => {
+  for (const [source, target, direction] of [
+    [{ x: -50 + 400 / 12, y: 228 }, { x: 50, y: 14 }, 1],
+    [{ x: 350 - 400 / 12, y: 228 }, { x: 250, y: 14 }, -1],
+  ] as const) {
+    const plan = createPourPlan(source, target, 4, 4, -130, 12, 400, 430);
+    assert.equal(plan.direction, direction);
+    let overhang = false;
+    for (let frame = 34; frame <= 72; frame++) {
+      const pose = sourcePose(plan, frame / 100), bounds = bottleBounds(pose.angle);
+      const left = source.x + pose.dx;
+      overhang ||= left + bounds.minX < 0 || left + bounds.maxX > 400;
+      assert.ok(Math.abs(pose.outlet.x - (target.x + 50)) < 0.01);
+    }
+    assert.ok(overhang);
+    assert.ok(Math.abs(sourcePose(plan, 0).dx) < 0.01);
+    assert.ok(Math.abs(sourcePose(plan, 1).dx) < 0.01);
   }
 });
 

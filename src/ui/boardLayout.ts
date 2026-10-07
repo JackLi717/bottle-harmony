@@ -1,26 +1,26 @@
 import type { Point } from '../art/liquidGeometry.ts';
 
-export type BoardLayout = { readonly width: number; readonly height: number; readonly positions: readonly Point[] };
+export type BoardLayout = { readonly width: number; readonly height: number; readonly slotWidth: number; readonly positions: readonly Point[] };
 
-/** Four slots preserve the approved art baseline. Wider boards keep two rows. */
+/** One bottle size for every level. Six glass silhouettes fit across the screen. */
 export function boardLayout(bottleCount: number): BoardLayout {
   if (!Number.isInteger(bottleCount) || bottleCount < 4 || bottleCount > 12) throw new Error('Boards support 4–12 bottles');
-  if (bottleCount === 4) return { width: 360, height: 430, positions: [{ x: 38, y: 14 }, { x: 222, y: 14 }, { x: 38, y: 228 }, { x: 222, y: 228 }] };
-  // Extra side space lets a tilted bottle reach an edge recipient without clipping.
+  // Glass occupies x=18–82 of its 100-unit SVG canvas. Only that visible
+  // silhouette needs to fit; transparent canvas and moving art may cross an edge.
+  const width = 400;
   const columns = Math.ceil(bottleCount / 2);
-  const spacing = columns === 6 ? 132 : 110;
-  const width = columns === 3 ? 470 : columns === 4 ? 580 : columns === 5 ? 690 : 910;
   const positions: Point[] = [];
   for (let row = 0; row < 2; row++) {
     const count = Math.min(columns, bottleCount - row * columns);
-    const occupied = 100 + (count - 1) * spacing;
-    for (let column = 0; column < count; column++) positions.push({ x: (width - occupied) / 2 + column * spacing, y: row === 0 ? 14 : 228 });
+    const spacing = width / count;
+    for (let column = 0; column < count; column++) positions.push({ x: (column + 0.5) * spacing - 50, y: row === 0 ? 14 : 210 });
   }
-  return { width, height: 430, positions };
+  return { width, height: 400, slotWidth: width / columns, positions };
 }
 
 export function fitBoard(layout: BoardLayout, stage: { width: number; height: number; y: number }, safeTop: number) {
-  const scale = Math.max(0, Math.min(stage.width / layout.width, stage.height / layout.height, (stage.y - safeTop + stage.height / 2) / (layout.height / 2 + 130)));
-  const minY = scale > 0 ? -Math.max(130, (stage.y - safeTop + (stage.height - layout.height * scale) / 2) / scale) : -130;
+  // Fit the resting board, without shrinking it to reserve animation headroom.
+  const scale = Math.max(0, Math.min(stage.width / layout.width, stage.height / layout.height));
+  const minY = scale > 0 ? -Math.max(0, (stage.y - safeTop + (stage.height - layout.height * scale) / 2) / scale) : 0;
   return { scale, minY };
 }

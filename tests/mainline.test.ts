@@ -70,22 +70,41 @@ test('progress refuses a skipped unlock, altered catalog, invalid move and locke
 });
 test('wide boards use two rows with six columns and nonoverlapping 44-point hit areas on a small phone', () => {
   for (const stage of [{ width: 304, height: 264, y: 155 }, { width: 412, height: 440, y: 180 }, { width: 752, height: 780, y: 190 }]) {
-    for (let count = 9; count <= 12; count++) {
+    for (let count = 8; count <= 12; count++) {
       const layout = boardLayout(count), { scale, minY } = fitBoard(layout, stage, 35);
       assert.equal(new Set(layout.positions.map(p => p.y)).size, 2);
       assert.ok(layout.positions.filter(p => p.y === 14).length <= 6);
-      const hit = Math.max(44, 100 * scale);
+      const hit = Math.max(44, layout.slotWidth * scale);
       for (const p of layout.positions) {
-        assert.ok((p.x + 50) * scale - hit / 2 >= 0);
-        assert.ok((p.x + 50) * scale + hit / 2 <= stage.width);
+        assert.ok((p.x + 50) * scale - hit / 2 >= -0.01);
+        assert.ok((p.x + 50) * scale + hit / 2 <= stage.width + 0.01);
       }
       for (let i = 1; i < layout.positions.length; i++) {
         const p = layout.positions[i], previous = layout.positions[i - 1];
-        if (p.y === previous.y) assert.ok((p.x - previous.x) * scale >= hit);
+        if (p.y === previous.y) assert.ok((p.x - previous.x) * scale >= hit - 0.01);
       }
       assert.ok(stage.y + (stage.height - layout.height * scale) / 2 + minY * scale >= 34.99);
     }
   }
+});
+test('all levels keep the same large bottle size and six bottles reach the screen edges', () => {
+  const stage = { width: 412, height: 500, y: 200 };
+  const baseline = fitBoard(boardLayout(4), stage, 35).scale;
+  for (let count = 4; count <= 12; count++) {
+    const layout = boardLayout(count), { scale } = fitBoard(layout, stage, 35);
+    assert.equal(scale, baseline);
+    assert.ok(Math.abs(layout.width * scale - stage.width) < 0.01);
+    for (const p of layout.positions) {
+      assert.ok((p.x + 18) * scale >= 0);
+      assert.ok((p.x + 82) * scale <= stage.width);
+    }
+  }
+  const six = boardLayout(12);
+  const first = six.positions[0], last = six.positions[5];
+  assert.ok((first.x + 18) * baseline < 2);
+  assert.ok(stage.width - (last.x + 82) * baseline < 2);
+  // Animation headroom must not reduce the resting bottle size.
+  assert.equal(fitBoard(six, { ...stage, y: 0 }, 35).scale, baseline);
 });
 test('layered proposals preserve color quantities and their distinct deterministic source', () => {
   const content = records[0].content;
