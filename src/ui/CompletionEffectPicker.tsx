@@ -5,22 +5,24 @@ import { useSharedValue } from 'react-native-reanimated';
 import { Bottle } from '../art/Bottle';
 import { COMPLETION_EFFECTS, type CompletionEffect } from '../art/bottleCompletion';
 import { GameButton } from './GameButton';
+import { vesselCompletionEffect, type VesselDesign } from '../art/vesselDesigns';
 
-type Props = { visible: boolean; value: CompletionEffect; reduceMotion: boolean; onSelect: (effect: CompletionEffect) => void; onClose: () => void };
+type Props = { visible: boolean; value: CompletionEffect; reduceMotion: boolean; onSelect: (effect: CompletionEffect) => void; onClose: () => void; vessel: VesselDesign };
 const COLORS = ['jade', 'jade', 'jade', 'jade'] as const;
 const POSITION = { x: 0, y: 0 };
 
-export function CompletionEffectPicker({ visible, value, reduceMotion, onSelect, onClose }: Props) {
+export function CompletionEffectPicker({ visible, value, reduceMotion, onSelect, onClose, vessel }: Props) {
   const { t, rtl } = useI18n();
   const progress = useSharedValue(1);
   const [replay, setReplay] = useState(0);
+  const effective = vesselCompletionEffect(vessel, value);
   return <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
     <View style={styles.backdrop}><View style={styles.panel}>
       <View style={[styles.heading, rtl && styles.reverse]}><UiText style={styles.title}>{t('effects')}</UiText><GameButton kind="icon" icon="close" label={t('close')} onPress={onClose} /></View>
       <UiText style={styles.note}>{t('effectsNote')}</UiText>
-      <View style={styles.options}>{COMPLETION_EFFECTS.map((effect, index) => <Pressable key={effect.id} accessibilityRole="radio" accessibilityLabel={t(effect.id)} accessibilityState={{ checked: value === effect.id }} onPress={() => { onSelect(effect.id); setReplay(value => value + 1); }} style={[styles.option, value === effect.id && styles.selected]}>
-        <View pointerEvents="none" style={styles.preview}><Bottle index={100 + index} colors={COLORS} selected={false} completed width={80} scale={0.8} position={POSITION} plan={null} pour={null} progress={progress} completionEffect={effect.id} completionReplay={replay} completionAnimations={visible && !reduceMotion} /></View>
-        <UiText style={styles.gold}>{t(effect.id)}{value === effect.id ? ' ✓' : ''}</UiText>
+      <View style={styles.options}>{COMPLETION_EFFECTS.filter(effect => effect.id !== 'cork' || vessel.cork).map((effect, index) => <Pressable key={effect.id} accessibilityRole="radio" accessibilityLabel={t(effect.id)} accessibilityState={{ checked: effective === effect.id }} onPress={() => { onSelect(effect.id); setReplay(value => value + 1); }} style={[styles.option, effective === effect.id && styles.selected]}>
+        <View pointerEvents="none" style={styles.preview}><Bottle index={100 + index} vessel={vessel} colors={COLORS} selected={false} completed width={80} scale={0.8} position={POSITION} plan={null} pour={null} progress={progress} completionEffect={effect.id} completionReplay={replay} completionAnimations={visible && !reduceMotion} /></View>
+        <UiText style={styles.gold}>{t(effect.id)}{effective === effect.id ? ' ✓' : ''}</UiText>
       </Pressable>)}</View>
       <GameButton kind="wide" tone="gold" icon="play" label={t('replayAnimation')} onPress={() => setReplay(value => value + 1)} style={styles.replay} />
       <UiText style={styles.note}>{t('effectsRule')}</UiText>

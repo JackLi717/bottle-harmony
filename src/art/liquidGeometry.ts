@@ -1,14 +1,6 @@
-export type Point = { x: number; y: number };
-
-// Interior silhouette, including the shoulder and neck. Coordinates belong to
-// the reusable 100 × 180 bottle design, independent of screen resolution.
-export const INTERIOR: Point[] = [
-  { x: 38, y: 34 }, { x: 62, y: 34 }, { x: 62, y: 42 },
-  { x: 73, y: 57 }, { x: 75, y: 66 }, { x: 75, y: 154 },
-  { x: 71, y: 162 }, { x: 29, y: 162 }, { x: 25, y: 154 },
-  { x: 25, y: 66 }, { x: 27, y: 57 }, { x: 38, y: 42 },
-];
-export const LAYER_AREA = (50 * 96 - 32) / 4;
+import type { Point } from './bottleDesign.ts';
+import { DEFAULT_VESSEL, type VesselGeometry } from './vesselDesigns.ts';
+export { INTERIOR, LAYER_AREA, type Point } from './bottleDesign.ts';
 
 export function polygonArea(points: Point[]): number {
   'worklet';
@@ -21,7 +13,7 @@ export function polygonArea(points: Point[]): number {
   return Math.abs(sum) / 2;
 }
 
-export function clipBelow(points: Point[], line: number): Point[] {
+export function clipBelow(points: readonly Point[], line: number): Point[] {
   'worklet';
   const output: Point[] = [];
   for (let i = 0; i < points.length; i++) {
@@ -38,23 +30,23 @@ export function clipBelow(points: Point[], line: number): Point[] {
   return output;
 }
 
-export function rotatedInterior(degrees: number): Point[] {
+export function rotatedInterior(degrees: number, geometry: VesselGeometry = DEFAULT_VESSEL): Point[] {
   'worklet';
   const radians = degrees * Math.PI / 180;
   const cos = Math.cos(radians);
   const sin = Math.sin(radians);
-  return INTERIOR.map(point => ({
+  return geometry.interior.map(point => ({
     x: 50 + (point.x - 50) * cos - (point.y - 90) * sin,
     y: 90 + (point.x - 50) * sin + (point.y - 90) * cos,
   }));
 }
 
 /** Horizontal liquid surface in world coordinates; preserves volume on tilt. */
-export function liquidPolygon(layers: number, degrees: number): Point[] {
+export function liquidPolygon(layers: number, degrees: number, geometry: VesselGeometry = DEFAULT_VESSEL): Point[] {
   'worklet';
   if (layers <= 0.0001) return [];
-  const points = rotatedInterior(degrees);
-  const desiredArea = Math.max(0, Math.min(4, layers)) * LAYER_AREA;
+  const points = rotatedInterior(degrees, geometry);
+  const desiredArea = Math.max(0, Math.min(4, layers)) * geometry.layerArea;
   let lo = -100;
   let hi = 280;
   for (let step = 0; step < 18; step++) {
@@ -71,9 +63,19 @@ export function liquidPolygon(layers: number, degrees: number): Point[] {
   }));
 }
 
-export function liquidPath(layers: number, degrees: number): string {
+export function liquidPath(layers: number, degrees: number, geometry: VesselGeometry = DEFAULT_VESSEL): string {
   'worklet';
-  const polygon = liquidPolygon(layers, degrees);
+  const polygon = liquidPolygon(layers, degrees, geometry);
   if (!polygon.length) return '';
   return polygon.map((p, index) => `${index ? 'L' : 'M'}${p.x},${p.y}`).join(' ') + ' Z';
+}
+
+/** Curved bowls have unequal layer heights; the stem is never part of the cavity. */
+export function liquidSurface(layers: number, geometry: VesselGeometry = DEFAULT_VESSEL) {
+  'worklet';
+  if (layers <= .0001) return { y: geometry.bottomY, halfWidth: 0 };
+  const polygon = liquidPolygon(layers, 0, geometry);
+  const y = Math.min(...polygon.map(p => p.y));
+  const edge = polygon.filter(p => Math.abs(p.y - y) < .01);
+  return { y, halfWidth: (Math.max(...edge.map(p => p.x)) - Math.min(...edge.map(p => p.x))) / 2 };
 }

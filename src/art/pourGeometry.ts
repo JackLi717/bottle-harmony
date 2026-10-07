@@ -1,4 +1,5 @@
-import { clipBelow, LAYER_AREA, polygonArea, rotatedInterior, type Point } from './liquidGeometry.ts';
+import { clipBelow, polygonArea, rotatedInterior, type Point } from './liquidGeometry.ts';
+import { DEFAULT_VESSEL, type VesselGeometry } from './vesselDesigns.ts';
 
 export const STAGE_WIDTH = 360;
 export const STAGE_HEIGHT = 430;
@@ -9,6 +10,7 @@ export const FLOW_END = 0.72;
 const MARGIN = 2;
 
 export type PourPlan = {
+  geometry: VesselGeometry;
   source: Point;
   target: Point;
   direction: number;
@@ -52,22 +54,22 @@ export function rotateBottlePoint(point: Point, angle: number): Point {
   };
 }
 
-export function outletPoint(direction: number): Point {
+export function outletPoint(direction: number, geometry: VesselGeometry = DEFAULT_VESSEL): Point {
   'worklet';
-  return { x: 50 + direction * 12, y: 28 };
+  return { x: 50 + direction * geometry.mouth.outlet, y: geometry.mouth.y };
 }
 
 /** Tilt until the remaining volume's horizontal surface reaches the lower lip.
  * A nearly empty bottle therefore tilts further than a full bottle. */
-export function pouringAngle(layers: number): number {
+export function pouringAngle(layers: number, geometry: VesselGeometry = DEFAULT_VESSEL): number {
   'worklet';
   let lo = 0;
   let hi = 160;
-  const area = clamp(layers, 0, 4) * LAYER_AREA;
+  const area = clamp(layers, 0, 4) * geometry.layerArea;
   for (let i = 0; i < 15; i++) {
     const mid = (lo + hi) / 2;
-    const lip = rotateBottlePoint(outletPoint(1), mid);
-    const capacity = polygonArea(clipBelow(rotatedInterior(mid), lip.y));
+    const lip = rotateBottlePoint(outletPoint(1, geometry), mid);
+    const capacity = polygonArea(clipBelow(rotatedInterior(mid, geometry), lip.y));
     if (capacity > area) lo = mid;
     else hi = mid;
   }
@@ -84,25 +86,25 @@ export function bottleBounds(angle: number) {
 }
 
 /** Use the screen's existing header space. The recipient stays in its slot. */
-export function createPourPlan(source: Point, target: Point, sourceCount: number, amount: number, minY = -130, startLift = 12, width = STAGE_WIDTH, height = STAGE_HEIGHT): PourPlan {
+export function createPourPlan(source: Point, target: Point, sourceCount: number, amount: number, minY = -130, startLift = 12, width = STAGE_WIDTH, height = STAGE_HEIGHT, geometry: VesselGeometry = DEFAULT_VESSEL): PourPlan {
   const direction = target.x > source.x ? 1 : target.x < source.x ? -1 : target.x < width / 2 ? -1 : 1;
-  const startAngle = pouringAngle(sourceCount);
-  const endAngle = pouringAngle(sourceCount - amount);
+  const startAngle = pouringAngle(sourceCount, geometry);
+  const endAngle = pouringAngle(sourceCount - amount, geometry);
   let minimumOutletY = minY;
   let maximumOutletY = height;
   for (let i = 0; i <= 80; i++) {
     const angle = direction * (startAngle + (endAngle - startAngle) * i / 80);
     const bounds = bottleBounds(angle);
-    const lip = rotateBottlePoint(outletPoint(direction), angle);
+    const lip = rotateBottlePoint(outletPoint(direction, geometry), angle);
     minimumOutletY = Math.max(minimumOutletY, minY + MARGIN - bounds.minY + lip.y);
     maximumOutletY = Math.min(maximumOutletY, height - MARGIN - bounds.maxY + lip.y);
   }
-  const outletY = clamp(target.y + 28 - 38, minimumOutletY + 1, maximumOutletY - 1);
+  const outletY = clamp(target.y + geometry.mouth.y - 38, minimumOutletY + 1, maximumOutletY - 1);
   return {
-    source, target, direction, sourceCount, amount,
+    geometry, source, target, direction, sourceCount, amount,
     outlet: { x: target.x + 50, y: outletY },
     minY, startLift, width, height,
-    angles: Array.from({ length: 129 }, (_, index) => direction * pouringAngle(sourceCount - amount * index / 128)),
+    angles: Array.from({ length: 129 }, (_, index) => direction * pouringAngle(sourceCount - amount * index / 128, geometry)),
   };
 }
 
@@ -114,15 +116,15 @@ export function sourcePose(plan: PourPlan, progress: number) {
   const initialAngle = plan.angles[0];
   const finalAngle = plan.angles[plan.angles.length - 1];
   let angle = 0;
-  let x = plan.source.x + 50 + plan.direction * 12;
-  let y = plan.source.y + 28;
+  let x = plan.source.x + 50 + plan.direction * plan.geometry.mouth.outlet;
+  let y = plan.source.y + plan.geometry.mouth.y;
   if (progress < 0.12) {
     y -= plan.startLift + ease(progress / 0.12) * (40 - plan.startLift);
   } else if (progress < 0.3) {
     const t = ease((progress - 0.12) / 0.18);
     angle = initialAngle * t;
     x += (plan.outlet.x - x) * t;
-    const raisedY = plan.source.y + 28 - 40;
+    const raisedY = plan.source.y + plan.geometry.mouth.y - 40;
     y = raisedY + (plan.outlet.y - raisedY) * t;
   } else if (progress < 0.76) {
     const sample = transferredFraction(progress) * (plan.angles.length - 1);
@@ -136,7 +138,7 @@ export function sourcePose(plan: PourPlan, progress: number) {
     x = plan.outlet.x + (x - plan.outlet.x) * t;
     y = plan.outlet.y + (y - plan.outlet.y) * t;
   }
-  const lip = rotateBottlePoint(outletPoint(plan.direction), angle);
+  const lip = rotateBottlePoint(outletPoint(plan.direction, plan.geometry), angle);
   const bounds = bottleBounds(angle);
   const left = x - lip.x;
   const top = clamp(y - lip.y, plan.minY + MARGIN - bounds.minY, plan.height - MARGIN - bounds.maxY);

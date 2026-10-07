@@ -9,7 +9,7 @@ const AnimatedPath = Animated.createAnimatedComponent(Path);
 export function PourStream({ plan, color, progress }: { plan: PourPlan; color: ColorId; progress: SharedValue<number> }) {
   const props = useAnimatedProps(() => {
     const outlet = sourcePose(plan, progress.value).outlet;
-    const bottom = plan.target.y + 35;
+    const bottom = plan.target.y + plan.geometry.mouth.y + 7;
     return {
       d: `M${outlet.x},${outlet.y} L${plan.target.x + 50},${bottom}`,
       opacity: streamOpacity(progress.value),

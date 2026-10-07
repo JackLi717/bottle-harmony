@@ -15,6 +15,8 @@ The user approved the original iPhone 12 Pro Max and low-end Android visuals/int
 
 Work directly on main. Do not create feature branches or worktrees unless the user requests them. Keep this project independent from sibling projects.
 
+The user authorized all fifteen glass-container styles from the October 7 concept sheets, including bottles, test tubes, tumblers and stemware. Each implemented style is freely selectable by swiping on the home screen and remembered under a separate cosmetic preference. Keep one uniform style across the current board, the approved large six-column layout, four equal logical portions and existing rules. Adapt the cavity, liquid volume, surface and pouring lip to the actual shape; liquid never enters a glass stem. Narrow vessels can use corks; wide cups use halo when the global cork effect is chosen. No purchases, unlock requirements, rewards or new game mechanics are implied by cosmetic selection.
+
 ## Development
 
 Use Node.js 24 and npm. Keep package-lock.json current. Use Expo's compatible dependency versions and expo install for native libraries.

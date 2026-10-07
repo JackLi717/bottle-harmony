@@ -25,6 +25,8 @@ import { GameFooter } from './GameFooter';
 import { Celebration } from './Celebration';
 import { fireworkCount } from '../art/fireworkPhysics';
 import { useSoundPreference } from './useSoundPreference';
+import { useVesselPreference } from './useVesselPreference';
+import { vesselCompletionEffect } from '../art/vesselDesigns';
 import { PourSound } from './PourSound';
 import { POUR_DURATION_MS } from '../art/pourGeometry';
 import { completedPreviewSession, finishPresentation } from './gamePresentation';
@@ -51,6 +53,7 @@ export function DemoScreen() {
   const compact = dimensions.height < 720;
   const { play, setPlay, ready, notice, saveStatus } = usePlayProgress();
   const { sound, ready: soundReady, saved: soundSaved, toggleSound } = useSoundPreference();
+  const { vessel, ready: vesselReady, saved: vesselSaved, chooseVessel } = useVesselPreference();
   const [page, setPage] = useState<'home' | 'game'>('home');
   const [internalSession, setInternalSession] = useState<GameSession | null>(null);
   const session = internalSession ?? visibleSession(play);
@@ -86,7 +89,7 @@ export function DemoScreen() {
   const { scale, minY } = fitBoard(layout, stage, safeTop);
   const won = session.status === 'solved';
   const [stalledNotice, setStalledNotice] = useState(INITIAL_STALLED_NOTICE);
-  const stalledEligible = ready && languageReady && soundReady && play.tutorialDone && appActive && !animation && !searching;
+  const stalledEligible = ready && languageReady && soundReady && vesselReady && play.tutorialDone && appActive && !animation && !searching;
   const nextNotice = advanceStalledNotice(stalledNotice, {
     scope: `${internalSession ? 'preview' : play.replay ? 'replay' : 'mainline'}:${session.level.id}`,
     board, status: session.status, entered: page === 'game', eligible: stalledEligible,
@@ -247,7 +250,7 @@ export function DemoScreen() {
     if (reduceMotion) { busy.current = false; setSelected(null); return; }
     progress.set(0);
     const { before, pour: committedPour } = accepted.event;
-    setAnimation({ before, pour: committedPour, plan: createPourPlan(layout.positions[committedPour.source], layout.positions[committedPour.target], before[committedPour.source].length, committedPour.amount, minY, selected === committedPour.source ? 12 : 0, layout.width, layout.height) });
+    setAnimation({ before, pour: committedPour, plan: createPourPlan(layout.positions[committedPour.source], layout.positions[committedPour.target], before[committedPour.source].length, committedPour.amount, minY, selected === committedPour.source ? 12 : 0, layout.width, layout.height, vessel) });
   }
 
   function selectBottle(index: number) {
@@ -322,7 +325,7 @@ export function DemoScreen() {
     else nextLevel();
   }
 
-  if (!ready || !languageReady || !soundReady) return <LinearGradient colors={['#11171E', '#070B12']} style={[styles.screen, { alignItems: 'center', justifyContent: 'center' }]}><StatusBar style="light" /><UiText style={styles.loading}>{t('loading')}</UiText></LinearGradient>;
+  if (!ready || !languageReady || !soundReady || !vesselReady) return <LinearGradient colors={['#11171E', '#070B12']} style={[styles.screen, { alignItems: 'center', justifyContent: 'center' }]}><StatusBar style="light" /><UiText style={styles.loading}>{t('loading')}</UiText></LinearGradient>;
 
   return (
     <LinearGradient colors={['#11171E', '#090E16', '#070B12']} locations={[0, 0.58, 1]} style={styles.screen}>
@@ -330,7 +333,7 @@ export function DemoScreen() {
       <PourSound progress={progress} pouring={!!animation} enabled={sound && appActive && !reduceMotion && page === 'game'} />
       <View pointerEvents="none" style={StyleSheet.absoluteFill}><GameBackdrop width={dimensions.width} height={dimensions.height} /></View>
       <View style={[styles.safe, { paddingTop: insets.top + (compact ? 8 : 14), paddingBottom: Math.max(insets.bottom, 14) }]}>
-        {page === 'home' ? <HomeScreen current={play.current} compact={compact} notice={notice ? t(notice) : undefined} onPlay={() => chooseNumber(play.current)} onLevels={() => openMenu('levels')} onSettings={() => openMenu('settings')} /> : <>
+        {page === 'home' ? <HomeScreen current={play.current} compact={compact} notice={notice ? t(notice) : undefined} onPlay={() => chooseNumber(play.current)} onLevels={() => openMenu('levels')} onSettings={() => openMenu('settings')} vessel={vessel} vesselSaved={vesselSaved} reduceMotion={reduceMotion} onVessel={chooseVessel} /> : <>
         <GameHeader label={label} compact={compact} disabled={!!animation || searching} onBack={goHome} />
         <View style={styles.stageSpace} onLayout={event => {
           const layout = event.nativeEvent.layout;
@@ -344,7 +347,7 @@ export function DemoScreen() {
               const bottle = displayBoard[index];
               // A view belongs to a visual slot; logical bottle IDs stay in the session.
               // Reuse glass/SVG/worklet bindings when the next level replaces its contents.
-              return <Bottle key={index} index={index} position={position} colors={bottle} selected={selected === index} completed={isBottleComplete(bottle, session.level.capacity)} width={100 * scale} scale={scale} plan={animation?.plan ?? null} pour={animation?.pour ?? null} progress={progress} symbols={play.symbols} completionEffect={completionEffect} completionScene={`${session.level.id}:${completionEpoch}`} completionAnimations={appActive && !reduceMotion} />;
+              return <Bottle key={index} index={index} vessel={vessel} position={position} colors={bottle} selected={selected === index} completed={isBottleComplete(bottle, session.level.capacity)} width={100 * scale} scale={scale} plan={animation?.plan ?? null} pour={animation?.pour ?? null} progress={progress} symbols={play.symbols} completionEffect={completionEffect} completionScene={`${session.level.id}:${completionEpoch}`} completionAnimations={appActive && !reduceMotion} />;
             })}
             {layout.positions.map((position, index) => {
               const bottle = displayBoard[index];
@@ -366,9 +369,9 @@ export function DemoScreen() {
         </>}
       </View>
       {debugReport && <DifficultyDebug visible={difficultyVisible} report={debugReport} sample={sample} label={label} onClose={() => setDifficultyVisible(false)} />}
-      {menuVisible && <MainlineMenu visible initialSection={menuSection} play={play} saveStatus={t(saveStatus)} onClose={() => setMenuVisible(false)} onResume={() => chooseNumber(play.current)} onSelect={chooseNumber} onSamples={() => { setMenuVisible(false); setPickerVisible(true); }} symbols={play.symbols} onSymbols={() => setPlay(Object.freeze({ ...play, symbols: !play.symbols }))} completionName={t(completionEffect)} onLanguage={() => { setMenuVisible(false); setLanguageVisible(true); }} onCompletionEffects={() => { setMenuVisible(false); setCompletionPickerVisible(true); }} sound={sound} soundSaved={soundSaved} onSound={toggleSound} onCelebrationPreview={previewCelebration} onDebug={INTERNAL_TOOLS ? openDifficulty : undefined} />}
+      {menuVisible && <MainlineMenu visible initialSection={menuSection} play={play} saveStatus={t(saveStatus)} onClose={() => setMenuVisible(false)} onResume={() => chooseNumber(play.current)} onSelect={chooseNumber} onSamples={() => { setMenuVisible(false); setPickerVisible(true); }} symbols={play.symbols} onSymbols={() => setPlay(Object.freeze({ ...play, symbols: !play.symbols }))} completionName={t(vesselCompletionEffect(vessel, completionEffect))} onLanguage={() => { setMenuVisible(false); setLanguageVisible(true); }} onCompletionEffects={() => { setMenuVisible(false); setCompletionPickerVisible(true); }} sound={sound} soundSaved={soundSaved} onSound={toggleSound} onCelebrationPreview={previewCelebration} onDebug={INTERNAL_TOOLS ? openDifficulty : undefined} />}
       <LanguagePicker visible={languageVisible} onClose={() => { setLanguageVisible(false); openMenu('settings'); }} />
-      <CompletionEffectPicker visible={completionPickerVisible} value={completionEffect} reduceMotion={reduceMotion} onSelect={effect => { setCompletionEffect(effect); setSelected(null); }} onClose={() => setCompletionPickerVisible(false)} />
+      <CompletionEffectPicker visible={completionPickerVisible} vessel={vessel} value={completionEffect} reduceMotion={reduceMotion} onSelect={effect => { setCompletionEffect(effect); setSelected(null); }} onClose={() => setCompletionPickerVisible(false)} />
       <Tutorial visible={page === 'game' && ready && !play.tutorialDone} notice={notice ? t(notice) : undefined} onStart={() => setPlay(Object.freeze({ ...play, tutorialDone: true }))} onSkip={() => setPlay(Object.freeze({ ...play, tutorialDone: true }))} />
       {INTERNAL_TOOLS && <LevelPicker visible={pickerVisible} currentCode={sample?.code ?? null} onClose={() => setPickerVisible(false)} onSelect={chooseSample} onPreview={number => { setInternalSession(createSession(MAINLINE.entries[number - 1].level)); setSelected(null); setPickerVisible(false); setPage('game'); announceStatus('tapStart'); }} />}
     </LinearGradient>

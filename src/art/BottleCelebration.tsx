@@ -15,7 +15,7 @@ const SPARKS = [
   { x: 26, y: 148, dx: -7, dy: -6, delay: 0.2, size: 1.9 },
   { x: 74, y: 144, dx: 8, dy: -7, delay: 0.09, size: 1.5 },
 ];
-type Props = { timeline: SharedValue<number>; complete: SharedValue<boolean>; id: string };
+type Props = { timeline: SharedValue<number>; complete: SharedValue<boolean>; id: string; shell?: string };
 
 function Spark({ timeline, complete, spark }: Pick<Props, 'timeline' | 'complete'> & { spark: typeof SPARKS[number] }) {
   const props = useAnimatedProps(() => {
@@ -31,7 +31,7 @@ function Spark({ timeline, complete, spark }: Pick<Props, 'timeline' | 'complete
 }
 
 /** A small fixed set of SVG shapes runs on the UI thread; no filters or JS frame loop. */
-export const BottleCelebration = memo(function BottleCelebration({ timeline, complete, id }: Props) {
+export const BottleCelebration = memo(function BottleCelebration({ timeline, complete, id, shell = BOTTLE_SHELL }: Props) {
   const glow = useAnimatedProps(() => ({ opacity: complete.value ? completionPose(timeline.value).glow : 0 }));
   const wave = useAnimatedProps(() => {
     const pose = completionPose(timeline.value);
@@ -46,10 +46,10 @@ export const BottleCelebration = memo(function BottleCelebration({ timeline, com
   return <G>
     <AnimatedG animatedProps={glow}>
       <Ellipse cx={50} cy={100} rx={46} ry={78} fill={`url(#${id}-completion-glow)`} />
-      <Path d={BOTTLE_SHELL} fill="none" stroke="#E8CB8C" strokeWidth={13} strokeOpacity={0.055} />
-      <Path d={BOTTLE_SHELL} fill="none" stroke="#F9E4AB" strokeWidth={7} strokeOpacity={0.12} />
-      <Path d={BOTTLE_SHELL} fill="none" stroke="#FFF3CC" strokeWidth={3.6} strokeOpacity={0.3} />
-      <Path d={BOTTLE_SHELL} fill="none" stroke="#FFF7DA" strokeWidth={1.8} strokeOpacity={0.85} />
+      <Path d={shell} fill="none" stroke="#E8CB8C" strokeWidth={13} strokeOpacity={0.055} />
+      <Path d={shell} fill="none" stroke="#F9E4AB" strokeWidth={7} strokeOpacity={0.12} />
+      <Path d={shell} fill="none" stroke="#FFF3CC" strokeWidth={3.6} strokeOpacity={0.3} />
+      <Path d={shell} fill="none" stroke="#FFF7DA" strokeWidth={1.8} strokeOpacity={0.85} />
     </AnimatedG>
     <AnimatedEllipse cx={50} cy={169} fill="none" stroke="#F7DEA5" strokeWidth={1.5} animatedProps={wave} />
     <AnimatedEllipse cx={50} cy={169} fill="none" stroke="#FFF0C4" strokeWidth={0.7} animatedProps={afterglow} />
