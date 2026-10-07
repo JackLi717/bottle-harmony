@@ -35,6 +35,7 @@ import { LevelPicker } from './LevelPicker';
 import { CALIBRATION_SAMPLES, DIFFICULTY, LEVEL_LABELS } from './content';
 import { MAINLINE, mainlineReport } from './mainlineContent';
 import type { DifficultyReport, PlanningDepthReport } from '../game/difficulty';
+import type { HumanDifficultyReport } from '../game/humanDifficulty';
 import { MainlineMenu } from './MainlineMenu';
 import { CompletionEffectPicker } from './CompletionEffectPicker';
 import { INTERNAL_TOOLS } from './buildConfig';
@@ -72,6 +73,7 @@ export function DemoScreen() {
   const [appActive, setAppActive] = useState(AppState.currentState === 'active');
   const [completionEpoch, setCompletionEpoch] = useState(0);
   const [debugReport, setDebugReport] = useState<DifficultyReport | PlanningDepthReport | null>(null);
+  const [debugHuman, setDebugHuman] = useState<HumanDifficultyReport | null>(null);
   const { board, history } = session;
   const [searching, setSearching] = useState(false);
   const search = useRef<SolverTask | null>(null);
@@ -217,7 +219,14 @@ export function DemoScreen() {
   function openDifficulty() {
     if (busy.current) return;
     setMenuVisible(false);
-    setDebugReport(entry ? mainlineReport(entry.number).evidence : DIFFICULTY.get(session.level.id)!);
+    if (entry) {
+      const full = mainlineReport(entry.number);
+      setDebugReport(full.rating.evidence);
+      setDebugHuman(full.human);
+    } else {
+      setDebugReport(DIFFICULTY.get(session.level.id)!);
+      setDebugHuman(null);
+    }
     setDifficultyVisible(true);
   }
 
@@ -368,7 +377,7 @@ export function DemoScreen() {
           onContinue={continueAfterWin} />
         </>}
       </View>
-      {debugReport && <DifficultyDebug visible={difficultyVisible} report={debugReport} sample={sample} label={label} onClose={() => setDifficultyVisible(false)} />}
+      {debugReport && <DifficultyDebug visible={difficultyVisible} report={debugReport} human={debugHuman} sample={sample} label={label} onClose={() => setDifficultyVisible(false)} />}
       {menuVisible && <MainlineMenu visible initialSection={menuSection} play={play} saveStatus={t(saveStatus)} onClose={() => setMenuVisible(false)} onResume={() => chooseNumber(play.current)} onSelect={chooseNumber} onSamples={() => { setMenuVisible(false); setPickerVisible(true); }} symbols={play.symbols} onSymbols={() => setPlay(Object.freeze({ ...play, symbols: !play.symbols }))} completionName={t(vesselCompletionEffect(vessel, completionEffect))} onLanguage={() => { setMenuVisible(false); setLanguageVisible(true); }} onCompletionEffects={() => { setMenuVisible(false); setCompletionPickerVisible(true); }} sound={sound} soundSaved={soundSaved} onSound={toggleSound} onCelebrationPreview={previewCelebration} onDebug={INTERNAL_TOOLS ? openDifficulty : undefined} />}
       <LanguagePicker visible={languageVisible} onClose={() => { setLanguageVisible(false); openMenu('settings'); }} />
       <CompletionEffectPicker visible={completionPickerVisible} vessel={vessel} value={completionEffect} reduceMotion={reduceMotion} onSelect={effect => { setCompletionEffect(effect); setSelected(null); }} onClose={() => setCompletionPickerVisible(false)} />

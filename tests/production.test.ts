@@ -85,60 +85,30 @@ test('D4 six- and eight-stage grades retain replayable lower-policy counterexamp
   assert.ok(results[0].score!.total < results[1].score!.total);
 });
 
-test('the 1000-slot recipe has exact quotas, repeated recovery, nondecreasing challenge ranks and twelve-bottle bounds', () => {
+test('the 1000-slot ramp has 100 local challenges and soft size guidance', () => {
   const slots = createProductionPlan(), summary = productionSummary(slots);
   assert.equal(slots.length, 1000);
-  assert.deepEqual(summary.tiers, { D1: 300, D2: 300, D3: 305, D4: 95 });
-  assert.deepEqual(summary.ranks, { 1: 300, 2: 300, 3: 105, 4: 200, 5: 20, 6: 20, 7: 25, 8: 30 });
-  assert.equal(slots.filter(slot => slot.role === 'challenge').length, 100);
-  let peak = 0;
+  assert.equal(summary.total, 1000);
+  assert.equal(summary.ordinary, 900);
+  assert.equal(summary.challenges, 100);
+  assert.equal(summary.stages.length, 20);
   for (const [index, slot] of slots.entries()) {
     assert.equal(slot.number, index + 1);
-    assert.ok(slot.colorsMinimum <= slot.colorsMaximum);
-    assert.ok(slot.colorsMaximum <= 11);
-    if (index < 3) assert.equal(slot.colorsMaximum, 3);
-    else if (index < 50 && slot.role !== 'challenge') { assert.equal(slot.preferredColorsMinimum, 6); assert.equal(slot.preferredColorsMaximum, 9); }
-    if (slot.role !== 'challenge') {
-      assert.ok(slot.colorsMinimum <= slot.preferredColorsMinimum!);
-      assert.ok(slot.preferredColorsMinimum! <= slot.preferredColorsMaximum!);
-      assert.ok(slot.preferredColorsMaximum! <= slot.colorsMaximum);
-    }
-    assert.ok(slot.colorsMaximum + Math.min(...slot.allowedEmptyBottles) <= 12);
-    assert.ok(slot.allowedEmptyBottles.some(empty => slot.colorsMinimum + empty <= 12));
-    assert.ok(slot.maxSolutionMoves <= 60);
+    assert.equal(slot.stage, Math.floor(index / 50) + 1);
+    assert.equal(slot.wave, Math.floor(index / 10) + 1);
+    assert.equal(slot.role, index % 10 === 9 ? 'challenge' : 'ordinary');
+    assert.equal(slot.maxSolutionMoves, 60);
     if (slot.role === 'challenge') {
-      assert.equal(slot.colorsMinimum, 3); assert.equal(slot.colorsMaximum, 11);
-      assert.equal(slot.preferredColorsMinimum, null); assert.equal(slot.preferredColorsMaximum, null);
-      assert.ok(slot.rank >= 4);
-      assert.ok(slot.rank >= peak); peak = slot.rank;
-      if (index < 999) assert.ok(slots[index + 1].rank < slot.rank);
+      assert.equal(slot.preferredColorsMinimum, null);
+      assert.equal(slot.preferredColorsMaximum, null);
+    } else {
+      assert.ok(slot.preferredColorsMinimum! >= 2);
+      assert.ok(slot.preferredColorsMaximum! <= 11);
+      assert.ok(slot.preferredColorsMinimum! <= slot.preferredColorsMaximum!);
     }
-    if (slot.tier === 'D3' || slot.tier === 'D4') assert.equal(slot.mixing, 'diverse');
-  }
-  assert.deepEqual(summary.stages.map(stage => stage.challengeRank), [4, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8]);
-  assert.deepEqual(summary.stages.map(stage => [stage.preferredColorsMinimum, stage.preferredColorsMaximum]), [
-    [6, 9], [7, 10], [7, 10], [7, 10], [7, 10],
-    [8, 10], [8, 10], [8, 10], [8, 10],
-    [8, 11], [8, 11], [8, 11], [8, 11], [8, 11],
-    [9, 11], [9, 11], [9, 11], [9, 11], [9, 11], [9, 11],
-  ]);
-  for (let index = 1; index < summary.stages.length; index++) {
-    const previous = summary.stages[index - 1], current = summary.stages[index];
-    assert.ok(current.preferredColorsMinimum! < previous.preferredColorsMaximum!);
-  }
-  // The opening ordinary range is a preference, not a six-color floor or
-  // nine-color input cap. Even the first closing level has no stage preference.
-  assert.equal(slots[3].colorsMinimum, 3); assert.equal(slots[3].colorsMaximum, 11);
-  assert.equal(slots[9].rank, 4); assert.equal(slots[9].preferredColorsMaximum, null);
-  const laterRoles = ['relax', 'standard', 'thinking', 'challenge'] as const;
-  for (const role of laterRoles) {
-    const candidates = slots.filter(slot => slot.stage === 11 && slot.role === role);
-    assert.ok(candidates.every(slot => slot.colorsMinimum === 3 && (role === 'challenge'
-      ? slot.preferredColorsMinimum === null && slot.preferredColorsMaximum === null && slot.colorsMaximum === 11
-      : slot.preferredColorsMinimum === 8 && slot.preferredColorsMaximum === (role === 'relax' ? 10 : 11))));
   }
   assert.deepEqual(createProductionPlan(), slots);
-  assert.ok(Object.isFrozen(slots[999].allowedEmptyBottles));
+  assert.ok(Object.isFrozen(slots[999]));
 });
 
 test('canonical labeling exactly matches the previous permutation definition on small boards', () => {

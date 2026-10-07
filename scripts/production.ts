@@ -39,7 +39,7 @@ async function main() {
     // Avoid replacing playable baseline artifacts with a recipe.
     if (output.startsWith(resolve('assets') + '/')) throw new Error('Production recipes belong outside playable assets');
     await atomicWrite(output, { ...summary, slots: createProductionPlan() });
-    console.log(JSON.stringify({ output, total: summary.total, tiers: summary.tiers, ranks: summary.ranks }, null, 2)); return;
+    console.log(JSON.stringify({ output, total: summary.total, ordinary: summary.ordinary, challenges: summary.challenges }, null, 2)); return;
   }
   const number = (key: string, fallback: number) => {
     const raw = values.get(key);

@@ -2,13 +2,14 @@ import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-nati
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TIER_NAMES, type CalibrationSample } from '../game/calibration';
 import type { DifficultyReport, PlanningDepthReport } from '../game/difficulty';
+import type { HumanDifficultyReport } from '../game/humanDifficulty';
 
-type Props = { visible: boolean; report: DifficultyReport | PlanningDepthReport; sample: CalibrationSample | null; label?: string; onClose: () => void };
+type Props = { visible: boolean; report: DifficultyReport | PlanningDepthReport; human?: HumanDifficultyReport | null; sample: CalibrationSample | null; label?: string; onClose: () => void };
 const PLANNING_NAMES = { P1: '直接整理', P2: '短程取舍', P3: '多步协调', P4: '全局规划' };
 const STATUS_NAMES = { passed: '通过', failed: '未通过', unknown: '未知' };
 
 /** Only presents bundled offline evidence; never evaluates the playing board. */
-export function DifficultyDebug({ visible, report, sample, label, onClose }: Props) {
+export function DifficultyDebug({ visible, report, human, sample, label, onClose }: Props) {
   const insets = useSafeAreaInsets();
   const { metrics } = report;
   const metric = (value: number | null) => value === null ? '未知' : String(value);
@@ -17,8 +18,14 @@ export function DifficultyDebug({ visible, report, sample, label, onClose }: Pro
       <View style={styles.panel}>
         <View style={styles.heading}><Text accessibilityRole="header" style={styles.title}>难度调试</Text><Pressable accessibilityRole="button" accessibilityLabel="关闭难度调试" onPress={onClose} style={styles.close}><Text style={styles.closeText}>关闭</Text></Pressable></View>
         <ScrollView contentContainerStyle={styles.list}>
-          <Text style={styles.rating}>{label ?? sample?.code ?? '原始体验'} · {report.tier ? `${report.tier} ${TIER_NAMES[report.tier]}` : report.status === 'unsolvable' ? '已证明无解' : '评级未知'}（自动暂定）</Text>
-          <Text style={styles.note}>针对初始关卡，倒水后评级不变。{'rank' in report ? `内部规划级：${report.rank} / 8。` : '对照题使用原始四档报告。'}策略模型待试玩校准。</Text>
+          <Text style={styles.rating}>{label ?? sample?.code ?? '原始体验'} · {human?.score ? `人类代理 ${human.score.total} 分` : report.tier ? `${report.tier} ${TIER_NAMES[report.tier]}` : report.status === 'unsolvable' ? '已证明无解' : '评级未知'}</Text>
+          <Text style={styles.note}>针对初始关卡，倒水后评级不变。{'rank' in report ? `内部规划级：${report.rank} / 8。` : '对照题使用原始四档报告。'}新分数尚待真人校准。</Text>
+          {human?.score && <View style={styles.card}>
+            <Text style={styles.section}>人类决策代理 · {human.model}</Text>
+            <Text style={styles.detail}>选择风险 {human.score.trapPeak} / 35 · 反复风险 {human.score.trapRepeat} / 10 · 规划 {human.score.planning} / 10</Text>
+            <Text style={styles.detail}>空间 {human.score.space} / 15 · 视觉 {human.score.visual} / 15 · 操作 {human.score.operations} / 15</Text>
+            {human.decisions.map(decision => <Text key={decision.moveIndex} style={styles.detail}>第 {decision.moveIndex + 1} 步：{decision.choices} 种选择，{decision.deadEnds} 死路，{decision.costlyDetours} 高成本绕路，风险 {decision.risk.toFixed(2)}</Text>)}
+          </View>}
           {sample && <Text style={styles.note}>人工试排：{sample.tier} {TIER_NAMES[sample.tier]}。分类仍保留试排，便于对照。</Text>}
           <View style={styles.card}>
             <Text style={styles.section}>空间与操作量</Text>

@@ -46,7 +46,9 @@
     "production:rate": "node --experimental-strip-types scripts/production.ts rate",
     "production:verify": "node --experimental-strip-types scripts/production.ts verify",
     "mainline:build": "node --experimental-strip-types scripts/mainline.ts build",
-    "mainline:verify": "node --experimental-strip-types scripts/mainline.ts verify"
+    "mainline:verify": "node --experimental-strip-types scripts/mainline.ts verify",
+    "mainline:audit": "node --experimental-strip-types scripts/audit-mainline.ts",
+    "mainline:human": "node --experimental-strip-types scripts/human-difficulty.ts"
   },
   "private": true,
   "engines": {
