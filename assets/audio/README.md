@@ -1,8 +1,46 @@
 # Audio sources
 
+## Vessel water palette (2026-10-08)
+
+The active app selects one of `pour/*.wav` by vessel family and the receiving
+vessel's **starting** fill: empty → low, one/two layers → mid, three layers → high.
+A multi-layer move plays one continuous excerpt. Six recordings provide eighteen
+clips, totaling about 0.61 MB of PCM. No looping, synthesis, pitch shifting or
+time stretching is used. Each clip lasts 0.769478 seconds, matching visible flow.
+
+These are **audition prototypes**, not recordings of all fifteen physical
+vessels or calibrated low/mid/high water heights. Band names are selection keys;
+the excerpts are taken from different natural moments of the source recordings.
+The flask source is a water bottle pouring into other water, the slender source
+is a drinking glass, and the bowl recordings do not establish the depth or stem
+shape of our virtual cups. Replace individual sources after phone listening or
+purpose-made recording, without changing the selector or timing.
+
+| Family | Source / author (CC0 1.0 on each source page) | Styles |
+| --- | --- | --- |
+| neck | [Water Pour — JohnsonBrandEditing](https://freesound.org/people/JohnsonBrandEditing/sounds/173930/) | classic, moon, royal, aurora, alchemy, prism |
+| flask | [water_bottle_pour_out.wav — j1987](https://freesound.org/people/j1987/sounds/335759/) | flask |
+| slender | [Pouring water in a glass — DenysFontanarosa](https://freesound.org/people/DenysFontanarosa/sounds/579752/) | tube, flute |
+| straight | [Pouring water into a glass — ahamirikia](https://freesound.org/people/ahamirikia/sounds/710550/) | beaker, highball |
+| bowl | [Water pouring into glass bowl 01 — Rudmer_Rotteveel](https://freesound.org/people/Rudmer_Rotteveel/sounds/700352/) | tulip, chalice |
+| shallow | [Pouring Water into a Glass Bowl.wav — The_Runner_01](https://freesound.org/people/The_Runner_01/sounds/554444/) | martini, coupe |
+
+All public HQ previews were retrieved on 2026-10-08. The exact source URLs,
+source/output SHA-256 hashes, cut offsets, output levels and processing are in
+[`pour/manifest.json`](pour/manifest.json). Reproduce with
+`python3 scripts/prepare-vessel-audio.py` after saving the six previews to
+`builds/pour-recordings/{family}.mp3`. Source-page HTML is retained locally with
+the downloads for license verification; originals are not shipped.
+
+The current family keeps three short native players loaded and silently rewound
+while idle. A move selects one prepared player without recreating it.
+If loading or seeking misses the visible-flow start, that pour stays silent;
+loading or unmuting mid-flow does not cause late playback. Existing cancellation
+and the shared sound preference also apply to this palette.
+
 ## Water pouring
 
-`water-pour.wav` is an edited excerpt of **Water Pour** by **JohnsonBrandEditing**:
+`water-pour.wav` is the retained baseline/regression excerpt of **Water Pour** by **JohnsonBrandEditing** (the active palette's neck-low uses the same cut):
 
 - Author page and license: https://freesound.org/people/JohnsonBrandEditing/sounds/173930/
 - Public HQ preview used: https://cdn.freesound.org/previews/173/173930_3229685-hq.mp3

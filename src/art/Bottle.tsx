@@ -9,6 +9,8 @@ import type { Point } from './liquidGeometry';
 import { sourcePose, streamOpacity, transferredFraction, type PourPlan } from './pourGeometry';
 import { COMPLETION_DURATION, completionPose, completionVisible, shouldCelebrateCompletion, type CompletionEffect } from './bottleCompletion';
 import { BottleCelebration } from './BottleCelebration';
+import { PourRipples } from './PourRipples';
+import { corkContact, pourFocus, receiverResponse } from './pourPresentation';
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 const AnimatedEllipse = Animated.createAnimatedComponent(Ellipse);
@@ -65,6 +67,10 @@ const BottleDefinitions = memo(function BottleDefinitions({ id, vessel }: { id: 
         <Stop offset="0.45" stopColor="#F4DBA0" stopOpacity={0.2} />
         <Stop offset="0.75" stopColor="#E8CB8C" stopOpacity={0.09} />
         <Stop offset="1" stopColor="#E8CB8C" stopOpacity={0} />
+      </RadialGradient>
+      <RadialGradient id={`${id}-color-glow`} cx="50%" cy="38%" rx="50%" ry="60%">
+        <Stop offset="0" stopColor="#FFFFFF" stopOpacity={.65} />
+        <Stop offset="1" stopColor="#FFFFFF" stopOpacity={0} />
       </RadialGradient>
       {Object.keys(LIQUIDS).map(color => (
         <LinearGradient key={color} id={`${id}-${color}`} x1="0" y1="0" x2="1" y2="0.45">
@@ -152,6 +158,18 @@ export const Bottle = memo(function Bottle({ index, colors, selected, completed,
     rx: Math.min(surfaceLevel.value.halfWidth, 4 + Math.sin(progress.value * 90) * 0.8),
     opacity: isTarget ? streamOpacity(progress.value) * 0.55 : 0,
   }));
+  const impact = useAnimatedProps(() => {
+    const response = receiverResponse(progress.value, isTarget && completionAnimations);
+    const y = surfaceLevel.value.y;
+    const radius = Math.min(6, Math.max(0, surfaceLevel.value.halfWidth - 1));
+    return { d: `M${50 - radius},${y} Q50,${y + 2 * response} ${50 + radius},${y}`, opacity: response * .65 };
+  });
+  const colorGlow = useAnimatedProps(() => ({
+    opacity: complete.value && completionAnimations ? completionPose(completionTimeline.value).glow * .23 : 0,
+  }));
+  const contact = useAnimatedProps(() => ({
+    opacity: complete.value ? corkContact(completionTimeline.value, completionAnimations) * .65 : 0,
+  }));
   const spout = useAnimatedProps(() => ({
     d: `M${50 + (plan?.direction ?? 1) * mouth.outlet},${mouth.y + 6} L${50 + (plan?.direction ?? 1) * mouth.outlet},${mouth.y}`,
     opacity: isSource ? streamOpacity(progress.value) : 0,
@@ -159,10 +177,11 @@ export const Bottle = memo(function Bottle({ index, colors, selected, completed,
   const flowColor = pour ? LIQUIDS[pour.color] : LIQUIDS.jade;
   const shell = useAnimatedProps(() => {
     const finished = complete.value;
+    const focus = pourFocus(progress.value, (isSource || isTarget) && completionAnimations);
     return {
-      stroke: finished ? '#E8CB8C' : selected ? '#B8F7E2' : vessel.edge,
-      strokeOpacity: selected || finished ? 0.95 : 0.65,
-      strokeWidth: selected ? 2.1 : finished ? 1.8 : 1.3,
+      stroke: finished ? '#E8CB8C' : selected || focus > 0 ? '#B8F7E2' : vessel.edge,
+      strokeOpacity: selected || finished ? 0.95 : 0.65 + focus * .25,
+      strokeWidth: selected ? 2.1 : finished ? 1.8 : 1.3 + focus * .55,
     };
   });
   const completion = useAnimatedProps(() => ({ opacity: complete.value ? 1 : 0 }));
@@ -205,6 +224,10 @@ export const Bottle = memo(function Bottle({ index, colors, selected, completed,
           <AnimatedPath animatedProps={innerStream} fill="none" stroke={flowColor.main} strokeWidth={3.3} strokeLinecap="round" />
           <AnimatedPath animatedProps={innerStream} fill="none" stroke={flowColor.light} strokeWidth={0.9} strokeLinecap="round" />
           <AnimatedEllipse cx={50} ry={1.8} fill={flowColor.light} animatedProps={splash} />
+          {isTarget && completionAnimations && <PourRipples progress={progress} surface={surfaceLevel} enabled color={flowColor.light} />}
+          <AnimatedPath animatedProps={impact} fill="none" stroke={flowColor.light} strokeWidth={1.1} strokeLinecap="round" />
+          <AnimatedPath d={vessel.inside} fill={colors[0] ? LIQUIDS[colors[0]].light : '#FFFFFF'} animatedProps={colorGlow} />
+          <AnimatedPath d={vessel.inside} fill={`url(#${id}-color-glow)`} animatedProps={colorGlow} />
         </G>
         {vessel.highlights.map((detail, index) => <Path key={`highlight-${index}`} d={detail.path} fill="none" stroke="#E9FFFF" strokeWidth={detail.width ?? 1.2} strokeOpacity={detail.opacity ?? .3} strokeLinecap="round" strokeLinejoin="round" />)}
         {vessel.details.map((detail, index) => <Path key={`detail-${index}`} d={detail.path} fill={detail.glass ? `url(#${id}-glass)` : 'none'} stroke={detail.gold ? '#E5CA91' : `url(#${id}-rim)`} strokeWidth={detail.width ?? .9} opacity={detail.opacity ?? .55} strokeLinecap="round" strokeLinejoin="round" />)}
@@ -229,6 +252,8 @@ export const Bottle = memo(function Bottle({ index, colors, selected, completed,
           <Path d={`M${50 - mouth.outer} ${mouth.y} A${mouth.outer} 5.8 0 0 0 ${50 + mouth.outer} ${mouth.y}`} fill="none" stroke="#294B5D" strokeWidth={3.3} />
           <Path d={`M${50 - mouth.outer} ${mouth.y} A${mouth.outer} 5.8 0 0 0 ${50 + mouth.outer} ${mouth.y}`} fill="none" stroke={`url(#${id}-rim)`} strokeWidth={1.7} />
           <Path d={`M${50 - mouth.inner - 1.5} ${mouth.y + 3} Q50 ${mouth.y + 7.3} ${50 + mouth.inner + 1.5} ${mouth.y + 3}`} fill="none" stroke="#E4EFD9" strokeWidth={0.7} strokeOpacity={0.75} />
+          <AnimatedEllipse cx={50} cy={mouth.y + 1.5} rx={mouth.inner + 1} ry={3} fill="none" stroke="#FFF4D8" strokeWidth={1.1} animatedProps={contact} />
+          <AnimatedPath d={`M${50 - mouth.inner * .6},${mouth.y - 10} Q${50 - mouth.inner * .35},${mouth.y - 12} 50,${mouth.y - 10}`} fill="none" stroke="#FFF4D8" strokeWidth={1} strokeLinecap="round" animatedProps={contact} />
         </AnimatedG>}
         <AnimatedPath animatedProps={spout} fill="none" stroke={flowColor.main} strokeWidth={3.5} strokeLinecap="round" />
       </Svg>

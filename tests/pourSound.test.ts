@@ -74,3 +74,53 @@ test('cancelling during lift prevents a pending preparation from touching the pl
   gate.arm(); gate.setFlow(false); prepare.resolve(); await flush();
   assert.deepEqual(events, []);
 });
+
+test('a clip not loaded at flow start stays silent even if it loads midway, then works on the next pour', async () => {
+  let available = false;
+  const events: string[] = [];
+  const gate = createPourSoundGate({ available: () => available, skipLate: true, prepare: async () => {},
+    rewind: async () => { events.push('rewind'); }, play: () => events.push('play'), stop: () => events.push('stop') });
+  gate.arm(); gate.setFlow(true); await flush(); assert.deepEqual(events, []);
+  available = true; gate.arm(); await flush(); gate.setFlow(true); await flush();
+  assert.deepEqual(events, ['rewind']);
+  gate.setFlow(false); gate.arm(); await flush(); gate.setFlow(true); await flush();
+  assert.deepEqual(events, ['rewind', 'stop', 'rewind', 'play']);
+});
+
+test('strict visible-flow deadline skips a late seek rather than playing a truncated sound', async () => {
+  const seek = deferred(), events: string[] = [];
+  const gate = createPourSoundGate({ skipLate: true, prepare: async () => {}, rewind: () => seek.promise,
+    play: () => events.push('play'), stop: () => events.push('stop') });
+  gate.arm(); await flush(); gate.setFlow(true); seek.resolve(); await flush();
+  assert.deepEqual(events, []);
+  gate.setFlow(false); gate.arm(); await flush(); gate.setFlow(true); await flush();
+  assert.deepEqual(events, ['stop', 'play']);
+});
+
+test('readiness recovered during lift can arm without a status notification, and never rearms the same cue', async () => {
+  let available = false;
+  const events: string[] = [];
+  const gate = createPourSoundGate({ available: () => available, skipLate: true, prepare: async () => {},
+    rewind: async () => { events.push('rewind'); }, play: () => events.push('play'), stop: () => {} });
+  assert.equal(gate.arm(), false);
+  available = true;
+  assert.equal(gate.arm(), true);
+  assert.equal(gate.arm(), true);
+  await flush(); gate.setFlow(true); await flush();
+  assert.deepEqual(events, ['rewind', 'play']);
+  gate.dispose(); assert.equal(gate.arm(), false);
+});
+
+test('standby fill-band players stay silent and only the selected prepared band plays', async () => {
+  const events: string[] = [];
+  const gates = ['low', 'mid', 'high'].map(band => createPourSoundGate({ skipLate: true,
+    prepare: async () => {}, rewind: async () => {}, play: () => events.push(band), stop: () => {} }));
+  gates.forEach(gate => gate.arm()); await flush();
+  assert.deepEqual(events, []);
+  for (const index of [0, 1, 2, 1]) {
+    gates[index].setFlow(true); await flush();
+    gates[index].setFlow(false); gates[index].arm(); await flush();
+  }
+  assert.deepEqual(events, ['low', 'mid', 'high', 'mid']);
+  gates.forEach(gate => gate.dispose());
+});

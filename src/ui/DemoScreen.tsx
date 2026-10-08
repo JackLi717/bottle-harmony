@@ -443,7 +443,7 @@ export function DemoScreen() {
   return (
     <LinearGradient colors={['#11171E', '#090E16', '#070B12']} locations={[0, 0.58, 1]} style={styles.screen}>
       <StatusBar style="light" />
-      <PourSound progress={progress} pouring={!!animation} enabled={sound && appActive && !reduceMotion && page === 'game'} />
+      <PourSound progress={progress} pouring={!!animation} vessel={vessel.id} receiverLayers={animation ? animation.before[animation.pour.target].length : 0} enabled={sound && appActive && !reduceMotion && page === 'game'} />
       <View pointerEvents="none" style={StyleSheet.absoluteFill}><GameBackdrop width={dimensions.width} height={dimensions.height} /></View>
       <View style={[styles.safe, { paddingTop: insets.top + (compact ? 8 : 14), paddingBottom: Math.max(insets.bottom, 14) }]}>
         {page === 'home' ? <HomeScreen current={play.current} sideNumber={play.side ? play.current / 20 : null} hintCredits={play.hintCredits} compact={compact} onPlay={resumeCurrent} onLevels={() => openMenu('levels')} onSettings={() => openMenu('settings')} vessel={vessel} vesselSaved={vesselSaved} reduceMotion={reduceMotion} onVessel={chooseVessel} /> : <>

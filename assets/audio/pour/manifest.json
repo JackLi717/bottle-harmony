@@ -1,0 +1,216 @@
+{
+  "version": "recorded-water-audition-v1",
+  "durationSeconds": 0.7694784580498866,
+  "sampleRate": 22050,
+  "license": "CC0-1.0",
+  "status": "Audition prototypes; fill bands use different natural recording excerpts, not measured fill heights.",
+  "processing": "mono 22050 Hz PCM16; highpass 90 Hz, lowpass 7500 Hz; 12/30 ms fades; RMS target .11, peak cap .72; no pitch or time change",
+  "sources": [
+    {
+      "family": "neck",
+      "author": "JohnsonBrandEditing",
+      "title": "Water Pour",
+      "page": "https://freesound.org/people/JohnsonBrandEditing/sounds/173930/",
+      "preview": "https://cdn.freesound.org/previews/173/173930_3229685-hq.mp3",
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourceSha256": "31aad4ba08594f6c70b9d66154e793bb4db5e68001becd06f6f2c4376511efd2",
+      "note": "Water poured into a glass; baseline used by the previous build."
+    },
+    {
+      "family": "flask",
+      "author": "j1987",
+      "title": "water_bottle_pour_out.wav",
+      "page": "https://freesound.org/people/j1987/sounds/335759/",
+      "preview": "https://cdn.freesound.org/previews/335/335759_367313-hq.mp3",
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourceSha256": "4f004eaa339c100d1593ba2f7a060aa4c1dc71475b572c3436e540b4f4406ca8",
+      "note": "Water bottle pouring into other water; proxy, not a recorded glass flask."
+    },
+    {
+      "family": "slender",
+      "author": "DenysFontanarosa",
+      "title": "Pouring water in a glass",
+      "page": "https://freesound.org/people/DenysFontanarosa/sounds/579752/",
+      "preview": "https://cdn.freesound.org/previews/579/579752_329215-hq.mp3",
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourceSha256": "dc77d69b903c057ef62fd97bd434f5b264b6c39d63e59acd263c544b66c2d25b",
+      "note": "Close recording of water into a glass; proxy for a slender open vessel."
+    },
+    {
+      "family": "straight",
+      "author": "ahamirikia",
+      "title": "Pouring water into a glass",
+      "page": "https://freesound.org/people/ahamirikia/sounds/710550/",
+      "preview": "https://cdn.freesound.org/previews/710/710550_15407943-hq.mp3",
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourceSha256": "a06a0e0002f241e799da2036add78c68d98d773fd2a45715836300cb7fca6e65",
+      "note": "Water into a glass, recorded with NT USB mini."
+    },
+    {
+      "family": "bowl",
+      "author": "Rudmer_Rotteveel",
+      "title": "Water pouring into glass bowl 01",
+      "page": "https://freesound.org/people/Rudmer_Rotteveel/sounds/700352/",
+      "preview": "https://cdn.freesound.org/previews/700/700352_4921277-hq.mp3",
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourceSha256": "3a12675454d83356987f2290e2b46bf7cf07f4a4ebe085712ef8b28e3d163937",
+      "note": "Water into a glass bowl; proxy for deep bowl stemware."
+    },
+    {
+      "family": "shallow",
+      "author": "The_Runner_01",
+      "title": "Pouring Water into a Glass Bowl.wav",
+      "page": "https://freesound.org/people/The_Runner_01/sounds/554444/",
+      "preview": "https://cdn.freesound.org/previews/554/554444_4688703-hq.mp3",
+      "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourceSha256": "024eea5d3a901ce77545280f85728ba1038790ff0a2f1ccbad29fde0c9c7ea51",
+      "note": "Water from a bottle into a glass bowl; proxy, bowl depth unspecified."
+    }
+  ],
+  "clips": [
+    {
+      "id": "neck-low",
+      "sourceFamily": "neck",
+      "offsetSeconds": 1.35,
+      "sha256": "6e7eef3d70692c3540e19ca3b720ebe8bee7f5f61ae97fcf905d8df37008d2d0",
+      "peak": 0.72,
+      "rms": 0.07462452998449037
+    },
+    {
+      "id": "neck-mid",
+      "sourceFamily": "neck",
+      "offsetSeconds": 2.4,
+      "sha256": "e5a794cf929567bf4c58b5756a2697f8cda25257afd4a3b7e60e806f6e113a4f",
+      "peak": 0.72,
+      "rms": 0.10881199245663599
+    },
+    {
+      "id": "neck-high",
+      "sourceFamily": "neck",
+      "offsetSeconds": 4.2,
+      "sha256": "0a72b752f020c1e315b5cac367f36cfa1116edb677716ab37a2b22198a546bfe",
+      "peak": 0.6759318267956042,
+      "rms": 0.11
+    },
+    {
+      "id": "flask-low",
+      "sourceFamily": "flask",
+      "offsetSeconds": 0.12,
+      "sha256": "58c6b40f4a835008188ac0731bb2e5fe93b26859db627d86b606407473e41d6a",
+      "peak": 0.72,
+      "rms": 0.0446627760185699
+    },
+    {
+      "id": "flask-mid",
+      "sourceFamily": "flask",
+      "offsetSeconds": 1.05,
+      "sha256": "04f13e44d4ba5e9d0cd1d346366d4e53775dc487d06a649704eb646abdd1fcc9",
+      "peak": 0.72,
+      "rms": 0.03770098458817082
+    },
+    {
+      "id": "flask-high",
+      "sourceFamily": "flask",
+      "offsetSeconds": 2.3,
+      "sha256": "b167c9f822496c5c47c3871a2f13e0fdc5c9b35a35dc320b15936bec0bf880a5",
+      "peak": 0.72,
+      "rms": 0.03205190429852928
+    },
+    {
+      "id": "slender-low",
+      "sourceFamily": "slender",
+      "offsetSeconds": 0.18,
+      "sha256": "b119bc557924996c0247ae3358a7bcdcb503323204ed9ad34af8b517a59936fa",
+      "peak": 0.72,
+      "rms": 0.043635675024892295
+    },
+    {
+      "id": "slender-mid",
+      "sourceFamily": "slender",
+      "offsetSeconds": 0.9,
+      "sha256": "fca6ccdd878721664a67f9d4f1728021f20558b853fa9048d9234f3a434f2385",
+      "peak": 0.72,
+      "rms": 0.07700753645039803
+    },
+    {
+      "id": "slender-high",
+      "sourceFamily": "slender",
+      "offsetSeconds": 1.45,
+      "sha256": "fea0b5538bc70d4d3ac04287870ac0ceca40a13ad0c19e937c0d4d42b05baf1e",
+      "peak": 0.72,
+      "rms": 0.03692478985042177
+    },
+    {
+      "id": "straight-low",
+      "sourceFamily": "straight",
+      "offsetSeconds": 0.55,
+      "sha256": "dc903e5500e008261d190fcfa4ebbf51dfd3ce6e68120e308aef95198e4087ba",
+      "peak": 0.72,
+      "rms": 0.0577986602032374
+    },
+    {
+      "id": "straight-mid",
+      "sourceFamily": "straight",
+      "offsetSeconds": 1.35,
+      "sha256": "64f33d8a93676425674c113c76b1fb81da7e6aae9996043dec9be470ef9f0a62",
+      "peak": 0.72,
+      "rms": 0.06575356743501887
+    },
+    {
+      "id": "straight-high",
+      "sourceFamily": "straight",
+      "offsetSeconds": 2.3,
+      "sha256": "b8d1bc3b013062c820ca641a00f123163276ce943a242b9a7ed6359ecfb53139",
+      "peak": 0.72,
+      "rms": 0.054906010260492716
+    },
+    {
+      "id": "bowl-low",
+      "sourceFamily": "bowl",
+      "offsetSeconds": 0.55,
+      "sha256": "efbb5551c38708c9d730a5d7c8f3f68ebae6502e1b501e60db794e33372a0448",
+      "peak": 0.72,
+      "rms": 0.07642976960318304
+    },
+    {
+      "id": "bowl-mid",
+      "sourceFamily": "bowl",
+      "offsetSeconds": 1.45,
+      "sha256": "95a7bc3fb752ad536f4a57e4296525b0ba55e113d3699b3052943ceded53faf7",
+      "peak": 0.72,
+      "rms": 0.06726238246620063
+    },
+    {
+      "id": "bowl-high",
+      "sourceFamily": "bowl",
+      "offsetSeconds": 2.45,
+      "sha256": "adfba7b38781a39c582a2d7fb1f4ed3d0176abda46e050363e7fbc71afab791f",
+      "peak": 0.72,
+      "rms": 0.07542592529954723
+    },
+    {
+      "id": "shallow-low",
+      "sourceFamily": "shallow",
+      "offsetSeconds": 2.6,
+      "sha256": "4043c96424b9219b39caec52f366abd571ed7138233381159b4e337202c0dfef",
+      "peak": 0.7199999999999999,
+      "rms": 0.0929644794438761
+    },
+    {
+      "id": "shallow-mid",
+      "sourceFamily": "shallow",
+      "offsetSeconds": 5.3,
+      "sha256": "6f83d92c7f229a742a605c4d7402cfc5a47099dc9b7de493534af9dd274da2b8",
+      "peak": 0.72,
+      "rms": 0.055362019864629845
+    },
+    {
+      "id": "shallow-high",
+      "sourceFamily": "shallow",
+      "offsetSeconds": 8.5,
+      "sha256": "1535f3a2fa4cf53eb3b325e4b1716a67bd1802557681c4530e0ea58df440c989",
+      "peak": 0.72,
+      "rms": 0.061467751165097236
+    }
+  ]
+}
