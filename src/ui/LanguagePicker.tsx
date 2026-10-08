@@ -1,4 +1,5 @@
-import { Modal, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { FocusablePressable as Pressable } from './FocusablePressable';
+import { Modal, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LANGUAGES, localizedLanguageName } from '../i18n/messages';
 import { UiText, useI18n } from '../i18n/I18n';
@@ -21,7 +22,7 @@ export function LanguagePicker({ visible, onClose }: { visible: boolean; onClose
 }
 const styles = StyleSheet.create({
   backdrop: { flex: 1, backgroundColor: '#050E19CC', paddingHorizontal: 18, alignItems: 'center', justifyContent: 'center' },
-  panel: { width: '100%', maxWidth: 480, maxHeight: '85%', backgroundColor: '#172B38', borderRadius: 22, borderWidth: 1, borderColor: '#C7AD7866', padding: 16 },
+  panel: { width: '100%', maxWidth: Platform.isTV ? 680 : 480, maxHeight: '85%', backgroundColor: '#172B38', borderRadius: 22, borderWidth: 1, borderColor: '#C7AD7866', padding: 16 },
   heading: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   reverse: { flexDirection: 'row-reverse' },
   title: { flex: 1, color: '#EBD8AD', fontSize: 22, fontWeight: '600' },

@@ -1,6 +1,6 @@
 # Bottle Harmony
 
-倒水排序游戏，目标平台为 iOS 和 Android。
+倒水排序游戏。目标覆盖 iOS／Android 手机和平板、PC 浏览器、Android TV 和 Apple TV；各平台的实际验证状态见[跨设备支持](docs/device-support.md)。
 
 ## 当前范围
 
@@ -36,6 +36,8 @@
 - [瓶子设计稿](assets/art/bottle-study.svg)：空瓶、混色、选中、完成和倾斜状态。
 - [玻璃瓶透明素材](assets/art/bottle-glass.svg)：可复用矢量素材。
 - [发布前下一步](docs/release-readiness.md)：当前能力、真机复测、发布配置和材料的剩余项。
+- [跨设备支持与检查](docs/device-support.md)：当前十二瓶适配、浏览器／TV 构建、实际证据和待完成的设备验收。
+- [未来多瓶布局约定](docs/adaptive-layout-design.md)：已确认的固定比例和间距方向，十八／二十四瓶自动布局延期实施。
 - [设备测试说明](docs/device-testing.md)：安卓 APK 与 iPhone 安装、检查项目和兼容范围。
 
 绘图组件与设计稿使用相同的瓶子轮廓、液体几何和配色。`npm run art` 可重新生成 SVG 设计稿；PNG 是便于查看的预览图，不是游戏运行时依赖。

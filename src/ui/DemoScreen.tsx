@@ -1,6 +1,7 @@
+import { FocusablePressable as Pressable } from './FocusablePressable';
 import { UiText, useI18n } from '../i18n/I18n';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { AccessibilityInfo, Alert, AppState, BackHandler, Dimensions, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { AccessibilityInfo, AppState, BackHandler, Dimensions, Platform, StyleSheet, TVEventControl, View, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -46,6 +47,9 @@ import { CompletionEffectPicker } from './CompletionEffectPicker';
 import { INTERNAL_TOOLS } from './buildConfig';
 import { Tutorial } from './PlayMenu';
 import { usePlayProgress } from './usePlayProgress';
+import { deviceLayout } from './deviceLayout';
+import { bottleControlId, useBoardKeyboard } from './useBoardKeyboard';
+import { GameNotice } from './GameNotice';
 import { boardLayout, bottleHitWidth, fitBoard } from './boardLayout';
 import { referenceHint, type CalibrationSample } from '../game/calibration';
 import { advanceStalledNotice, closeStalledNotice, INITIAL_STALLED_NOTICE, showUnsolvableNotice } from './stalledNoticePolicy';
@@ -57,7 +61,7 @@ export function DemoScreen() {
   const { t, ready: languageReady } = useI18n();
   const insets = useSafeAreaInsets();
   const dimensions = useWindowDimensions();
-  const compact = dimensions.height < 720;
+  const { compact, rail, horizontalInset, verticalInset } = deviceLayout(dimensions.width, dimensions.height, Platform.isTV);
   const { play, setPlay, ready, saveStatus } = usePlayProgress();
   const { sound, ready: soundReady, saved: soundSaved, toggleSound } = useSoundPreference();
   const { vessel, ready: vesselReady, saved: vesselSaved, chooseVessel } = useVesselPreference();
@@ -72,6 +76,7 @@ export function DemoScreen() {
     : entry ? { kind: 'main', number: entry.number } : null;
   const previousPreview = previewPosition && adjacentPreview(previewPosition, -1, MAINLINE.entries.length, SIDE_AFTER);
   const followingPreview = previewPosition && adjacentPreview(previewPosition, 1, MAINLINE.entries.length, SIDE_AFTER);
+  const [notice, setNotice] = useState<{ title: string; message: string } | null>(null);
   const [menuVisible, setMenuVisible] = useState(false);
   const [privacyVisible, setPrivacyVisible] = useState(false);
   const [menuSection, setMenuSection] = useState<'levels' | 'settings'>('levels');
@@ -96,16 +101,18 @@ export function DemoScreen() {
   const [selected, setSelected] = useState<number | null>(null);
   const [animation, setAnimation] = useState<Animation | null>(null);
   const [stage, setStage] = useState({ width: 0, height: 0, y: 0 });
+  const [bodyY, setBodyY] = useState(0);
   const [reduceMotion, setReduceMotion] = useState(false);
   // A synchronous gate prevents consecutive touches from accepting overlapping moves.
   const busy = useRef(false);
   const progress = useSharedValue(1);
-  const safeTop = insets.top + (compact ? 8 : 14);
+  const safeTop = Math.max(insets.top, verticalInset) + (compact ? 8 : 14);
   // Use the full screen width for resting bottles. Pouring art may cross the
   // horizontal screen edge and is clipped by the screen, not by a bottle slot.
   // Keep the original slot visible so enabling the reserve never shifts glass.
   const layout = boardLayout(board.length + (reserveLocked ? 1 : 0));
-  const { scale, minY } = fitBoard(layout, stage, safeTop);
+  // Preserve the stage's offset within the safe container after adding the body wrapper.
+  const { scale, minY } = fitBoard(layout, { ...stage, y: stage.y + bodyY }, safeTop);
   const won = session.status === 'solved';
   const hintMode = internalSession ? 'replay' : hintAvailability(play);
   const hintParams = { n: play.hintCredits, max: MAX_HINT_CREDITS };
@@ -222,6 +229,13 @@ export function DemoScreen() {
     setLastAward(0);
     setPage('home');
   }, [setSelected, setPage, setPendingCelebration, setCelebration]);
+  const handlesTVBack = page === 'game' || menuVisible || privacyVisible || pickerVisible || difficultyVisible || languageVisible || completionPickerVisible || !!notice;
+  useEffect(() => {
+    if (!Platform.isTV || Platform.OS !== 'ios' || !handlesTVBack) return;
+    // Apple TV otherwise lets Menu leave the app before BackHandler can navigate.
+    TVEventControl.enableTVMenuKey();
+    return () => TVEventControl.disableTVMenuKey();
+  }, [handlesTVBack]);
   useEffect(() => {
     const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
       if (page !== 'game') return false;
@@ -398,7 +412,7 @@ export function DemoScreen() {
     if (busy.current) return;
     if (won) { nextLevel(); return; }
     if (session.status === 'stalled') { setStalledNotice(value => showUnsolvableNotice(value)); return; }
-    if (hintMode === 'none') { Alert.alert(t('hint'), t('emptyHintStatus'), [{ text: t('close') }]); return; }
+    if (hintMode === 'none') { setNotice({ title: t('hint'), message: t('emptyHintStatus') }); return; }
     const content = entry ?? sample?.content;
     const referencePour = content ? referenceHint(content, board) : null;
     if (referencePour) { startPour(referencePour, true); return; }
@@ -420,7 +434,7 @@ export function DemoScreen() {
     setSearching(false);
     if (result.status === 'solved' && result.route.length) startPour(result.route[0], true);
     else if (result.status === 'unsolvable') setStalledNotice(value => showUnsolvableNotice(value));
-    else Alert.alert(t('hint'), t('searchLimit'), [{ text: t('close') }]);
+    else setNotice({ title: t('hint'), message: t('searchLimit') });
   }
 
   const displayBoard = animation ? animation.before.map((bottle, index) => index === animation.pour.target
@@ -438,15 +452,18 @@ export function DemoScreen() {
     else nextLevel();
   }
 
+  useBoardKeyboard({ enabled: page === 'game' && !menuVisible && !privacyVisible && !pickerVisible && !difficultyVisible && !languageVisible && !completionPickerVisible && !notice && (play.tutorialDone || !!internalSession),
+    disabled: !!animation || searching, positions: layout.positions, onEscape: () => selected === null ? goHome() : setSelected(null) });
+
   if (!ready || !languageReady || !soundReady || !vesselReady) return <LinearGradient colors={['#11171E', '#070B12']} style={[styles.screen, { alignItems: 'center', justifyContent: 'center' }]}><StatusBar style="light" /><UiText style={styles.loading}>{t('loading')}</UiText></LinearGradient>;
 
   return (
-    <LinearGradient colors={['#11171E', '#090E16', '#070B12']} locations={[0, 0.58, 1]} style={styles.screen}>
+    <LinearGradient colors={['#11171E', '#090E16', '#070B12']} locations={[0, 0.58, 1]} testID={`game-screen-${dimensions.width}x${dimensions.height}`} style={[styles.screen, Platform.OS === 'web' && { flexGrow: 0, flexShrink: 0, flexBasis: 'auto', height: Math.max(dimensions.height, rail ? 400 : 520) }]}>
       <StatusBar style="light" />
       <PourSound progress={progress} pouring={!!animation} vessel={vessel.id} receiverLayers={animation ? animation.before[animation.pour.target].length : 0} enabled={sound && appActive && !reduceMotion && page === 'game'} />
       <View pointerEvents="none" style={StyleSheet.absoluteFill}><GameBackdrop width={dimensions.width} height={dimensions.height} /></View>
-      <View style={[styles.safe, { paddingTop: insets.top + (compact ? 8 : 14), paddingBottom: Math.max(insets.bottom, 14) }]}>
-        {page === 'home' ? <HomeScreen current={play.current} sideNumber={play.side ? play.current / 20 : null} hintCredits={play.hintCredits} compact={compact} onPlay={resumeCurrent} onLevels={() => openMenu('levels')} onSettings={() => openMenu('settings')} vessel={vessel} vesselSaved={vesselSaved} reduceMotion={reduceMotion} onVessel={chooseVessel} /> : <>
+      <View style={[styles.safe, { paddingTop: safeTop, paddingBottom: Math.max(insets.bottom, verticalInset, 14), paddingLeft: Math.max(insets.left, horizontalInset), paddingRight: Math.max(insets.right, horizontalInset) }]}>
+        {page === 'home' ? <HomeScreen current={play.current} sideNumber={play.side ? play.current / 20 : null} hintCredits={play.hintCredits} compact={compact} landscape={rail} onPlay={resumeCurrent} onLevels={() => openMenu('levels')} onSettings={() => openMenu('settings')} vessel={vessel} vesselSaved={vesselSaved} reduceMotion={reduceMotion} onVessel={chooseVessel} /> : <>
         <GameHeader label={label} compact={compact} disabled={!!animation || searching} onBack={goHome}
           previewNavigation={INTERNAL_TOOLS && previewPosition ? {
             detail: sideEntry ? `开发浏览 · 凝固最短 ${sideEntry.difficulty.frozenMoves} 步`
@@ -454,7 +471,8 @@ export function DemoScreen() {
             previous: !!previousPreview, next: !!followingPreview,
             onPrevious: () => browsePreview(previousPreview), onNext: () => browsePreview(followingPreview),
           } : undefined} />
-        <View style={styles.stageSpace} onLayout={event => {
+        <View style={[styles.gameBody, rail && styles.gameBodyRail]} onLayout={event => setBodyY(event.nativeEvent.layout.y)}>
+        <View testID="game-stage" style={[styles.stageSpace, rail && styles.railStage]} onLayout={event => {
           const layout = event.nativeEvent.layout;
           setStage(old => old.width === layout.width && old.height === layout.height && old.y === layout.y ? old : layout);
         }}>
@@ -475,11 +493,11 @@ export function DemoScreen() {
               const bottle = displayBoard[index];
               const label = t('bottle', { n: index + 1, colors: bottle.length ? [...bottle].reverse().map(c => t(c)).join(', ') : t('empty') });
               const hitWidth = bottleHitWidth(layout, scale);
-              return <Pressable key={index} accessibilityRole="button" accessibilityLabel={label} accessibilityHint={t('tapStart')} accessibilityState={{ selected: selected === index, disabled: !!animation || searching }} disabled={!!animation || searching} onPress={() => selectBottle(index)} style={{ position: 'absolute', left: (position.x + 50) * scale - hitWidth / 2, top: position.y * scale, width: hitWidth, height: 180 * scale, zIndex: 3 }}>
+              return <Pressable key={index} focusIndicatorStyle={{ position: 'absolute', alignSelf: 'center', top: 15 * scale, width: 64 * scale, height: 160 * scale, borderRadius: 12 * scale }} nativeID={bottleControlId(index)} testID={bottleControlId(index)} hasTVPreferredFocus={Platform.isTV && index === 0} accessibilityRole="button" accessibilityLabel={label} accessibilityHint={t('tapStart')} accessibilityState={{ selected: selected === index, disabled: !!animation || searching }} disabled={!Platform.isTV && (!!animation || searching)} onPress={() => selectBottle(index)} style={{ position: 'absolute', left: (position.x + 50) * scale - hitWidth / 2, top: position.y * scale, width: hitWidth, height: 180 * scale, zIndex: 3 }}>
                 {selected === index && !animation && <View style={[styles.selectionDot, { bottom: -5 * scale }]} />}
               </Pressable>;
             })}
-            {reserveLocked && <Pressable accessibilityRole="button" accessibilityLabel={t('reserveUnlock')} accessibilityHint={t('reserveScope')}
+            {reserveLocked && <Pressable focusIndicatorStyle={{ position: 'absolute', alignSelf: 'center', top: 15 * scale, width: 64 * scale, height: 160 * scale, borderRadius: 12 * scale }} nativeID={bottleControlId(board.length)} testID={bottleControlId(board.length)} accessibilityRole="button" accessibilityLabel={t('reserveUnlock')} accessibilityHint={t('reserveScope')}
               accessibilityState={{ disabled: !!animation || searching || won }} disabled={!!animation || searching || won} onPress={useReserve}
               style={{ position: 'absolute', left: (layout.positions[board.length].x + 50) * scale - bottleHitWidth(layout, scale) / 2,
                 top: layout.positions[board.length].y * scale, width: bottleHitWidth(layout, scale), height: 180 * scale,
@@ -495,15 +513,17 @@ export function DemoScreen() {
           </View>}
           {celebration !== null && appActive && !reduceMotion && stage.width > 0 && stage.height > 0 && <Celebration count={celebration === 'win' ? celebrationCount : celebration} width={stage.width} height={stage.height} sound={sound} onComplete={celebrationFinished} />}
         </View>
-        <GameFooter won={won} continueVisible={won && !animation && !pendingCelebration && celebration === null} compact={compact}
+        <GameFooter rail={rail} won={won} continueVisible={won && !animation && !pendingCelebration && celebration === null} compact={compact}
           disabled={!!animation || searching} undoDisabled={!history.length || !!animation || searching} searching={searching} reduceMotion={reduceMotion}
           nextLabel={t(finish.label)} hintStatus={hintStatus} onUndo={undo} onReset={reset} onHint={demonstrate}
           stalledReason={stalledReason} reserveAvailable={reserveLocked} heatAvailable={!!session.solid && !session.solid.melted} onHeat={heatSide} onCloseStalled={() => setStalledNotice(value => closeStalledNotice(value))}
           onContinue={continueAfterWin} />
+        </View>
         </>}
       </View>
       {debugReport && <DifficultyDebug visible={difficultyVisible} report={debugReport} human={debugHuman} sample={sample} label={label} onClose={() => setDifficultyVisible(false)} />}
       {menuVisible && <MainlineMenu visible initialSection={menuSection} play={play} saveStatus={t(saveStatus)} onClose={() => setMenuVisible(false)} onResume={resumeCurrent} onSelect={chooseNumber} onSelectSide={chooseSide} onPreview={previewMainline} onSidePreview={previewSide} onSamples={() => { setMenuVisible(false); setPickerVisible(true); }} symbols={play.symbols} onSymbols={() => setPlay(Object.freeze({ ...play, symbols: !play.symbols }))} completionName={t(vesselCompletionEffect(vessel, completionEffect))} onLanguage={() => { setMenuVisible(false); setLanguageVisible(true); }} onCompletionEffects={() => { setMenuVisible(false); setCompletionPickerVisible(true); }} sound={sound} soundSaved={soundSaved} onSound={toggleSound} onCelebrationPreview={previewCelebration} onPrivacy={() => { setMenuVisible(false); setPrivacyVisible(true); }} onDebug={INTERNAL_TOOLS && !sideEntry ? openDifficulty : undefined} />}
+      <GameNotice notice={notice} onClose={() => setNotice(null)} />
       <PrivacyPolicy visible={privacyVisible} onClose={() => { setPrivacyVisible(false); openMenu('settings'); }} />
       <LanguagePicker visible={languageVisible} onClose={() => { setLanguageVisible(false); openMenu('settings'); }} />
       <CompletionEffectPicker visible={completionPickerVisible} vessel={vessel} value={completionEffect} reduceMotion={reduceMotion} onSelect={effect => { setCompletionEffect(effect); setSelected(null); }} onClose={() => setCompletionPickerVisible(false)} />
@@ -517,6 +537,9 @@ const styles = StyleSheet.create({
   screen: { flex: 1, overflow: 'hidden' },
   safe: { flex: 1, paddingHorizontal: 22 },
   loading: { color: '#BDCDD3', fontSize: 14 },
+  gameBody: { flex: 1, minHeight: 0 },
+  gameBodyRail: { flexDirection: 'row', gap: 24 },
+  railStage: { marginHorizontal: 0, minWidth: 0 },
   stageSpace: { flex: 1, alignItems: 'center', justifyContent: 'center', marginHorizontal: -22, marginTop: 8, marginBottom: 4 },
   selectionDot: { position: 'absolute', alignSelf: 'center', width: 4, height: 4, borderRadius: 2, backgroundColor: '#B8F7E2' },
   frozenMarker: { backgroundColor: '#A8E9FA', shadowColor: '#A8E9FA', shadowOpacity: .8, shadowRadius: 5 },

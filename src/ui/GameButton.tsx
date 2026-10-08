@@ -1,6 +1,7 @@
+import { FocusablePressable as Pressable } from './FocusablePressable';
 import { UiText, useI18n } from '../i18n/I18n';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Platform, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { Icon, type IconName } from './Icon';
 
 const TONES = {
@@ -9,15 +10,15 @@ const TONES = {
   mint: { colors: ['#234E51', '#193C40'] as const, edge: '#85C8B977', base: '#193C40', ink: '#DDF9EC' },
   gold: { colors: ['#2E3741', '#222F3C'] as const, edge: '#C7AD7866', base: '#222F3C', ink: '#E8D2A3' },
 };
-type Props = { label: string; icon: IconName; onPress: () => void; disabled?: boolean; tone?: keyof typeof TONES; kind?: 'icon' | 'tool' | 'wide'; compact?: boolean; accessibilityLabel?: string; style?: StyleProp<ViewStyle> };
+type Props = { preferredFocus?: boolean; label: string; icon: IconName; onPress: () => void; disabled?: boolean; tone?: keyof typeof TONES; kind?: 'icon' | 'tool' | 'wide'; compact?: boolean; accessibilityLabel?: string; style?: StyleProp<ViewStyle> };
 
 /** Fine borders and restrained glass surfaces keep controls light and modern. */
-export function GameButton({ label, icon, onPress, disabled = false, tone = 'violet', kind = 'tool', compact = false, accessibilityLabel = label, style }: Props) {
+export function GameButton({ preferredFocus = false, label, icon, onPress, disabled = false, tone = 'violet', kind = 'tool', compact = false, accessibilityLabel = label, style }: Props) {
   const { rtl } = useI18n();
   const paint = TONES[tone];
-  return <Pressable onPress={onPress} disabled={disabled} accessibilityRole="button" accessibilityLabel={accessibilityLabel}
+  return <Pressable hasTVPreferredFocus={Platform.isTV && preferredFocus} onPress={onPress} disabled={disabled} accessibilityRole="button" accessibilityLabel={accessibilityLabel}
     style={({ pressed }) => [styles.frame, { backgroundColor: paint.base, borderColor: paint.edge }, kind === 'icon' ? styles.iconFrame : kind === 'wide' ? styles.wideFrame : styles.toolFrame,
-      compact && kind === 'tool' && styles.compactTool, compact && kind === 'wide' && styles.compactWide, disabled && styles.disabled, pressed && styles.pressed, style]}>
+      compact && kind === 'tool' && styles.compactTool, compact && kind === 'wide' && styles.compactWide, disabled && styles.disabled, pressed && styles.pressed, Platform.isTV && (kind === 'icon' ? styles.tvIcon : kind === 'tool' ? styles.tvTool : styles.tvWide), style]}>
     <LinearGradient colors={paint.colors} style={[styles.face, kind === 'wide' && styles.wideFace, kind === 'wide' && rtl && styles.reverse, kind === 'icon' && styles.iconFace, compact && styles.compactFace]}>
       <View pointerEvents="none" style={styles.shine} />
       <Icon name={icon} size={kind === 'tool' ? compact ? 22 : 30 : 23} color={paint.ink} />
@@ -26,6 +27,9 @@ export function GameButton({ label, icon, onPress, disabled = false, tone = 'vio
   </Pressable>;
 }
 const styles = StyleSheet.create({
+  tvIcon: { width: 62, height: 62 },
+  tvTool: { width: 104, minHeight: 92 },
+  tvWide: { minHeight: 64 },
   frame: { borderWidth: 1, borderRadius: 14, padding: 0 },
   toolFrame: { width: 74, minHeight: 68 },
   compactTool: { minHeight: 56 },

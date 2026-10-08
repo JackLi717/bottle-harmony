@@ -1,5 +1,6 @@
+import { FocusablePressable as Pressable } from './FocusablePressable';
 import { useEffect } from 'react';
-import { AccessibilityInfo, Pressable, StyleSheet, View } from 'react-native';
+import { AccessibilityInfo, StyleSheet, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { UiText, useI18n } from '../i18n/I18n';
@@ -8,8 +9,8 @@ import { Icon } from './Icon';
 import type { StalledReason } from './stalledNoticePolicy';
 
 /** Fits over the existing footer, keeping all bottle coordinates unchanged. */
-export function StalledNotice({ reason, compact, canUndo, reserveAvailable, heatAvailable, reduceMotion, onClose, onUndo, onReset, onHeat }: {
-  reason: StalledReason; compact: boolean; canUndo: boolean; reserveAvailable: boolean; heatAvailable: boolean; reduceMotion: boolean; onClose: () => void; onUndo: () => void; onReset: () => void; onHeat: () => void;
+export function StalledNotice({ reason, rail = false, compact, canUndo, reserveAvailable, heatAvailable, reduceMotion, onClose, onUndo, onReset, onHeat }: {
+  rail?: boolean; reason: StalledReason; compact: boolean; canUndo: boolean; reserveAvailable: boolean; heatAvailable: boolean; reduceMotion: boolean; onClose: () => void; onUndo: () => void; onReset: () => void; onHeat: () => void;
 }) {
   const { t, rtl } = useI18n();
   const entrance = useSharedValue(reduceMotion ? 1 : 0);
@@ -29,10 +30,10 @@ export function StalledNotice({ reason, compact, canUndo, reserveAvailable, heat
         <Pressable accessibilityRole="button" accessibilityLabel={t('close')} onPress={onClose} style={[styles.close, rtl ? styles.closeLeft : styles.closeRight]}><Icon name="close" size={18} color="#BDCDD3" /></Pressable>
       </View>
       <UiText numberOfLines={2} adjustsFontSizeToFit minimumFontScale={.8} style={[styles.note, compact && styles.compactNote]}>{t(help)}</UiText>
-      <View style={[styles.actions, rtl && styles.reverse]}>
-        {heatAvailable && <View style={styles.action}><GameButton compact={compact} kind="wide" tone="gold" icon="fire" label={t('meltTarget')} onPress={onHeat} /></View>}
-        {canUndo && <View style={styles.action}><GameButton compact={compact} kind="wide" tone="mint" icon="undo" label={t(compact ? 'undo' : 'undoStep')} accessibilityLabel={t('undoStep')} onPress={onUndo} /></View>}
-        <View style={styles.action}><GameButton compact={compact} kind="wide" tone="blue" icon="reset" label={t('reset')} accessibilityLabel={t('resetHint')} onPress={onReset} /></View>
+      <View style={[styles.actions, rtl && styles.reverse, rail && styles.railActions]}>
+        {heatAvailable && <View style={[styles.action, rail && styles.railAction]}><GameButton compact={compact} kind="wide" tone="gold" icon="fire" label={t('meltTarget')} onPress={onHeat} /></View>}
+        {canUndo && <View style={[styles.action, rail && styles.railAction]}><GameButton compact={compact} kind="wide" tone="mint" icon="undo" label={t(compact ? 'undo' : 'undoStep')} accessibilityLabel={t('undoStep')} onPress={onUndo} /></View>}
+        <View style={[styles.action, rail && styles.railAction]}><GameButton compact={compact} kind="wide" tone="blue" icon="reset" label={t('reset')} accessibilityLabel={t('resetHint')} onPress={onReset} /></View>
       </View>
     </LinearGradient>
   </Animated.View>;
@@ -52,5 +53,7 @@ const styles = StyleSheet.create({
   compactNote: { fontSize: 10, lineHeight: 13, marginBottom: 3 },
   actions: { flexDirection: 'row', gap: 8 },
   reverse: { flexDirection: 'row-reverse' },
+  railActions: { flexDirection: 'column', gap: 16 },
+  railAction: { flex: 0 },
   action: { flex: 1 },
 });

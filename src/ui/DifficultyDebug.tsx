@@ -1,4 +1,5 @@
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { FocusablePressable as Pressable } from './FocusablePressable';
+import { Modal, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TIER_NAMES, type CalibrationSample } from '../game/calibration';
 import type { DifficultyReport, PlanningDepthReport } from '../game/difficulty';

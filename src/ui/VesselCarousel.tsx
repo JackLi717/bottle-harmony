@@ -1,5 +1,6 @@
+import { FocusablePressable as Pressable } from './FocusablePressable';
 import { useRef, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, View } from 'react-native';
+import { FlatList, Platform, StyleSheet, View } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
 import { Bottle } from '../art/Bottle';
 import { VESSELS, type VesselDesign, type VesselId } from '../art/vesselDesigns';
@@ -13,6 +14,7 @@ export function VesselCarousel({ vessel, compact, saved, reduceMotion, onSelect 
   const [width, setWidth] = useState(0);
   const list = useRef<FlatList<VesselDesign>>(null);
   const progress = useSharedValue(1);
+  const choiceHint = Platform.isTV || Platform.OS === 'web' ? 'chooseStylesWithButtons' : 'swipeStyles';
   const index = VESSELS.findIndex(item => item.id === vessel.id);
   const scale = compact ? .75 : 1;
   function move(delta: number) {
@@ -22,7 +24,7 @@ export function VesselCarousel({ vessel, compact, saved, reduceMotion, onSelect 
   }
   return <View style={[styles.carousel, { marginVertical: compact ? 10 : 18 }]} onLayout={event => setWidth(event.nativeEvent.layout.width)}>
     <View accessible accessibilityRole="adjustable" accessibilityLabel={t('styleChoice', { name: t(vessel.name), n: index + 1, total: VESSELS.length })}
-      accessibilityHint={t('swipeStyles')} accessibilityActions={[{ name: 'increment', label: t('nextStyle') }, { name: 'decrement', label: t('previousStyle') }]}
+      accessibilityHint={t(choiceHint)} accessibilityActions={[{ name: 'increment', label: t('nextStyle') }, { name: 'decrement', label: t('previousStyle') }]}
       onAccessibilityAction={event => {
         if (event.nativeEvent.actionName === 'increment') move(1);
         else if (event.nativeEvent.actionName === 'decrement') move(-1);
@@ -54,13 +56,13 @@ export function VesselCarousel({ vessel, compact, saved, reduceMotion, onSelect 
       <Pressable onPress={() => move(1)} disabled={index === VESSELS.length - 1} accessibilityRole="button" accessibilityLabel={t('nextStyle')} accessibilityState={{ disabled: index === VESSELS.length - 1 }}
         style={({ pressed }) => [styles.arrow, index === VESSELS.length - 1 && styles.disabled, pressed && styles.pressed]}><View style={styles.flip}><Icon name="back" size={18} color="#BBCDD3" /></View></Pressable>
     </View>
-    <UiText style={styles.hint}>{t(saved ? 'swipeStyles' : 'saveFailed')}</UiText>
+    <UiText style={styles.hint}>{t(saved ? choiceHint : 'saveFailed')}</UiText>
   </View>;
 }
 const styles = StyleSheet.create({
   carousel: { width: '100%', maxWidth: 360 },
   selector: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
-  arrow: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
+  arrow: { width: Platform.isTV ? 62 : 44, height: Platform.isTV ? 62 : 44, alignItems: 'center', justifyContent: 'center' },
   flip: { transform: [{ rotate: '180deg' }] },
   caption: { flex: 1, maxWidth: 210, alignItems: 'center' },
   name: { color: '#DECBA4', fontSize: 15, textAlign: 'center' },

@@ -1,4 +1,5 @@
-import { Modal, ScrollView, StyleSheet, View } from 'react-native';
+import { ReadableScrollView as ScrollView } from './ReadableScrollView';
+import { Modal, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { UiText, useI18n } from '../i18n/I18n';
 import policy from '../config/privacy.json';

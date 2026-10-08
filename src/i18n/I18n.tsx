@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type PropsWithChildren } from 'react';
-import { AppState, Text, type TextProps } from 'react-native';
+import { AppState, Platform, StyleSheet, Text, type TextProps } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getLocales } from 'expo-localization';
 import { createProgressWriter } from '../storage/progressWriter';
@@ -41,5 +41,7 @@ export function useI18n() {
 /** Keep board coordinates fixed; mirror only UI copy and navigation rows. */
 export function UiText({ style, ...props }: TextProps) {
   const { rtl } = useI18n();
-  return <Text {...props} style={[{ writingDirection: rtl ? 'rtl' : 'ltr', textAlign: rtl ? 'right' : 'left' }, style]} />;
+  const flat = StyleSheet.flatten(style);
+  const tv = Platform.isTV ? { fontSize: (flat?.fontSize ?? 14) * 1.4, ...(flat?.lineHeight ? { lineHeight: flat.lineHeight * 1.4 } : {}) } : undefined;
+  return <Text {...props} style={[{ writingDirection: rtl ? 'rtl' : 'ltr', textAlign: rtl ? 'right' : 'left' }, style, tv]} />;
 }

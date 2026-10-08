@@ -1,6 +1,7 @@
+import { FocusablePressable as Pressable } from './FocusablePressable';
 import { UiText, useI18n } from '../i18n/I18n';
 import { useRef, useState } from 'react';
-import { FlatList, Keyboard, Modal, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { FlatList, Keyboard, Modal, Platform, ScrollView, StyleSheet, TextInput, View, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { MainlineState } from '../game/mainline';
@@ -15,11 +16,15 @@ type Props = { visible: boolean; initialSection: 'levels' | 'settings'; play: Ma
 export function MainlineMenu({ visible, initialSection, play, saveStatus, onClose, onResume, onSelect, onSelectSide, onPreview, onSidePreview, onSamples, onSymbols, symbols, completionName, onLanguage, onCompletionEffects, sound, soundSaved, onSound, onCelebrationPreview, onDebug, onPrivacy }: Props) {
   const { t, rtl, languageName } = useI18n();
   const insets = useSafeAreaInsets();
+  const { height } = useWindowDimensions();
   const [section, setSection] = useState(initialSection);
   const [toolsVisible, setToolsVisible] = useState(false);
   const [testing, setTesting] = useState(false);
   const [testGroup, setTestGroup] = useState<'main' | 'side'>('main');
   const [jumpText, setJumpText] = useState('');
+  const [listHeight, setListHeight] = useState(0);
+  // The TV runtime wraps FlatList in a focus guide without flex sizing.
+  const listStyle = Platform.isTV ? { height: listHeight, flexGrow: 0, flexShrink: 0 } : styles.list;
   const mainList = useRef<FlatList<number>>(null);
   function jumpToLevel() {
     const number = Number(jumpText);
@@ -33,6 +38,7 @@ export function MainlineMenu({ visible, initialSection, play, saveStatus, onClos
         <View style={[styles.heading, rtl && styles.reverse]}><UiText style={styles.title}>{t(section)}</UiText><GameButton kind="icon" icon="close" label={t('close')} onPress={onClose} /></View>
         <View style={[styles.tabs, rtl && styles.reverse]}>{(['levels', 'settings'] as const).map(tab => <Pressable key={tab} accessibilityRole="tab" accessibilityState={{ selected: section === tab }} onPress={() => setSection(tab)} style={[styles.tab, section === tab && styles.activeTab]}><UiText style={[styles.tabText, section === tab && styles.activeTabText]}>{t(tab)}</UiText></Pressable>)}</View>
         {section === 'levels' ? <>
+          <ScrollView keyboardShouldPersistTaps="handled" style={[styles.levelControls, { maxHeight: Math.max(80, Math.min(260, height * .28)) }]}>
           <View style={[styles.progressHeading, rtl && styles.reverse]}><UiText style={styles.progressText}>{t('completedCount', { n: play.completedThrough })}</UiText><UiText style={styles.note}>{t('totalLevels')}</UiText></View>
           <View style={styles.progressTrack}><View style={[styles.progressFill, { width: `${play.completedThrough / 10}%` }]} /></View>
           <GameButton kind="wide" tone="mint" icon="play" label={play.side ? t('solidSideLabel', { n: play.current / 20 }) : t('continueLevel', { n: play.current })} onPress={onResume} style={styles.resume} />
@@ -49,22 +55,24 @@ export function MainlineMenu({ visible, initialSection, play, saveStatus, onClos
               onSubmitEditing={jumpToLevel} placeholder="输入 1–1000 关" placeholderTextColor="#7F9CA6" style={styles.jumpInput} />
             <Pressable accessibilityRole="button" accessibilityLabel="跳转到关号" onPress={jumpToLevel} style={styles.jumpButton}><UiText style={styles.testToggleText}>跳转</UiText></Pressable>
           </View>}
+          </ScrollView>
           {!testing && play.sideCompletedThrough > 0 && <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.sideList} contentContainerStyle={styles.sideListContent}>
             {Array.from({ length: play.sideCompletedThrough }, (_, index) => index + 1).map(number => <Pressable key={number} accessibilityRole="button"
               accessibilityLabel={t('solidSideLabel', { n: number })} onPress={() => onSelectSide(number)} style={styles.sideCell}>
               <UiText style={styles.sideText}>{t('solidSideLabel', { n: number })}</UiText>
             </Pressable>)}
           </ScrollView>}
+          <View style={styles.list} onLayout={event => setListHeight(event.nativeEvent.layout.height)}>
           {testing && testGroup === 'side' ? <FlatList key="side-test" data={SOLID_SIDES.entries} numColumns={2} keyExtractor={item => String(item.number)}
             getItemLayout={(_, index) => ({ length: 98, offset: 98 * index, index })} initialNumToRender={10} maxToRenderPerBatch={10} windowSize={5}
-            style={styles.list} renderItem={({ item }) => <Pressable accessibilityRole="button" accessibilityLabel={`试玩副关卡 ${item.number}，凝固最短 ${item.difficulty.frozenMoves} 步，首步死路 ${item.difficulty.frozenFirstChoices.dead}/${item.difficulty.frozenFirstChoices.choices}`}
+            style={listStyle} renderItem={({ item }) => <Pressable accessibilityRole="button" accessibilityLabel={`试玩副关卡 ${item.number}，凝固最短 ${item.difficulty.frozenMoves} 步，首步死路 ${item.difficulty.frozenFirstChoices.dead}/${item.difficulty.frozenFirstChoices.choices}`}
               onPress={() => onSidePreview(item.number)} style={({ pressed }) => [styles.sideTestCell, pressed && styles.pressed]}>
               <UiText style={styles.number}>副 {item.number}</UiText>
               <UiText style={styles.testDetail}>{item.level.colors.length} 色 · 最短 {item.difficulty.frozenMoves} 步</UiText>
               <UiText style={styles.testDetail}>首步死路 {item.difficulty.frozenFirstChoices.dead}/{item.difficulty.frozenFirstChoices.choices}</UiText>
             </Pressable>} /> : <FlatList key="mainline-grid" ref={mainList} data={NUMBERS} numColumns={5} keyExtractor={number => String(number)} initialScrollIndex={Math.floor((play.current - 1) / 5)}
             getItemLayout={(_, index) => ({ length: 68, offset: 68 * index, index })} initialNumToRender={10} maxToRenderPerBatch={10} windowSize={5}
-            style={styles.list} renderItem={({ item: number }) => {
+            style={listStyle} renderItem={({ item: number }) => {
               const unlocked = number <= play.completedThrough || number === play.current;
               const rating = MAINLINE.entries[number - 1];
               return <Pressable accessibilityRole="button" accessibilityLabel={testing ? `试玩第 ${number} 关，${rating.tier}，${rating.score} 分` : t('levelState', { n: number, state: t(unlocked ? number <= play.completedThrough ? 'completed' : 'current' : 'locked') })}
@@ -75,6 +83,7 @@ export function MainlineMenu({ visible, initialSection, play, saveStatus, onClos
                 {!testing && (unlocked ? <UiText style={styles.mark}>{number <= play.completedThrough ? '✓' : '·'}</UiText> : <Icon name="lock" size={10} color="#7B919F" />)}
               </Pressable>;
             }} />}
+          </View>
         </> : <ScrollView style={styles.settings} contentContainerStyle={styles.settingsContent}>
           <View style={styles.settingsHero}><Icon name="spark" color="#DEC797" size={22} /><UiText style={styles.settingsBrand}>BOTTLE HARMONY</UiText></View>
           <Pressable accessibilityRole="button" onPress={onLanguage} style={[styles.settingRow, rtl && styles.reverse]}><Icon name="language" color="#BDCDD3" /><View style={styles.settingCopy}><UiText style={styles.settingTitle}>{t('language')}</UiText></View><UiText style={styles.settingValue}>{languageName} ›</UiText></Pressable>
@@ -95,7 +104,8 @@ export function MainlineMenu({ visible, initialSection, play, saveStatus, onClos
 }
 const styles = StyleSheet.create({
   backdrop: { flex: 1, backgroundColor: '#050E19CC', paddingHorizontal: 18, alignItems: 'center', justifyContent: 'center' },
-  panel: { width: '100%', maxWidth: 520, height: '85%', borderRadius: 28, borderWidth: 1, borderColor: '#C7AD7866', padding: 16 },
+  panel: { width: '100%', maxWidth: Platform.isTV ? 760 : 520, height: '85%', borderRadius: 28, borderWidth: 1, borderColor: '#C7AD7866', padding: 16 },
+  levelControls: { flexGrow: 0, flexShrink: 0 },
   heading: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   reverse: { flexDirection: 'row-reverse' },
   title: { flex: 1, color: '#EBD8AD', fontSize: 22, fontWeight: '600' },

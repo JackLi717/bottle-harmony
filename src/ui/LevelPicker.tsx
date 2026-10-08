@@ -1,5 +1,6 @@
+import { FocusablePressable as Pressable } from './FocusablePressable';
 import { useState } from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Modal, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TIER_NAMES, TRIAL_TIERS, type CalibrationSample, type TrialTier } from '../game/calibration';
 import { CALIBRATION_SAMPLES, DIFFICULTY } from './content';

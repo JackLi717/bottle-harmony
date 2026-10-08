@@ -1,5 +1,7 @@
+import { ReadableScrollView as ScrollView } from './ReadableScrollView';
+import { FocusablePressable as Pressable } from './FocusablePressable';
 import { UiText, useI18n } from '../i18n/I18n';
-import { Modal, Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { Modal, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSharedValue } from 'react-native-reanimated';
@@ -24,7 +26,7 @@ export function Tutorial({ visible, onStart, onSkip }: { visible: boolean; onSta
         {[[t('step1'), t('step1Note')], [t('step2'), t('pourTarget')], [t('step3'), t('objective')]].map(([title, note], index) => <View key={title} style={[styles.step, compact && styles.compactStep, rtl && styles.reverse]}><View style={styles.stepNumber}><UiText style={styles.number}>{index + 1}</UiText></View><View style={styles.stepCopy}><UiText style={styles.stepTitle}>{title}</UiText><UiText style={[styles.note, compact && styles.compactNote]}>{note}</UiText></View></View>)}
         <UiText style={[styles.tip, compact && styles.compactTip]}>{t('tutorialTip')}</UiText>
       </ScrollView>
-        <GameButton kind="wide" tone="mint" icon="play" label={t('start')} onPress={onStart} />
+        <GameButton preferredFocus kind="wide" tone="mint" icon="play" label={t('start')} onPress={onStart} />
         <Pressable accessibilityRole="button" onPress={onSkip} style={styles.skip}><UiText style={styles.note}>{t('skip')}</UiText></Pressable>
       </LinearGradient>
     </View>

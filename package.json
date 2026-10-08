@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "main": "index.ts",
   "dependencies": {
+    "@expo/metro-runtime": "~57.0.16",
     "@react-native-async-storage/async-storage": "2.2.0",
     "expo": "~57.0.27",
     "expo-asset": "~57.0.19",
@@ -12,13 +13,16 @@
     "expo-localization": "~57.0.2",
     "expo-status-bar": "~57.0.1",
     "react": "19.2.3",
-    "react-native": "0.86.3",
+    "react-dom": "19.2.3",
+    "react-native": "npm:react-native-tvos@0.86.3-0",
     "react-native-reanimated": "4.5.1",
     "react-native-safe-area-context": "~5.7.0",
     "react-native-svg": "15.15.4",
+    "react-native-web": "^0.21.2",
     "react-native-worklets": "0.10.1"
   },
   "devDependencies": {
+    "@react-native-tvos/config-tv": "^0.1.7",
     "@types/node": "^24.19.1",
     "@types/react": "~19.2.2",
     "eslint": "^9.39.5",
@@ -66,7 +70,13 @@
     "android:store-apk": "node --experimental-strip-types scripts/android-store.ts --apk",
     "brand:render": "node --experimental-strip-types scripts/render-brand.ts",
     "android:inspect": "python3 scripts/check-android-artifact.py",
-    "android:apks": "node --experimental-strip-types scripts/android-apks.ts"
+    "android:apks": "node --experimental-strip-types scripts/android-apks.ts",
+    "web": "expo start --web",
+    "web:export": "expo export --platform web",
+    "prebuild:tv": "node --experimental-strip-types scripts/tv.ts all",
+    "ios:tv": "node --experimental-strip-types scripts/tv.ts ios --run",
+    "android:tv": "node --experimental-strip-types scripts/tv.ts android --run",
+    "audit:layout": "node --experimental-strip-types scripts/audit-device-layout.ts"
   },
   "private": true,
   "engines": {
