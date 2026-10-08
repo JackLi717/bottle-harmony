@@ -5,11 +5,11 @@
     "sections": [
       {
         "title": "Information in the game",
-        "body": "The game stores puzzle progress, undo history, earned hint credits and preferences such as sound, symbols and container style on your device. It does not require an account. Platon Games does not collect or receive this information from the game."
+        "body": "The game stores puzzle progress, undo history, earned hint credits and preferences such as sound, symbols and container style on your device. It also keeps local play statistics: puzzle visits and completions, foreground play time, moves, undo and reset actions, hints and other puzzle assistance. A random installation record links these local records within this installation; it does not identify you across reinstalls. The game does not require an account. Platon Games does not collect or receive this information from the game."
       },
       {
         "title": "No advertising or tracking",
-        "body": "The game contains no advertising, in-app purchases, analytics or tracking services. It does not request access to your contacts, location, camera, microphone, advertising identifier or shared storage. The Android public build does not have network permission and does not upload gameplay or device information."
+        "body": "The game contains no advertising, in-app purchases, remote analytics or tracking services. It does not request access to your contacts, location, camera, microphone, advertising identifier or shared storage. The Android public build does not have network permission and does not upload gameplay, local statistics or device information."
       },
       {
         "title": "Children",
@@ -17,7 +17,7 @@
       },
       {
         "title": "Storage and deletion",
-        "body": "Game data stays in the app's private storage until you clear the app's storage in Android settings or uninstall it. Doing so deletes your saved progress and preferences. The public Android build disables operating-system app backup. The game does not provide cloud saving or cross-device restoration."
+        "body": "Game data stays in the app's private storage until you clear the app's storage in Android settings or uninstall it. Doing so deletes saved progress, local statistics and preferences. Detailed play events are periodically trimmed to approximately the most recent 30 days and 50,000 events; level summaries and completion records remain locally. The public Android build disables operating-system app backup. The game does not provide cloud saving or cross-device restoration."
       },
       {
         "title": "Support correspondence",

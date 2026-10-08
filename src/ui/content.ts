@@ -1,14 +1,16 @@
-import pool from '../../assets/levels/calibration.json';
-import difficultyPool from '../../assets/levels/calibration-difficulty.json';
-import { loadCalibrationSamples } from '../game/calibration';
+import { loadCalibrationSamples, type CalibrationSample } from '../game/calibration';
 import { decodeDifficultyPool } from '../game/difficultyCodec';
 import { DEMO_LEVEL } from '../game/demo';
 import { LIQUIDS } from '../art/palette';
-
-export const CALIBRATION_SAMPLES = loadCalibrationSamples(JSON.stringify(pool));
-export const PLAY_LEVELS = [DEMO_LEVEL, ...CALIBRATION_SAMPLES.map(sample => sample.content.level)];
-export const DIFFICULTY = new Map([
-  ...decodeDifficultyPool(JSON.stringify(difficultyPool), [...CALIBRATION_SAMPLES.map(sample => sample.content.level), DEMO_LEVEL]),
-].map(report => [report.levelId, report]));
-export const LEVEL_LABELS = new Map<string, string>([[DEMO_LEVEL.id, '初次体验'], ...CALIBRATION_SAMPLES.map(sample => [sample.content.level.id, sample.code] as const)]);
-for (const level of PLAY_LEVELS) for (const color of level.colors) if (!LIQUIDS[color]) throw new Error(`Missing liquid art for ${color}`);
+import type { ContentRepository } from '../storage/contentRepository';
+import type { DifficultyReport, PlanningDepthReport } from '../game/difficulty';
+export let CALIBRATION_SAMPLES: readonly CalibrationSample[] = [];
+export const DIFFICULTY = new Map<string, DifficultyReport | PlanningDepthReport>();
+export const LEVEL_LABELS = new Map<string, string>([[DEMO_LEVEL.id, '初次体验']]);
+export function installInternalContent(content: ContentRepository) {
+  CALIBRATION_SAMPLES = loadCalibrationSamples(JSON.stringify(content.internal('calibration')));
+  const levels = [...CALIBRATION_SAMPLES.map(sample => sample.content.level), DEMO_LEVEL];
+  for (const report of decodeDifficultyPool(JSON.stringify(content.internal('calibration-difficulty')), levels)) DIFFICULTY.set(report.levelId, report);
+  for (const sample of CALIBRATION_SAMPLES) LEVEL_LABELS.set(sample.content.level.id, sample.code);
+  for (const level of levels) for (const color of level.colors) if (!LIQUIDS[color]) throw new Error(`Missing liquid art for ${color}`);
+}

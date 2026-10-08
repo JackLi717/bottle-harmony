@@ -7,6 +7,7 @@ export type GameSession = {
   readonly level: LevelDefinition;
   readonly board: Board;
   readonly history: readonly Board[];
+  readonly historyOffset: number;
   readonly status: GameStatus;
   readonly solid: SolidRule | null;
 };
@@ -24,8 +25,17 @@ function status(board: Board, capacity: number, solid: SolidRule | null): GameSt
   if (isSolved(board, capacity)) return 'solved';
   return getLegalPours(board, capacity).length ? 'playing' : 'stalled';
 }
-function session(level: LevelDefinition, board: Board, history: readonly Board[], solid: SolidRule | null = null): GameSession {
-  return Object.freeze({ level, board: snapshot(board), history: Object.freeze([...history]), status: status(board, level.capacity, solid), solid });
+export const SESSION_HISTORY_LIMIT = 4096;
+function session(level: LevelDefinition, board: Board, history: readonly Board[], solid: SolidRule | null = null, historyOffset = 0): GameSession {
+  return Object.freeze({ level, board: snapshot(board), history: Object.freeze([...history]), historyOffset, status: status(board, level.capacity, solid), solid });
+}
+
+/** A bounded undo checkpoint retains the original reset board and validates conservation. */
+export function restoreSessionCheckpoint(level: LevelDefinition, board: Board, offset: number, solid: SolidRule | null): GameSession {
+  if (!Number.isSafeInteger(offset) || offset < 0 || board.length !== level.bottles.length) throw new Error('Invalid undo checkpoint');
+  parseLevel({ ...level, bottles: level.bottles.map((b, i) => ({ ...b, layers: board[i] })) });
+  if (solid && !solid.melted && board[solid.bottle][0] !== level.bottles[solid.bottle].layers[0]) throw new Error('Invalid frozen checkpoint');
+  return session(level, board, [], solid, offset);
 }
 
 export function createSession(definition: LevelDefinition, solid: SolidRule | null = null): GameSession {
@@ -43,7 +53,9 @@ export function moveSession(current: GameSession, source: number, target: number
   if (!pour) return null;
   const after = current.solid ? applySolidPour(current.board, pour, current.level.capacity, current.solid)
     : applyPour(current.board, pour, current.level.capacity);
-  const next = session(current.level, after, [...current.history, current.board], current.solid);
+  const trimmed = current.history.length === SESSION_HISTORY_LIMIT;
+  const solid = trimmed && current.solid?.melted ? { ...current.solid, meltAt: Math.max(0, (current.solid.meltAt ?? 0) - 1) } : current.solid;
+  const next = session(current.level, after, [...(trimmed ? current.history.slice(1) : current.history), current.board], solid, current.historyOffset + (trimmed ? 1 : 0));
   return {
     session: next,
     event: Object.freeze({ before: current.board, after: next.board, pour: Object.freeze(pour), sourceId: current.level.bottles[source].id, targetId: current.level.bottles[target].id }),
@@ -55,7 +67,7 @@ export function undoSession(current: GameSession): GameSession {
   const length = current.history.length - 1;
   const solid = current.solid?.melted && current.solid.meltAt !== null && current.solid.meltAt !== undefined
     ? { ...current.solid, meltAt: Math.min(current.solid.meltAt, length) } : current.solid;
-  return session(current.level, current.history[length], current.history.slice(0, -1), solid);
+  return session(current.level, current.history[length], current.history.slice(0, -1), solid, current.historyOffset);
 }
 
 export function resetSession(current: GameSession): GameSession {
@@ -64,7 +76,7 @@ export function resetSession(current: GameSession): GameSession {
 
 export function meltSession(current: GameSession): GameSession {
   if (!current.solid || current.solid.melted || current.status === 'solved') return current;
-  return session(current.level, current.board, current.history, { ...current.solid, melted: true, meltAt: current.history.length });
+  return session(current.level, current.board, current.history, { ...current.solid, melted: true, meltAt: current.history.length }, current.historyOffset);
 }
 
 /** Add the original, trailing empty bottle without changing any accepted pour
@@ -78,5 +90,5 @@ export function extendSessionWithEmptyBottle(current: GameSession, definition: L
       || JSON.stringify(bottle.layers) !== JSON.stringify(current.level.bottles[index].layers))) {
     throw new Error('Reserve bottle does not match the current level');
   }
-  return session(full, [...current.board, []], current.history.map(board => [...board, []]));
+  return session(full, [...current.board, []], current.history.map(board => [...board, []]), current.solid, current.historyOffset);
 }

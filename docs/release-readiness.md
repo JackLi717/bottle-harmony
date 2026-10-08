@@ -18,7 +18,7 @@ Console 页面：[Publishing overview](https://play.google.com/console/u/0/devel
 
 最低 Android API 24，目标 API 36。正式界面关闭内部工具；包中包含用户批准的倒水与禁止广告标识图标。上传证书指纹、版本、权限和静态检查见 `builds/release-0.1.1/mobile5-aab-report.json` 与 `mobile5-apk-report.json`。包无网络、存储、悬浮窗、麦克风、广告 ID、定位、摄像头或联系人权限；Android 系统备份关闭。没有广告、账号、内购、联网采集或云存档。
 
-当前内容为已验证的 `mainline-1000-v5` 主线、50 副关卡和十五款自由选择容器。本轮只修改文档，不改变实际关卡、规则、解锁或存档格式。用户已确认下一次实现采用全 SQLite 新基线，关卡库、玩家状态、统计与偏好一并重建，不兼容旧开发存档；见[存储方案](gameplay-statistics-plan.md)。后续产品决定见[无广告、推荐与 Premium 规则](gameplay-ideas.md#后续商业规则无广告推荐与-premium)，尚未接入当前应用；接入联网或内购后须重新核查包、声明与政策。
+当前内容为已验证的 `mainline-1000-v5` 主线、50 副关卡和十五款自由选择容器。当前源码已按用户确认接入全 SQLite 新基线，关卡库、玩家状态、统计与偏好一并重建，不继承旧开发存档；规则与关卡布局不变。旧提交包尚未被本次源码替换；见[存储方案](gameplay-statistics-plan.md)。后续产品决定见[无广告、推荐与 Premium 规则](gameplay-ideas.md#后续商业规则无广告推荐与-premium)，尚未接入当前应用；接入联网或内购后须重新核查包、声明与政策。
 
 ## 验证
 
@@ -38,7 +38,7 @@ Console 页面：[Publishing overview](https://play.google.com/console/u/0/devel
 
 IARC 按实际内容披露 Champagne Flute 与 Faceted Martini 的偶发酒精名称，没有饮酒或鼓励饮酒。结果为美国 Everyone（Alcohol reference）、欧洲 PEGI 3、澳大利亚 General、巴西／德国 All ages、韩国 15+、台湾 Parental guidance 15、沙特 12、其余及俄罗斯 3+。目标受众选择不替代各地区分级限制。
 
-英文隐私政策：https://readytradie.com/bottle-harmony/privacy.html 。应用内政策可离线阅读。网站与数独共用既有 Cloudflare Pages 静态托管，只新增 Bottle Harmony 英文页，两个应用代码和构建独立。部署及公开页面证据保存在 `builds/play/website-deployment.json` 与 `privacy-live.jpg`。
+英文隐私政策：https://readytradie.com/bottle-harmony/privacy.html 。应用内政策可离线阅读。网站与数独共用既有 Cloudflare Pages 静态托管，只新增 Bottle Harmony 英文页，两个应用代码和构建独立。本轮应用内与仓库静态政策已补充本地统计及保留期限，尚未重新部署公开政策或提交新商店包。此前部署及公开页面证据保存在 `builds/play/website-deployment.json` 与 `privacy-live.jpg`。
 
 提交批次新选十四张真实原图保存在 Git 忽略目录 `builds/release-0.1.1/screenshots/`；入口 `gallery.html`、索引 `screenshots-manifest.json`、场景 `scene-recipes.json`，保留平台、包版本、尺寸、哈希及重拍脚本。前四张为不同平台／容器的 279／42／673／910 关。预先准备的场景用于展示，不冒充自然通关。根据用户“截图本地保存，不上传到 G 的库”要求，当时未将新截图加入 Git 或上传 Play；该次送审沿用此前批准且已上传的四张手机截图和商店素材。
 

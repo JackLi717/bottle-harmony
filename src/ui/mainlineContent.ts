@@ -1,12 +1,11 @@
-import { decodePlayableMainline } from '../game/mainlinePlayable';
-import { parseProductionRecords } from '../game/mainlineCatalog';
-import { parseHumanDifficultyReport } from '../game/humanDifficulty';
-const data: unknown = require('../../assets/levels/mainline-play.json');
-export const MAINLINE = decodePlayableMainline(JSON.stringify(data));
+import type { PlayableMainline } from '../game/mainlinePlayable';
+import type { MainlineEntry } from '../game/mainlineCatalog';
+import type { ContentRepository } from '../storage/contentRepository';
+export let MAINLINE: PlayableMainline;
+let repository: ContentRepository;
+export function installMainlineContent(content: ContentRepository) { repository = content; MAINLINE = content.mainline; }
 export function mainlineReport(number: number) {
-  const full = require('../../assets/levels/mainline-catalog.json');
-  const row = full.records[number - 1];
-  const record = parseProductionRecords([{ content: row.content, rating: row.rating }])[0];
-  return { rating: record.rating, human: parseHumanDifficultyReport(row.human, record.content.level,
-    record.rating.evidence.rank!, record.rating.evidence.metrics.shortestMoves!) };
+  const entry = MAINLINE.entries[number - 1];
+  const row = repository.evidence<MainlineEntry>(entry.levelId ?? entry.level.id);
+  return { rating: row.rating, human: row.human };
 }

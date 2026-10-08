@@ -13,8 +13,8 @@
 | 规则 | 四份等容量，顶部连续同色按目标余量转移；所有非空瓶满且单色即完成 | `src/game/rules.ts`、`session.ts`；`tests/rules.test.ts`、`core.test.ts` |
 | 提示与恢复 | 撤销／重来免费；新主线／副关每题首次成功一步提示免费，之后每次一券；首次主线通关普通题 +1、十关挑战 +2，余额上限 5；重玩／内部预览提示免费、不发券 | `src/game/mainline.ts`；`tests/mainline.test.ts` |
 | 可选备用瓶 | 仅第 4、65、68、193、364、463、485 关；占据原位置，免费启用；保留动作与撤销历史，重来不收回 | `src/game/optionalReserve.ts`；`tests/optionalReserve.test.ts` |
-| 重玩 | 已完成主线与副关可重玩；独立会话，不覆盖正在推进的主线／副关，不授予主线进度 | `src/game/mainline.ts`、`mainlineCodec.ts`；`tests/mainline.test.ts` |
-| 本地恢复 | 保存主线、副关、重玩动作及撤销历史、完成位置、提示资源与符号；容器和声音使用各自偏好键 | `src/game/mainlineCodec.ts`、`src/ui/usePlayProgress.ts`、`src/storage/` |
+| 重玩 | 已完成主线与副关可重玩；独立会话，不覆盖正在推进的主线／副关，不授予主线进度 | `src/game/mainline.ts`；`tests/mainline.test.ts`、`sqlite.test.ts` |
+| 本地恢复 | 保存主线、副关、重玩动作及撤销历史、完成位置、提示资源与符号；声音／符号／容器统一 SQLite 偏好 | `src/ui/usePlayProgress.ts`、`src/storage/`、`tests/sqlite.test.ts` |
 | 卡住反馈 | 无合法移动在倒水回位后显示底部恢复入口；按需提示搜索可证明无解；预算不足只报未知 | `src/ui/stalledNoticePolicy.ts`、`StalledNotice.tsx`；`tests/stalledNotice.test.ts` |
 | 美术与容器 | 15 款免费外观，首页滑动／箭头选择并记住；统一棋盘款式；固定明亮 11 色、可选颜色符号；窄口瓶塞、宽口光晕 | `src/art/vesselDesigns.ts`、`palette.ts`、`Bottle.tsx`；`tests/vessels.test.ts` |
 | 倒水与完成 | 1900 ms 倒水；杯腔裁切涟漪、局部轮廓、完成色柔光与瓶塞反光；D1–D4 对应 2–5 朵礼花，结束后继续 | `src/art/`、`src/ui/gamePresentation.ts`；表现／礼花测试 |
@@ -28,14 +28,14 @@
 
 ## 内容与后续边界
 
-当前 D1／D2／D3／D4 为 **8／315／510／167**，是结构代理分档而非玩家实测。完整目录保存来源与证据，启动使用严格对应的精简投影；内容约束和验收统一见[制作配方](production-plan.md)。内部 C 样本、原始演示和旧 80 题只作对照／工具，不是公开主线。
+当前 D1／D2／D3／D4 为 **8／315／510／167**，是结构代理分档而非玩家实测。完整目录保存来源与证据，运行使用通过读回验证的 SQLite 关卡库；内容约束和验收统一见[制作配方](production-plan.md)。内部 C 样本、原始演示和旧 80 题只作对照／工具，不是公开主线。
 
-第一版没有商业关卡门槛、推荐、Premium、内购、账号、云同步、在线统计、广告、生命或倒计时。已确认未实施的[商业规则](gameplay-ideas.md#后续商业规则无广告推荐与-premium)、[四区域方向](gameplay-ideas.md#四个游戏区域题库规模与提示资源讨论方向)及已确认的[全 SQLite 新基线方案](gameplay-statistics-plan.md)各按其状态维护；第二版范围尚未选定。
+第一版没有商业关卡门槛、推荐、Premium、内购、账号、云同步、在线统计、广告、生命或倒计时。已确认未实施的[商业规则](gameplay-ideas.md#后续商业规则无广告推荐与-premium)、[四区域方向](gameplay-ideas.md#四个游戏区域题库规模与提示资源讨论方向)各按其状态维护；[全 SQLite 新基线](gameplay-statistics-plan.md)已接入源码；第二版范围尚未选定。
 
 ## 源码验证与发布差异
 
-最新源码 `ab80e1f` 增加倒水中持续显示辅助符号、满杯同色视觉装满后淡出、撤销恢复，详见[游玩流程](play-flow.md#视觉与内部工具)。该增量 **155／155 测试、TypeScript、ESLint 通过**，本地网页检查倒水、完成隐藏和撤销恢复；没有重新构建／安装手机或发布，不能归入已提交测试包。
+此前辅助符号增量 `ab80e1f` 增加倒水中持续显示辅助符号、满杯同色视觉装满后淡出、撤销恢复，详见[游玩流程](play-flow.md#视觉与内部工具)。该增量 **155／155 测试、TypeScript、ESLint 通过**，本地网页检查倒水、完成隐藏和撤销恢复；没有重新构建／安装手机或发布，不能归入已提交测试包。
 
 当前千关已独立完成来源重建、路线回放、规划／人类代理／标签重算与全局去重；目录 SHA-256 为 `04e540f8bb21914a1b7dcfff4d29c085aee3cc1fc042e8b7478e3de29fca1795`，运行投影严格一致，50 副关双状态验证通过。文档整理不代表重新全库评级或设备验收。真机性能、声音、最低系统及跨平台未验项统一见[设备支持](device-support.md)。
 
-SQLite 新基线已获确认但尚未实现：运行关卡库、游戏状态、统计及全部本地偏好改用 SQLite，不导入旧开发 JSON／AsyncStorage 存档。当前无玩家，新基线首次启动可重新开始，之后必须恢复自身数据；此授权不适用于未来玩家测试或发行后的重置。
+SQLite 新基线已接入当前源码：只读关卡库、玩家会话、统计及全部本地偏好均使用 SQLite，不导入旧开发 JSON／AsyncStorage。当前无玩家，新基线首次启动重新开始，其后必须恢复自身数据；此授权不适用于未来测试或发行后的重置。本轮构建和验收记录位于 `builds/sqlite-acceptance/`，实际已完成范围按记录判定；此前提交包不包含这次改造。

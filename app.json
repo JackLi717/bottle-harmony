@@ -67,7 +67,8 @@
           "enableBackgroundRecording": false
         }
       ],
-      "expo-asset"
+      "expo-asset",
+      "expo-sqlite"
     ]
   }
 }

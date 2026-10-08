@@ -4,13 +4,13 @@
   "main": "index.ts",
   "dependencies": {
     "@expo/metro-runtime": "~57.0.16",
-    "@react-native-async-storage/async-storage": "2.2.0",
     "expo": "~57.0.27",
     "expo-asset": "~57.0.19",
     "expo-audio": "~57.0.5",
     "expo-dev-client": "~57.0.19",
     "expo-linear-gradient": "~57.0.2",
     "expo-localization": "~57.0.2",
+    "expo-sqlite": "~57.0.4",
     "expo-status-bar": "~57.0.1",
     "react": "19.2.3",
     "react-dom": "19.2.3",
@@ -36,7 +36,7 @@
     "ios": "expo run:ios",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "node --experimental-strip-types --test tests/*.test.ts",
+    "test": "node --experimental-strip-types --test --test-concurrency=1 tests/*.test.ts",
     "benchmark:solver": "node --expose-gc --experimental-strip-types scripts/benchmark-solver.ts",
     "benchmark:production": "node --expose-gc --experimental-strip-types scripts/benchmark-production.ts",
     "levels:generate": "node --experimental-strip-types scripts/levels.ts generate",
@@ -76,7 +76,11 @@
     "prebuild:tv": "node --experimental-strip-types scripts/tv.ts all",
     "ios:tv": "node --experimental-strip-types scripts/tv.ts ios --run",
     "android:tv": "node --experimental-strip-types scripts/tv.ts android --run",
-    "audit:layout": "node --experimental-strip-types scripts/audit-device-layout.ts"
+    "audit:layout": "node --experimental-strip-types scripts/audit-device-layout.ts",
+    "content:build": "node --experimental-strip-types scripts/sqlite-content.ts",
+    "test:storage": "node --experimental-strip-types --test tests/sqlite*.test.ts",
+    "postinstall": "node scripts/patch-sqlite-web.cjs",
+    "web:serve": "node --experimental-strip-types scripts/serve-web.ts"
   },
   "private": true,
   "engines": {

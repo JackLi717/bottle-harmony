@@ -8,7 +8,7 @@ import type { MainlineCatalog } from './mainlineCatalog.ts';
 import { hasCleanStart, hasVariedStart } from './startQuality.ts';
 import { tierForHumanScore } from './humanDifficulty.ts';
 
-export type PlayableEntry = { readonly number: number; readonly level: LevelDefinition; readonly solution: readonly Pour[]; readonly rank: number; readonly tier: DifficultyTier; readonly score: number };
+export type PlayableEntry = { readonly number: number; readonly levelId?: string; readonly colorCount?: number; readonly bottleCount?: number; readonly level: LevelDefinition; readonly solution: readonly Pour[]; readonly rank: number; readonly tier: DifficultyTier; readonly score: number };
 export type PlayableMainline = { readonly id: string; readonly entries: readonly PlayableEntry[] };
 export function encodePlayableMainline(catalog: MainlineCatalog) {
   return JSON.stringify({ format: 'bottle-harmony-mainline-play', version: 1, plan: PRODUCTION_PLAN, id: catalog.id,

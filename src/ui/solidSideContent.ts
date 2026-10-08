@@ -1,4 +1,3 @@
-import { decodeSolidSide } from '../game/solidSide';
-
-const data: unknown = require('../../assets/levels/solid-side-50.json');
-export const SOLID_SIDES = decodeSolidSide(data);
+import type { SolidSideCatalog } from '../game/solidSide';
+export let SOLID_SIDES: SolidSideCatalog;
+export function installSideContent(content: SolidSideCatalog) { SOLID_SIDES = content; }

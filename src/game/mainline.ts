@@ -25,13 +25,13 @@ export function createMainline(catalog: PlayableMainline): MainlineState {
 export function reserveIsLocked(state: MainlineState, catalog: PlayableMainline): boolean {
   const session = visibleSession(state);
   if (state.side && !state.replay) return false;
-  const entry = state.replay ? catalog.entries.find(e => e.level.id === session.level.id) : catalog.entries[state.current - 1];
+  const entry = state.replay ? catalog.entries.find(e => (e.levelId ?? e.level.id) === session.level.id) : catalog.entries[state.current - 1];
   return !!entry && hasOptionalReserve(entry) && session.level.bottles.length === entry.level.bottles.length - 1;
 }
 export function unlockReserveMainline(state: MainlineState, catalog: PlayableMainline): MainlineState {
   if (!reserveIsLocked(state, catalog)) return state;
   const session = visibleSession(state);
-  const entry = state.replay ? catalog.entries.find(e => e.level.id === session.level.id)! : catalog.entries[state.current - 1];
+  const entry = state.replay ? catalog.entries.find(e => (e.levelId ?? e.level.id) === session.level.id)! : catalog.entries[state.current - 1];
   const expanded = extendSessionWithEmptyBottle(session, entry.level);
   return Object.freeze(state.replay ? { ...state, replay: expanded } : { ...state, main: expanded });
 }

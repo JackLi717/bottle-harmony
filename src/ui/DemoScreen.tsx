@@ -44,6 +44,7 @@ import { MainlineMenu } from './MainlineMenu';
 import { INTERNAL_TOOLS } from './buildConfig';
 import { Tutorial } from './PlayMenu';
 import { usePlayProgress } from './usePlayProgress';
+import { monotonicNow } from '../storage/gameplayClock';
 import { deviceLayout } from './deviceLayout';
 import { bottleControlId, useBoardKeyboard } from './useBoardKeyboard';
 import { GameNotice } from './GameNotice';
@@ -52,22 +53,22 @@ import { referenceHint, type CalibrationSample } from '../game/calibration';
 import { advanceStalledNotice, closeStalledNotice, INITIAL_STALLED_NOTICE, showUnsolvableNotice } from './stalledNoticePolicy';
 
 type Animation = { before: Board; pour: Pour; plan: PourPlan };
-const SIDE_AFTER = SOLID_SIDES.entries.map(item => item.afterMainline);
 
 export function DemoScreen() {
   const { t } = useI18n();
   const insets = useSafeAreaInsets();
   const dimensions = useWindowDimensions();
   const { compact, rail, horizontalInset, verticalInset } = deviceLayout(dimensions.width, dimensions.height, Platform.isTV);
-  const { play, setPlay, ready, saveStatus } = usePlayProgress();
+  const { play, setPlay, record, observe, hintRequestId, ready, saveStatus } = usePlayProgress();
+  const SIDE_AFTER = SOLID_SIDES.entries.map(item => item.afterMainline);
   const { sound, ready: soundReady, saved: soundSaved, toggleSound } = useSoundPreference();
   const { vessel, ready: vesselReady, saved: vesselSaved, chooseVessel } = useVesselPreference();
   const [page, setPage] = useState<'home' | 'game'>('home');
   const [internalSession, setInternalSession] = useState<GameSession | null>(null);
   const session = internalSession ?? visibleSession(play);
   const sample = CALIBRATION_SAMPLES.find(item => item.content.level.id === session.level.id) ?? null;
-  const entry = MAINLINE.entries.find(item => item.level.id === session.level.id);
-  const sideEntry = SOLID_SIDES.entries.find(item => item.level.id === session.level.id);
+  const entry = MAINLINE.entries.find(item => (item.levelId ?? item.level.id) === session.level.id);
+  const sideEntry = SOLID_SIDES.entries.find(item => (item.levelId ?? item.level.id) === session.level.id);
   const label = sideEntry ? t('solidSideLabel', { n: sideEntry.number }) : entry ? `Level ${entry.number}` : LEVEL_LABELS.get(session.level.id)!;
   const previewPosition: PreviewPosition | null = sideEntry ? { kind: 'side', number: sideEntry.number }
     : entry ? { kind: 'main', number: entry.number } : null;
@@ -92,6 +93,13 @@ export function DemoScreen() {
   const [searching, setSearching] = useState(false);
   const [lastAward, setLastAward] = useState(0);
   const search = useRef<SolverTask | null>(null);
+  const hintRequest = useRef<{ id: string; started: number } | null>(null);
+  function hintResult(result: string) {
+    const request = hintRequest.current;
+    if (!request) return;
+    record({ type: 'hint-result', requestId: request.id, result, durationMs: performance.now() - request.started });
+    hintRequest.current = null;
+  }
   const [selected, setSelected] = useState<number | null>(null);
   const [animation, setAnimation] = useState<Animation | null>(null);
   const [stage, setStage] = useState({ width: 0, height: 0, y: 0 });
@@ -108,6 +116,13 @@ export function DemoScreen() {
   // Preserve the stage's offset within the safe container after adding the body wrapper.
   const { scale, minY } = fitBoard(layout, { ...stage, y: stage.y + bodyY }, safeTop);
   const won = session.status === 'solved';
+  useEffect(() => {
+    observe(page === 'game' && !internalSession && play.tutorialDone && !won,
+      !!animation || searching || menuVisible || privacyVisible || pickerVisible || difficultyVisible || !!notice,
+      `${session.level.id}:${play.replay ? 'replay' : play.side ? 'side' : 'main'}`);
+  // Observation writes no game state; track actual visibility and operation gates only.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, internalSession, play.tutorialDone, play.replay, play.side, session.level.id, won, animation, searching, menuVisible, privacyVisible, pickerVisible, difficultyVisible, notice]);
   const hintMode = internalSession ? 'replay' : hintAvailability(play);
   const hintParams = { n: play.hintCredits, max: MAX_HINT_CREDITS };
   const hintStatus = sideEntry && session.solid && !session.solid.melted && !won ? t('solidInstruction')
@@ -176,6 +191,7 @@ export function DemoScreen() {
         setCelebration(null);
         setCompletionEpoch(epoch => epoch + 1);
         search.current?.cancel();
+        hintResult('cancelled');
         search.current = null;
         setSearching(false);
         // The logical move was already committed; interruption displays that result.
@@ -194,6 +210,8 @@ export function DemoScreen() {
       search.current?.cancel();
       search.current = null;
     };
+  // Cancellation uses the current request ref; the subscription must outlive renders.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [progress]);
 
   useEffect(() => {
@@ -309,7 +327,7 @@ export function DemoScreen() {
     if (busy.current) return;
     setPendingCelebration(null); setCelebration(null);
     setLastAward(0);
-    setInternalSession(null); setPlay(selectMainline(play, MAINLINE, number));
+    setInternalSession(null); setPlay(selectMainline(play, MAINLINE, number), { type: 'select' });
     setSelected(null); setMenuVisible(false); setPage('game'); announceStatus('tapStart');
   }
 
@@ -323,18 +341,18 @@ export function DemoScreen() {
   function chooseSide(number: number) {
     if (busy.current) return;
     setPendingCelebration(null); setCelebration(null); setLastAward(0);
-    setInternalSession(null); setPlay(selectSideMainline(play, SOLID_SIDES, number));
+    setInternalSession(null); setPlay(selectSideMainline(play, SOLID_SIDES, number), { type: 'select' });
     setSelected(null); setMenuVisible(false); setPage('game'); announceStatus('tapStart');
   }
 
-  function startPour(pour: Pour, hinted = false) {
+  function startPour(pour: Pour, hinted = false, requestId?: string) {
     if (busy.current) return;
     const accepted = internalSession ? moveSession(internalSession, pour.source, pour.target)
       : hinted ? hintMainline(play, pour.source, pour.target) : moveMainline(play, pour.source, pour.target);
     if (!accepted) return;
     busy.current = true;
     if ('state' in accepted) {
-      setPlay(accepted.state);
+      setPlay(accepted.state, { type: 'pour', hinted, requestId, source: accepted.event.sourceId, target: accepted.event.targetId, amount: accepted.event.pour.amount });
       if (visibleSession(accepted.state).status === 'solved') setLastAward(accepted.awardedTickets);
     } else { setInternalSession(accepted.session); setLastAward(0); }
     const resultingSession = 'state' in accepted ? visibleSession(accepted.state) : accepted.session;
@@ -370,7 +388,7 @@ export function DemoScreen() {
     if (busy.current || searching || won || !reserveLocked) return;
     setStalledNotice(value => closeStalledNotice(value, true));
     if (internalSession && entry) setInternalSession(extendSessionWithEmptyBottle(internalSession, entry.level));
-    else setPlay(unlockReserveMainline(play, MAINLINE));
+    else setPlay(unlockReserveMainline(play, MAINLINE), { type: 'reserve' });
     setSelected(null);
     announceStatus('reserveEnabled');
   }
@@ -379,7 +397,7 @@ export function DemoScreen() {
     if (busy.current || searching || won || !session.solid || session.solid.melted) return;
     setStalledNotice(value => closeStalledNotice(value, true));
     if (internalSession) setInternalSession(meltSession(internalSession));
-    else setPlay(meltSideMainline(play));
+    else setPlay(meltSideMainline(play), { type: 'melt' });
     setSelected(null);
     AccessibilityInfo.announceForAccessibility(t('heat'));
   }
@@ -389,7 +407,7 @@ export function DemoScreen() {
     setStalledNotice(value => closeStalledNotice(value, true));
     setPendingCelebration(null); setCelebration(null);
     setLastAward(0);
-    if (internalSession) setInternalSession(resetSession(internalSession)); else setPlay(editMainline(play, 'reset')); setSelected(null);
+    if (internalSession) setInternalSession(resetSession(internalSession)); else setPlay(editMainline(play, 'reset'), { type: 'reset' }); setSelected(null);
     announceStatus('tapStart');
   }
 
@@ -398,18 +416,20 @@ export function DemoScreen() {
     setStalledNotice(value => closeStalledNotice(value, true));
     setPendingCelebration(null); setCelebration(null);
     setLastAward(0);
-    if (internalSession) setInternalSession(undoSession(internalSession)); else setPlay(editMainline(play, 'undo'));
+    if (internalSession) setInternalSession(undoSession(internalSession)); else setPlay(editMainline(play, 'undo'), { type: 'undo' });
     setSelected(null); announceStatus('undone');
   }
 
   async function demonstrate() {
     if (busy.current) return;
     if (won) { nextLevel(); return; }
-    if (session.status === 'stalled') { setStalledNotice(value => showUnsolvableNotice(value)); return; }
-    if (hintMode === 'none') { setNotice({ title: t('hint'), message: t('emptyHintStatus') }); return; }
+    const requestId = internalSession ? undefined : hintRequestId();
+    if (requestId) { hintRequest.current = { id: requestId, started: monotonicNow() }; record({ type: 'hint-request', requestId }); }
+    if (session.status === 'stalled') { hintResult('no-legal-moves'); setStalledNotice(value => showUnsolvableNotice(value)); return; }
+    if (hintMode === 'none') { hintResult('no-credit'); setNotice({ title: t('hint'), message: t('emptyHintStatus') }); return; }
     const content = entry ?? sample?.content;
     const referencePour = content ? referenceHint(content, board) : null;
-    if (referencePour) { startPour(referencePour, true); return; }
+    if (referencePour) { hintResult('reference'); startPour(referencePour, true, requestId); return; }
     const task = createSolver(board, { capacity: session.level.capacity,
       maxStates: sideEntry ? 100000 : 30000, maxMilliseconds: sideEntry ? 700 : 200,
       solid: session.solid ?? undefined });
@@ -426,7 +446,8 @@ export function DemoScreen() {
     search.current = null;
     busy.current = false;
     setSearching(false);
-    if (result.status === 'solved' && result.route.length) startPour(result.route[0], true);
+    hintResult(result.status === 'solved' ? 'solved' : result.status === 'unsolvable' ? 'unsolvable' : 'unknown');
+    if (result.status === 'solved' && result.route.length) startPour(result.route[0], true, requestId);
     else if (result.status === 'unsolvable') setStalledNotice(value => showUnsolvableNotice(value));
     else setNotice({ title: t('hint'), message: t('searchLimit') });
   }
@@ -510,13 +531,13 @@ export function DemoScreen() {
         <GameFooter rail={rail} won={won} continueVisible={won && !animation && !pendingCelebration && celebration === null} compact={compact}
           disabled={!!animation || searching} undoDisabled={!history.length || !!animation || searching} searching={searching} reduceMotion={reduceMotion}
           nextLabel={t(finish.label)} hintStatus={hintStatus} onUndo={undo} onReset={reset} onHint={demonstrate}
-          stalledReason={stalledReason} reserveAvailable={reserveLocked} heatAvailable={!!session.solid && !session.solid.melted} onHeat={heatSide} onCloseStalled={() => setStalledNotice(value => closeStalledNotice(value))}
+          stalledReason={stalledReason} reserveAvailable={reserveLocked} heatAvailable={!!session.solid && !session.solid.melted} onHeat={heatSide} onCloseStalled={() => { if (!internalSession) record({ type: 'dismiss-stalled' }); setStalledNotice(value => closeStalledNotice(value)); }}
           onContinue={continueAfterWin} />
         </View>
         </>}
       </View>
       {debugReport && <DifficultyDebug visible={difficultyVisible} report={debugReport} human={debugHuman} sample={sample} label={label} onClose={() => setDifficultyVisible(false)} />}
-      {menuVisible && <MainlineMenu visible initialSection={menuSection} play={play} saveStatus={t(saveStatus)} onClose={() => setMenuVisible(false)} onResume={resumeCurrent} onSelect={chooseNumber} onSelectSide={chooseSide} onPreview={previewMainline} onSidePreview={previewSide} onSamples={() => { setMenuVisible(false); setPickerVisible(true); }} symbols={play.symbols} onSymbols={() => setPlay(Object.freeze({ ...play, symbols: !play.symbols }))} sound={sound} soundSaved={soundSaved} onSound={toggleSound} onCelebrationPreview={previewCelebration} onPrivacy={() => { setMenuVisible(false); setPrivacyVisible(true); }} onDebug={INTERNAL_TOOLS && !sideEntry ? openDifficulty : undefined} />}
+      {menuVisible && <MainlineMenu visible initialSection={menuSection} play={play} saveStatus={t(saveStatus)} onClose={() => setMenuVisible(false)} onResume={resumeCurrent} onSelect={chooseNumber} onSelectSide={chooseSide} onPreview={previewMainline} onSidePreview={previewSide} onSamples={() => { setMenuVisible(false); setPickerVisible(true); }} symbols={play.symbols} onSymbols={() => setPlay(Object.freeze({ ...play, symbols: !play.symbols }), { type: 'preference', preference: 'symbols', value: String(!play.symbols) })} sound={sound} soundSaved={soundSaved} onSound={toggleSound} onCelebrationPreview={previewCelebration} onPrivacy={() => { setMenuVisible(false); setPrivacyVisible(true); }} onDebug={INTERNAL_TOOLS && !sideEntry ? openDifficulty : undefined} />}
       <GameNotice notice={notice} onClose={() => setNotice(null)} />
       <PrivacyPolicy visible={privacyVisible} onClose={() => { setPrivacyVisible(false); openMenu('settings'); }} />
       <Tutorial visible={page === 'game' && ready && !internalSession && !play.tutorialDone} onStart={() => setPlay(Object.freeze({ ...play, tutorialDone: true }))} onSkip={() => setPlay(Object.freeze({ ...play, tutorialDone: true }))} />

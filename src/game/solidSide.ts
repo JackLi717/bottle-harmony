@@ -6,6 +6,7 @@ import { applySolidPour, getSolidPour } from './solidRules.ts';
 const COLOR_IDS = ['jade', 'coral', 'amber', 'azure', 'violet', 'rose'] as const;
 type FirstChoices = { choices: number; safe: number; costly: number; dead: number };
 export type SolidSideEntry = {
+  readonly levelId?: string;
   readonly number: number;
   readonly afterMainline: number;
   readonly level: LevelDefinition;

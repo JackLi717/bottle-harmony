@@ -1,68 +1,59 @@
-import type { MessageKey } from '../i18n/messages';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createMainline, type MainlineState } from '../game/mainline';
-import { decodeMainline, encodeMainline, MAINLINE_SAVE_KEY } from '../game/mainlineCodec';
-import { createProgressWriter } from '../storage/progressWriter';
-import { MAINLINE } from './mainlineContent';
-import { SOLID_SIDES } from './solidSideContent';
-
-const write = createProgressWriter(value => AsyncStorage.setItem(MAINLINE_SAVE_KEY, value));
+import type { MessageKey } from '../i18n/messages';
+import type { MainlineState } from '../game/mainline';
+import { visibleSession } from '../game/mainline';
+import { getPlayer } from '../storage/runtime';
+import type { GameplayAction } from '../storage/statistics';
+import { GameplayClock, monotonicNow } from '../storage/gameplayClock';
 export function usePlayProgress() {
-  const [play, updatePlay] = useState(() => createMainline(MAINLINE));
-  const [ready, setReady] = useState(false);
+  const repository = getPlayer();
+  const [play, updatePlay] = useState(repository.state);
   const [saveStatus, setSaveStatus] = useState<MessageKey>('localProgress');
-  const latest = useRef<string | null>(null);
-  const lastRequested = useRef<string | null>(null);
-  const alive = useRef(true);
-  const dirty = useRef(false);
-  useEffect(() => {
-    alive.current = true;
-    let cancelled = false;
-    (async () => {
-      let restored = createMainline(MAINLINE);
-      try {
-        const json = await AsyncStorage.getItem(MAINLINE_SAVE_KEY);
-        if (json) {
-          try { restored = decodeMainline(json, MAINLINE, SOLID_SIDES); }
-          catch { /* An incompatible pre-release board starts fresh; retain its bytes until the next explicit action. */ }
-        }
-      } catch { /* Keep the fresh in-memory session without exposing a storage diagnostic in play. */ }
-      if (cancelled) return;
-      // Do not overwrite a failed read or invalid save merely by mounting the app.
-      lastRequested.current = encodeMainline(restored, MAINLINE, SOLID_SIDES);
-      latest.current = lastRequested.current;
-      updatePlay(restored); setSaveStatus('localProgress'); setReady(true);
-    })();
-    return () => { cancelled = true; alive.current = false; };
-  }, []);
-  const encoded = useMemo(() => {
-    try { return encodeMainline(play, MAINLINE, SOLID_SIDES); } catch { return null; }
-  }, [play]);
-  useEffect(() => {
-    if (!ready || encoded === null) return;
-    const json = encoded;
-    latest.current = json;
-    if (lastRequested.current === json) return;
-    lastRequested.current = json;
-    dirty.current = true;
-    write(json).then(ok => {
-      if (alive.current && latest.current === json) setSaveStatus(ok ? 'saved' : 'saveFailed');
-    });
-  }, [encoded, ready]);
-  useEffect(() => {
-    if (!ready) return;
-    const subscription = AppState.addEventListener('change', state => {
-      if (state !== 'active' && dirty.current && latest.current) {
-        const json = latest.current;
-        write(json).then(ok => { if (alive.current && latest.current === json) setSaveStatus(ok ? 'saved' : 'saveFailed'); });
-      }
-    });
-    return () => subscription.remove();
-  }, [ready]);
-  function setPlay(next: MainlineState) {
-    updatePlay(next);
+  const [timer] = useState(() => new GameplayClock(monotonicNow()));
+  const clock = useRef(timer);
+  const alive = useRef(true), visible = useRef(false), blocked = useRef(false);
+  const active = useRef(AppState.currentState === 'active'), revision = useRef(0);
+  const focus = useRef('');
+  function report(result: Promise<boolean>) {
+    const request = ++revision.current;
+    void result.then(ok => { if (alive.current && revision.current === request) setSaveStatus(ok ? 'saved' : 'saveFailed'); });
   }
-  return { play, setPlay, ready, saveStatus: encoded === null ? 'saveTooLong' as const : saveStatus };
+  function record(action: GameplayAction) {
+    report(repository.record({ ...clock.current.take(performance.now(), ['pour', 'undo', 'reset', 'melt', 'reserve', 'hint-request'].includes(action.type)), ...action }));
+  }
+  function setPlay(next: MainlineState, action: GameplayAction = { type: 'navigate' }) {
+    const timing = clock.current.take(performance.now(), ['pour', 'undo', 'reset', 'melt', 'reserve'].includes(action.type));
+    if (action.type === 'navigate' || action.type === 'select' || visibleSession(next).status === 'solved') clock.current.update(performance.now(), false, false);
+    updatePlay(next);
+    report(repository.commit(next, { ...timing, ...action }));
+  }
+  function observe(entered: boolean, unavailable: boolean, scope: string) {
+    const wasVisible = visible.current;
+    const changed = focus.current !== scope;
+    focus.current = scope;
+    clock.current.update(performance.now(), entered && active.current, unavailable);
+    visible.current = entered; blocked.current = unavailable;
+    if (entered !== wasVisible || entered && changed) record({ type: entered ? 'show' : 'pause' });
+  }
+  useEffect(() => {
+    const timer = clock.current;
+    alive.current = true;
+    const subscription = AppState.addEventListener('change', state => {
+      active.current = state === 'active';
+      clock.current.update(performance.now(), visible.current && active.current, blocked.current);
+      report(repository.record({ ...clock.current.take(performance.now()), type: active.current ? visible.current ? 'show' : 'clock' : 'background' }));
+      void repository.flush();
+    });
+    const interval = setInterval(() => {
+      if (active.current && visible.current) report(repository.record({ ...clock.current.take(performance.now()), type: 'clock' }));
+      else void repository.flush();
+    }, 10000);
+    return () => {
+      alive.current = false; subscription.remove(); clearInterval(interval);
+      void repository.record({ ...timer.take(performance.now()), type: 'background' });
+    };
+  // Repository and clock are stable for the lifetime of this screen.
+  }, [repository]);
+  return { play, setPlay, record, observe, hintRequestId: () => repository.hintRequestId(), ready: true, saveStatus };
 }

@@ -14,6 +14,8 @@ for (const file of ['App.tsx', 'index.ts', 'package.json', 'package-lock.json', 
   if (existsSync(resolve(project, file))) cpSync(resolve(project, file), resolve(target, file), { recursive: true });
 }
 if (!existsSync(resolve(target, 'node_modules'))) symlinkSync(resolve(project, 'node_modules'), resolve(target, 'node_modules'), 'dir');
+mkdirSync(resolve(target, 'scripts'), { recursive: true });
+cpSync(resolve(project, 'scripts/patch-sqlite-web.cjs'), resolve(target, 'scripts/patch-sqlite-web.cjs'));
 const env = { ...process.env, EXPO_TV: '1' };
 function expo(args: string[]) {
   const result = spawnSync(process.execPath, [require.resolve('expo/bin/cli'), ...args], { cwd: target, env, stdio: 'inherit' });
