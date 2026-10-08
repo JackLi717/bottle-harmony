@@ -2,7 +2,11 @@
 
 ## 当前项目题库 v5（2026-10-08）
 
-项目已按 `thousand-mountain-v1` 重新筛选千关，采用二十关主峰、十关次峰与明确缓冲，实际 D1/D2/D3/D4 为 8/315/510/167。离线来源、回放、评级与标签复核见[最终评价](level-selection-evaluation.md)。v5 的手机新构建和连续试玩尚未进行；以下 v4 及更早设备记录保留其实际测试版本，不作为 v5 体验证据。
+项目已按 `thousand-mountain-v1` 重新筛选千关，采用二十关主峰、十关次峰与明确缓冲，实际 D1/D2/D3/D4 为 8/315/510/167。离线来源、回放、评级与标签复核见[最终评价](level-selection-evaluation.md)。已从提交 `c2668146251c8becf888464f8c6b9ad2764a94fb` 的独立源码快照构建 Release 内测包，覆盖安装到 iPhone 12 Pro Max（iOS 17.4.1）并成功启动，随后读取设备进程确认应用仍在运行。主线内容为 `mainline-1000-v5`，应用版本仍为 `0.0.1`，包名为 `com.bottleharmony.app`。内部难度试玩入口保留，可直接选关；旧内容 ID 的内测主线存档按既有规则从第 1 关准备新局面。
+
+快照的 205 个已提交文件逐个校验一致；137/137 测试、TypeScript、ESLint 通过。安装包的 Hermes 字节码确认包含 v5、`thousand-mountain-v1` 和第 1、10、20、1000 关的实际 ID；包内 Expo 配置确认 `internalTools=true`。构建、签名核验、安装与启动已完成；连续试玩、屏幕表现、提示时延和存档体验等待用户验证。以下 v4 及更早设备记录保留其实际测试版本，不作为 v5 体验证据。
+
+本机证据位于 `builds/wave-selection/`：`iphone-build-source.json`、`iphone-package-check.json`、`snapshot-tests.log`、`snapshot-typecheck.log`、`snapshot-lint.log`、`ios-build.log`、`iphone-install.json`、`iphone-launch.json` 与 `iphone-processes.json`。建议先连续体验前 40 关，再用内部试玩比较中后段的峰值与缓冲。
 
 ## 主线混排题库 v4（2026-10-08）
 
