@@ -1,10 +1,12 @@
 # 第一版发布与测试状态
 
-更新日期：2026 年 10 月 8 日（墨尔本）。**用户最新确认第一版已完成，正在申请上线，尚未进入玩家测试、没有玩家。** 当前仓库与最近上传的 Google Play 手机／平板版本为 0.1.1（versionCode 5），商店标题 Water Sort - No Ads，轨道为 Alpha 封闭测试；第一版功能清单见[实现基线](current-baseline.md)。
+更新日期：2026 年 10 月 9 日（墨尔本）。**用户最新确认第一版已完成，尚未进入玩家测试、没有玩家。** 当前仓库与最近上传的 Google Play 手机／平板版本为 0.1.1（versionCode 5），商店标题 Water Sort - No Ads，轨道为 Alpha 封闭测试；第一版功能清单见[实现基线](current-baseline.md)。
 
-最后一次留存的 Console 观察是本版本已提交首次审核、Publishing overview 显示 **Changes in review** 与 **Your changes are now in review**，版本为 `0.1.1 (5) - multi-platform closed test`。该观察与用户最新确认分开记录；本轮未重新查询 Console，不推断审核已通过、测试已开放或生产权限已获批。此前“已上线测试、已有玩家”的说明以用户此次澄清为准。
+10 月 9 日重新查看 Console：Alpha 页面显示 **Active**，最新版本仍为 `0.1.1 (5) - multi-platform closed test`；Publishing overview 显示 **Last published on 8 October 2026**。本次创建独立 Google 群组并保存其 Alpha 绑定，仅提交这一项 Testers 变更；快速检查完成后显示 **Changes in review** 与 **Your changes are now in review**。群组创建时只有群主一人，不据此推断实际测试者加入、测试起算日或生产权限获批。此前“已有玩家”的说明仍以用户澄清为准。
 
 Console 页面：[Publishing overview](https://play.google.com/console/u/0/developers/6045945546746635759/app/4974675580183102720/publishing)。提交时的本地记录与截图在 `builds/release-0.1.1/console-progress.json`、`play-first-review.jpg`、`play-first-review-full.jpg`，它们是当时证据，未改写成上线截图。
+
+本次测试群与送审证据保存在 `builds/test-group/`；群组权限、邮箱和加入步骤由[测试安排](play-testing-plan.md#测试群与加入入口)维护。本次未上传新应用包或邀请测试者。
 
 ## 本次产物
 
@@ -44,7 +46,7 @@ IARC 按实际内容披露 Champagne Flute 与 Faceted Martini 的偶发酒精�
 
 ## 当前测试与后续验证
 
-- 送审时的 Console 记录显示尚未配置名单；用户最新确认尚未进入测试、没有玩家。本轮未重新核对 Console 名单或开放状态，不设定测试起算日，也没有代为联系测试者。
+- Alpha 已绑定独立 Google 测试群，该配置变更于 10 月 9 日发送审核。用户最新确认尚未进入玩家测试、没有玩家；本次没有代为联系测试者，不设定测试起算日。
 - 账号为 2023 年 11 月 13 日之后创建的个人账号。Bottle Harmony 需至少 12 名真实测试者连续加入本应用封闭测试 14 天并实际试玩，之后申请正式发布权限；数独的测试记录不能替代，达到天数不自动获批。这是此前按账号情况核查的准备要求；实际人数、天数与资格以该应用 Console 为准，本轮未重新核验政策。用户已选择完成封闭测试后申请正式发行，不另做 Early Access。参考：[Google 官方要求](https://support.google.com/googleplay/android-developer/answer/14151465?hl=en)。
 - 上传密钥和密码仅存于 Git 忽略的 `builds/signing/`，需备份到用户控制的安全位置，不能提交 Git 或作为商店素材上传。
 - 真机持续游玩、低端设备性能、声音听感、最低系统、TV 实际观看距离及其他浏览器引擎仍需补验；本轮模拟器检查不替代这些结果。现有手机的 debug 签名不同；SQLite 新基线按用户授权不继承旧开发数据，本轮文档更新不卸载应用或清理设备数据。

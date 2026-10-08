@@ -1,8 +1,8 @@
 # 第一版实现基线
 
-更新日期：2026 年 10 月 8 日。第一版已完成；最新项目记录更正为正在申请上线、尚未进入玩家测试、没有玩家。应用 **0.1.1**，Android 手机／平板 **versionCode 5**，题库 **mainline-1000-v5**。Google Play 标题 Water Sort - No Ads，应用品牌 Bottle Harmony，包名 `com.bottleharmony.app`，开发者 Platon Games。
+更新日期：2026 年 10 月 9 日。第一版已完成；最新项目记录更正为正在申请上线、尚未进入玩家测试、没有玩家。应用 **0.1.1**，Android 手机／平板 **versionCode 5**，题库 **mainline-1000-v5**。Google Play 标题 Water Sort - No Ads，应用品牌 Bottle Harmony，包名 `com.bottleharmony.app`，开发者 Platon Games。
 
-最后保留的 Console 观察为 Alpha 送审、Changes in review。本轮未重新查询 Console，不推断审核通过、测试开放、公开生产发行或测试起算日。Apple／TV／浏览器适配不等于发行，见[发布记录](release-readiness.md)。
+10 月 9 日已创建独立 Google 测试群并保存 Alpha 绑定，配置变更已发送审核；Console 显示 Alpha 为 Active，发布概览显示 Last published on 8 October 2026。实际玩家加入、测试起算日与生产发行仍未确认。加入入口见[测试安排](play-testing-plan.md)，审核与平台边界见[发布记录](release-readiness.md)。
 
 ## 已实现能力与代码对应
 

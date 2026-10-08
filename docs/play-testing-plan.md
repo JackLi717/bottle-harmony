@@ -1,12 +1,21 @@
 # Bottle Harmony 封闭测试安排
 
-更新日期：2026 年 10 月 8 日。用户最新确认正在申请上线，尚未进入玩家测试、没有玩家；当前版本 0.1.1（Android 5）。测试起算日未建立，本轮未查 Console，版本与证据见[发布记录](release-readiness.md)。
+更新日期：2026 年 10 月 9 日。用户最新确认尚未进入玩家测试、没有玩家；当前版本 0.1.1（Android 5）。已创建独立 Google 测试群并保存 Alpha 绑定，配置变更已发送审核；测试起算日未建立，版本与 Console 证据见[发布记录](release-readiness.md)。
 
 发布主体 Platon Games；免费游戏；支持与反馈 admin@readytradie.com。用户计划面向儿童及成年人，在 Google Play 可选的全部国家与地区测试。用户已确认 6 岁以上儿童及成年人，申报已提交；仍需实际儿童操作验证，不能把内容分级低等同于适合所有年龄。
 
 新个人账号先在本应用组织至少 12 人连续加入 14 天；数独测试名单可以邀请相同人员，但加入与计时分别属于每个应用。实际招募建议超过 12 人以留出退出余量。不自动联系他人或代填体验。测试者需要使用自己的 Google 账号通过该应用链接加入并安装。
 
 SQLite 新基线已接入当前源码，构建与验收记录位于 `builds/sqlite-acceptance/`，详见[关卡库与游玩统计方案](gameplay-statistics-plan.md)。正式开始测试时应明确采用的包与存储基线；当前不导入旧开发存档。以下为后续测试安排。
+
+## 测试群与加入入口
+
+- 群名：Bottle Harmony Beta Testers；邮箱：`bottle-harmony-beta-testers@googlegroups.com`。
+- [加入 Google 群组](https://groups.google.com/g/bottle-harmony-beta-testers)：公开可搜索、任何 Google 用户可自行加入；讨论仅成员可见，成员名单仅群主可见。
+- [加入本应用封闭测试](https://play.google.com/apps/testing/com.bottleharmony.app)：使用加入群组的同一 Google 账号操作。
+- [Google Play 安装页](https://play.google.com/store/apps/details?id=com.bottleharmony.app)：以测试资格及审核后的实际可用状态为准。
+
+群组说明已包含加入步骤及反馈邮箱。创建时仅有群主一名成员，未添加或邀请他人；群组成员数不等于 Play 测试者人数，未建立连续测试起算日。此群独立于数独项目。
 
 ## 测试者任务
 
