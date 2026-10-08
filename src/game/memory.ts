@@ -65,15 +65,17 @@ export function hiddenMemory(current: MemorySession, units = current.units, forc
 }
 export function validateMemoryPuzzle(puzzle: MemoryPuzzle) {
   const game = createSession(puzzle.level), units = initialUnits(puzzle), colors = unitColors(puzzle);
-  if (!Number.isInteger(puzzle.number) || puzzle.number < 1 || game.level.capacity !== 4 || game.level.colors.length > 6
-    || game.board.filter(b => !b.length).length !== 2 || game.board.length > 8 || !puzzle.masks.length
-    || new Set(puzzle.masks).size !== puzzle.masks.length || !puzzle.skill) throw new Error('Invalid memory puzzle');
+  if (!Number.isInteger(puzzle.number) || puzzle.number < 1 || game.level.capacity !== 4 || game.level.colors.length > 8
+    || game.board.length !== game.level.colors.length + 2 || game.board.some(b => b.length !== 0 && b.length !== 4)
+    || game.board.filter(b => !b.length).length !== 2 || game.board.length > 10 || !puzzle.masks.length
+    || puzzle.masks.length > 12 || new Set(puzzle.masks).size !== puzzle.masks.length || !puzzle.skill) throw new Error('Invalid memory puzzle');
   for (const id of puzzle.masks) {
     const bottle = units.find(b => b.includes(id)), depth = bottle?.indexOf(id) ?? -1;
     if (!Number.isInteger(id) || id < 0 || id >= colors.length || depth < 0 || depth > 1) throw new Error('Invalid memory mask');
     const i = units.indexOf(bottle!);
     if (game.board[i].slice(depth).every(c => c === colors[id])) throw new Error('Mask covers a visible top run');
   }
+  if (new Set(puzzle.masks.map(id => Math.floor(id/4))).size > 6 || puzzle.masks.some(id => id % 4 === 1 && !puzzle.masks.includes(id-1))) throw new Error('Invalid memory bottom mask');
   if (game.board.some(b => game.level.colors.some(c => b.filter(v => v === c).length > 2))) throw new Error('Memory opening concentration');
 }
 /** Restore validates stable identities and every retained transition, independent of rendering. */

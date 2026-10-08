@@ -13,21 +13,21 @@ import { TestDatabase } from './helpers/sqlite.ts';
 import { moveMainline } from '../src/game/mainline.ts';
 
 const source = new TestDatabase('assets/levels/content.sqlite'), content = new ContentRepository(source);
-const puzzle = content.memoryPuzzle(3);
+const puzzle = content.memoryPuzzleById('memory-prototype-v1-3');
 async function setup(db = new TestDatabase()) {
   const player = await PlayerRepository.open(db, content.mainline, content.sides, 'test');
   return { db, player, memory: await MemoryRepository.open(player, content) };
 }
-test('five hand-authored memory test boards are distinct, bounded and replay to completion from SQLite', () => {
-  assert.equal(content.memory.length, 5);
+test('one hundred memory boards are distinct, bounded and replay to completion from SQLite', () => {
+  assert.equal(content.memory.length, 100);
   const keys = new Set<string>();
-  for (let i = 1; i <= 5; i++) {
+  for (let i = 1; i <= 100; i++) {
     const p = content.memoryPuzzle(i); validateMemoryPuzzle(p);
-    assert.ok(p.level.colors.length <= 6); assert.ok(p.level.bottles.length <= 8);
+    assert.ok(p.level.colors.length <= 8); assert.ok(p.level.bottles.length <= 10);
     keys.add(canonicalBottleStrings(initialBoard(p.level).map(b => b.map(c => p.level.colors.indexOf(c)))));
     replaySolution(initialBoard(p.level), p.solution);
   }
-  assert.equal(keys.size, 5);
+  assert.equal(keys.size, 100);
   assert.throws(() => validateMemoryPuzzle({ ...puzzle, masks: [3] }), /top run|mask/i);
 });
 test('observation cannot pour; ready masks exact portions; peek is temporary and pauses actions', () => {

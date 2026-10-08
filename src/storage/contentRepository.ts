@@ -6,6 +6,7 @@ import type { PlayableEntry, PlayableMainline } from '../game/mainlinePlayable.t
 import type { SolidSideCatalog, SolidSideEntry } from '../game/solidSide.ts';
 import type { ReadDatabase, WriteDatabase } from './sql.ts';
 import { CONTENT_SCHEMA_VERSION } from './contentSchema.ts';
+import { MEMORY_CATALOG, MEMORY_COUNT } from '../game/memoryCatalog.ts';
 import { validateMemoryPuzzle, type MemoryPuzzle } from '../game/memory.ts';
 
 type LevelRow = { id: string; mode: string; number: number; capacity: number; color_count: number; bottle_count: number;
@@ -44,7 +45,7 @@ export class ContentRepository {
     }))) });
     const repository = this;
     const memory = rows.filter(row => row.mode === 'memory');
-    if (memory.length !== Number(value('memoryCount')) || value('memoryCatalog') !== 'memory-prototype-v1' || memory.some((row, i) => row.number !== i + 1)) throw new Error('Memory manifest mismatch');
+    if (memory.length !== Number(value('memoryCount')) || value('memoryCatalog') !== MEMORY_CATALOG || memory.length !== MEMORY_COUNT || memory.some((row, i) => row.number !== i + 1)) throw new Error('Memory manifest mismatch');
     this.memory = Object.freeze(memory.map(row => Object.freeze({
       number: row.number,
       get level() { return repository.level(row.id); },
@@ -60,6 +61,11 @@ export class ContentRepository {
       get difficulty() { return repository.evidence<{ difficulty: SolidSideEntry['difficulty'] }>(row.id).difficulty; },
       get structureKey() { return repository.evidence<{ structureKey: string }>(row.id).structureKey; },
     }))) });
+  }
+  memoryPuzzleById(id: string): MemoryPuzzle {
+    const row = this.db.getFirstSync<{ number: number }>("SELECT number FROM levels WHERE mode='memory' AND id=?", id);
+    if (!row) throw new Error('Missing memory puzzle ID');
+    return this.memoryPuzzle(row.number);
   }
   memoryPuzzle(number: number): MemoryPuzzle {
     const puzzle = this.memory[number - 1];

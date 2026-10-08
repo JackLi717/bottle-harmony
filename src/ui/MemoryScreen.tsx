@@ -1,3 +1,4 @@
+import { nextMemoryNumber } from '../game/memoryCatalog.ts';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { AccessibilityInfo, AppState, BackHandler, Dimensions, Platform, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -130,7 +131,7 @@ export function MemoryScreen({ vessel, symbols, sound, reduceMotion, onBack }: {
   function next() {
     if (busy.current) return;
     setPendingWin(false); setCelebrating(false); setSelected(null);
-    commit(repository.select(session.puzzle.number === repository.content.memory.length ? 1 : session.puzzle.number + 1), 'next');
+    commit(repository.select(nextMemoryNumber(session.puzzle.number, repository.content.memory.length)), 'next');
   }
   const displayedUnits = animation ? animation.before.units.map((b, i) => i === animation.pour.target
     ? [...b, ...animation.before.units[animation.pour.source].slice(-animation.pour.amount)] : b) : session.units;

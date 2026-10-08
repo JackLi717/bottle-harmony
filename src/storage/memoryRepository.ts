@@ -1,3 +1,4 @@
+import { MEMORY_CATALOG } from '../game/memoryCatalog.ts';
 import { createMemory, restoreMemory, MEMORY_RULES, type MemorySession, type UnitBoard } from '../game/memory.ts';
 import type { ContentRepository } from './contentRepository.ts';
 import type { PlayerRepository } from './playerRepository.ts';
@@ -35,7 +36,8 @@ export class MemoryRepository {
     const row = db.getFirstSync<Saved>('SELECT * FROM memory_session WHERE id=1');
     let state: MemorySession | null = null;
     if (row) {
-      const puzzle = content.memoryPuzzle(row.number);
+      // Stable content ID owns the board; position may change when a bank is reordered.
+      const puzzle = content.memoryPuzzleById(row.level_id);
       if (puzzle.level.id !== row.level_id || row.rules !== MEMORY_RULES) throw new Error('Memory content binding mismatch');
       const snapshots = new Map<number, number[][]>();
       const total = db.getFirstSync<{ n: number }>('SELECT COUNT(*) AS n FROM memory_layers')!.n;
@@ -93,7 +95,7 @@ export class MemoryRepository {
         await db.runAsync("INSERT OR IGNORE INTO completions VALUES('memory',?,?)", next.puzzle.level.id, at);
       }
       await db.runAsync('INSERT INTO events VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', revision, `${this.player.installation}:${revision}`, revision, at,
-        null, null, attemptId, 'memory', next.puzzle.level.id, kind, this.player.statistics.appVersion, 'memory-prototype-v1', MEMORY_RULES, 'prototype-free-v1', 'memory-observation-v1',
+        null, null, attemptId, 'memory', next.puzzle.level.id, kind, this.player.statistics.appVersion, MEMORY_CATALOG, MEMORY_RULES, 'memory-free-v1', 'memory-observation-v1',
         JSON.stringify({ ...detail, ...timing, phase: next.phase, routeStep: next.game.historyOffset + next.game.history.length,
           revealed: before?.attempt === next.attempt ? next.revealed.flatMap((step, id) => before.revealed[id] === -1 && step >= 0 ? [{ unit: id, step }] : []) : [] }));
       if (revision % 100 === 0) {

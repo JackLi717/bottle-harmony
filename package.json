@@ -80,7 +80,9 @@
     "content:build": "node --experimental-strip-types scripts/sqlite-content.ts",
     "test:storage": "node --experimental-strip-types --test tests/sqlite*.test.ts",
     "postinstall": "node scripts/patch-sqlite-web.cjs",
-    "web:serve": "node --experimental-strip-types scripts/serve-web.ts"
+    "web:serve": "node --experimental-strip-types scripts/serve-web.ts",
+    "memory:build": "node --experimental-strip-types scripts/memory-bank.ts build",
+    "memory:verify": "node --experimental-strip-types scripts/memory-bank.ts verify"
   },
   "private": true,
   "engines": {
