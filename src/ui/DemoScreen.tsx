@@ -8,12 +8,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { cancelAnimation, Easing, useSharedValue, withTiming } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 import { Bottle } from '../art/Bottle';
-import { isBottleComplete, type CompletionEffect } from '../art/bottleCompletion';
+import { isBottleComplete } from '../art/bottleCompletion';
 import { PourStream } from '../art/PourStream';
 import { StageArt } from '../art/StageArt';
 import { GameBackdrop } from '../art/GameBackdrop';
 import type { MessageKey } from '../i18n/messages';
-import { LanguagePicker } from './LanguagePicker';
 import { PrivacyPolicy } from './PrivacyPolicy';
 import { createPourPlan, type PourPlan } from '../art/pourGeometry';
 import { DEMO_LEVEL } from '../game/demo';
@@ -31,7 +30,6 @@ import { Celebration } from './Celebration';
 import { fireworkCount } from '../art/fireworkPhysics';
 import { useSoundPreference } from './useSoundPreference';
 import { useVesselPreference } from './useVesselPreference';
-import { vesselCompletionEffect } from '../art/vesselDesigns';
 import { PourSound } from './PourSound';
 import { POUR_DURATION_MS } from '../art/pourGeometry';
 import { completedPreviewSession, finishPresentation } from './gamePresentation';
@@ -43,7 +41,6 @@ import { SOLID_SIDES } from './solidSideContent';
 import type { DifficultyReport, PlanningDepthReport } from '../game/difficulty';
 import type { HumanDifficultyReport } from '../game/humanDifficulty';
 import { MainlineMenu } from './MainlineMenu';
-import { CompletionEffectPicker } from './CompletionEffectPicker';
 import { INTERNAL_TOOLS } from './buildConfig';
 import { Tutorial } from './PlayMenu';
 import { usePlayProgress } from './usePlayProgress';
@@ -58,7 +55,7 @@ type Animation = { before: Board; pour: Pour; plan: PourPlan };
 const SIDE_AFTER = SOLID_SIDES.entries.map(item => item.afterMainline);
 
 export function DemoScreen() {
-  const { t, ready: languageReady } = useI18n();
+  const { t } = useI18n();
   const insets = useSafeAreaInsets();
   const dimensions = useWindowDimensions();
   const { compact, rail, horizontalInset, verticalInset } = deviceLayout(dimensions.width, dimensions.height, Platform.isTV);
@@ -82,9 +79,6 @@ export function DemoScreen() {
   const [menuSection, setMenuSection] = useState<'levels' | 'settings'>('levels');
   const [pickerVisible, setPickerVisible] = useState(false);
   const [difficultyVisible, setDifficultyVisible] = useState(false);
-  const [languageVisible, setLanguageVisible] = useState(false);
-  const [completionPickerVisible, setCompletionPickerVisible] = useState(false);
-  const [completionEffect, setCompletionEffect] = useState<CompletionEffect>('cork');
   const [pendingCelebration, setPendingCelebration] = useState<string | null>(null);
   const [celebration, setCelebration] = useState<'win' | 2 | 3 | 4 | 5 | null>(null);
   const [appActive, setAppActive] = useState(AppState.currentState === 'active');
@@ -123,7 +117,7 @@ export function DemoScreen() {
     : won ? t('hintCredits', hintParams)
     : t(hintMode === 'free' ? 'freeHintStatus' : hintMode === 'ticket' ? 'paidHintStatus' : 'emptyHintStatus', hintParams);
   const [stalledNotice, setStalledNotice] = useState(INITIAL_STALLED_NOTICE);
-  const stalledEligible = ready && languageReady && soundReady && vesselReady && play.tutorialDone && appActive && !animation && !searching;
+  const stalledEligible = ready && soundReady && vesselReady && play.tutorialDone && appActive && !animation && !searching;
   const nextNotice = advanceStalledNotice(stalledNotice, {
     scope: `${internalSession ? 'preview' : play.replay ? 'replay' : sideEntry ? 'side' : 'mainline'}:${session.level.id}`,
     board, status: session.status, entered: page === 'game', eligible: stalledEligible,
@@ -229,7 +223,7 @@ export function DemoScreen() {
     setLastAward(0);
     setPage('home');
   }, [setSelected, setPage, setPendingCelebration, setCelebration]);
-  const handlesTVBack = page === 'game' || menuVisible || privacyVisible || pickerVisible || difficultyVisible || languageVisible || completionPickerVisible || !!notice;
+  const handlesTVBack = page === 'game' || menuVisible || privacyVisible || pickerVisible || difficultyVisible || !!notice;
   useEffect(() => {
     if (!Platform.isTV || Platform.OS !== 'ios' || !handlesTVBack) return;
     // Apple TV otherwise lets Menu leave the app before BackHandler can navigate.
@@ -452,10 +446,10 @@ export function DemoScreen() {
     else nextLevel();
   }
 
-  useBoardKeyboard({ enabled: page === 'game' && !menuVisible && !privacyVisible && !pickerVisible && !difficultyVisible && !languageVisible && !completionPickerVisible && !notice && (play.tutorialDone || !!internalSession),
+  useBoardKeyboard({ enabled: page === 'game' && !menuVisible && !privacyVisible && !pickerVisible && !difficultyVisible && !notice && (play.tutorialDone || !!internalSession),
     disabled: !!animation || searching, positions: layout.positions, onEscape: () => selected === null ? goHome() : setSelected(null) });
 
-  if (!ready || !languageReady || !soundReady || !vesselReady) return <LinearGradient colors={['#11171E', '#070B12']} style={[styles.screen, { alignItems: 'center', justifyContent: 'center' }]}><StatusBar style="light" /><UiText style={styles.loading}>{t('loading')}</UiText></LinearGradient>;
+  if (!ready || !soundReady || !vesselReady) return <LinearGradient colors={['#11171E', '#070B12']} style={[styles.screen, { alignItems: 'center', justifyContent: 'center' }]}><StatusBar style="light" /><UiText style={styles.loading}>{t('loading')}</UiText></LinearGradient>;
 
   return (
     <LinearGradient colors={['#11171E', '#090E16', '#070B12']} locations={[0, 0.58, 1]} testID={`game-screen-${dimensions.width}x${dimensions.height}`} style={[styles.screen, Platform.OS === 'web' && { flexGrow: 0, flexShrink: 0, flexBasis: 'auto', height: Math.max(dimensions.height, rail ? 400 : 520) }]}>
@@ -484,7 +478,7 @@ export function DemoScreen() {
               const bottle = displayBoard[index];
               // A view belongs to a visual slot; logical bottle IDs stay in the session.
               // Reuse glass/SVG/worklet bindings when the next level replaces its contents.
-              return <Bottle key={index} index={index} vessel={vessel} position={position} colors={bottle} selected={selected === index} completed={isBottleComplete(bottle, session.level.capacity)} width={100 * scale} scale={scale} plan={animation?.plan ?? null} pour={animation?.pour ?? null} progress={progress} symbols={play.symbols} frozenBottom={!!session.solid && !session.solid.melted && session.solid.bottle === index} completionEffect={completionEffect} completionScene={`${session.level.id}:${completionEpoch}`} completionAnimations={appActive && !reduceMotion} />;
+              return <Bottle key={index} index={index} vessel={vessel} position={position} colors={bottle} selected={selected === index} completed={isBottleComplete(bottle, session.level.capacity)} width={100 * scale} scale={scale} plan={animation?.plan ?? null} pour={animation?.pour ?? null} progress={progress} symbols={play.symbols} frozenBottom={!!session.solid && !session.solid.melted && session.solid.bottle === index} completionEffect="cork" completionScene={`${session.level.id}:${completionEpoch}`} completionAnimations={appActive && !reduceMotion} />;
             })}
             {reserveLocked && <View pointerEvents="none" style={[StyleSheet.absoluteFill, { opacity: 0.25 }]}>
               <Bottle index={board.length} vessel={vessel} position={layout.positions[board.length]} colors={[]} selected={false} completed={false} width={100 * scale} scale={scale} plan={null} pour={null} progress={progress} completionAnimations={false} />
@@ -522,11 +516,9 @@ export function DemoScreen() {
         </>}
       </View>
       {debugReport && <DifficultyDebug visible={difficultyVisible} report={debugReport} human={debugHuman} sample={sample} label={label} onClose={() => setDifficultyVisible(false)} />}
-      {menuVisible && <MainlineMenu visible initialSection={menuSection} play={play} saveStatus={t(saveStatus)} onClose={() => setMenuVisible(false)} onResume={resumeCurrent} onSelect={chooseNumber} onSelectSide={chooseSide} onPreview={previewMainline} onSidePreview={previewSide} onSamples={() => { setMenuVisible(false); setPickerVisible(true); }} symbols={play.symbols} onSymbols={() => setPlay(Object.freeze({ ...play, symbols: !play.symbols }))} completionName={t(vesselCompletionEffect(vessel, completionEffect))} onLanguage={() => { setMenuVisible(false); setLanguageVisible(true); }} onCompletionEffects={() => { setMenuVisible(false); setCompletionPickerVisible(true); }} sound={sound} soundSaved={soundSaved} onSound={toggleSound} onCelebrationPreview={previewCelebration} onPrivacy={() => { setMenuVisible(false); setPrivacyVisible(true); }} onDebug={INTERNAL_TOOLS && !sideEntry ? openDifficulty : undefined} />}
+      {menuVisible && <MainlineMenu visible initialSection={menuSection} play={play} saveStatus={t(saveStatus)} onClose={() => setMenuVisible(false)} onResume={resumeCurrent} onSelect={chooseNumber} onSelectSide={chooseSide} onPreview={previewMainline} onSidePreview={previewSide} onSamples={() => { setMenuVisible(false); setPickerVisible(true); }} symbols={play.symbols} onSymbols={() => setPlay(Object.freeze({ ...play, symbols: !play.symbols }))} sound={sound} soundSaved={soundSaved} onSound={toggleSound} onCelebrationPreview={previewCelebration} onPrivacy={() => { setMenuVisible(false); setPrivacyVisible(true); }} onDebug={INTERNAL_TOOLS && !sideEntry ? openDifficulty : undefined} />}
       <GameNotice notice={notice} onClose={() => setNotice(null)} />
       <PrivacyPolicy visible={privacyVisible} onClose={() => { setPrivacyVisible(false); openMenu('settings'); }} />
-      <LanguagePicker visible={languageVisible} onClose={() => { setLanguageVisible(false); openMenu('settings'); }} />
-      <CompletionEffectPicker visible={completionPickerVisible} vessel={vessel} value={completionEffect} reduceMotion={reduceMotion} onSelect={effect => { setCompletionEffect(effect); setSelected(null); }} onClose={() => setCompletionPickerVisible(false)} />
       <Tutorial visible={page === 'game' && ready && !internalSession && !play.tutorialDone} onStart={() => setPlay(Object.freeze({ ...play, tutorialDone: true }))} onSkip={() => setPlay(Object.freeze({ ...play, tutorialDone: true }))} />
       {INTERNAL_TOOLS && <LevelPicker visible={pickerVisible} currentCode={sample?.code ?? null} onClose={() => setPickerVisible(false)} onSelect={chooseSample} onPreview={previewMainline} onSidePreview={previewSide} />}
     </LinearGradient>

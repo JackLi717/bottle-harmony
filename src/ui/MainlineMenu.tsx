@@ -12,9 +12,9 @@ import { MAINLINE } from './mainlineContent';
 import { SOLID_SIDES } from './solidSideContent';
 
 const NUMBERS = Array.from({ length: 1000 }, (_, i) => i + 1);
-type Props = { visible: boolean; initialSection: 'levels' | 'settings'; play: MainlineState; saveStatus: string; onClose: () => void; onResume: () => void; onSelect: (number: number) => void; onSelectSide: (number: number) => void; onPreview: (number: number) => void; onSidePreview: (number: number) => void; onSamples: () => void; onSymbols: () => void; symbols: boolean; completionName: string; onLanguage: () => void; onCompletionEffects: () => void; sound: boolean; soundSaved: boolean; onSound: () => void; onCelebrationPreview: (count: 2 | 3 | 4 | 5) => void; onDebug?: () => void; onPrivacy: () => void };
-export function MainlineMenu({ visible, initialSection, play, saveStatus, onClose, onResume, onSelect, onSelectSide, onPreview, onSidePreview, onSamples, onSymbols, symbols, completionName, onLanguage, onCompletionEffects, sound, soundSaved, onSound, onCelebrationPreview, onDebug, onPrivacy }: Props) {
-  const { t, rtl, languageName } = useI18n();
+type Props = { visible: boolean; initialSection: 'levels' | 'settings'; play: MainlineState; saveStatus: string; onClose: () => void; onResume: () => void; onSelect: (number: number) => void; onSelectSide: (number: number) => void; onPreview: (number: number) => void; onSidePreview: (number: number) => void; onSamples: () => void; onSymbols: () => void; symbols: boolean; sound: boolean; soundSaved: boolean; onSound: () => void; onCelebrationPreview: (count: 2 | 3 | 4 | 5) => void; onDebug?: () => void; onPrivacy: () => void };
+export function MainlineMenu({ visible, initialSection, play, saveStatus, onClose, onResume, onSelect, onSelectSide, onPreview, onSidePreview, onSamples, onSymbols, symbols, sound, soundSaved, onSound, onCelebrationPreview, onDebug, onPrivacy }: Props) {
+  const { t, rtl } = useI18n();
   const insets = useSafeAreaInsets();
   const { height } = useWindowDimensions();
   const [section, setSection] = useState(initialSection);
@@ -86,9 +86,7 @@ export function MainlineMenu({ visible, initialSection, play, saveStatus, onClos
           </View>
         </> : <ScrollView style={styles.settings} contentContainerStyle={styles.settingsContent}>
           <View style={styles.settingsHero}><Icon name="spark" color="#DEC797" size={22} /><UiText style={styles.settingsBrand}>BOTTLE HARMONY</UiText></View>
-          <Pressable accessibilityRole="button" onPress={onLanguage} style={[styles.settingRow, rtl && styles.reverse]}><Icon name="language" color="#BDCDD3" /><View style={styles.settingCopy}><UiText style={styles.settingTitle}>{t('language')}</UiText></View><UiText style={styles.settingValue}>{languageName} ›</UiText></Pressable>
           <Pressable accessibilityRole="switch" accessibilityLabel={t('sound')} accessibilityState={{ checked: sound }} onPress={onSound} style={[styles.settingRow, rtl && styles.reverse]}><View style={styles.settingCopy}><UiText style={styles.settingTitle}>{t('sound')}</UiText><UiText style={styles.settingNote}>{t(soundSaved ? 'soundNote' : 'saveFailed')}</UiText></View><View style={[styles.toggle, sound && styles.toggleOn]}><View style={[styles.toggleThumb, sound && styles.toggleThumbOn]} /></View></Pressable>
-          <Pressable accessibilityRole="button" onPress={onCompletionEffects} style={[styles.settingRow, rtl && styles.reverse]}><View style={styles.settingCopy}><UiText style={styles.settingTitle}>{t('effects')}</UiText></View><UiText style={styles.settingValue}>{completionName} ›</UiText></Pressable>
           <Pressable accessibilityRole="switch" accessibilityLabel={t('symbols')} accessibilityState={{ checked: symbols }} onPress={onSymbols} style={[styles.settingRow, rtl && styles.reverse]}><View style={styles.settingCopy}><UiText style={styles.settingTitle}>{t('symbols')}</UiText><UiText style={styles.settingNote}>{t('symbolsNote')}</UiText></View><View style={[styles.toggle, symbols && styles.toggleOn]}><View style={[styles.toggleThumb, symbols && styles.toggleThumbOn]} /></View></Pressable>
           <Pressable accessibilityRole="button" onPress={onPrivacy} style={[styles.settingRow, rtl && styles.reverse]}><UiText style={styles.settingTitle}>{t('privacyPolicy')}</UiText><UiText style={styles.settingValue}>›</UiText></Pressable>
           <UiText style={styles.saveStatus}>{saveStatus}</UiText>

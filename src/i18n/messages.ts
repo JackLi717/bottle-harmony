@@ -6,7 +6,6 @@ export const LANGUAGES = [
   { id: 'ru', name: 'Русский' }, { id: 'ar', name: 'العربية' }, { id: 'hi', name: 'हिन्दी' }, { id: 'id', name: 'Bahasa Indonesia' },
 ] as const;
 export type Language = typeof LANGUAGES[number]['id'];
-export type LanguagePreference = Language | 'system';
 type Translations = readonly [string, string, string, string, string, string, string, string, string, string, string, string, string];
 export const MESSAGES = {
   privacyPolicy: ['Privacy policy','隐私政策','隱私政策','Política de privacidad','Política de privacidade','Politique de confidentialité','Datenschutzerklärung','プライバシーポリシー','개인정보 처리방침','Политика конфиденциальности','سياسة الخصوصية','गोपनीयता नीति','Kebijakan privasi'],
@@ -155,9 +154,6 @@ export type MessageKey = keyof typeof MESSAGES;
 const LANGUAGE_LABELS = { en: 'languageEn', 'zh-Hans': 'languageZhHans', 'zh-Hant': 'languageZhHant', es: 'languageEs', pt: 'languagePt', fr: 'languageFr', de: 'languageDe', ja: 'languageJa', ko: 'languageKo', ru: 'languageRu', ar: 'languageAr', hi: 'languageHi', id: 'languageId' } as const satisfies Record<Language, MessageKey>;
 export function localizedLanguageName(target: Language, display: Language): string {
   return translate(display, LANGUAGE_LABELS[target]);
-}
-export function parsePreference(value: unknown): LanguagePreference {
-  return value === 'system' || LANGUAGES.some(language => language.id === value) ? value as LanguagePreference : 'system';
 }
 export function resolveLanguage(locales: readonly string[]): Language {
   for (const tag of locales) {

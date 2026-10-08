@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { LANGUAGES, localizedLanguageName, MESSAGES, parsePreference, resolveLanguage, translate } from '../src/i18n/messages.ts';
+import { systemLanguage } from '../src/i18n/systemLanguage.ts';
+import { LANGUAGES, localizedLanguageName, MESSAGES, resolveLanguage, translate } from '../src/i18n/messages.ts';
 
 test('all public messages cover all languages and preserve interpolation fields', () => {
   const fields = (text: string) => [...text.matchAll(/\{(\w+)\}/g)].map(match => match[1]).sort();
@@ -21,8 +22,6 @@ test('language selection respects scripts, regions and ordered system fallbacks'
   assert.equal(resolveLanguage(['ar-EG']), 'ar');
   assert.equal(resolveLanguage(['unknown']), 'en');
   assert.equal(resolveLanguage([]), 'en');
-  for (const language of LANGUAGES) assert.equal(parsePreference(language.id), language.id);
-  for (const invalid of [null, '', 'pl', '{}', 12]) assert.equal(parsePreference(invalid), 'system');
 });
 test('translations change presentation without changing numerical level identifiers', () => {
   assert.equal(translate('zh-Hans', 'continueLevel', { n: 419 }), '继续第 419 关');
@@ -35,4 +34,12 @@ test('language rows keep recognizable native names and localized secondary names
   assert.equal(localizedLanguageName('zh-Hans', 'es'), 'Chino (simplificado)');
   assert.equal(localizedLanguageName('ar', 'en'), 'Arabic');
   for (const display of LANGUAGES) for (const target of LANGUAGES) assert.ok(localizedLanguageName(target.id, display.id));
+});
+
+test('system language reads preferred locales and falls back to English when unavailable', () => {
+  assert.equal(systemLanguage(() => [{ languageTag: 'zh-Hans-AU' }]), 'zh-Hans');
+  assert.equal(systemLanguage(() => [{ languageTag: 'pl-PL' }, { languageTag: 'de-AT' }]), 'de');
+  assert.equal(systemLanguage(() => []), 'en');
+  assert.equal(systemLanguage(() => [{ languageTag: 'pl-PL' }]), 'en');
+  assert.equal(systemLanguage(() => { throw new Error('Locale service unavailable'); }), 'en');
 });
