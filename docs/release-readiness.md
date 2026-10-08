@@ -1,8 +1,10 @@
-# Google Play 首次封闭测试提交
+# 第一版发布与测试状态
 
-检查日期：2026 年 10 月 8 日（墨尔本）。Water Sort - No Ads 的 0.1.1（versionCode 5）已上传 Google Play，并已提交首次 Alpha 封闭测试审核。提交后的快速检查完成，Publishing overview 明确显示 **Changes in review** 与 **Your changes are now in review**；所列版本只有 `0.1.1 (5) - multi-platform closed test`。这不是审核通过或正式公开发行。
+更新日期：2026 年 10 月 8 日（墨尔本）。**用户最新确认第一版已完成，正在申请上线，尚未进入玩家测试、没有玩家。** 当前仓库与最近上传的 Google Play 手机／平板版本为 0.1.1（versionCode 5），商店标题 Water Sort - No Ads，轨道为 Alpha 封闭测试；第一版功能清单见[实现基线](current-baseline.md)。
 
-审核页面：https://play.google.com/console/u/0/developers/6045945546746635759/app/4974675580183102720/publishing 。本地状态和截图在 `builds/release-0.1.1/console-progress.json`、`play-first-review.jpg`、`play-first-review-full.jpg`。
+最后一次留存的 Console 观察是本版本已提交首次审核、Publishing overview 显示 **Changes in review** 与 **Your changes are now in review**，版本为 `0.1.1 (5) - multi-platform closed test`。该观察与用户最新确认分开记录；本轮未重新查询 Console，不推断审核已通过、测试已开放或生产权限已获批。此前“已上线测试、已有玩家”的说明以用户此次澄清为准。
+
+Console 页面：[Publishing overview](https://play.google.com/console/u/0/developers/6045945546746635759/app/4974675580183102720/publishing)。提交时的本地记录与截图在 `builds/release-0.1.1/console-progress.json`、`play-first-review.jpg`、`play-first-review-full.jpg`，它们是当时证据，未改写成上线截图。
 
 ## 本次产物
 
@@ -16,11 +18,11 @@
 
 最低 Android API 24，目标 API 36。正式界面关闭内部工具；包中包含用户批准的倒水与禁止广告标识图标。上传证书指纹、版本、权限和静态检查见 `builds/release-0.1.1/mobile5-aab-report.json` 与 `mobile5-apk-report.json`。包无网络、存储、悬浮窗、麦克风、广告 ID、定位、摄像头或联系人权限；Android 系统备份关闭。没有广告、账号、内购、联网采集或云存档。
 
-当前内容为已验证的 `mainline-1000-v5` 主线、50 副关卡和十五款自由选择容器。本轮不改变关卡、规则、解锁或存档格式。后续产品决定见[首期无广告、推荐与 Premium 规则](gameplay-ideas.md#首期无广告推荐与-premium-规则)，尚未接入当前应用；接入联网或内购后须重新核查包、声明与政策。
+当前内容为已验证的 `mainline-1000-v5` 主线、50 副关卡和十五款自由选择容器。本轮只修改文档，不改变实际关卡、规则、解锁或存档格式。用户已确认下一次实现采用全 SQLite 新基线，关卡库、玩家状态、统计与偏好一并重建，不兼容旧开发存档；见[存储方案](gameplay-statistics-plan.md)。后续产品决定见[无广告、推荐与 Premium 规则](gameplay-ideas.md#后续商业规则无广告推荐与-premium)，尚未接入当前应用；接入联网或内购后须重新核查包、声明与政策。
 
 ## 验证
 
-Node 24 的 TypeScript、ESLint 通过，当前游戏自动测试 150／150 通过，日志位于 `builds/release-0.1.1/logs/`。新增 R8 后重新核查了最终 AAB／APK、签名及一致的映射；游戏测试不替代混淆后的原生运行检查。
+本节为 0.1.1（5）构建提交时的验证记录；本轮文档核对未重做构建或设备操作，最新源码回归见[基线](current-baseline.md)。提交批次 Node 24 的 TypeScript、ESLint 通过，当时游戏自动测试 150／150 通过，日志位于 `builds/release-0.1.1/logs/`。新增 R8 后重新核查了最终 AAB／APK、签名及一致的映射；游戏测试不替代混淆后的原生运行检查。
 
 版本 5 在七英寸 Android API 34 平板完成横竖屏展示、倒水和撤销，并核对实际四层／空瓶到三层／一层再恢复。最终 AAB 生成的版本 5 APK 在 API 36、真实 16384 字节页的独立模拟器中启动；本次运行明确设置并读取 `bionic.linker.16kb.app_compat.enabled=false`、`pm.16kb.app_compat.disabled=true`，第 42 关倒水和撤销实际层数均已验证。运行记录绑定最终产物哈希，见 `builds/release-0.1.1/runtime-r8-16kb.json` 和相应 UI XML。截图场景结束后已恢复原存档并核对哈希。
 
@@ -32,18 +34,18 @@ Node 24 的 TypeScript、ESLint 通过，当前游戏自动测试 150／150 通�
 
 ## 素材与声明
 
-用户确认 Platon Games、包名 `com.bottleharmony.app`、公开支持邮箱 `admin@readytradie.com`、全部可选国家／地区以及 6 岁以上儿童和成年人。Console 已提交英中商店页、用户选定的 Water Sort - No Ads 标题、无广告、免登录、无广告 ID、不收集／共享数据、非政府／金融／健康应用、目标年龄及 IARC 分级。儿童合规、IARC 条款及创建应用声明均已由用户确认。标题中的宣传关键词此前有 Console 提示，进入审核不等于标题已获批准。
+用户确认 Platon Games、包名 `com.bottleharmony.app`、公开支持邮箱 `admin@readytradie.com`、全部可选国家／地区以及 6 岁以上儿童和成年人。Console 已提交英中商店页、用户选定的 Water Sort - No Ads 标题、无广告、免登录、无广告 ID、不收集／共享数据、非政府／金融／健康应用、目标年龄及 IARC 分级。儿童合规、IARC 条款及创建应用声明均已由用户确认。标题中的宣传关键词此前有 Console 提示；此处保留提交时记录，本轮没有重新核对标题的 Console 结论。
 
 IARC 按实际内容披露 Champagne Flute 与 Faceted Martini 的偶发酒精名称，没有饮酒或鼓励饮酒。结果为美国 Everyone（Alcohol reference）、欧洲 PEGI 3、澳大利亚 General、巴西／德国 All ages、韩国 15+、台湾 Parental guidance 15、沙特 12、其余及俄罗斯 3+。目标受众选择不替代各地区分级限制。
 
 英文隐私政策：https://readytradie.com/bottle-harmony/privacy.html 。应用内政策可离线阅读。网站与数独共用既有 Cloudflare Pages 静态托管，只新增 Bottle Harmony 英文页，两个应用代码和构建独立。部署及公开页面证据保存在 `builds/play/website-deployment.json` 与 `privacy-live.jpg`。
 
-本轮新选十四张真实原图保存在 Git 忽略目录 `builds/release-0.1.1/screenshots/`；入口 `gallery.html`、索引 `screenshots-manifest.json`、场景 `scene-recipes.json`，保留平台、包版本、尺寸、哈希及重拍脚本。前四张为不同平台／容器的 279／42／673／910 关。预先准备的场景用于展示，不冒充自然通关。根据用户“截图本地保存，不上传到 G 的库”要求，本轮未将新截图加入 Git 或上传 Play；本次送审沿用此前批准且已上传的四张手机截图和商店素材。
+提交批次新选十四张真实原图保存在 Git 忽略目录 `builds/release-0.1.1/screenshots/`；入口 `gallery.html`、索引 `screenshots-manifest.json`、场景 `scene-recipes.json`，保留平台、包版本、尺寸、哈希及重拍脚本。前四张为不同平台／容器的 279／42／673／910 关。预先准备的场景用于展示，不冒充自然通关。根据用户“截图本地保存，不上传到 G 的库”要求，当时未将新截图加入 Git 或上传 Play；该次送审沿用此前批准且已上传的四张手机截图和商店素材。
 
-## 尚需用户协助及后续验证
+## 当前测试与后续验证
 
-- 测试者名单尚未配置。已询问用户复用现有数独名单或提供本应用名单，尚无答复；没有自行勾选数独名单或联系任何测试者。该提醒没有阻止首次送审，但配置名单前无人能加入。
-- 账号为 2023 年 11 月 13 日之后创建的个人账号。Bottle Harmony 需至少 12 名真实测试者连续加入本应用封闭测试 14 天并实际试玩，之后申请正式发布权限；数独的测试记录不能替代，达到天数不自动获批。用户已选择本应用完成封闭测试后申请正式发行，不另做 Early Access。[Google 官方要求](https://support.google.com/googleplay/android-developer/answer/14151465?hl=en)。
+- 送审时的 Console 记录显示尚未配置名单；用户最新确认尚未进入测试、没有玩家。本轮未重新核对 Console 名单或开放状态，不设定测试起算日，也没有代为联系测试者。
+- 账号为 2023 年 11 月 13 日之后创建的个人账号。Bottle Harmony 需至少 12 名真实测试者连续加入本应用封闭测试 14 天并实际试玩，之后申请正式发布权限；数独的测试记录不能替代，达到天数不自动获批。这是此前按账号情况核查的准备要求；实际人数、天数与资格以该应用 Console 为准，本轮未重新核验政策。用户已选择完成封闭测试后申请正式发行，不另做 Early Access。参考：[Google 官方要求](https://support.google.com/googleplay/android-developer/answer/14151465?hl=en)。
 - 上传密钥和密码仅存于 Git 忽略的 `builds/signing/`，需备份到用户控制的安全位置，不能提交 Git 或作为商店素材上传。
-- 真机持续游玩、低端设备性能、声音听感、最低系统、TV 实际观看距离及其他浏览器引擎仍需补验；本轮模拟器检查不替代这些结果。现有手机的 debug 签名不同，不为复测卸载旧应用或删除用户进度。
+- 真机持续游玩、低端设备性能、声音听感、最低系统、TV 实际观看距离及其他浏览器引擎仍需补验；本轮模拟器检查不替代这些结果。现有手机的 debug 签名不同；SQLite 新基线按用户授权不继承旧开发数据，本轮文档更新不卸载应用或清理设备数据。
 - TV 商店发行、Apple 商店及浏览器公网部署需按各平台单独完成。本次送审为 Google 手机／平板的 Alpha 封闭测试包。

@@ -1,25 +1,23 @@
 # Bottle Harmony Google Play 材料
 
-此目录是本地商店素材基线。英语和中文游戏介绍、四张重新筛选的手机截图均已保存为Play Console草稿，并经重新加载核对；尚未提交本轮素材审核或发行。当前v5 AAB仍保留在Alpha封闭测试发布草稿。用户已选定第四种图形化无广告设计作为正式图标，本地图标已更新；当前已上传AAB仍是旧图标，需在下一次原生构建中更新。新图标由内置ImageGen生成，来源和提示词见 assets/brand/icon-prompts.json。横图的来源声明仍待此前请求的确认，详细进度见 builds/play/console-progress.json。
+更新日期：2026 年 10 月 8 日。第一版已完成，正在申请上线，尚未进入玩家测试、没有玩家（用户最新确认）。当前手机／平板上传版本为 **0.1.1（versionCode 5）**，Alpha 封闭测试；应用内品牌 Bottle Harmony，商店标题 **Water Sort - No Ads**。完整发布状态、产物哈希和证据边界见[发布记录](../../docs/release-readiness.md)。本轮仅对齐本地文档，未访问 Console 或上传素材。
 
-用户选定的商店标题草稿为 **Water Sort - No Ads**（19 个字符）。Console 实际提示名称不应使用价格或宣传关键词，并提示以 No ads 开头的英文短说明可能不满足商店推荐要求；成功保存不等于审核接受。规则见 [Google Play 元数据政策](https://support.google.com/googleplay/android-developer/answer/9898842?hl=en)。应用内品牌、包名及现有构建仍为 Bottle Harmony。
+最后一次 Console 留存证据为 0.1.1（5）已送审，晚于此前 `builds/play/console-progress.json` 的素材草稿。当前用户确认测试已开始；不再把旧草稿、旧图标或 0.1.0 产物写为最新状态，也不据此推断公开正式发行。用户批准的无广告图标已进入当前测试包。
 
-| 材料 | 文件 | 状态 |
+| 材料 | 文件 | 当前基线 |
 | --- | --- | --- |
-| 应用图标 | icon-512.png | 用户已确认第4种：倒水玻璃＋镂空禁止广告标识；512×512 PNG，已上传Console并保存，重新打开核对通过，尚未送审 |
-| 宣传横图 | feature-1024x500.png | 1024×500、24 位 PNG，待用户审阅 |
-| 商店文案 | listing.json | 英语和简体中文；名称、短说明、完整说明 |
-| 完整介绍预览 | description-en-US.txt、description-zh-CN.txt | 从 listing.json 导出，便于审阅 |
-| 版本说明 | release-notes.txt | 0.1.0 测试版本 |
-| Console 声明 | declarations.json | 内容声明、6 岁以上受众和官方 IARC 分级已保存；地区分级不同，见文件 |
-| 手机截图 | screenshots/en-US/ | 四张1080×1920、24位PNG，真实v5发布包UI；分散关卡、不同容器 |
+| 应用图标 | `icon-512.png` | 已批准的倒水玻璃＋镂空禁止广告标识；已用于商店材料及 0.1.1 包 |
+| 宣传横图 | `feature-1024x500.png` | 1024×500、24 位 PNG；沿用首次提交材料，未在本轮改图或送审 |
+| 英中商店文案 | `listing.json` | 标题、短说明和完整介绍；对应千关、50 副关、15 容器及现行提示规则 |
+| 完整介绍预览 | `description-en-US.txt`、`description-zh-CN.txt` | 从 `listing.json` 导出 |
+| 版本说明 | `release-notes.txt` | 首次封闭测试说明，当前绑定 0.1.1（5） |
+| 内容／数据声明 | `declarations.json` | 免费、无广告／内购／账号／联网采集；6 岁以上及地区 IARC 分级；未来商业规则未实施 |
+| 手机截图 | `screenshots/en-US/` | 沿用已批准并上传的四张；拍摄来源为 0.1.0（1）包的 v5 题库，未伪称在 0.1.1 重拍 |
 
-截图按产品橱窗的展示目的重新筛选为四张：郁金香杯（279关）、月光瓶（42关）、十二瓶棱镜棋盘（673关）、辅助辨色冰晶杯（910关）。全部来自已上传v5发布包的真实手机UI，在独立模拟器内使用经正式存档解码器校验的临时截图测试场景；完成后原测试数据库已按SHA-256原样恢复。没有修改游戏代码或截图RGB像素。此截图测试存档不作为自然通关或进度功能验收证据。
+四张手机截图依次为 279 关郁金香杯、42 关月光瓶、673 关十二瓶棱镜、910 关冰晶杯与辅助符号。均为真实发布 UI，在隔离模拟器用正式解码器验证的临时场景拍摄，原存档按哈希恢复；不是自然通关或进度功能验收。原图、场景、尺寸和哈希见[截图基线](screenshots/README.md)。新选十四张跨平台原图按用户要求只留在本地 `builds/release-0.1.1/screenshots/`，未加入 Git 或上传 Play。
 
-原尺寸图片、排序预览、场景参数、SHA-256和后续重拍对比流程均在 [screenshots/README.md](screenshots/README.md)。这是一份本地可持续更新的素材基线；PC、平板和TV交付由其他开发人员负责，实际交付验证后再拍相应平台素材。
+当前签名 AAB 为 `builds/play/bottle-harmony-0.1.1-5.aab`，SHA-256 `58472cf3ab3f851acfc28a302dd26b56bbf64b5ad89f709d0d7e611889b6490d`；对应 APK 及 R8 mapping 见发布记录。截图证据中的旧 AAB 哈希仍是拍摄来源，不替换成新包哈希。上传签名密钥和密码仅在被忽略的 `builds/signing/`，需要安全备份，不提交仓库或随商店材料上传。
 
-最终签名 AAB：builds/play/bottle-harmony-0.1.0-1.aab，SHA-256 为 cbc29b5b19c9a58d9e8806f172320e514639d35fc818bd13046d65d343c0dfa1。对应 APK 由这个 AAB 生成，用于隔离模拟器验证；并非 Google Play 增强、重新签名及分包后交付的安装包。上传签名密钥和密码仅在被忽略的 builds/signing/ 中，需要安全备份，不得随商店资料上传。
+政策源为 `src/config/privacy.json`，应用内离线可读；网站文件 `store/website/bottle-harmony/privacy.html` 对应[公开英文政策](https://readytradie.com/bottle-harmony/privacy.html)。公开 Android 包无网络权限，政策与声明描述当前离线包；推荐结算或内购实施后须同步更新，不能提前写成已接入。
 
-仅英文的政策源是 src/config/privacy.json，应用内可离线阅读。网站文件是 store/website/bottle-harmony/privacy.html，已上线 URL 为 https://readytradie.com/bottle-harmony/privacy.html；部署核对记录见 docs/release-readiness.md。
-
-账号要求、真实设备复测、已知工具链审计问题、16 KB 警告及 Console 剩余操作，以 docs/release-readiness.md 为准。先完成本应用自己的封闭测试，再申请正式发布权限；本次不另做开放/Early Access测试；数独的参与天数不计入 Bottle Harmony。
+Android TV、Apple 和浏览器均已有对应构建／适配证据，但不据此认定已完成平台发行，见[设备支持](../../docs/device-support.md)。正式发行前的测试与资格待确认事项见[封闭测试安排](../../docs/play-testing-plan.md)；用户已选择本应用封闭测试后申请正式发行，不另做 Early Access。

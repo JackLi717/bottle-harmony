@@ -1,12 +1,12 @@
 {
-  "status": "Current v5 artifact checked; Console content sections saved as ready for review, not submitted to Google app review.",
+  "status": "The owner clarified on 2026-10-08 that version one is complete and its release application is in progress, but player testing has not started and there are no players. This supersedes earlier wording that testing was live. Repository/mobile upload baseline remains 0.1.1 (5); last retained Console evidence is Alpha Changes in review. Console was not rechecked; approval, production access and testing start dates are not asserted. A fresh SQLite-only design for runtime content, saves, statistics and preferences is confirmed but not implemented; existing package declarations still describe the submitted build.",
   "developer": "Platon Games",
   "appName": "Bottle Harmony",
   "packageName": "com.bottleharmony.app",
   "category": "GAME_PUZZLE",
   "price": "Free",
   "distribution": "All countries and regions available in Google Play Console",
-  "track": "Closed testing first; open testing / Early Access after app production access is approved",
+  "track": "Alpha closed testing; production release after this app completes testing and receives required access. No separate open testing / Early Access planned.",
   "supportEmail": "admin@readytradie.com",
   "privacyPolicy": "https://readytradie.com/bottle-harmony/privacy.html",
   "containsAds": false,
@@ -63,5 +63,7 @@
     "16–17",
     "18+"
   ],
-  "targetAgeSavedInConsole": true
+  "targetAgeSavedInConsole": true,
+  "releaseVersion": "0.1.1",
+  "androidMobileVersionCode": 5
 }
