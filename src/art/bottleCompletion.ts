@@ -16,6 +16,15 @@ export function completionVisible(completeColors: boolean, visibleLayers: number
 }
 
 export const COMPLETION_DURATION = 1200;
+export const SYMBOL_FADE_DURATION = 180;
+
+/** Uses the existing visible-completion clock; restored/cancelled scenes are already settled. */
+export function completionSymbolOpacity(complete: boolean, timeline: number, animations: boolean) {
+  'worklet';
+  if (!complete) return 1;
+  return animations ? 1 - Math.max(0, Math.min(1, timeline * COMPLETION_DURATION / SYMBOL_FADE_DURATION)) : 0;
+}
+
 export type CompletionFrame = { complete: boolean; scene: string; effect: CompletionEffect; replay: number; enabled: boolean };
 
 /** Completion is an edge of this bottle's state, never of the global pour clock. */
