@@ -1,9 +1,10 @@
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
 
-export type IconName = 'language' | 'back' | 'previous' | 'next' | 'undo' | 'reset' | 'play' | 'spark' | 'hint' | 'fire' | 'settings' | 'levels' | 'close' | 'trophy' | 'lock';
+export type IconName = 'eye' | 'eye-off' | 'language' | 'back' | 'previous' | 'next' | 'undo' | 'reset' | 'play' | 'spark' | 'hint' | 'fire' | 'settings' | 'levels' | 'close' | 'trophy' | 'lock';
 export function Icon({ name, color = '#FFF2D4', size = 22 }: { name: IconName; color?: string; size?: number }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      {(name === 'eye' || name === 'eye-off') && <><Path d="M2 12 Q12 -2 22 12 Q12 26 2 12Z" stroke={color} strokeWidth={1.6} /><Circle cx={12} cy={12} r={3.2} stroke={color} strokeWidth={1.6} />{name === 'eye-off' && <Path d="M3 3 21 21" stroke={color} strokeWidth={2} strokeLinecap="round" />}</>}
       {name === 'language' && <><Circle cx={12} cy={12} r={9} stroke={color} strokeWidth={1.5} /><Path d="M3 12h18 M12 3c-6 5-6 13 0 18 M12 3c6 5 6 13 0 18" stroke={color} strokeWidth={1.3} /></>}
       {name === 'back' && <Path d="m14 5-7 7 7 7 M7 12h13" stroke={color} strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" />}
       {name === 'previous' && <Path d="m15 5-7 7 7 7" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />}

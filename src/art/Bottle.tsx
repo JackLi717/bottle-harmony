@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { Platform } from 'react-native';
 import Animated, { cancelAnimation, Easing, useAnimatedProps, useAnimatedReaction, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming, type SharedValue } from 'react-native-reanimated';
-import Svg, { ClipPath, Defs, Ellipse, G, LinearGradient, Path, RadialGradient, Stop, Text as SvgText } from 'react-native-svg';
+import Svg, { ClipPath, Defs, Ellipse, G, LinearGradient, Path, RadialGradient, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import type { ColorId, Pour } from '../game/rules';
 import { liquidPath, liquidSurface } from './liquidGeometry';
 import { liquidFrame, type LiquidLayerFrame } from './liquidPresentation';
@@ -26,14 +26,15 @@ type LiquidLayerProps = {
   count: SharedValue<number>;
   liquid: SharedValue<LiquidLayerFrame[]>;
   id: string;
+  hidden?: boolean;
 };
 
-function LiquidLayer({ color, layer, firstLayer, count, liquid, id }: LiquidLayerProps) {
+function LiquidLayer({ color, layer, firstLayer, count, liquid, id, hidden = false }: LiquidLayerProps) {
   const props = useAnimatedProps(() => ({
     d: liquid.value[layer]?.path ?? '',
     opacity: count.value > firstLayer ? 1 : 0,
   }));
-  return <AnimatedPath animatedProps={props} fill={`url(#${id}-${color})`} stroke="#FFFFFF" strokeOpacity={0.075} strokeWidth={0.5} />;
+  return <AnimatedPath animatedProps={props} fill={hidden ? '#65717B' : `url(#${id}-${color})`} stroke="#FFFFFF" strokeOpacity={0.075} strokeWidth={0.5} />;
 }
 
 function LiquidSymbol({ color, layer, liquid, opacity }: { color: ColorId; layer: number; liquid: SharedValue<LiquidLayerFrame[]>; opacity: SharedValue<number> }) {
@@ -47,7 +48,7 @@ function LiquidSymbol({ color, layer, liquid, opacity }: { color: ColorId; layer
     // Native SVG takes a numeric matrix; web SVG requires the transform attribute.
     return IS_WEB ? { opacity: alpha, transform: `matrix(${matrix.join(' ')})` } : { opacity: alpha, matrix };
   });
-  return <AnimatedG animatedProps={props}><SvgText x={0} y={16 * .35} fontSize={16} textAnchor="middle" fill="#142F39">{LIQUID_SYMBOLS[color]}</SvgText></AnimatedG>;
+  return <AnimatedG animatedProps={props}><SvgText x={0} y={16 * .35} fontSize={16} textAnchor="middle" fill={color === 'unknown' ? '#ECF0F2' : '#142F39'}>{LIQUID_SYMBOLS[color] ?? '?'}</SvgText></AnimatedG>;
 }
 
 /** Gradients and the glass clip never change when a slot receives a new level. */
@@ -119,10 +120,12 @@ export type BottleProps = {
   completionAnimations?: boolean;
   vessel?: VesselDesign;
   frozenBottom?: boolean;
+  hiddenLayers?: readonly boolean[];
+  markedLayers?: readonly boolean[];
 };
 
 /** Glass art remains static; liquid paths and transforms update on the UI thread. */
-export const Bottle = memo(function Bottle({ index, colors, selected, completed, width, scale, plan, pour, progress, position, symbols = false, completionEffect = 'gold', completionScene = 'preview', completionReplay = 0, completionAnimations = true, vessel = DEFAULT_VESSEL, frozenBottom = false }: BottleProps) {
+export const Bottle = memo(function Bottle({ index, colors, selected, completed, width, scale, plan, pour, progress, position, symbols = false, completionEffect = 'gold', completionScene = 'preview', completionReplay = 0, completionAnimations = true, vessel = DEFAULT_VESSEL, frozenBottom = false, hiddenLayers = [], markedLayers = [] }: BottleProps) {
   const isSource = pour?.source === index;
   const isTarget = pour?.target === index;
   const id = `bottle-${index}-${vessel.id}`;
@@ -139,7 +142,9 @@ export const Bottle = memo(function Bottle({ index, colors, selected, completed,
     return colors.length + (isSource ? -transferred : isTarget ? transferred - (pour?.amount ?? 0) : 0);
   });
   const complete = useDerivedValue(() => completionVisible(completed, count.value));
-  const liquid = useDerivedValue(() => liquidFrame(colors, count.value, angle.value, vessel, symbols));
+  // Unknown portions never merge visually or expose their real color/symbol through animation.
+  const presentationColors = colors.map((c, i) => hiddenLayers[i] ? `unknown-${i}` : c);
+  const liquid = useDerivedValue(() => liquidFrame(presentationColors, count.value, angle.value, vessel, symbols || hiddenLayers.some(Boolean)));
   const completionTimeline = useSharedValue(1);
   useAnimatedReaction(() => ({ complete: complete.value, scene, effect, replay: completionReplay, enabled: completionAnimations }), (current, previous) => {
     if (shouldCelebrateCompletion(current, previous)) {
@@ -221,19 +226,26 @@ export const Bottle = memo(function Bottle({ index, colors, selected, completed,
         </AnimatedG>}
         <AnimatedPath d={vessel.shell} fill={`url(#${id}-glass)`} animatedProps={shell} />
         <G clipPath={`url(#${id}-inside)`}>
-          {[...colors].map((color, layer) => {
+          {presentationColors.map((color, layer) => {
             let firstLayer = layer;
-            while (firstLayer > 0 && colors[firstLayer - 1] === color) firstLayer--;
+            while (firstLayer > 0 && presentationColors[firstLayer - 1] === color) firstLayer--;
             return { color, layer, firstLayer };
-          }).filter(({ color, layer }) => colors[layer + 1] !== color).reverse().map(({ color, layer, firstLayer }) => (
-            <LiquidLayer key={layer} color={color} layer={layer} firstLayer={firstLayer} count={count} liquid={liquid} id={id} />
+          }).filter(({ color, layer }) => presentationColors[layer + 1] !== color).reverse().map(({ color, layer, firstLayer }) => (
+            <LiquidLayer key={layer} color={color} hidden={!!hiddenLayers[layer]} layer={layer} firstLayer={firstLayer} count={count} liquid={liquid} id={id} />
           ))}
           {frozenBottom && colors.length > 0 && <G>
             <Path d={liquidPath(1, 0, vessel)} fill="#C6F3FF" fillOpacity={0.35} stroke="#E8FCFF" strokeOpacity={0.8} strokeWidth={1.2} />
             <Path d={`M50 ${iceMiddle - iceRadius} V${iceMiddle + iceRadius} M${50 - iceRadius} ${iceMiddle} H${50 + iceRadius} M${50 - iceRadius * .7} ${iceMiddle - iceRadius * .7} L${50 + iceRadius * .7} ${iceMiddle + iceRadius * .7} M${50 + iceRadius * .7} ${iceMiddle - iceRadius * .7} L${50 - iceRadius * .7} ${iceMiddle + iceRadius * .7}`}
               fill="none" stroke="#F2FDFF" strokeOpacity={0.85} strokeWidth={1.5} strokeLinecap="round" />
           </G>}
-          {symbols && colors.map((color, layer) => <LiquidSymbol key={`symbol-${layer}`} color={color} layer={layer} liquid={liquid} opacity={symbolOpacity} />)}
+          {colors.map((color, layer) => (symbols || hiddenLayers[layer]) && <LiquidSymbol key={`symbol-${layer}`} color={hiddenLayers[layer] ? 'unknown' : color} layer={layer} liquid={liquid} opacity={symbolOpacity} />)}
+          {markedLayers.map((marked, layer) => {
+            if (!marked) return null;
+            // Inset by volume first: the zero-volume surface of round bottoms has zero width.
+            const top = liquidSurface(layer + .88, vessel), bottom = liquidSurface(layer + .12, vessel);
+            const half = Math.max(3, Math.min(top.halfWidth, bottom.halfWidth) - 4);
+            return <Rect key={`mark-${layer}`} x={50 - half} y={top.y + 4} width={half * 2} height={Math.max(3, bottom.y - top.y - 8)} rx={3} fill="none" stroke="#F5DCA6" strokeWidth={1.4} strokeDasharray="3 2" />;
+          })}
           <AnimatedEllipse cx={50} rx={24.5} ry={3.5} fill="#FFFFFF" animatedProps={surface} />
           <AnimatedPath animatedProps={innerStream} fill="none" stroke={flowColor.main} strokeWidth={3.3} strokeLinecap="round" />
           <AnimatedPath animatedProps={innerStream} fill="none" stroke={flowColor.light} strokeWidth={0.9} strokeLinecap="round" />

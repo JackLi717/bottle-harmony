@@ -6,6 +6,7 @@ import type { PlayableEntry, PlayableMainline } from '../game/mainlinePlayable.t
 import type { SolidSideCatalog, SolidSideEntry } from '../game/solidSide.ts';
 import type { ReadDatabase, WriteDatabase } from './sql.ts';
 import { CONTENT_SCHEMA_VERSION } from './contentSchema.ts';
+import { validateMemoryPuzzle, type MemoryPuzzle } from '../game/memory.ts';
 
 type LevelRow = { id: string; mode: string; number: number; capacity: number; color_count: number; bottle_count: number;
   rank: number; tier: PlayableEntry['tier']; score: number; frozen_bottle: number; after_mainline: number; reserve: number };
@@ -14,6 +15,7 @@ type LevelRow = { id: string; mode: string; number: number; capacity: number; co
 export class ContentRepository {
   readonly mainline: PlayableMainline;
   readonly sides: SolidSideCatalog;
+  readonly memory: readonly MemoryPuzzle[];
   private cache = new Map<string, LevelDefinition>();
   readonly db: ReadDatabase;
   static async open(db: WriteDatabase) {
@@ -41,6 +43,15 @@ export class ContentRepository {
       get solution() { return repository.route(row.id, 'main'); },
     }))) });
     const repository = this;
+    const memory = rows.filter(row => row.mode === 'memory');
+    if (memory.length !== Number(value('memoryCount')) || value('memoryCatalog') !== 'memory-prototype-v1' || memory.some((row, i) => row.number !== i + 1)) throw new Error('Memory manifest mismatch');
+    this.memory = Object.freeze(memory.map(row => Object.freeze({
+      number: row.number,
+      get level() { return repository.level(row.id); },
+      get masks() { return Object.freeze(db.getAllSync<{ unit: number }>('SELECT unit FROM memory_masks WHERE level_id=? ORDER BY unit', row.id).map(r => r.unit)); },
+      get skill() { return repository.evidence<{ skill: string }>(row.id).skill; },
+      get solution() { return repository.route(row.id, 'main'); },
+    })));
     this.sides = Object.freeze({ id: value('sideCatalog'), entries: Object.freeze(side.map(row => Object.freeze({
       number: row.number, levelId: row.id, afterMainline: row.after_mainline, frozenBottle: row.frozen_bottle,
       get level() { return repository.level(row.id); },
@@ -49,6 +60,12 @@ export class ContentRepository {
       get difficulty() { return repository.evidence<{ difficulty: SolidSideEntry['difficulty'] }>(row.id).difficulty; },
       get structureKey() { return repository.evidence<{ structureKey: string }>(row.id).structureKey; },
     }))) });
+  }
+  memoryPuzzle(number: number): MemoryPuzzle {
+    const puzzle = this.memory[number - 1];
+    if (!puzzle || puzzle.number !== number) throw new Error('Missing memory puzzle');
+    validateMemoryPuzzle(puzzle);
+    return puzzle;
   }
   level(id: string): LevelDefinition {
     const cached = this.cache.get(id);

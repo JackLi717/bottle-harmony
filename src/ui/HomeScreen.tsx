@@ -5,7 +5,7 @@ import { UiText, useI18n } from '../i18n/I18n';
 import { GameButton } from './GameButton';
 import { MAX_HINT_CREDITS } from '../game/mainline';
 
-export function HomeScreen({ current, sideNumber, hintCredits, compact, landscape = false, onPlay, onLevels, onSettings, vessel, vesselSaved, reduceMotion, onVessel }: { current: number; sideNumber?: number | null; hintCredits: number; compact: boolean; landscape?: boolean; onPlay: () => void; onLevels: () => void; onSettings: () => void; vessel: VesselDesign; vesselSaved: boolean; reduceMotion: boolean; onVessel: (id: VesselId) => void }) {
+export function HomeScreen({ current, sideNumber, hintCredits, compact, landscape = false, onPlay, onMemory, onLevels, onSettings, vessel, vesselSaved, reduceMotion, onVessel }: { current: number; sideNumber?: number | null; hintCredits: number; compact: boolean; landscape?: boolean; onPlay: () => void; onMemory: () => void; onLevels: () => void; onSettings: () => void; vessel: VesselDesign; vesselSaved: boolean; reduceMotion: boolean; onVessel: (id: VesselId) => void }) {
   const { t, rtl } = useI18n();
   return <View style={styles.home}>
     <View style={[styles.top, rtl && styles.reverse]}><GameButton kind="icon" icon="settings" label={t('settings')} onPress={onSettings} /></View>
@@ -17,6 +17,7 @@ export function HomeScreen({ current, sideNumber, hintCredits, compact, landscap
       <View style={[styles.actionSection, landscape && styles.landscapeSection]}>
       <View style={styles.actions}>
         <GameButton preferredFocus kind="wide" tone="mint" icon="play" label={sideNumber ? t('solidSideLabel', { n: sideNumber }) : `Level ${current}`} accessibilityLabel={sideNumber ? t('solidSideLabel', { n: sideNumber }) : t('continueLevel', { n: current })} onPress={onPlay} />
+        <GameButton kind="wide" tone="gold" icon="eye" label={t('memoryMode')} onPress={onMemory} />
         <GameButton kind="wide" tone="violet" icon="levels" label={t('levels')} onPress={onLevels} />
       </View>
       <UiText style={styles.hintCredits}>{t('hintCredits', { n: hintCredits, max: MAX_HINT_CREDITS })}</UiText>

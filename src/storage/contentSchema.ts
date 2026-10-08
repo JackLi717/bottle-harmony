@@ -22,5 +22,6 @@ CREATE TABLE solution_steps(level_id TEXT NOT NULL REFERENCES levels(id), varian
 CREATE TABLE evidence(level_id TEXT PRIMARY KEY REFERENCES levels(id), record TEXT NOT NULL CHECK(json_valid(record))) STRICT;
 CREATE TABLE tags(level_id TEXT NOT NULL REFERENCES levels(id), tag TEXT NOT NULL, PRIMARY KEY(level_id,tag)) STRICT;
 CREATE TABLE internal_assets(key TEXT PRIMARY KEY, record TEXT NOT NULL CHECK(json_valid(record))) STRICT;
+CREATE TABLE memory_masks(level_id TEXT NOT NULL, unit INTEGER NOT NULL CHECK(unit>=0), PRIMARY KEY(level_id,unit), FOREIGN KEY(level_id) REFERENCES levels(id)) STRICT;
 PRAGMA user_version=1;
 `;

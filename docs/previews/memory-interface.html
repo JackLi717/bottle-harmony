@@ -1,0 +1,322 @@
+<div id="bh-memory-preview" class="viz-dotted-background">
+  <div class="bh-phone" aria-label="Bottle Harmony 记忆玩法界面">
+    <div class="bh-safe"><span>9:41</span><span class="bh-system"><i data-lucide="signal" aria-hidden="true"></i><i data-lucide="wifi" aria-hidden="true"></i><i data-lucide="battery-full" aria-hidden="true"></i></span></div>
+    <div class="bh-game">
+      <header class="bh-header">
+        <button class="bh-icon cursor-interaction" data-action="back" aria-label="返回记忆玩法入口"><i data-lucide="chevron-left" aria-hidden="true"></i></button>
+        <h2 class="bh-level">第 3 题</h2>
+        <span class="bh-header-space"></span>
+      </header>
+      <div class="bh-board" role="group" aria-label="颜色整理棋盘"></div>
+      <div class="bh-footer">
+        <div class="bh-feedback" role="status" aria-live="polite"></div>
+        <div class="bh-main-slot"><button class="bh-primary cursor-interaction" data-action="main"></button></div>
+        <div class="bh-tools">
+          <button class="bh-tool cursor-interaction" data-action="undo"><i data-lucide="undo-2" aria-hidden="true"></i><span>撤销</span></button>
+          <button class="bh-tool bh-gold cursor-interaction" data-action="hint"><i data-lucide="lightbulb" aria-hidden="true"></i><span>提示</span></button>
+          <button class="bh-tool cursor-interaction" data-action="reset"><i data-lucide="rotate-ccw" aria-hidden="true"></i><span>重来</span></button>
+          <button class="bh-tool bh-eye cursor-interaction" data-action="view"><i data-lucide="eye" aria-hidden="true"></i><span>查看</span></button>
+        </div>
+        <div class="bh-footnote"></div>
+      </div>
+    </div>
+    <div class="bh-entry" hidden>
+      <header><span class="bh-wordmark">BOTTLE <small>HARMONY</small></span><button class="bh-icon cursor-interaction" data-action="resume" aria-label="返回当前棋盘"><i data-lucide="chevron-right" aria-hidden="true"></i></button></header>
+      <div class="bh-entry-art" aria-hidden="true"></div>
+      <span class="bh-entry-eyebrow">观察 · 记住 · 整理</span><h2>观察记忆</h2><p>先看清颜色，再凭记忆让它们归位。<br>想不起来时，随时再看一眼。</p>
+      <button class="bh-primary cursor-interaction" data-action="resume"><i data-lucide="play" aria-hidden="true"></i><span class="bh-resume-label">开始观察</span></button>
+      <span class="bh-entry-note">独立进度 · 自主观察</span>
+    </div>
+    <section class="bh-tutorial" hidden aria-label="首次记忆玩法教学">
+      <header class="bh-header"><button class="bh-icon cursor-interaction" data-action="tutorial-back" aria-label="返回记忆玩法入口"><i data-lucide="chevron-left" aria-hidden="true"></i></button><span class="bh-mode">第一次玩</span><span class="bh-header-space"></span></header>
+      <h2>记住标记里的颜色</h2>
+      <div class="bh-tutorial-demo" role="img" aria-label="观察时，底部两层颜色带虚线标记；点击准备好了后，同一位置变为未知颜色。">
+        <div><div class="bh-demo-before"></div><span>观察时</span></div>
+        <i data-lucide="arrow-right" aria-hidden="true"></i>
+        <div><div class="bh-demo-after"></div><span>开始后</span></div>
+      </div>
+      <ol class="bh-tutorial-steps">
+        <li><strong>看标记，记颜色</strong><span>虚线框标出的液体层，开始后会遮色。</span></li>
+        <li><strong>准备好了，再开始</strong><span>不计时。记好颜色和顺序，再轻点开始。</span></li>
+        <li><strong>边整理，边揭示</strong><span>新露出的颜色会保留，想不起来可再看一眼。</span></li>
+      </ol>
+      <button class="bh-primary cursor-interaction" data-action="tutorial-done"><i data-lucide="play" aria-hidden="true"></i>知道了，开始</button>
+    </section>
+    <div class="bh-home-indicator" aria-hidden="true"></div>
+  </div>
+  <div class="bh-preview-label">交互设计预览 · 示例棋盘</div>
+</div>
+<style>
+  #bh-memory-preview{padding:24px 0 16px;background-color:transparent}
+  #bh-memory-preview .bh-phone{--bh-ink:#ebd8ad;--bh-text:#dce8ec;--bh-muted:#a6bec6;--bh-mint:#c9f1e4;position:relative;width:100%;max-width:390px;margin:auto;overflow:hidden;box-sizing:border-box;border-radius:32px;color:var(--bh-text);background:radial-gradient(ellipse at 50% 46%,#24434c66,transparent 65%),radial-gradient(ellipse at 50% 0%,#bca5780b,transparent 36%),#172a36;box-shadow:0 20px 60px #00000026,0 0 0 1px #91b5bf24;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;color-scheme:dark;font-size:14px;line-height:1.5}
+  #bh-memory-preview .bh-phone *{box-sizing:border-box}
+  #bh-memory-preview .bh-phone button{font:inherit;color:inherit;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+  #bh-memory-preview .bh-safe{height:44px;padding:12px 27px 6px;display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:500;color:#d9e5e8}
+  #bh-memory-preview .bh-system{display:flex;align-items:center;gap:5px}
+  #bh-memory-preview .bh-system svg{width:15px;height:15px}
+  #bh-memory-preview .bh-system svg:last-child{width:22px;height:18px}
+  #bh-memory-preview .bh-header{display:flex;justify-content:space-between;align-items:center;margin:5px 18px 0;text-align:center;height:62px}
+  #bh-memory-preview .bh-game .bh-header{height:54px}
+  #bh-memory-preview .bh-icon{display:grid;place-items:center;width:44px;height:44px;background:linear-gradient(#263444,#1c2938);border:1px solid #acbecc45;border-radius:14px}
+  #bh-memory-preview .bh-icon svg{width:22px;height:22px}
+  #bh-memory-preview .bh-header-space{width:44px}
+  #bh-memory-preview .bh-mode{display:block;color:var(--bh-muted);font-size:12px;letter-spacing:2px}
+  #bh-memory-preview .bh-level{margin:0;font-size:24px;line-height:1.25;font-weight:500;color:var(--bh-ink);letter-spacing:1px}
+  #bh-memory-preview .bh-board{position:relative;width:100%;aspect-ratio:1;isolation:isolate;margin:5px 0 0;overflow:visible}
+  #bh-memory-preview .bh-bottle{position:absolute;background:none;border:0;padding:0;display:grid;place-items:center;height:46%;min-width:44px;transform:translateY(0);transition:transform 220ms ease;z-index:1}
+  #bh-memory-preview .bh-bottle svg{width:100px;height:180px;max-width:none;pointer-events:none;overflow:visible}
+  #bh-memory-preview .bh-bottle:disabled{opacity:1}
+  #bh-memory-preview .bh-bottle.bh-selected{transform:translateY(-12px);z-index:3}
+  #bh-memory-preview .bh-bottle.bh-receiver{animation:bh-receiver 480ms ease-out}
+  #bh-memory-preview .bh-number{position:absolute;bottom:0;color:#9eb5bf;font-size:11px;font-variant-numeric:tabular-nums;line-height:16px}
+  #bh-memory-preview .bh-footer{padding:0 27px 0;min-height:196px;text-align:center;display:flex;flex-direction:column;align-items:center}
+  #bh-memory-preview .bh-feedback{min-height:26px;font-size:11px;color:#ceb98f;display:flex;justify-content:center;align-items:center;line-height:1.4;width:100%}
+  #bh-memory-preview .bh-primary{width:100%;min-height:50px;border-radius:14px;border:1px solid #85c8b970;background:linear-gradient(160deg,#234e51,#193c40);display:flex;align-items:center;justify-content:center;gap:9px;color:#ddf9ec;font-size:16px;font-weight:500;box-shadow:inset 0 1px #ffffff0a}
+  #bh-memory-preview .bh-primary svg{height:20px;width:20px}
+  #bh-memory-preview .bh-main-slot{width:100%;height:63px;display:flex;align-items:flex-start;justify-content:center}
+  #bh-memory-preview .bh-footer.bh-observing .bh-primary{min-height:62px;gap:12px}
+  #bh-memory-preview .bh-footer.bh-observing .bh-primary svg{width:30px;height:30px}
+  #bh-memory-preview .bh-tools{display:flex;justify-content:center;width:100%;gap:8px;background:linear-gradient(#17313c99,#11263199);border:1px solid #c7ad7826;border-radius:21px;padding:7px}
+  #bh-memory-preview .bh-tool{flex:1;min-width:0;min-height:61px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border:1px solid #acbecc45;background:linear-gradient(#263444,#1c2938);border-radius:13px;font-size:11px;color:#dce8ec}
+  #bh-memory-preview .bh-tool svg{width:24px;height:24px}
+  #bh-memory-preview .bh-tool.bh-gold{color:#e8d2a3;border-color:#c7ad7855;background:linear-gradient(#2e3741,#222f3c)}
+  #bh-memory-preview .bh-tool.bh-eye{color:#c9f1e4;border-color:#85c8b960;background:linear-gradient(#23464c,#19383e)}
+  #bh-memory-preview .bh-tool.bh-eye[aria-pressed="true"]{border-color:#c4dfd5;background:linear-gradient(#305c5d,#23464c)}
+  #bh-memory-preview .bh-tool:disabled{opacity:.38}
+  #bh-memory-preview .bh-footnote{font-size:11px;color:#a6bec6;margin-top:12px;min-height:18px}
+  #bh-memory-preview .bh-footer.bh-observing .bh-tools{visibility:hidden}
+  #bh-memory-preview .bh-footer.bh-observing .bh-footnote{position:relative;top:-73px}
+  #bh-memory-preview .bh-footer.bh-finished .bh-tools{display:none}
+  #bh-memory-preview .bh-footer.bh-finished .bh-footnote{margin-top:16px;color:#cdbd99}
+  #bh-memory-preview .bh-home-indicator{height:5px;width:112px;background:#c7d7dc80;border-radius:4px;margin:4px auto 10px}
+  #bh-memory-preview .bh-preview-label{color:var(--muted-foreground);font-family:system-ui,sans-serif;font-size:12px;text-align:center;margin:18px 0 0}
+  #bh-memory-preview .bh-entry{min-height:764px;padding:20px 28px 50px;text-align:center}
+  #bh-memory-preview [hidden]{display:none!important}
+  #bh-memory-preview .bh-entry header{display:flex;align-items:center;justify-content:space-between;text-align:left}
+  #bh-memory-preview .bh-wordmark{font-size:16px;letter-spacing:4px;color:#ebd8ad}
+  #bh-memory-preview .bh-wordmark small{display:block;font-size:9px;letter-spacing:4px;color:#9aafba}
+  #bh-memory-preview .bh-entry-art{height:295px;display:flex;justify-content:center;align-items:center;margin-top:25px;filter:drop-shadow(0 15px 30px #22d3b014)}
+  #bh-memory-preview .bh-entry-art svg{width:175px;height:315px}
+  #bh-memory-preview .bh-entry-eyebrow{font-size:11px;letter-spacing:4px;color:#b8a57f}
+  #bh-memory-preview .bh-entry h2{color:#ebd8ad;font-size:30px;letter-spacing:4px;font-weight:500;margin:13px 0}
+  #bh-memory-preview .bh-entry p{font-size:13px;line-height:1.9;color:#a6bec6;margin:0 0 27px}
+  #bh-memory-preview .bh-entry-note{font-size:11px;color:#a6bec6;display:block;margin-top:15px}
+  #bh-memory-preview .bh-tutorial{min-height:739px;padding:0 25px 44px}
+  #bh-memory-preview .bh-tutorial .bh-header{margin:5px -7px 0}
+  #bh-memory-preview .bh-tutorial h2{font-size:25px;font-weight:500;letter-spacing:2px;text-align:center;color:var(--bh-ink);margin:28px 0 15px}
+  #bh-memory-preview .bh-tutorial-demo{display:grid;grid-template-columns:1fr 24px 1fr;align-items:center;max-width:290px;margin:0 auto 25px;text-align:center;color:var(--bh-muted)}
+  #bh-memory-preview .bh-tutorial-demo svg{width:115px;height:207px;max-width:100%}
+  #bh-memory-preview .bh-tutorial-demo>svg{width:24px;height:24px;color:#b7a17b}
+  #bh-memory-preview .bh-tutorial-demo span{display:block;font-size:12px;margin-top:5px}
+  #bh-memory-preview .bh-tutorial-steps{list-style:none;padding:0;margin:0 0 30px;counter-reset:bh-step;display:grid;gap:18px}
+  #bh-memory-preview .bh-tutorial-steps li{counter-increment:bh-step;position:relative;padding-left:37px}
+  #bh-memory-preview .bh-tutorial-steps li:before{content:counter(bh-step);position:absolute;left:0;top:1px;width:25px;height:25px;display:grid;place-items:center;background:#25454b;color:#c9f1e4;border-radius:50%;font-size:12px}
+  #bh-memory-preview .bh-tutorial-steps strong{font-weight:500;font-size:14px;display:block;color:var(--bh-text)}
+  #bh-memory-preview .bh-tutorial-steps span{display:block;font-size:12px;line-height:1.7;margin-top:4px;color:var(--bh-muted)}
+  @keyframes bh-receiver{0%{filter:drop-shadow(0 0 8px #b8f7e265)}100%{filter:none}}
+  @media(max-width:420px){#bh-memory-preview{padding:8px 0}#bh-memory-preview .bh-phone{border-radius:24px}#bh-memory-preview .bh-footer{padding-left:20px;padding-right:20px}}
+  @media(prefers-reduced-motion:reduce){#bh-memory-preview .bh-phone *{animation:none!important;transition:none!important}}
+</style>
+<script>
+(() => {
+  const root = document.getElementById('bh-memory-preview');
+  const q = s => root.querySelector(s);
+  const boardEl = q('.bh-board');
+  const shell = 'M35 28 Q35 25 40 25 H60 Q65 25 65 28 V40 C65 45 79 51 79 66 V154 Q79 167 66 168 H34 Q21 167 21 154 V66 C21 51 35 45 35 40 Z';
+  const inside = 'M38 34 H62 V42 Q75 55 75 66 V154 Q75 162 67 162 H33 Q25 162 25 154 V66 Q25 55 38 42 Z';
+  const palette = [
+    {main:'#22d3b0',dark:'#1aa086',light:'#9cebdb',name:'薄荷青',symbol:'●'},
+    {main:'#fa5060',dark:'#be3d49',light:'#fdb0b7',name:'亮红',symbol:'▲'},
+    {main:'#f5d547',dark:'#baa236',light:'#fbecac',name:'柠檬黄',symbol:'■'},
+    {main:'#35bceb',dark:'#288fb3',light:'#a4e1f6',name:'晴空蓝',symbol:'◆'},
+    {main:'#b682ee',dark:'#8a63b5',light:'#dec7f7',name:'明紫',symbol:'★'},
+    {main:'#ff912f',dark:'#c26e24',light:'#ffcea1',name:'鲜橙',symbol:'✚'}
+  ];
+  const design = { phase:'观察', symbols:false, size:'六瓶' };
+  let board=[], known=new Set(), history=[], phase='observe', selected=-1, peeks=0, hints=0, moves=0, undos=0, attempts=1, level=3, note='', hintPair=null, onEntry=false, tutorialDone=false, onTutorial=true, searchToken=0, searching=false, lastSnapshot='';
+  const boundaries=[162,137.52,113.68,89.84,66];
+  function initial() {
+    const colors=design.size==='八瓶'?6:4;
+    const rows=colors===4?[[0,1,2,3],[1,0,3,2],[2,3,0,1],[3,2,1,0],[],[]]:[[0,1,2,3],[1,2,3,4],[2,3,4,5],[3,4,5,0],[4,5,0,1],[5,0,1,2],[],[]];
+    return rows.map((b,i)=>b.map((c,j)=>({c:(c+level-3)%colors,id:`${i}-${j}`,masked:(i===0||i===2)&&j<2})));
+  }
+  const clone = b => b.map(x=>x.map(u=>({...u})));
+  const icon = name => `<i data-lucide="${name}" aria-hidden="true"></i>`;
+  function reveal() { for(const b of board){if(!b.length)continue;const c=b.at(-1).c;for(let i=b.length-1;i>=0&&b[i].c===c;i--)known.add(b[i].id);} }
+  function isVisible(u) {return phase==='observe'||phase==='peek'||phase==='done'||!u.masked||known.has(u.id);}
+  function solved(b) {return b.some(x=>x.length)&&b.every(x=>!x.length||(x.length===4&&x.every(u=>u.c===x[0].c)));}
+  function validPour(b,s,t) {
+    if(s===t||!b[s]?.length||b[t]?.length>=4)return 0;
+    const c=b[s].at(-1).c;
+    if(b[t].length&&b[t].at(-1).c!==c)return 0;
+    let n=0;for(let j=b[s].length-1;j>=0&&b[s][j].c===c;j--)n++;
+    return Math.min(n,4-b[t].length);
+  }
+  function cancelSearch(){searchToken++;searching=false;}
+  function fresh(resetCounters=true) {
+    cancelSearch();board=initial();known=new Set();history=[];phase='observe';selected=-1;note='';hintPair=null;onEntry=false;
+    if(resetCounters){peeks=0;hints=0;moves=0;undos=0;attempts=1;}else attempts++;
+    design.phase='观察';render();
+  }
+  function bottleSvg(b,index,standalone=false,displayPhase=phase) {
+    const id=`bh-${standalone?'hero-'+index:index}`;
+    const complete=b.length===4&&b.every(u=>u.c===b[0].c);
+    const focus=selected===index||hintPair?.includes(index);
+    let defs=`<linearGradient id="${id}-glass"><stop stop-color="#63b4c0" stop-opacity=".34"/><stop offset=".2" stop-color="#c0e7e7" stop-opacity=".09"/><stop offset=".7" stop-color="#091c35" stop-opacity=".08"/><stop offset="1" stop-color="#83bbd2" stop-opacity=".26"/></linearGradient><linearGradient id="${id}-rim" x2=".8" y2="1"><stop stop-color="#f2f1ce"/><stop offset=".4" stop-color="#8ec5ce"/><stop offset="1" stop-color="#315670"/></linearGradient><linearGradient id="${id}-hidden"><stop stop-color="#52636e"/><stop offset=".3" stop-color="#6a7b84"/><stop offset=".72" stop-color="#6a7b84"/><stop offset="1" stop-color="#52636e"/></linearGradient><linearGradient id="${id}-cork"><stop stop-color="#93683d"/><stop offset=".25" stop-color="#d4ad76"/><stop offset=".5" stop-color="#e9cca0"/><stop offset="1" stop-color="#866039"/></linearGradient><clipPath id="${id}-inside"><path d="${inside}"/></clipPath>`;
+    palette.forEach((p,i)=>defs+=`<linearGradient id="${id}-c${i}"><stop stop-color="${p.dark}"/><stop offset=".22" stop-color="${p.main}"/><stop offset=".7" stop-color="${p.main}"/><stop offset="1" stop-color="${p.dark}"/></linearGradient>`);
+    let liquid='';
+    b.forEach((u,j)=>{
+      const tutorial=index==='tutorial-before'||index==='tutorial-after';
+      const visible=tutorial?(displayPhase==='observe'||!u.masked):(standalone||isVisible(u)),y=boundaries[j+1],h=boundaries[j]-y;
+      liquid+=`<rect x="25" y="${y}" width="50" height="${h+.1}" fill="url(#${id}-${visible?'c'+u.c:'hidden'})"/>`;
+      if(j>0&&b[j-1].c!==u.c&&visible&&isVisible(b[j-1]))liquid+=`<path d="M25 ${boundaries[j]} H75" stroke="#ffffff" stroke-opacity=".12" stroke-width=".5"/>`;
+      if(!visible)liquid+=`<path d="M25 ${y} H75" stroke="#b1c0c7" stroke-opacity=".3" stroke-width=".6"/><text x="50" y="${y+h/2+4}" font-size="12" text-anchor="middle" fill="#dde5e8" opacity=".85">?</text>`;
+      else if(design.symbols)liquid+=`<text x="50" y="${y+h/2+4}" font-size="13" text-anchor="middle" fill="#142f39" opacity=".8">${palette[u.c].symbol}</text>`;
+      if(displayPhase==='observe'&&u.masked)liquid+=`<rect x="28.5" y="${y+3}" width="43" height="${h-6}" rx="2.5" fill="none" stroke="#152b35" stroke-opacity=".65" stroke-width="3.2"/><rect data-memory-mark="true" x="28.5" y="${y+3}" width="43" height="${h-6}" rx="2.5" fill="none" stroke="#fff0c5" stroke-width="1.5" stroke-dasharray="3 2"/>`;
+    });
+    if(b.length)liquid+=`<ellipse cx="50" cy="${boundaries[b.length]}" rx="25" ry="2.1" fill="${standalone||isVisible(b.at(-1))?palette[b.at(-1).c].light:'#c3cdd0'}" opacity=".6"/>`;
+    return `<svg viewBox="0 0 100 180" aria-hidden="true" focusable="false"><defs>${defs}</defs><ellipse cx="50" cy="171" rx="30" ry="4.5" fill="#081c2c" opacity=".22"/>${complete?'<ellipse cx="50" cy="167" rx="32" ry="7" fill="#e8cb8c" opacity=".08"/>':''}<path d="${shell}" fill="url(#${id}-glass)" stroke="${focus?'#b8f7e2':complete?'#e8cb8c':'#82b1c4'}" stroke-opacity="${focus||complete?'.95':'.65'}" stroke-width="${focus?'2.1':complete?'1.8':'1.3'}"/><g clip-path="url(#${id}-inside)">${liquid}</g><path d="M34 62 Q30 68 30 77 V147 Q30 155 36 157 M40 42 Q38 49 30 55" fill="none" stroke="#e9ffff" stroke-width="2.3" stroke-linecap="round" opacity=".25"/><path d="M70 80 V142" fill="none" stroke="#e9ffff" stroke-width="1.4" opacity=".11"/><path d="M30 162 Q50 169 70 162" fill="none" stroke="#e9ffff" stroke-width="1.7" opacity=".48"/><ellipse cx="50" cy="28" rx="17" ry="5.8" fill="#183447" stroke="url(#${id}-rim)" stroke-width="2.5"/><ellipse cx="50" cy="28" rx="11.5" ry="3.3" fill="#081c2c" stroke="#72acbc" stroke-width=".7"/><path d="M34 27 Q50 19 66 27" fill="none" stroke="#eaf4e0" stroke-opacity=".75" stroke-width="1.1"/>${complete?`<path d="M38 18 Q50 14 62 18 L59.5 33 Q50 37 40.5 33 Z" fill="url(#${id}-cork)" stroke="#a78150" stroke-width=".6"/><ellipse cx="50" cy="18" rx="12" ry="3.1" fill="#e9cda0" stroke="#b9915d" stroke-width=".7"/><path d="M33 28 Q50 37 67 28" fill="none" stroke="url(#${id}-rim)" stroke-width="1.7"/>`:''}</svg>`;
+  }
+  function accessibleBottle(b,i) {
+    const units=[...b].reverse().map(u=>isVisible(u)?palette[u.c].name+(phase==='observe'&&u.masked?'（开始后遮色）':''):'未知颜色');
+    return `${i+1} 号瓶，${b.length?`从上到下：${units.join('、')}，余量 ${4-b.length} 份`:'空瓶，余量 4 份'}${selected===i?'，已选中':''}`;
+  }
+  function renderBoard() {
+    const focused = document.activeElement?.dataset?.bottle;
+    const cols=Math.ceil(board.length/2),width=boardEl.clientWidth||390,scale=width/400;
+    boardEl.innerHTML=board.map((b,i)=>{
+      const row=Math.floor(i/cols),col=i%cols,left=(col+.5)*100/cols;
+      return `<button class="bh-bottle cursor-interaction ${selected===i?'bh-selected':''}" data-bottle="${i}" style="left:${left}%;top:${row?52.5:3.5}%;width:${100/cols}%;margin-left:${-50/cols}%" aria-label="${accessibleBottle(b,i)}" aria-pressed="${selected===i}" ${phase!=='play'?'disabled':''}><span style="display:block;width:${100*scale}px;height:${180*scale}px">${bottleSvg(b,i)}</span><span class="bh-number" aria-hidden="true">${i+1}</span></button>`;
+    }).join('');
+    boardEl.querySelectorAll('.bh-bottle svg').forEach(el=>{el.style.width=`${100*scale}px`;el.style.height=`${180*scale}px`;});
+    if(focused!==undefined)boardEl.querySelector(`[data-bottle="${focused}"]:not(:disabled)`)?.focus({preventScroll:true});
+  }
+  function render() {
+    design.phase=onTutorial?'首次教学':({observe:'观察',play:'解题',peek:'再看',done:'完成'})[phase];
+    q('.bh-game').hidden=onEntry||onTutorial;q('.bh-entry').hidden=!onEntry||onTutorial;q('.bh-tutorial').hidden=!onTutorial;
+    q('.bh-level').textContent=`第 ${level} 题`;
+    q('.bh-footer').className=`bh-footer ${phase==='observe'?'bh-observing':phase==='done'?'bh-finished':''}`;
+    q('.bh-feedback').textContent=note;
+    const main=q('[data-action="main"]');
+    main.hidden=phase==='play'||phase==='peek';
+    main.innerHTML=phase==='observe'?icon('eye-off')+'准备好了':icon('play')+'下一题';
+    main.disabled=searching;
+    const view=q('[data-action="view"]');
+    view.innerHTML=icon(phase==='peek'?'eye-off':'eye')+`<span>${phase==='peek'?'整理':'查看'}</span>`;
+    view.setAttribute('aria-label',phase==='peek'?'整理，收起完整查看':`查看，已查看 ${peeks} 次`);
+    view.setAttribute('aria-pressed',String(phase==='peek'));
+    view.disabled=phase!=='play'&&phase!=='peek';
+    q('[data-action="undo"]').disabled=phase!=='play'||!history.length||searching;
+    q('[data-action="hint"]').disabled=phase!=='play'||searching;
+    q('[data-action="hint"] span').textContent=searching?'寻找中':'提示';
+    q('[data-action="reset"]').disabled=(phase!=='play'&&phase!=='peek')||searching;
+    q('.bh-footnote').textContent=phase==='done'?`查看 ${peeks} 次 · 提示 ${hints} 次 · 撤销 ${undos} 次${attempts>1?' · 重来 '+(attempts-1)+' 次':''}`:(phase==='play'||phase==='peek')?`查看 ${peeks} 次`:'';
+    q('.bh-resume-label').textContent=phase==='observe'?'开始观察':phase==='done'?'查看完成棋盘':'继续这一题';
+    q('.bh-entry-art').innerHTML=bottleSvg([{c:0,id:'hero0'},{c:2,id:'hero1'},{c:1,id:'hero2'},{c:3,id:'hero3'}],99,true);
+    const demo=[{c:0,id:'demo0',masked:true},{c:1,id:'demo1',masked:true},{c:2,id:'demo2',masked:false},{c:3,id:'demo3',masked:false}];
+    q('.bh-demo-before').innerHTML=bottleSvg(demo,'tutorial-before',false,'observe');
+    q('.bh-demo-after').innerHTML=bottleSvg(demo,'tutorial-after',false,'play');
+    renderBoard();if(globalThis.lucide)lucide.createIcons({attrs:{width:16,height:16}});
+  }
+  function save() {
+    const snapshot={modelContent:{interface:'观察记忆',phase:onTutorial?'首次教学':design.phase,symbols:design.symbols,bottles:board.length},privateContent:{version:2,design:{...design},board,known:[...known],history,phase,selected,peeks,hints,moves,undos,attempts,level,onEntry,tutorialDone,onTutorial}};
+    if(JSON.stringify(snapshot).length>15000)snapshot.privateContent={version:2,tutorialDone};
+    lastSnapshot=JSON.stringify(snapshot.privateContent);
+    if(window.openai?.setWidgetState)window.openai.setWidgetState(snapshot).catch(()=>{});
+  }
+  function restore(value) {
+    const p=value?.privateContent;
+    if(p?.version===2&&typeof p.tutorialDone==='boolean'){tutorialDone=p.tutorialDone;onTutorial=!tutorialDone;}
+    if(p?.version!==2||!Array.isArray(p.board)||![6,8].includes(p.board.length)||!p.board.every(b=>Array.isArray(b)&&b.length<=4&&b.every(u=>Number.isInteger(u.c)&&u.c>=0&&u.c<6&&typeof u.id==='string'))||!['observe','play','peek','done'].includes(p.phase))return false;
+    Object.assign(design,p.design);board=clone(p.board);known=new Set(p.known||[]);history=(p.history||[]).map(clone);phase=p.phase;selected=p.selected??-1;peeks=p.peeks||0;hints=p.hints||0;moves=p.moves||0;undos=p.undos||0;attempts=p.attempts||1;level=p.level||3;onEntry=!!p.onEntry;onTutorial=!!p.onTutorial;note='';hintPair=null;cancelSearch();render();return true;
+  }
+  async function hint() {
+    searching=true;note='正在寻找下一步…';render();const token=++searchToken;
+    const coded=board.map(b=>b.map(u=>u.c));
+    const key=b=>b.map(x=>x.join('')).sort().join('|');
+    const nodes=[{b:coded,first:null}],seen=new Set([key(coded)]);let cursor=0,found=null,exhausted=false;
+    while(cursor<nodes.length&&nodes.length<20000&&token===searchToken){
+      const until=Math.min(cursor+150,nodes.length);
+      for(;cursor<until;cursor++){
+        const node=nodes[cursor],b=node.b;
+        if(b.every(x=>!x.length||(x.length===4&&x.every(c=>c===x[0])))){found=node.first;break;}
+        for(let s=0;s<b.length;s++)for(let t=0;t<b.length;t++){
+          if(s===t||!b[s].length||b[t].length===4||(b[t].length&&b[t].at(-1)!==b[s].at(-1)))continue;
+          if(!b[t].length&&b[s].every(c=>c===b[s][0]))continue;
+          let run=0;for(let j=b[s].length-1;j>=0&&b[s][j]===b[s].at(-1);j--)run++;
+          const n=Math.min(run,4-b[t].length),next=b.map(x=>[...x]);next[t].push(...next[s].splice(-n));
+          const k=key(next);if(seen.has(k))continue;seen.add(k);nodes.push({b:next,first:node.first||[s,t]});
+        }
+      }
+      if(found)break;
+      await new Promise(r=>setTimeout(r,0));
+    }
+    if(token!==searchToken)return;
+    exhausted=cursor>=nodes.length;searching=false;
+    if(found){hints++;hintPair=found;selected=found[0];note=`将 ${found[0]+1} 号瓶倒入 ${found[1]+1} 号瓶`;}
+    else note=exhausted?'当前局面已无解，可以撤销或重来':'这次未找到提示，可以撤销或再看一眼';
+    render();save();
+  }
+  root.addEventListener('click',e=>{
+    const bottle=e.target.closest('[data-bottle]');
+    if(bottle&&phase==='play'&&!onTutorial&&!onEntry&&!searching){
+      const i=Number(bottle.dataset.bottle);note='';hintPair=null;
+      if(selected===i)selected=-1;
+      else if(selected<0){if(board[i].length)selected=i;else note='先选择有液体的瓶子';}
+      else {
+        const n=validPour(board,selected,i);
+        if(n){history.push(clone(board));board[i].push(...board[selected].splice(-n));moves++;reveal();selected=-1;if(solved(board)){phase='done';design.phase='完成';}render();q(`[data-bottle="${i}"]`)?.classList.add('bh-receiver');save();return;}
+        else {selected=board[i].length?i:selected;note='需要相同的顶色，或一个空瓶';}
+      }
+      render();save();return;
+    }
+    const action=e.target.closest('[data-action]')?.dataset.action;
+    if(!action||e.target.closest('button')?.disabled)return;
+    if(action==='back'){onEntry=true;cancelSearch();}
+    if(action==='resume'){onEntry=false;onTutorial=!tutorialDone;}
+    if(action==='tutorial-back'){onTutorial=false;onEntry=true;}
+    if(action==='tutorial-done'){tutorialDone=true;onTutorial=false;onEntry=false;}
+    if(action==='main'){
+      if(phase==='observe'){
+        const from=q('[data-action="main"]').getBoundingClientRect();
+        phase='play';design.phase='解题';reveal();note='';render();
+        const view=q('[data-action="view"]'),to=view.getBoundingClientRect();
+        if(to.width&&to.height&&!matchMedia('(prefers-reduced-motion:reduce)').matches)view.animate([{transformOrigin:'0 0',transform:`translate(${from.x-to.x}px,${from.y-to.y}px) scale(${from.width/to.width},${from.height/to.height})`},{transformOrigin:'0 0',transform:'none'}],{duration:240,easing:'cubic-bezier(.2,.7,.3,1)'});
+        view.focus({preventScroll:true});save();return;
+      }
+      if(phase==='done'){level++;fresh();save();return;}
+    }
+    if(action==='view'){
+      cancelSearch();selected=-1;hintPair=null;note='';
+      if(phase==='play'){phase='peek';design.phase='再看';peeks++;}
+      else if(phase==='peek'){phase='play';design.phase='解题';}
+    }
+    if(action==='undo'&&history.length){board=history.pop();undos++;selected=-1;hintPair=null;reveal();note='已撤销倒水，看过的颜色仍然保留';}
+    if(action==='reset'){fresh(false);save();return;}
+    if(action==='hint'){hint();return;}
+    render();save();
+  });
+  let previousSize=design.size;
+  if(!restore(window.openai?.widgetState))fresh();
+  previousSize=design.size;
+  window.addEventListener('openai:set_globals',e=>{const value=e.detail?.globals?.widgetState;if(value&&JSON.stringify(value.privateContent)!==lastSnapshot)restore(value);});
+  new ResizeObserver(()=>renderBoard()).observe(boardEl);
+  if(globalThis.Tweak){
+    const tweak=new Tweak({container:q('.bh-phone'),onChange:()=>{
+      if(design.size!==previousSize){previousSize=design.size;fresh();}
+      else if(design.phase==='首次教学'){onTutorial=true;onEntry=false;}
+      else if(({观察:'observe',解题:'play',再看:'peek',完成:'done'})[design.phase]!==phase||onTutorial){
+        cancelSearch();selected=-1;hintPair=null;note='';onEntry=false;onTutorial=false;
+        if(design.phase==='观察'){board=initial();known=new Set();history=[];phase='observe';peeks=hints=moves=undos=0;attempts=1;}
+        if(design.phase==='解题'){board=initial();known=new Set();history=[];phase='play';reveal();}
+        if(design.phase==='再看'){if(phase==='done')board=initial();phase='peek';peeks=Math.max(1,peeks);}
+        if(design.phase==='完成'){board=initial();const units=board.flat();board=Array.from({length:board.length},(_,c)=>units.filter(u=>u.c===c));phase='done';}
+      }
+      render();save();
+    }});
+    tweak.addSelect(design,'phase',{label:'预览阶段',options:['首次教学','观察','解题','再看','完成']});
+    tweak.addSelect(design,'size',{label:'棋盘密度',options:['六瓶','八瓶']});
+    tweak.addToggle(design,'symbols',{label:'颜色辅助符号'});
+  }
+})();
+</script>

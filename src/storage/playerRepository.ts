@@ -8,7 +8,7 @@ import { PLAYER_SCHEMA, PLAYER_SCHEMA_VERSION, METRICS_VERSION } from './playerS
 import { StatisticsRecorder, type GameplayAction } from './statistics.ts';
 
 type ProgressRow = { catalog: string; current: number; completed: number; side_completed: number; tutorial: number; symbols: number; credits: number; free_hint_used: number };
-type Job = { revision: number; at: number; before: MainlineState; next: MainlineState; action: GameplayAction; resolve: (ok: boolean) => void };
+type Job = { revision: number; at: number; before: MainlineState; next: MainlineState; action: GameplayAction; resolve: (ok: boolean) => void; work?: (revision: number) => Promise<void> };
 
 function validateProgress(state: MainlineState, main: PlayableMainline, sides: SolidSideCatalog) {
   if (!Number.isInteger(state.current) || state.current < 1 || state.current > main.entries.length
@@ -105,6 +105,13 @@ export class PlayerRepository {
   record(action: GameplayAction, at = Date.now()) { return this.commit(this.state, action, at); }
   setPreference(key: 'sound' | 'vessel', value: string) { return this.record({ type: 'preference', preference: key, value }); }
   hintRequestId() { return `${this.installation}:hint:${this.revision + 1}`; }
+  /** Feature writes share the player revision/transaction queue; never nest transactions. */
+  enqueueWrite(work: (revision: number) => Promise<void>): Promise<boolean> {
+    return new Promise(resolve => {
+      this.pending.push({ revision: ++this.revision, at: Date.now(), before: this.state, next: this.state, action: { type: 'diagnostic' }, resolve, work });
+      void this.flush();
+    });
+  }
   /** Retain the failed head and all following jobs. Later actions/background retry in order. */
   flush(): Promise<boolean> {
     if (this.running) return this.running;
@@ -118,6 +125,11 @@ export class PlayerRepository {
             const saved = Number((await this.db.getFirstAsync<{ value: string }>("SELECT value FROM metadata WHERE key='revision'"))!.value);
             if (saved >= job.revision) return;
             if (saved !== job.revision - 1) throw new Error('Player write revision gap');
+            if (job.work) {
+              await job.work(job.revision);
+              await this.db.runAsync("UPDATE metadata SET value=? WHERE key='revision'", String(job.revision));
+              return;
+            }
             if (job.before !== job.next) {
               await PlayerRepository.putProgress(this.db, job.next, this.mainline.id);
               await saveSession(this.db, 'main', job.next.main, job.before.main);

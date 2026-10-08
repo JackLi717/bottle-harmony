@@ -24,6 +24,7 @@ import { moveMainline, hintMainline, hintAvailability, MAX_HINT_CREDITS, editMai
 import { createSession, moveSession, resetSession, undoSession, meltSession, extendSessionWithEmptyBottle, type GameSession } from '../game/session';
 import { createSolver, type SolveResult, type SolverTask } from '../game/solver';
 import { HomeScreen } from './HomeScreen';
+import { MemoryScreen } from './MemoryScreen';
 import { GameHeader } from './GameHeader';
 import { GameFooter } from './GameFooter';
 import { Celebration } from './Celebration';
@@ -63,7 +64,7 @@ export function DemoScreen() {
   const SIDE_AFTER = SOLID_SIDES.entries.map(item => item.afterMainline);
   const { sound, ready: soundReady, saved: soundSaved, toggleSound } = useSoundPreference();
   const { vessel, ready: vesselReady, saved: vesselSaved, chooseVessel } = useVesselPreference();
-  const [page, setPage] = useState<'home' | 'game'>('home');
+  const [page, setPage] = useState<'home' | 'game' | 'memory'>('home');
   const [internalSession, setInternalSession] = useState<GameSession | null>(null);
   const session = internalSession ?? visibleSession(play);
   const sample = CALIBRATION_SAMPLES.find(item => item.content.level.id === session.level.id) ?? null;
@@ -241,7 +242,7 @@ export function DemoScreen() {
     setLastAward(0);
     setPage('home');
   }, [setSelected, setPage, setPendingCelebration, setCelebration]);
-  const handlesTVBack = page === 'game' || menuVisible || privacyVisible || pickerVisible || difficultyVisible || !!notice;
+  const handlesTVBack = page !== 'home' || menuVisible || privacyVisible || pickerVisible || difficultyVisible || !!notice;
   useEffect(() => {
     if (!Platform.isTV || Platform.OS !== 'ios' || !handlesTVBack) return;
     // Apple TV otherwise lets Menu leave the app before BackHandler can navigate.
@@ -472,13 +473,15 @@ export function DemoScreen() {
 
   if (!ready || !soundReady || !vesselReady) return <LinearGradient colors={['#11171E', '#070B12']} style={[styles.screen, { alignItems: 'center', justifyContent: 'center' }]}><StatusBar style="light" /><UiText style={styles.loading}>{t('loading')}</UiText></LinearGradient>;
 
+  if (page === 'memory') return <MemoryScreen vessel={vessel} symbols={play.symbols} sound={sound} reduceMotion={reduceMotion} onBack={goHome} />;
+
   return (
     <LinearGradient colors={['#11171E', '#090E16', '#070B12']} locations={[0, 0.58, 1]} testID={`game-screen-${dimensions.width}x${dimensions.height}`} style={[styles.screen, Platform.OS === 'web' && { flexGrow: 0, flexShrink: 0, flexBasis: 'auto', height: Math.max(dimensions.height, rail ? 400 : 520) }]}>
       <StatusBar style="light" />
       <PourSound progress={progress} pouring={!!animation} vessel={vessel.id} receiverLayers={animation ? animation.before[animation.pour.target].length : 0} enabled={sound && appActive && !reduceMotion && page === 'game'} />
       <View pointerEvents="none" style={StyleSheet.absoluteFill}><GameBackdrop width={dimensions.width} height={dimensions.height} /></View>
       <View style={[styles.safe, { paddingTop: safeTop, paddingBottom: Math.max(insets.bottom, verticalInset, 14), paddingLeft: Math.max(insets.left, horizontalInset), paddingRight: Math.max(insets.right, horizontalInset) }]}>
-        {page === 'home' ? <HomeScreen current={play.current} sideNumber={play.side ? play.current / 20 : null} hintCredits={play.hintCredits} compact={compact} landscape={rail} onPlay={resumeCurrent} onLevels={() => openMenu('levels')} onSettings={() => openMenu('settings')} vessel={vessel} vesselSaved={vesselSaved} reduceMotion={reduceMotion} onVessel={chooseVessel} /> : <>
+        {page === 'home' ? <HomeScreen current={play.current} sideNumber={play.side ? play.current / 20 : null} hintCredits={play.hintCredits} compact={compact} landscape={rail} onPlay={resumeCurrent} onMemory={() => { setInternalSession(null); setPage('memory'); }} onLevels={() => openMenu('levels')} onSettings={() => openMenu('settings')} vessel={vessel} vesselSaved={vesselSaved} reduceMotion={reduceMotion} onVessel={chooseVessel} /> : <>
         <GameHeader label={label} compact={compact} disabled={!!animation || searching} onBack={goHome}
           previewNavigation={INTERNAL_TOOLS && previewPosition ? {
             detail: sideEntry ? `开发浏览 · 凝固最短 ${sideEntry.difficulty.frozenMoves} 步`
