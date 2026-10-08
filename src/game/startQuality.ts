@@ -24,3 +24,23 @@ export function inspectStartQuality(level: Pick<LevelDefinition, 'capacity' | 'b
 export function hasCleanStart(level: Pick<LevelDefinition, 'capacity' | 'bottles'>): boolean {
   return inspectStartQuality(level).length === 0;
 }
+
+/** Structural appearance of an opening, independent of display color names. */
+export function measureStartVariety(level: Pick<LevelDefinition, 'bottles'>) {
+  let filled = 0, bottomPairs = 0, threeColors = 0, fourColors = 0, adjacentPairs = 0;
+  for (const { layers } of level.bottles) {
+    if (layers.length === 0) continue;
+    filled++;
+    if (layers[0] === layers[1]) bottomPairs++;
+    const distinct = new Set(layers).size;
+    if (distinct >= 3) threeColors++;
+    if (distinct === 4) fourColors++;
+    for (let index = 1; index < layers.length; index++) if (layers[index] === layers[index - 1]) adjacentPairs++;
+  }
+  return { filled, bottomPairs, threeColors, fourColors, adjacentPairs };
+}
+
+export function hasVariedStart(level: Pick<LevelDefinition, 'bottles'>): boolean {
+  const variety = measureStartVariety(level);
+  return variety.filled > 0 && variety.bottomPairs < variety.filled;
+}

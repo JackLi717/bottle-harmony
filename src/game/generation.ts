@@ -5,7 +5,8 @@ import { canonicalBottleStrings } from './structure.ts';
 
 export const GENERATOR_ID = 'balanced-shuffle-v1' as const;
 export const LAYERED_GENERATOR_ID = 'layered-shuffle-v1' as const;
-export type GeneratorId = typeof GENERATOR_ID | typeof LAYERED_GENERATOR_ID;
+export const ANCHORED_GENERATOR_ID = 'anchored-shuffle-v1' as const;
+export type GeneratorId = typeof GENERATOR_ID | typeof LAYERED_GENERATOR_ID | typeof ANCHORED_GENERATOR_ID;
 /** Logical IDs; display colors are assigned separately by the app palette. */
 export const PRODUCTION_COLORS = Object.freeze(['jade', 'coral', 'amber', 'azure', 'violet', 'rose', 'tangerine', 'lime', 'indigo', 'cocoa', 'silver']);
 export const MAX_PRODUCTION_BOTTLES = 12;
@@ -82,11 +83,17 @@ export function makeLayeredCandidate(seed: number, candidateIndex: number, confi
   return buildCandidate(seed, candidateIndex, config, LAYERED_GENERATOR_ID);
 }
 
+/** Keep one layer of each color at the base and shuffle the other three.
+ * Unlike layered-shuffle, this does not force matching base pairs. */
+export function makeAnchoredCandidate(seed: number, candidateIndex: number, config: GenerationConfig): LevelDefinition {
+  return buildCandidate(seed, candidateIndex, config, ANCHORED_GENERATOR_ID);
+}
+
 function buildCandidate(seed: number, candidateIndex: number, config: GenerationConfig, generator: GeneratorId): LevelDefinition {
   if (!isSeed(seed) || !Number.isInteger(candidateIndex) || candidateIndex < 0 || candidateIndex >= 1000) throw new LevelValidationError(['Invalid seed or candidate index']);
   const settings = parseGenerationConfig(config);
   let state = (seed ^ Math.imul(candidateIndex + 1, 0x9e3779b9)) >>> 0;
-  const baseLayers = generator === LAYERED_GENERATOR_ID ? 2 : 0;
+  const baseLayers = generator === LAYERED_GENERATOR_ID ? 2 : generator === ANCHORED_GENERATOR_ID ? 1 : 0;
   const layers = settings.colors.flatMap(color => Array<string>(4 - baseLayers).fill(color));
   // Explicit 32-bit LCG and Fisher–Yates: no Math.random or platform-dependent hash.
   for (let i = layers.length - 1; i > 0; i--) {
@@ -97,7 +104,7 @@ function buildCandidate(seed: number, candidateIndex: number, config: Generation
   const bottles = settings.colors.map((color, i) => ({ id: `bottle-${i + 1}`, layers: [...Array<string>(baseLayers).fill(color), ...layers.slice(i * (4 - baseLayers), (i + 1) * (4 - baseLayers))] }));
   for (let i = 0; i < settings.emptyBottles; i++) bottles.push({ id: `spare-${i + 1}`, layers: [] });
   return parseLevel({ format: 'bottle-harmony', version: 1, rules: 'water-sort',
-    id: `${generator === GENERATOR_ID ? 'g' : 'l'}-v1-${seed.toString(16).padStart(8, '0')}-${candidateIndex}-${settings.colors.length}c-${settings.emptyBottles}e`, capacity: 4, colors: settings.colors, bottles });
+    id: `${generator === GENERATOR_ID ? 'g' : generator === LAYERED_GENERATOR_ID ? 'l' : 'a'}-v1-${seed.toString(16).padStart(8, '0')}-${candidateIndex}-${settings.colors.length}c-${settings.emptyBottles}e`, capacity: 4, colors: settings.colors, bottles });
 }
 
 /** Exact equivalence under bottle permutation and color renaming. */
@@ -122,10 +129,10 @@ export function parseGeneratedContent(input: unknown): GeneratedContent {
   const value = recordObject(input, ['format', 'version', 'origin', 'level', 'structureKey', 'solution', 'metrics'], 'content');
   if (value.format !== 'bottle-harmony-content' || value.version !== 1) throw new LevelValidationError(['Unsupported content format or version']);
   const origin = recordObject(value.origin, ['generator', 'seed', 'candidateIndex', 'config'], 'origin');
-  if ((origin.generator !== GENERATOR_ID && origin.generator !== LAYERED_GENERATOR_ID) || !isSeed(origin.seed) || typeof origin.candidateIndex !== 'number' || !Number.isInteger(origin.candidateIndex) || origin.candidateIndex < 0 || origin.candidateIndex >= 1000) throw new LevelValidationError(['Unsupported or invalid generation origin']);
+  if ((origin.generator !== GENERATOR_ID && origin.generator !== LAYERED_GENERATOR_ID && origin.generator !== ANCHORED_GENERATOR_ID) || !isSeed(origin.seed) || typeof origin.candidateIndex !== 'number' || !Number.isInteger(origin.candidateIndex) || origin.candidateIndex < 0 || origin.candidateIndex >= 1000) throw new LevelValidationError(['Unsupported or invalid generation origin']);
   const config = parseGenerationConfig(origin.config);
   const level = parseLevel(value.level);
-  const expected = (origin.generator === GENERATOR_ID ? makeCandidate : makeLayeredCandidate)(origin.seed, origin.candidateIndex, config);
+  const expected = (origin.generator === GENERATOR_ID ? makeCandidate : origin.generator === LAYERED_GENERATOR_ID ? makeLayeredCandidate : makeAnchoredCandidate)(origin.seed, origin.candidateIndex, config);
   if (JSON.stringify(level) !== JSON.stringify(expected)) throw new LevelValidationError(['Actual layout does not match generation origin']);
   if (config.mixing === 'diverse' && !hasDiverseStart(level)) throw new LevelValidationError(['Initial bottles do not meet diverse mixing policy']);
   if (!Array.isArray(value.solution) || value.solution.length < config.minSolutionMoves || value.solution.length > config.maxSolutionMoves) throw new LevelValidationError(['Solution outside configured move range']);

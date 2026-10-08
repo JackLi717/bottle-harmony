@@ -5,7 +5,7 @@ import type { Pour } from './rules.ts';
 import type { DifficultyTier } from './difficulty.ts';
 import { createProductionPlan, PRODUCTION_PLAN, validateRamp } from './productionPlan.ts';
 import type { MainlineCatalog } from './mainlineCatalog.ts';
-import { hasCleanStart } from './startQuality.ts';
+import { hasCleanStart, hasVariedStart } from './startQuality.ts';
 import { tierForHumanScore } from './humanDifficulty.ts';
 
 export type PlayableEntry = { readonly number: number; readonly level: LevelDefinition; readonly solution: readonly Pour[]; readonly rank: number; readonly tier: DifficultyTier; readonly score: number };
@@ -32,7 +32,8 @@ export function decodePlayableMainline(json: string): PlayableMainline {
       || !Array.isArray(e.solution) || e.solution.length < 1 || e.solution.length > slot.maxSolutionMoves
       || level.capacity !== 4 || level.bottles.length > 12 || level.colors.length < (slot.number <= 3 ? 2 : 4)
       || level.colors.length > (slot.number <= 3 ? 3 : 11)
-      || (e.tier === 'D3' || e.tier === 'D4') && !hasDiverseStart(level) || !hasCleanStart(level)) throw new Error('Playable slot mismatch');
+      || (e.tier === 'D3' || e.tier === 'D4') && !hasDiverseStart(level) || !hasCleanStart(level)
+      || !hasVariedStart(level)) throw new Error('Playable slot mismatch');
     const solution = e.solution.map(input => {
       const p = recordObject(input, ['source', 'target', 'color', 'amount'], 'playable pour');
       if (!Number.isInteger(p.source) || !Number.isInteger(p.target) || !Number.isInteger(p.amount) || typeof p.color !== 'string') throw new Error('Invalid playable pour');

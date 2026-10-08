@@ -1,4 +1,4 @@
-import { contentMetrics, GENERATOR_ID, hasDiverseStart, isSeed, makeCandidate, parseGeneratedContent, parseGenerationConfig, structureKey, type GeneratedContent, type GenerationConfig, type MixingPolicy } from './generation.ts';
+import { ANCHORED_GENERATOR_ID, contentMetrics, GENERATOR_ID, hasDiverseStart, isSeed, LAYERED_GENERATOR_ID, makeAnchoredCandidate, makeCandidate, makeLayeredCandidate, parseGeneratedContent, parseGenerationConfig, structureKey, type GeneratedContent, type GenerationConfig, type GeneratorId, type MixingPolicy } from './generation.ts';
 import { initialBoard, LevelValidationError, type LevelDefinition } from './model.ts';
 import { isSolved } from './rules.ts';
 import { createSolver, type SolverTask } from './solver.ts';
@@ -15,6 +15,7 @@ export type GeneratorOptions = {
   maxMilliseconds?: number;
   excludedKeys?: readonly string[];
   mixing?: MixingPolicy;
+  generator?: GeneratorId;
 };
 export type GenerationStats = {
   readonly attempts: number;
@@ -46,6 +47,7 @@ export function createGenerator(options: GeneratorOptions): GeneratorTask {
   let candidate: LevelDefinition | null = null;
   let candidateStateBudget = 0;
   const seed = options.seed;
+  const generator = options.generator ?? GENERATOR_ID;
   const excluded = new Set<string>();
   const issues: string[] = [];
   const stats = (): GenerationStats => ({ attempts, visitedStates, elapsedMilliseconds: elapsed, rejected: Object.freeze({ ...rejected }) });
@@ -54,6 +56,7 @@ export function createGenerator(options: GeneratorOptions): GeneratorTask {
       minSolutionMoves: options.minSolutionMoves ?? 3, maxSolutionMoves: options.maxSolutionMoves ?? 80, mixing: options.mixing ?? 'relaxed' });
   } catch (error) { issues.push(...(error instanceof LevelValidationError ? error.issues : ['Invalid configuration'])); }
   if (!isSeed(seed)) issues.push('Seed must be an unsigned 32-bit integer');
+  if (generator !== GENERATOR_ID && generator !== LAYERED_GENERATOR_ID && generator !== ANCHORED_GENERATOR_ID) issues.push('Unsupported generator');
   if (!Number.isInteger(maxAttempts) || maxAttempts < 1 || maxAttempts > 1000) issues.push('maxAttempts must be an integer from 1 to 1000');
   if (!Number.isInteger(maxStates) || maxStates < 1 || maxStates > 1000000) issues.push('maxStates must be an integer from 1 to 1000000');
   if (!Number.isInteger(maxTotalStates) || maxTotalStates < 1 || maxTotalStates > 1000000) issues.push('maxTotalStates must be an integer from 1 to 1000000');
@@ -91,7 +94,7 @@ export function createGenerator(options: GeneratorOptions): GeneratorTask {
         if (!search) {
           if (attempts >= maxAttempts) return finish({ status: 'exhausted' });
           if (visitedStates >= maxTotalStates) return finish({ status: 'limitReached', reason: 'states' });
-          candidate = makeCandidate(seed, attempts++, config!);
+          candidate = (generator === GENERATOR_ID ? makeCandidate : generator === LAYERED_GENERATOR_ID ? makeLayeredCandidate : makeAnchoredCandidate)(seed, attempts++, config!);
           const board = initialBoard(candidate);
           if (isSolved(board, 4) || contentMetrics(candidate, 0).mixedBottles < 2) { rejected.initiallySimple++; continue; }
           if (config!.mixing === 'diverse' && !hasDiverseStart(candidate)) { rejected.mixing++; continue; }
@@ -119,7 +122,7 @@ export function createGenerator(options: GeneratorOptions): GeneratorTask {
         else if (solved.route.length < config!.minSolutionMoves || solved.route.length > config!.maxSolutionMoves) rejected.solutionLength++;
         else {
           const content = parseGeneratedContent({ format: 'bottle-harmony-content', version: 1,
-            origin: { generator: GENERATOR_ID, seed, candidateIndex: attempts - 1, config },
+            origin: { generator, seed, candidateIndex: attempts - 1, config },
             level: candidate!, structureKey: structureKey(candidate!), solution: solved.route, metrics: contentMetrics(candidate!, solved.route.length) });
           if (activeTime() >= maxMilliseconds) return finish({ status: 'limitReached', reason: 'time' });
           return finish({ status: 'generated', content });

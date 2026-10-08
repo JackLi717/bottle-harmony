@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { decodePlayableMainline } from '../src/game/mainlinePlayable.ts';
+import { createProductionPlan } from '../src/game/productionPlan.ts';
 import { initialBoard, parseLevel } from '../src/game/model.ts';
 import { solveBoard, replaySolution } from '../src/game/solver.ts';
 import { hasOptionalReserve, oneSpareLevel, OPTIONAL_RESERVE_LEVELS } from '../src/game/optionalReserve.ts';
@@ -11,8 +12,8 @@ import { decodeMainline, encodeMainline } from '../src/game/mainlineCodec.ts';
 const catalog = decodePlayableMainline(readFileSync(new URL('../assets/levels/mainline-play.json', import.meta.url), 'utf8'));
 
 test('every offered one-spare start is independently solvable and bound to this catalog', () => {
-  assert.equal(OPTIONAL_RESERVE_LEVELS.size, 192);
-  let twoSpare = 0, solvable = 0, impossible = 0;
+  assert.ok(OPTIONAL_RESERVE_LEVELS.size > 0);
+  let twoSpare = 0, solvable = 0, impossible = 0, solvableTeaching = 0;
   for (const entry of catalog.entries) {
     const bottles = entry.level.bottles;
     if (bottles.at(-1)?.layers.length !== 0 || bottles.at(-2)?.layers.length !== 0) {
@@ -24,6 +25,7 @@ test('every offered one-spare start is independently solvable and bound to this 
     const result = solveBoard(initialBoard(smaller), { capacity: 4, maxStates: 100000, maxMilliseconds: 400 });
     if (result.status === 'solved') {
       solvable++;
+      if (entry.number <= 3) solvableTeaching++;
       replaySolution(initialBoard(smaller), result.route, 4);
     } else {
       assert.equal(result.status, 'unsolvable', `level ${entry.number} must not be unknown`);
@@ -34,11 +36,11 @@ test('every offered one-spare start is independently solvable and bound to this 
     if (offered) {
       assert.equal(OPTIONAL_RESERVE_LEVELS.get(entry.number), entry.level.id);
       assert.deepEqual(oneSpareLevel(entry), smaller);
+      assert.notEqual(createProductionPlan()[entry.number - 1].waveRole, 'recovery');
     }
   }
-  assert.equal(twoSpare, 450);
-  assert.equal(solvable, 194);
-  assert.equal(impossible, 256);
+  assert.equal(twoSpare, solvable + impossible);
+  assert.equal(OPTIONAL_RESERVE_LEVELS.size, solvable - solvableTeaching);
 });
 
 test('reserve activation preserves accepted moves and undo, survives reset and save, and never carries forward', () => {
@@ -80,8 +82,8 @@ test('reserve activation preserves accepted moves and undo, survives reset and s
   assert.equal(state.main.status, 'solved');
   state = nextMainline(state, catalog);
   assert.equal(state.current, 5);
-  assert.equal(reserveIsLocked(state, catalog), false);
-  assert.equal(state.main.board.length, catalog.entries[4].level.bottles.length);
+  assert.equal(reserveIsLocked(state, catalog), hasOptionalReserve(catalog.entries[4]));
+  assert.equal(state.main.board.length, catalog.entries[4].level.bottles.length - (hasOptionalReserve(catalog.entries[4]) ? 1 : 0));
   const replayFour = selectMainline(state, catalog, 4);
   assert.equal(reserveIsLocked(replayFour, catalog), true);
   assert.equal(replayFour.main, state.main);

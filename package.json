@@ -23,7 +23,8 @@
     "@types/react": "~19.2.2",
     "eslint": "^9.39.5",
     "eslint-config-expo": "~57.0.2",
-    "typescript": "~6.0.3"
+    "typescript": "~6.0.3",
+    "sharp": "^0.35.5"
   },
   "scripts": {
     "start": "expo start --dev-client",
@@ -50,7 +51,15 @@
     "mainline:audit": "node --experimental-strip-types scripts/audit-mainline.ts",
     "mainline:human": "node --experimental-strip-types scripts/human-difficulty.ts",
     "side:build": "node --experimental-strip-types scripts/solid-structure-research.ts --assemble-side50",
-    "side:verify": "node --experimental-strip-types --test tests/solidSide.test.ts"
+    "side:verify": "node --experimental-strip-types --test tests/solidSide.test.ts",
+    "mainline:candidates": "node --experimental-strip-types scripts/mainline-candidates.ts",
+    "mainline:wave-candidates": "node --experimental-strip-types scripts/wave-candidates.ts",
+    "mainline:replan": "node --experimental-strip-types scripts/replan-mainline.ts",
+    "mainline:replace": "node --experimental-strip-types scripts/replace-mainline-score-matched.ts",
+    "mainline:opening-mix": "node --experimental-strip-types scripts/refresh-opening-mix.ts",
+    "mainline:features": "node --experimental-strip-types scripts/mainline-features.ts",
+    "mainline:evaluate": "node --experimental-strip-types scripts/evaluate-mainline.ts",
+    "mainline:reserves": "node --experimental-strip-types scripts/rebuild-optional-reserve.ts"
   },
   "private": true,
   "engines": {

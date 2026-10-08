@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import test from 'node:test';
 import { decodeContentPool, encodeContentPool } from '../src/game/contentCodec.ts';
 import { createGenerator, generateContent, type GenerationResult, type GeneratorOptions } from '../src/game/generator.ts';
-import { hasDiverseStart, makeCandidate, parseGeneratedContent, structureKey, type GenerationConfig } from '../src/game/generation.ts';
+import { ANCHORED_GENERATOR_ID, hasDiverseStart, makeAnchoredCandidate, makeCandidate, parseGeneratedContent, structureKey, type GenerationConfig } from '../src/game/generation.ts';
 import { initialBoard, parseLevel } from '../src/game/model.ts';
 import { getLegalPours, isSolved } from '../src/game/rules.ts';
 import { replaySolution } from '../src/game/solver.ts';
@@ -44,6 +44,23 @@ test('fixed seed/config yields identical serialized verified content across call
   assert.deepEqual(result.content, a.content);
   assert.deepEqual(parseGeneratedContent(a.content), a.content);
   assert.ok(Object.isFrozen(a.content.solution[0]));
+});
+
+test('anchored shuffle removes the fixed bottom pair and retains exact provenance', () => {
+  const settings = { ...config, colors: colors.slice(0, 5) };
+  const proposal = makeAnchoredCandidate(1000001, 0, settings);
+  assert.deepEqual(proposal, makeAnchoredCandidate(1000001, 0, settings));
+  assert.ok(proposal.bottles.slice(0, 5).some(bottle => bottle.layers[0] !== bottle.layers[1]));
+  for (const color of proposal.colors) assert.equal(initialBoard(proposal).flat().filter(layer => layer === color).length, 4);
+  const result = generateContent({ seed: 1000001, colors: settings.colors, generator: ANCHORED_GENERATOR_ID,
+    maxAttempts: 100, maxMilliseconds: 10000 });
+  assert.equal(result.status, 'generated', JSON.stringify(result));
+  if (result.status !== 'generated') return;
+  assert.equal(result.content.origin.generator, ANCHORED_GENERATOR_ID);
+  assert.deepEqual(parseGeneratedContent(result.content), result.content);
+  assert.ok(isSolved(replaySolution(initialBoard(result.content.level), result.content.solution)));
+  assert.throws(() => parseGeneratedContent({ ...result.content,
+    origin: { ...result.content.origin, generator: 'balanced-shuffle-v1' } }));
 });
 
 test('every accepted 2 to 5 color sample can be replayed, with detached input settings', () => {
@@ -142,7 +159,7 @@ test('invalid generator settings reject before candidate creation or search', ()
     { emptyBottles: 0 }, { maxAttempts: 0 }, { maxAttempts: 1001 }, { maxStates: Infinity }, { maxTotalStates: 0 },
     { maxMilliseconds: 0 }, { maxMilliseconds: 60001 }, { minSolutionMoves: 5, maxSolutionMoves: 3 },
     { excludedKeys: ['x'.repeat(257)] },
-    { mixing: 'unknown' }, { mixing: 'diverse' },
+    { mixing: 'unknown' }, { mixing: 'diverse' }, { generator: 'unknown' },
   ];
   for (const change of changes) {
     const result = generateContent({ seed: 717, colors: colors.slice(0, 2), ...change } as GeneratorOptions);
@@ -200,6 +217,9 @@ test('CLI generates a reproducible pool, verifies serialized replay and preserve
     assert.equal(run('generate', '--colors', '4', '--count', '2', '--mixing', 'diverse', '--output', diverseOutput).status, 0);
     assert.ok(decodeContentPool(await readFile(diverseOutput, 'utf8')).every(content => content.origin.config.mixing === 'diverse' && hasDiverseStart(content.level)));
     assert.equal(run('verify', '--input', diverseOutput).status, 0);
+    const anchoredOutput = join(directory, 'anchored.json');
+    assert.equal(run('generate', '--seed', '1000001', '--colors', '5', '--count', '1', '--generator', ANCHORED_GENERATOR_ID, '--output', anchoredOutput).status, 0);
+    assert.equal(decodeContentPool(await readFile(anchoredOutput, 'utf8'))[0].origin.generator, ANCHORED_GENERATOR_ID);
     assert.equal(run('generate', '--colors', '2', '--mixing', 'diverse', '--output', output).status, 1);
     assert.equal(await readFile(output, 'utf8'), original);
     const tampered = JSON.parse(original); tampered.records[0].solution[0].amount = 99;

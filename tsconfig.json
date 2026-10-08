@@ -4,5 +4,6 @@
     "strict": true,
     "allowImportingTsExtensions": true,
     "types": ["node"]
-  }
+  },
+  "exclude": ["node_modules", "builds", "dist", "android", "ios", "babel.config.js", "metro.config.js", "jest.config.js", "eslint.config.js"]
 }

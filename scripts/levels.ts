@@ -2,7 +2,7 @@ import { mkdir, open, readFile, rename, stat, unlink } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { decodeContentPool, encodeContentPool } from '../src/game/contentCodec.ts';
 import { generateContent } from '../src/game/generator.ts';
-import { PRODUCTION_COLORS, type GeneratedContent } from '../src/game/generation.ts';
+import { ANCHORED_GENERATOR_ID, GENERATOR_ID, LAYERED_GENERATOR_ID, PRODUCTION_COLORS, type GeneratedContent } from '../src/game/generation.ts';
 
 const HELP = `Usage:
   npm run levels:generate -- --seed 717 --colors 3 --count 10 --output builds/levels.json
@@ -10,12 +10,13 @@ const HELP = `Usage:
 Generate options: --seed, --colors (2..11; colors + empty bottles <=12), --count (1..1000), --empty-bottles (1..2),
   --min-moves, --max-moves, --max-attempts, --max-states, --max-total-states, --max-ms, --output
   --mixing (relaxed|diverse; diverse requires >=3 colors per initial filled bottle, <=2 layers per color)
+  --generator (balanced-shuffle-v1|anchored-shuffle-v1|layered-shuffle-v1)
 Generation validates every record before atomically replacing the output. Existing output survives a failed batch.
 Verification reconstructs each candidate, replays every move and checks metadata and duplicates.`;
 
 function argumentsMap(command: string | undefined, args: string[]): Map<string, string> {
   const allowed = command === 'generate'
-    ? ['seed', 'colors', 'count', 'empty-bottles', 'min-moves', 'max-moves', 'max-attempts', 'max-states', 'max-total-states', 'max-ms', 'output', 'mixing']
+    ? ['seed', 'colors', 'count', 'empty-bottles', 'min-moves', 'max-moves', 'max-attempts', 'max-states', 'max-total-states', 'max-ms', 'output', 'mixing', 'generator']
     : ['input'];
   const values = new Map<string, string>();
   for (let i = 0; i < args.length; i += 2) {
@@ -55,11 +56,13 @@ async function main() {
   if (colorCount + emptyBottles > 12) throw new Error('Colors plus empty bottles must not exceed 12');
   const mixing = values.get('mixing') ?? 'relaxed';
   if (mixing !== 'relaxed' && mixing !== 'diverse') throw new Error('--mixing must be relaxed or diverse');
+  const generator = values.get('generator') ?? GENERATOR_ID;
+  if (generator !== GENERATOR_ID && generator !== ANCHORED_GENERATOR_ID && generator !== LAYERED_GENERATOR_ID) throw new Error('Unsupported --generator');
   const records: GeneratedContent[] = [];
   let visitedStates = 0, attempts = 0, elapsedMilliseconds = 0;
   for (let index = 0; index < count; index++) {
     const result = generateContent({ seed: (seed + index) >>> 0,
-      colors: PRODUCTION_COLORS.slice(0, colorCount), emptyBottles, mixing,
+      colors: PRODUCTION_COLORS.slice(0, colorCount), emptyBottles, mixing, generator,
       minSolutionMoves: integer(values, 'min-moves', 3), maxSolutionMoves: integer(values, 'max-moves', 80),
       maxAttempts: integer(values, 'max-attempts', 64), maxStates: integer(values, 'max-states', 30000),
       maxTotalStates: integer(values, 'max-total-states', 150000), maxMilliseconds: integer(values, 'max-ms', 5000),
@@ -82,7 +85,7 @@ async function main() {
     await handle.close().catch(() => {});
     await unlink(temporary).catch(() => {});
   }
-  console.log(JSON.stringify({ output, records: records.length, colors: colorCount, seed, mixing, attempts, visitedStates, activeMilliseconds: Math.round(elapsedMilliseconds),
+  console.log(JSON.stringify({ output, records: records.length, colors: colorCount, seed, mixing, generator, attempts, visitedStates, activeMilliseconds: Math.round(elapsedMilliseconds),
     solutionMoves: records.map(record => record.metrics.solutionMoves) }, null, 2));
 }
 
