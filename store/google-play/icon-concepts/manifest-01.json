@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-08",
+  "method": "Built-in image_gen.imagegen",
+  "file": "comparison-01.png",
+  "sha256": "badd2473bc6105d58d7f0b460c19b36f9244b3cb2bf29ce8e7d13cbbac7f61f2",
+  "prompt": "prompt-01.txt",
+  "status": "Six design concepts for owner selection; current production icon unchanged",
+  "layout": "Two columns, three rows; numerals outside icon artwork",
+  "candidates": [
+    {
+      "number": 1,
+      "concept": "Perfect pour, sculptural"
+    },
+    {
+      "number": 2,
+      "concept": "Perfect pour, bold"
+    },
+    {
+      "number": 3,
+      "concept": "Color crystal, faceted"
+    },
+    {
+      "number": 4,
+      "concept": "Color crystal, rounded"
+    },
+    {
+      "number": 5,
+      "concept": "Two glasses in harmony, stemware"
+    },
+    {
+      "number": 6,
+      "concept": "Two glasses in harmony, tumblers"
+    }
+  ],
+  "constraints": [
+    "No text or badges inside icons",
+    "No No Ads badge",
+    "Selection sheet only; regenerate selected icon as a standalone production asset before replacement"
+  ]
+}

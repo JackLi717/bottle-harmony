@@ -1,0 +1,16 @@
+{
+  "status": "concept-comparison-for-owner-review",
+  "method": "built-in image_gen image edit",
+  "reference": "icon-01-no-ads.png",
+  "image": "no-ads-graphic-comparison-01.png",
+  "prompt": "prompt-no-ads-graphic-01.txt",
+  "width": 1024,
+  "height": 1536,
+  "sha256": "6b26749bb9ed84d72fe683eb4cfdbe8bb83520cf83b4342070b6bdeb5cd9ee0e",
+  "variants": ["AD prohibition disc", "Crossed-out ad popup", "Crossed-out video ad card", "Open AD prohibition mark", "Crossed-out ad banner", "Pictogram plus NO ADS capsule"],
+  "generatedOriginal": "/Users/lixiaohu/.codex/generated_images/01a11884-78bb-7383-aec2-6327b70cd44b/exec-65056df3-3411-47c2-a5e7-0d5f26d4e664.png",
+  "selectedCandidate": 4,
+  "productionIconReplaced": true,
+  "productionSource": "../../../assets/brand/icon-master.png",
+  "uploadedToPlayConsole": false
+}

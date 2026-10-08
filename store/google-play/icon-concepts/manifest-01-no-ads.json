@@ -1,0 +1,15 @@
+{
+  "status": "concept-for-owner-review",
+  "method": "built-in image_gen image edit",
+  "reference": "comparison-01.png",
+  "selectedCandidate": 1,
+  "requestedChange": "Add a NO ADS badge inside the lower-right corner",
+  "image": "icon-01-no-ads.png",
+  "prompt": "prompt-01-no-ads.txt",
+  "width": 1254,
+  "height": 1254,
+  "sha256": "527fd7dcd75e3dcbdadeac8b5d464648e9f67ee6c14bb3ddea2b1a0d4428dd0c",
+  "generatedOriginal": "/Users/lixiaohu/.codex/generated_images/01a11884-78bb-7383-aec2-6327b70cd44b/exec-bbff4306-90c8-462d-91bc-4d92b6274abb.png",
+  "productionIconReplaced": false,
+  "uploadedToPlayConsole": false
+}

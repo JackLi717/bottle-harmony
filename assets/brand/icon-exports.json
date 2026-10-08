@@ -1,0 +1,55 @@
+{
+  "design": "Selected graphic comparison candidate 4",
+  "background": "#061F3E",
+  "adaptiveSafeRadius": 304,
+  "outputs": [
+    {
+      "path": "assets/icon.png",
+      "width": 1024,
+      "height": 1024,
+      "channels": 3,
+      "bytes": 1709482,
+      "sha256": "a1142cc5dfaf5d84bc997c759ee215f58317a20d2531f66fa6a19c44f18ae0f2"
+    },
+    {
+      "path": "assets/android-icon-foreground.png",
+      "width": 1024,
+      "height": 1024,
+      "channels": 4,
+      "bytes": 405834,
+      "sha256": "e860b134b3da3c8a01b25b68151b806318f7972c8243eab0260e566f8bdf0ba1"
+    },
+    {
+      "path": "assets/android-icon-background.png",
+      "width": 1024,
+      "height": 1024,
+      "channels": 3,
+      "bytes": 16050,
+      "sha256": "be18f9239512a720f7905c285f3c9efcfa4bde35dfc26daa24a31b583425271b"
+    },
+    {
+      "path": "assets/android-icon-monochrome.png",
+      "width": 1024,
+      "height": 1024,
+      "channels": 4,
+      "bytes": 59271,
+      "sha256": "d8940b8fd4f299b9a9ed55a90ab03e9625a95c784b6d5b47d75cf812f4928d91"
+    },
+    {
+      "path": "assets/favicon.png",
+      "width": 64,
+      "height": 64,
+      "channels": 3,
+      "bytes": 10514,
+      "sha256": "19aef1b3b2bd84a0a7638f44efaca6da09b059f00f95352aff4d0ba93cadb58e"
+    },
+    {
+      "path": "store/google-play/icon-512.png",
+      "width": 512,
+      "height": 512,
+      "channels": 4,
+      "bytes": 494374,
+      "sha256": "41291370485e70ddcb32836abe043eb350af928ba02fe31f284e1a55d9318203"
+    }
+  ]
+}

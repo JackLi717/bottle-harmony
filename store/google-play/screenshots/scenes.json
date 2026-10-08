@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "sourceContentId": "mainline-1000-v5",
+  "language": "en",
+  "device": {
+    "avd": "BottleHarmony_Play_16KB",
+    "serial": "emulator-5562",
+    "width": 1080,
+    "height": 1920
+  },
+  "commonPreferences": {
+    "sound": false,
+    "completionEffect": "cork",
+    "hintCredits": 4,
+    "freeHintUsed": false,
+    "wideVesselFallback": "halo"
+  },
+  "captureMethod": "Actual uploaded release APK, isolated temporary screenshot-save fixtures validated by the app decoder; original test database backed up and byte-for-byte restored. No app code or screenshot pixel edits.",
+  "scenes": [
+    {
+      "order": 1,
+      "file": "01-tulip-level-279.png",
+      "sourceRawFile": "02-tulip-level-279.png",
+      "number": 279,
+      "vessel": "tulip",
+      "symbols": false,
+      "levelId": "a-v1-004c4b6d-0-9c-1e",
+      "levelSha256": "33ad8dec9f2a8c822a47976228281e64efcfc0e2691d3e8b4c84f2852e66a480",
+      "colors": 9,
+      "bottles": 10,
+      "moves": [],
+      "moment": "Idle initial board; no selected vessel, pour animation or open menu",
+      "purpose": "Distinctive stemware: nine colors, ten bottles"
+    },
+    {
+      "order": 2,
+      "file": "02-moon-level-042.png",
+      "sourceRawFile": "01-moon-level-042.png",
+      "number": 42,
+      "vessel": "moon",
+      "symbols": false,
+      "levelId": "g-v1-0013d62e-0-6c-2e",
+      "levelSha256": "d8220a25fec1ab73ae3d3db67bab18a5b95e70139c7c71b06b629eb5583b89ce",
+      "colors": 6,
+      "bottles": 8,
+      "moves": [],
+      "moment": "Idle initial board; no selected vessel, pour animation or open menu",
+      "purpose": "Inviting hero: rounded glass, six colors, generous eight-bottle board"
+    },
+    {
+      "order": 3,
+      "file": "03-prism-level-673.png",
+      "sourceRawFile": "03-prism-level-673.png",
+      "number": 673,
+      "vessel": "prism",
+      "symbols": false,
+      "levelId": "a-v1-0098968a-0-10c-2e",
+      "levelSha256": "302bcf6324b4f3b368a346418ece7ac24dc5b932d25d8751eae52510d139e007",
+      "colors": 10,
+      "bottles": 12,
+      "moves": [],
+      "moment": "Idle initial board; no selected vessel, pour animation or open menu",
+      "purpose": "Content depth: ten colors, maximum twelve-bottle board"
+    },
+    {
+      "order": 4,
+      "file": "04-crystal-symbols-level-910.png",
+      "sourceRawFile": "04-crystal-symbols-level-910.png",
+      "number": 910,
+      "vessel": "highball",
+      "symbols": true,
+      "levelId": "g-v1-0138923f-0-8c-1e",
+      "levelSha256": "2a54587c8a6ce05c0d9036d7c5b780370b0f2d3e798a82434f5cfa4fc2ab7877",
+      "colors": 8,
+      "bottles": 9,
+      "moves": [],
+      "moment": "Idle initial board; no selected vessel, pour animation or open menu",
+      "purpose": "Comfort and color recognition: broad glasses, shape symbols, nine-bottle asymmetry"
+    }
+  ]
+}

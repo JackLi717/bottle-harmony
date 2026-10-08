@@ -1,0 +1,22 @@
+ENGLISH
+
+Lead: No ads. No interruptions. Just one satisfying pour after another.
+Glass styles: Your puzzle. Your favorite glass.
+Progression: 1,000 puzzles. Take them at your own pace.
+Family: Think together. Take turns. Share the final pour.
+Offline: A little quiet time, wherever you are.
+Accessibility: Add symbols to help tell the colors apart.
+
+简体中文
+
+开场：没有广告，没有打扰。把时间留给解题的畅快。
+容器：换一只杯子，换一种心情。
+关卡：1000道谜题，按自己的节奏慢慢解。
+亲子：一起想，轮流倒，分享最后一步的开心。
+离线：随时留一点安静的时间给自己。
+辨色：开启颜色辅助符号，让色彩更好分辨。
+
+使用范围
+以上为宣传文案备选，不代表已叠加在真实游戏截图上。
+亲子场景指同一台设备讨论解法、轮流操作；没有多人联机功能。
+平台适配由其他开发人员负责。PC、平板和TV的支持声明与截图须待其交付实际版本、完成验证后再添加。

@@ -1,50 +1,50 @@
 [
   {
-    "file": "01-home.png",
+    "order": 1,
+    "file": "01-tulip-level-279.png",
+    "level": 279,
+    "vessel": "tulip",
+    "symbols": false,
     "width": 1080,
     "height": 1920,
     "channels": 3,
-    "sha256": "22f7bfcb81138d56218a00acda87789cdafc948f2e6f7ee1f41d9bd69f39e0e4",
+    "sha256": "61587aae9bc7a6b3fca3223fb12f3505fb7f9f2355ff891fef90c7be28f0eec7",
     "pixelsUnchanged": true
   },
   {
-    "file": "02-level-one.png",
+    "order": 2,
+    "file": "02-moon-level-042.png",
+    "level": 42,
+    "vessel": "moon",
+    "symbols": false,
     "width": 1080,
     "height": 1920,
     "channels": 3,
-    "sha256": "94306d1513d73292597557e910e29c35f00e955fb4d09aab199e5f3974da851d",
+    "sha256": "db7b2b9429e0314a4c01158c453989657b6b555b9c66f334310497dd06e731fc",
     "pixelsUnchanged": true
   },
   {
-    "file": "03-level-four.png",
+    "order": 3,
+    "file": "03-prism-level-673.png",
+    "level": 673,
+    "vessel": "prism",
+    "symbols": false,
     "width": 1080,
     "height": 1920,
     "channels": 3,
-    "sha256": "65fa28d482b52606dba018bb810b94a3bb023e55cf138c055f656edd3e610d1c",
+    "sha256": "951b51053295bc33f706615a54c12269e31de47300ce2d9a9effaa7be617b8cf",
     "pixelsUnchanged": true
   },
   {
-    "file": "04-glass-choice.png",
+    "order": 4,
+    "file": "04-crystal-symbols-level-910.png",
+    "level": 910,
+    "vessel": "highball",
+    "symbols": true,
     "width": 1080,
     "height": 1920,
     "channels": 3,
-    "sha256": "aaed99accc0d71957701a86dbcdc95cb6c5efa6ff5310fefd22025ee4580e74e",
-    "pixelsUnchanged": true
-  },
-  {
-    "file": "05-color-symbols.png",
-    "width": 1080,
-    "height": 1920,
-    "channels": 3,
-    "sha256": "7d782115657d318f7a32edc3e2688dc5e671dcef2b82bc6778be9ba0e99b2fe1",
-    "pixelsUnchanged": true
-  },
-  {
-    "file": "06-levels.png",
-    "width": 1080,
-    "height": 1920,
-    "channels": 3,
-    "sha256": "45c4a8c913b6d5053c2f4c3a6c5a5428f47246a0a4a7ce205a635047464b34f1",
+    "sha256": "e2d90ad52ddd8ea8a9270041acdc121dadb98bec2bb792b107e7cc1b8b648c43",
     "pixelsUnchanged": true
   }
 ]
