@@ -1,0 +1,10 @@
+{
+  "created": "2026-10-08",
+  "tool": "OpenAI image_gen",
+  "reference": "assets/brand/icon-master.png",
+  "master": "assets/brand/tv-banner-master.png",
+  "export": "assets/android-tv-banner.png",
+  "width": 320,
+  "height": 180,
+  "prompt": "Create ONE professional Android TV launcher banner, 16:9 landscape, based on the attached approved app icon. Full-bleed midnight navy background. On the RIGHT half, faithfully reuse the clear glass bottles, vivid turquoise pouring stream and coral open prohibition circle/slash over ivory AD from the reference, with no tile border. On the LEFT half, exceptionally clear bold warm-ivory typography exactly 'Water Sort' on the first line and 'No Ads' on the second line, aligned left and generously spaced. This banner must remain readable when reduced to 320x180. Avoid tiny text, decorative detail, extra claims or additional badges. Crisp, clean, polished illustration, balanced generous margins. No rounded outer corners, no white frame, no mockup. Output one 16:9 banner."
+}

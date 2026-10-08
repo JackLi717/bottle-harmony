@@ -1,73 +1,49 @@
-# Google Play 测试前检查
+# Google Play 首次封闭测试提交
 
-检查日期：2026 年 10 月 8 日（墨尔本）。本次核查当前代码、最终签名 Android 包、隔离模拟器、测试记录、Google 官方要求和 Play Console 可见页面。已创建 Water Sort - No Ads 应用草稿，保存英文商店材料与内容声明，上传当前 AAB 并保存 Alpha 封闭测试发布草稿；没有提交 Google 应用审核或发行。
+检查日期：2026 年 10 月 8 日（墨尔本）。Water Sort - No Ads 的 0.1.1（versionCode 5）已上传 Google Play，并已提交首次 Alpha 封闭测试审核。提交后的快速检查完成，Publishing overview 明确显示 **Changes in review** 与 **Your changes are now in review**；所列版本只有 `0.1.1 (5) - multi-platform closed test`。这不是审核通过或正式公开发行。
 
-后续产品决定：[首期无广告、推荐与 Premium 规则](gameplay-ideas.md#首期无广告推荐与-premium-规则)已确认，尚未接入当前应用。接入在线推荐结算及内购后，需要重新构建并核查网络配置、隐私政策、数据安全、内购声明与商店文字，不能沿用现有“无联网／内购”结果作为新包结论。
+审核页面：https://play.google.com/console/u/0/developers/6045945546746635759/app/4974675580183102720/publishing 。本地状态和截图在 `builds/release-0.1.1/console-progress.json`、`play-first-review.jpg`、`play-first-review-full.jpg`。
 
-当前题库：项目资源及本次重新构建的签名包均采用 `mainline-1000-v5` 山峰编排，分布及独立复核见[结果评价](level-selection-evaluation.md)。已用该 AAB 生成的 APK 重新完成前三关实际通关、提示、撤销、重开、进程恢复与重玩隔离检查。商店截图现已另行按产品展示目的重拍为四张分散关卡、不同容器的真实UI画面；截图采用可恢复的独立测试存档，不作为自然通关验收证据。模拟器检查不代替真机验收。
+## 本次产物
 
-## Play Console 与账号
+| 产物 | 位置 | SHA-256 |
+| --- | --- | --- |
+| 已上传签名 AAB | `builds/play/bottle-harmony-0.1.1-5.aab` | `58472cf3ab3f851acfc28a302dd26b56bbf64b5ad89f709d0d7e611889b6490d` |
+| AAB 生成的签名 APK | `builds/play/bottle-harmony-0.1.1-5.apk` | `5f32e8c220924d85f680607c549a32efb200a72fb08448e4669ef83a1ca09747` |
+| R8 混淆映射 | `builds/play/bottle-harmony-0.1.1-5-mapping.txt` | `2bdcf214d6ffd59513b17ef2b161751b9f3b9954d2c8be4e1e1c70843bb1b34c` |
 
-用户确认是 2023 年 11 月 13 日后创建的个人开发者账号。实际 Chrome 页面已能打开账号首页和 Platon Sudoku 仪表盘；未观察到访问被封禁的报错，先前打不开的具体原因没有足够证据确定。
+正式构建通过配置插件启用 R8，沿用原生依赖的保留规则；没有额外启用资源压缩。构建脚本保存带版本号的映射文件，检查脚本验证它与 AAB 内 `BUNDLE-METADATA/com.android.tools.build.obfuscation/proguard.map` 完全一致。Google 自动识别了 ReTrace mapping file 和 native debug symbols，原反混淆文件警告已消失。后续版本必须保留各自对应的映射，不能拿本文件解释其他包的堆栈。
 
-账号首页仅列出 Platon Sudoku（com.platongames.sudoku），状态为封闭测试，当前仪表盘显示至少 12 人已连续加入 4 天，发布权限申请按钮仍禁用。这不是 Bottle Harmony 的测试记录，不能替它完成测试条件。
+最低 Android API 24，目标 API 36。正式界面关闭内部工具；包中包含用户批准的倒水与禁止广告标识图标。上传证书指纹、版本、权限和静态检查见 `builds/release-0.1.1/mobile5-aab-report.json` 与 `mobile5-apk-report.json`。包无网络、存储、悬浮窗、麦克风、广告 ID、定位、摄像头或联系人权限；Android 系统备份关闭。没有广告、账号、内购、联网采集或云存档。
 
-通知中心有 10 月 7 日同名应用删除恢复期已过的提醒，但当前数独应用仪表盘仍可访问，正在累计测试天数。未核实删除通知对应的应用 ID，不能断定正在测试的应用被删除，也不能断定它一定只是旧同名应用。
+当前内容为已验证的 `mainline-1000-v5` 主线、50 副关卡和十五款自由选择容器。本轮不改变关卡、规则、解锁或存档格式。后续产品决定见[首期无广告、推荐与 Premium 规则](gameplay-ideas.md#首期无广告推荐与-premium-规则)，尚未接入当前应用；接入联网或内购后须重新核查包、声明与政策。
 
-用户已选择完成本应用封闭测试后申请正式发布权限，本次不另做 Early Access。Early Access 对应开放测试。此类账号须先完成该应用至少 12 名测试者连续加入 14 天的封闭测试，再申请并获批发布权限，之后才可开放测试。计时满足不保证自动获批；获批权限也不等于正式发行。依据：[个人账号测试要求](https://support.google.com/googleplay/android-developer/answer/14151465?hl=en)、[测试轨道](https://support.google.com/googleplay/android-developer/answer/9845334?hl=en)。
+## 验证
 
-## 已补齐
+Node 24 的 TypeScript、ESLint 通过，当前游戏自动测试 150／150 通过，日志位于 `builds/release-0.1.1/logs/`。新增 R8 后重新核查了最终 AAB／APK、签名及一致的映射；游戏测试不替代混淆后的原生运行检查。
 
-| 项目 | 当前结果 |
-| --- | --- |
-| 发布身份 | 用户确认 Platon Games、Bottle Harmony、com.bottleharmony.app、admin@readytradie.com；全可选国家/地区，儿童及成年人 |
-| 上传签名 | 已生成独立 RSA 4096 位上传密钥，仅存于 Git 忽略的 builds/signing/；签名脚本不覆盖已有密钥，需安全备份 |
-| 发布构建 | 版本 0.1.0、versionCode 1、最低 API 24、目标 API 36；最终签名 AAB 与其生成的 APK 已完成版本、证书、权限和静态检查；Google 接受 AAB 上传，Console 显示 Releases are signed by Google Play，自动保护默认启用 |
-| 正式界面 | 公开构建关闭内部预览/难度调试入口；开发时可显式启用，不改变游戏逻辑和存档 |
-| Android 权限 | 公开构建删除网络、存储、悬浮窗、麦克风和广告 ID 权限；最终 Manifest 仅有音频设置、振动、唤醒锁及应用私有接收器权限；无开发界面 Activity |
-| 系统备份 | 公开 Android 构建关闭 allowBackup；应用与政策均明确本机存档及卸载删除，无云恢复 |
-| 原创图标 | 用户已选定第4种倒水＋镂空禁止广告标识作为正式设计；已更新应用图标、Android透明前景/背景/单色图、favicon及512×512商店图标。源图、ImageGen提示词、导出哈希和裁切预览见 assets/brand/。旧AAB尚未包含此更新，下一次原生构建需核对；商店宣传横图保持1024×500 |
-| 商店文案 | 已准备中英文名称、短说明、完整说明和版本说明；依据实际 1000 主线、50 副关卡、十五款容器及提示券行为 |
-| 隐私材料 | 应用内英文政策已接入设置，可离线阅读；网页与应用共用政策源；用户确认 Cloudflare 授权后，英文页已部署到数独现有静态站点，正式域名及 www 均公开访问通过 |
-| Console 声明 | 已保存隐私政策、无广告、免登录、无广告 ID、非政府/健康/金融应用、6 岁以上目标受众及不收集/共享数据；儿童合规与 IARC 条款经用户确认；IARC 已完成 |
-| 实际截图 | 已从已上传v5发布包重拍四张1080×1920、24位PNG，顺序为279/42/673/910关，分别使用郁金香杯、月光瓶、棱镜瓶、带辅助符号的冰晶杯；原图、场景和重拍流程见store/google-play/screenshots/README.md |
-| 模拟器试玩 | 当前 v5 包已复测前三关通关、提示与提示券、撤销、重开、进程关闭后恢复、经典瓶与水杯选择及重玩隔离；以 builds/play/runtime-16kb.json 的当前产物绑定记录为准，不将先前包的十五款完整遍历计入新包复测 |
-| 测试组织 | 已写封闭测试方案，覆盖参与天数、真实反馈、恢复/提示/重玩/音效/容器和儿童及老年人可用性 |
+版本 5 在七英寸 Android API 34 平板完成横竖屏展示、倒水和撤销，并核对实际四层／空瓶到三层／一层再恢复。最终 AAB 生成的版本 5 APK 在 API 36、真实 16384 字节页的独立模拟器中启动；本次运行明确设置并读取 `bionic.linker.16kb.app_compat.enabled=false`、`pm.16kb.app_compat.disabled=true`，第 42 关倒水和撤销实际层数均已验证。运行记录绑定最终产物哈希，见 `builds/release-0.1.1/runtime-r8-16kb.json` 和相应 UI XML。截图场景结束后已恢复原存档并核对哈希。
 
-网页已上线地址：https://readytradie.com/bottle-harmony/privacy.html。该网站既有项目是 `/Users/lixiaohu/work/hard-sudoku-pro/site` 的 Cloudflare Pages `platon-games-site`；两个游戏只共用静态网站托管，应用代码和构建各自独立。数独政策与 app-ads.txt 保持原样。2026 年 10 月 8 日通过 Cloudflare Pages 部署 `a1dd538e`，只新增一份英文政策；数独线上 9 月 30 日政策保持原样，本地 10 月 4 日数独改动未随此次上线。正式网页、www、数独政策、主页、样式及 app-ads.txt 均返回 200 且内容核对通过（网页的 `.html` 路径由 Pages 标准 308 重定向至无后缀路径）。部署证据在 builds/play/website-deployment.json，正式页面截图在 builds/play/privacy-live.jpg。
+18 个 ARM64 库 LOAD 对齐通过，AAB 请求 16 KB ZIP 对齐，生成 APK 的 ZIP 对齐检查通过。报告仍保留 11 个 RELRO 末端公式警告，向 16 KB 取整的填充区均无可写分配节，`strictRelroChecklistPassed=false`；没有修改预编译 ELF 或弱化 RELRO。关闭兼容回退的实测覆盖启动与核心倒水／撤销，不覆盖所有原生路径或真实设备性能。
 
-## 验证证据
+同轮完成 Android 十英寸平板、iPad、Android TV、Apple TV 与 Chrome 正式配置的原生或浏览器展示检查，范围见[设备支持](device-support.md)。十英寸 Android 平板发现并修复了清单竖屏锁定造成的信箱化误判，版本 5 包含该修复。iOS／tvOS 是 Release 模拟器包，未提交 Apple 商店；Android TV 0.1.1（3）独立签名包仍在本地，未开启或提交 Google TV 商店轨道。Google Play Games on PC 在 Console 默认已选入，但 Chrome 结果不作为 Windows Google Play Games 客户端验收。
 
-Node 24 的 TypeScript 与 ESLint 已通过。当前整套测试 137/137 通过（Node 24、并发 2，日志 builds/play-current-checks.log）。本次签名包 Hermes 资源含 mainline-1000-v5 标识，不含旧 v4 标识；1000 关，D1/D2/D3/D4 实际计数 8/315/510/167。完整目录 SHA-256 与独立复算、来源重建记录一致，为 04e540f8bb21914a1b7dcfff4d29c085aee3cc1fc042e8b7478e3de29fca1795。源映射中 73 个项目 JS/TS 源文件与构建输入一致；JSON 不在源映射内，目录与 Hermes 标识另行核查。本次没有重复计算已经完成的整套离线难度模型。
+本次没有重新运行远端 Expo Doctor 或 React Native Directory 检查，遵守用户“仅做本地检查”的选择。此前官方 npm 审计为 18 项 high、0 项 moderate／critical，涉及上游工具链 braces／node-forge；这些模块未出现在已核查的 Hermes 源列表，仍不能称 npm 审计全部通过。没有使用强制降级工具链的 audit fix --force。
 
-最终 AAB SHA-256：`cbc29b5b19c9a58d9e8806f172320e514639d35fc818bd13046d65d343c0dfa1`。对应 AAB 生成 APK SHA-256：`f3d2aabf184339cef3eb5c6a9aaa947592c142265dc71e97a8844aec99ae3f7a`。
+## 素材与声明
 
-签名 AAB 已构建成功；构建脚本通过 Expo 配置插件持续表达签名、NDK 28 和权限设置，不依赖手改生成的 native 目录。最终包 Manifest、证书、版本和 SHA-256 记录在 builds/play/。模拟器实测记录为 builds/play/runtime-16kb.json，最终 crash.log 与 app-errors.log 均为空。首次模拟器开机曾出现 System UI 等待对话框，恢复后完成测试；不归因于应用崩溃，也不把此环境作为真机性能证据。旧 builds/bottle-harmony-demo.apk 是 10 月 7 日、0.0.1 的 debug 签名包，不能用于上传。
+用户确认 Platon Games、包名 `com.bottleharmony.app`、公开支持邮箱 `admin@readytradie.com`、全部可选国家／地区以及 6 岁以上儿童和成年人。Console 已提交英中商店页、用户选定的 Water Sort - No Ads 标题、无广告、免登录、无广告 ID、不收集／共享数据、非政府／金融／健康应用、目标年龄及 IARC 分级。儿童合规、IARC 条款及创建应用声明均已由用户确认。标题中的宣传关键词此前有 Console 提示，进入审核不等于标题已获批准。
 
-官方 npm 审计在兼容的 uuid 修复后为 18 项 high、0 项 moderate、0 项 critical；根源是上游 braces 和 node-forge，当前兼容工具链尚无可用修复。Hermes 打包源列表未包含这些模块，以及 xcode、npm uuid、expo-dev-launcher 和 expo-dev-menu 的 JS。工具链问题仍保留记录，不把运行包不包含解释为 npm 审计全部通过，也不采用把 Expo 强制降级的 audit fix --force。
+IARC 按实际内容披露 Champagne Flute 与 Faceted Martini 的偶发酒精名称，没有饮酒或鼓励饮酒。结果为美国 Everyone（Alcohol reference）、欧洲 PEGI 3、澳大利亚 General、巴西／德国 All ages、韩国 15+、台湾 Parental guidance 15、沙特 12、其余及俄罗斯 3+。目标受众选择不替代各地区分级限制。
 
-用户选择仅做本地 Expo 检查。本地版本映射匹配；Doctor 的可执行本地检查通过，远端 schema 未验证，React Native Directory 已禁用。不能把网络检查无法运行当作版本兼容已通过。
+英文隐私政策：https://readytradie.com/bottle-harmony/privacy.html 。应用内政策可离线阅读。网站与数独共用既有 Cloudflare Pages 静态托管，只新增 Bottle Harmony 英文页，两个应用代码和构建独立。部署及公开页面证据保存在 `builds/play/website-deployment.json` 与 `privacy-live.jpg`。
 
-16 KB 检查：已升级源构建 NDK 28 和链接参数。最终 AAB 请求 16 KB ZIP 对齐，APK zipalign 检查通过，18 个 ARM64 库 LOAD 对齐通过。仍有 11 个 RELRO 末端公式警告，末端向 16 KB 取整的填充区均无可写分配节；报告保留 strictRelroChecklistPassed=false，未修改预编译 ELF 或移除 RELRO 保护。最终 AAB 生成的 APK 已在 API 36、实际 16384 字节页的独立系统中离线启动和游玩，bionic.linker.16kb.app_compat.enabled=false、pm.16kb.app_compat.disabled=true，未使用兼容回退。[Android 官方检查](https://developer.android.com/guide/practices/page-sizes)与[Android linker 实现](https://android.googlesource.com/platform/bionic/+/refs/heads/main/linker/linker_phdr.cpp)与实际运行证据一起保留；模拟器覆盖启动及核心游玩，不覆盖所有原生路径，Google Play 最终上传校验及真实设备兼容性仍待完成。
+本轮新选十四张真实原图保存在 Git 忽略目录 `builds/release-0.1.1/screenshots/`；入口 `gallery.html`、索引 `screenshots-manifest.json`、场景 `scene-recipes.json`，保留平台、包版本、尺寸、哈希及重拍脚本。前四张为不同平台／容器的 279／42／673／910 关。预先准备的场景用于展示，不冒充自然通关。根据用户“截图本地保存，不上传到 G 的库”要求，本轮未将新截图加入 Git 或上传 Play；本次送审沿用此前批准且已上传的四张手机截图和商店素材。
 
-## 发起测试前仍待完成
+## 尚需用户协助及后续验证
 
-| 项目 | 剩余动作 |
-| --- | --- |
-| 真实设备 | 最终包仍需小屏/低端手机、声音、持续游玩及本机存档恢复验收；模拟器不代替手机性能与体验结论 |
-| 用户审阅 | 审阅 store/google-play/README.md 中的图标、横图、政策、商店文字及四张重新筛选的真实截图，然后确定提交封闭测试；正式发行仍由用户决定 |
-| 密钥备份 | 将 builds/signing/ 中的上传密钥与密码备份到用户控制的安全位置，不能提交 Git 或上传到商店资料 |
-| Console 操作 | 本应用已创建，11 项基础设置已完成，Alpha 测试地区为全部 178 个可选地区，当前 AAB 与中英文版本说明已保存；英语与中文商店文案及四张新截图已保存为草稿并重新加载核对；AI 宣传素材声明、测试者名单仍待完成；PC/平板/TV适配由用户指定其他开发人员负责，以 builds/play/console-progress.json 为准；应用审核与测试发行等待用户审阅决定 |
-| 测试者 | 为 Bottle Harmony 邀请至少 12 名真实测试者，连续加入 14 天并实际试玩，保留问题和修复记录；数独测试不替代本应用 |
-
-包名首次上传后固定；目标 API 36 按当前 Google 新应用要求准备。[创建应用与签名](https://support.google.com/googleplay/android-developer/answer/9859152?hl=en)、[目标 API](https://support.google.com/googleplay/android-developer/answer/11926878?hl=en)。截图与图标规范见[商店素材](https://support.google.com/googleplay/android-developer/answer/9866151?hl=en)。封闭测试也需 Data safety 和公开政策，见[数据安全](https://support.google.com/googleplay/android-developer/answer/10787469?hl=en)与[用户数据政策](https://support.google.com/googleplay/android-developer/answer/10144311?hl=en)。儿童目标年龄需按实际产品设计填写，内容评级低不等于适合每个年龄段。[目标年龄](https://support.google.com/googleplay/android-developer/answer/9867159?hl=en)。
-
-现有手机的 debug 签名与上传/Play 签名不同，不能直接覆盖；不要为了复测卸载旧安装、丢失进度。本任务的隔离模拟器用于检查新签名产物。当前未发起 Google 应用审核或测试发行。
-
-IARC 按实际内容披露了 Champagne Flute 与 Faceted Martini 的偶发酒精名称提及，没有饮酒或鼓励饮酒。实际结果：美国 Everyone（Alcohol reference）、欧洲 PEGI 3、澳大利亚 General、巴西 All ages、德国 All ages、韩国 15+、台湾 Parental guidance 15、沙特 12，其余及俄罗斯 3+。目标受众 6 岁以上并不改变当地分级限制。
-
-用户选定标题 Water Sort - No Ads；Console 对标题及英语短说明中的宣传关键词给出提示，英语短说明可能不符合商店推荐要求。保留用户选择用于审阅，不能把成功保存视为 Google 已接受审核。
-
-封闭发布预览没有显示阻止错误，显示两项警告：未配置测试者、未上传反混淆文件。当前 Gradle 的 android.enableMinifyInReleaseBuilds 未设置，默认 false，没有启用 R8/ProGuard 混淆，因此没有对应 mapping 文件；没有为了消除建议警告改动构建行为。发布汇总显示 15 项尚未提交的变更，包含 Alpha 版本、地区、反馈邮箱、英文商店页及声明；快速检查仍在运行，尚未将其视为通过。
-
-Console默认启用了Google Play Games on PC及Android XR。用户现已将PC、平板与TV适配交给其他开发人员；本轮仅处理介绍和手机截图，保持现有分发设置，不宣称这些平台已经通过验收。此前AI宣传素材标签提交被自动审批要求明确授权，该来源确认仍待完成；本轮已通过“Save as draft”保存英中介绍和四张新截图，没有进入最终素材提交或应用审核。
+- 测试者名单尚未配置。已询问用户复用现有数独名单或提供本应用名单，尚无答复；没有自行勾选数独名单或联系任何测试者。该提醒没有阻止首次送审，但配置名单前无人能加入。
+- 账号为 2023 年 11 月 13 日之后创建的个人账号。Bottle Harmony 需至少 12 名真实测试者连续加入本应用封闭测试 14 天并实际试玩，之后申请正式发布权限；数独的测试记录不能替代，达到天数不自动获批。用户已选择本应用完成封闭测试后申请正式发行，不另做 Early Access。[Google 官方要求](https://support.google.com/googleplay/android-developer/answer/14151465?hl=en)。
+- 上传密钥和密码仅存于 Git 忽略的 `builds/signing/`，需备份到用户控制的安全位置，不能提交 Git 或作为商店素材上传。
+- 真机持续游玩、低端设备性能、声音听感、最低系统、TV 实际观看距离及其他浏览器引擎仍需补验；本轮模拟器检查不替代这些结果。现有手机的 debug 签名不同，不为复测卸载旧应用或删除用户进度。
+- TV 商店发行、Apple 商店及浏览器公网部署需按各平台单独完成。本次送审为 Google 手机／平板的 Alpha 封闭测试包。

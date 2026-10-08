@@ -13,6 +13,7 @@ import zipfile
 parser = argparse.ArgumentParser()
 parser.add_argument('artifact', type=Path)
 parser.add_argument('--report', type=Path)
+parser.add_argument('--mapping', type=Path, help='Require this exact R8 mapping to be embedded in the AAB.')
 parser.add_argument('--bundletool', type=Path, default=Path('builds/tooling/bundletool.jar'))
 args = parser.parse_args()
 sdk = Path(os.environ.get('ANDROID_HOME', str(Path.home() / 'Library/Android/sdk')))
@@ -21,7 +22,19 @@ info = json.loads(Path('app.json').read_text())['expo']
 errors = []
 native = []
 warnings = []
+mapping = None
 with zipfile.ZipFile(args.artifact) as archive:
+    mapping_name = 'BUNDLE-METADATA/com.android.tools.build.obfuscation/proguard.map'
+    if mapping_name in archive.namelist():
+        mapping_blob = archive.read(mapping_name)
+        mapping = {'embeddedPath': mapping_name, 'sha256': hashlib.sha256(mapping_blob).hexdigest(), 'bytes': len(mapping_blob)}
+    if args.mapping:
+        if args.artifact.suffix != '.aab':
+            errors.append('Embedded R8 mapping verification requires an AAB.')
+        elif mapping is None:
+            errors.append('AAB does not contain an R8 mapping file.')
+        elif args.mapping.read_bytes() != mapping_blob:
+            errors.append('Saved R8 mapping does not match the mapping embedded in this AAB.')
     for name in archive.namelist():
         if not name.endswith('.so') or not any('/' + abi + '/' in name for abi in ['arm64-v8a', 'x86_64']):
             continue
@@ -105,7 +118,7 @@ if re.search(r'Android Debug|androiddebugkey', certificate, re.I):
 for permission in ['INTERNET', 'ACCESS_NETWORK_STATE', 'READ_EXTERNAL_STORAGE', 'WRITE_EXTERNAL_STORAGE', 'SYSTEM_ALERT_WINDOW', 'RECORD_AUDIO', 'AD_ID', 'ACCESS_FINE_LOCATION', 'CAMERA', 'READ_CONTACTS']:
     if re.search(r'(?:android|gms)\.permission\.' + permission + r'[\'\"]', permissions):
         errors.append('Unexpected public-game permission: ' + permission)
-report = {'artifact': str(args.artifact.resolve()), 'sha256': hashlib.sha256(args.artifact.read_bytes()).hexdigest(), 'nativeLibraries': native, 'certificate': certificate.strip(), 'errors': errors, 'warnings': warnings, 'staticChecksPassed': not errors, 'strictRelroChecklistPassed': all(row['relroAligned'] for row in native), 'runtime16KBTestRequired': True}
+report = {'artifact': str(args.artifact.resolve()), 'sha256': hashlib.sha256(args.artifact.read_bytes()).hexdigest(), 'mapping': mapping, 'nativeLibraries': native, 'certificate': certificate.strip(), 'errors': errors, 'warnings': warnings, 'staticChecksPassed': not errors, 'strictRelroChecklistPassed': all(row['relroAligned'] for row in native), 'runtime16KBTestRequired': True}
 if args.report:
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text(json.dumps(report, indent=2) + '\n')

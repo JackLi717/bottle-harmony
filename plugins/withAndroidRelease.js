@@ -2,7 +2,10 @@ const { withAppBuildGradle, withGradleProperties, withProjectBuildGradle } = req
 
 module.exports = function withAndroidRelease(config, { store = false } = {}) {
   config = withGradleProperties(config, mod => {
-    const properties = { EX_DEV_CLIENT_NETWORK_INSPECTOR: store ? 'false' : 'true' };
+    const properties = {
+      EX_DEV_CLIENT_NETWORK_INSPECTOR: store ? 'false' : 'true',
+      'android.enableMinifyInReleaseBuilds': store ? 'true' : 'false',
+    };
     for (const [key, value] of Object.entries(properties)) {
       mod.modResults = mod.modResults.filter(entry => entry.key !== key);
       mod.modResults.push({ type: 'property', key, value });

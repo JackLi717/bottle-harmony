@@ -18,3 +18,8 @@ const source = apkOnly ? 'android/app/build/outputs/apk/release/app-release.apk'
 const output = `builds/play/bottle-harmony-${config.version}-${config.android.versionCode}.${apkOnly ? 'apk' : 'aab'}`;
 copyFileSync(source, output);
 console.log(`Store artifact: ${resolve(output)}`);
+const mapping = 'android/app/build/outputs/mapping/release/mapping.txt';
+if (!existsSync(mapping)) throw new Error('Store build did not produce an R8 mapping file.');
+const mappingOutput = `builds/play/bottle-harmony-${config.version}-${config.android.versionCode}-mapping.txt`;
+copyFileSync(mapping, mappingOutput);
+console.log(`R8 mapping: ${resolve(mappingOutput)}`);
