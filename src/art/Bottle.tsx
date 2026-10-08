@@ -147,7 +147,7 @@ export const Bottle = memo(function Bottle({ index, colors, selected, completed,
   const surface = useAnimatedProps(() => ({
     cy: surfaceLevel.value.y,
     rx: Math.max(0, surfaceLevel.value.halfWidth - .5),
-    opacity: count.value > 0 && Math.abs(angle.value) < 8 ? 0.4 : 0,
+    opacity: count.value > 0 && Math.abs(angle.value) < 8 ? 0.4 - receiverResponse(progress.value, isTarget && completionAnimations) * .22 : 0,
   }));
   const innerStream = useAnimatedProps(() => ({
     d: `M50,${mouth.y + 5} L50,${surfaceLevel.value.y}`,
@@ -224,7 +224,7 @@ export const Bottle = memo(function Bottle({ index, colors, selected, completed,
           <AnimatedPath animatedProps={innerStream} fill="none" stroke={flowColor.main} strokeWidth={3.3} strokeLinecap="round" />
           <AnimatedPath animatedProps={innerStream} fill="none" stroke={flowColor.light} strokeWidth={0.9} strokeLinecap="round" />
           <AnimatedEllipse cx={50} ry={1.8} fill={flowColor.light} animatedProps={splash} />
-          {isTarget && completionAnimations && <PourRipples progress={progress} surface={surfaceLevel} enabled color={flowColor.light} />}
+          {isTarget && completionAnimations && <PourRipples progress={progress} surface={surfaceLevel} enabled color="#F5FFFD" />}
           <AnimatedPath animatedProps={impact} fill="none" stroke={flowColor.light} strokeWidth={1.1} strokeLinecap="round" />
           <AnimatedPath d={vessel.inside} fill={colors[0] ? LIQUIDS[colors[0]].light : '#FFFFFF'} animatedProps={colorGlow} />
           <AnimatedPath d={vessel.inside} fill={`url(#${id}-color-glow)`} animatedProps={colorGlow} />

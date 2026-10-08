@@ -33,10 +33,20 @@ test('ripples follow all fifteen actual cavities for empty, half-full and nearly
         const pose = ripplePose(p, ring, surface.halfWidth, true);
         assert.ok(Number.isFinite(pose.rx) && Number.isFinite(pose.ry));
         assert.ok(pose.rx >= 0 && pose.rx <= Math.max(0, surface.halfWidth - 1) + 1e-8, vessel.id);
-        assert.ok(pose.opacity >= 0 && pose.opacity <= .32);
+        assert.ok(pose.opacity >= 0 && pose.opacity <= .72);
         if (p <= FLOW_START || p >= .92) assert.equal(pose.opacity, 0);
       }
     }
+  }
+});
+
+test('expanded ripples remain visible during reception rather than fading into the surface highlight', () => {
+  // At least one clearly expanded ring persists through the steady stream.
+  // Small rings at birth and expired rings must not be the only visible ones.
+  for (let ms = 100; ms <= 650; ms += 25) {
+    const p = FLOW_START + ms / POUR_DURATION_MS;
+    const rings = [0, 1, 2].map(ring => ripplePose(p, ring, 25, true));
+    assert.ok(rings.some(pose => pose.rx >= 10 && pose.opacity >= .45), String(ms));
   }
 });
 

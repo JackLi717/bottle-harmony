@@ -7,7 +7,10 @@ type Props = { progress: SharedValue<number>; surface: SharedValue<{ y: number; 
 
 function Ring({ progress, surface, enabled, color, index }: Props & { index: number }) {
   const props = useAnimatedProps(() => ({ ...ripplePose(progress.value, index, surface.value.halfWidth, enabled), cy: surface.value.y + .7 }));
-  return <AnimatedEllipse cx={50} animatedProps={props} fill="none" stroke={color} strokeWidth={.8} />;
+  return <>
+    <AnimatedEllipse cx={50} animatedProps={props} fill="none" stroke="#174B5D" strokeOpacity={.55} strokeWidth={2.6} />
+    <AnimatedEllipse cx={50} animatedProps={props} fill="none" stroke={color} strokeWidth={1.3} />
+  </>;
 }
 
 export function PourRipples(props: Props) {

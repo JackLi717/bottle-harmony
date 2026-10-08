@@ -19,9 +19,11 @@ export function ripplePose(progress: number, ring: number, halfWidth: number, en
   const phase = (elapsed / 480 + ring / 3) % 1;
   const noNewRing = progress < STOP || Math.floor(elapsed / 480 + ring / 3)
     === Math.floor((STOP - FLOW_START) * POUR_DURATION_MS / 480 + ring / 3);
-  const limit = Math.max(0, Math.min(18, halfWidth - 1));
+  const limit = Math.max(0, Math.min(24, halfWidth - 1));
   const rx = limit * (.12 + .88 * phase);
-  return { rx, ry: rx * .15, opacity: limit > 1 && noNewRing ? response * .32 * (1 - phase) : 0 };
+  // Peak after the ring has grown, rather than making only its tiny center
+  // visible. A smooth envelope also avoids a bright pop when a ring restarts.
+  return { rx, ry: rx * .18, opacity: limit > 1 && noNewRing ? response * .72 * Math.sin(Math.PI * phase) : 0 };
 }
 
 export function pourFocus(progress: number, active: boolean) {
