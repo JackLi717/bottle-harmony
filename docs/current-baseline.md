@@ -19,7 +19,7 @@
 | 美术与容器 | 15 款免费外观，首页滑动／箭头选择并记住；统一棋盘款式；固定明亮 11 色、可选颜色符号；窄口瓶塞、宽口光晕 | `src/art/vesselDesigns.ts`、`palette.ts`、`Bottle.tsx`；`tests/vessels.test.ts` |
 | 倒水与完成 | 1900 ms 倒水；杯腔裁切涟漪、局部轮廓、完成色柔光与瓶塞反光；D1–D4 对应 2–5 朵礼花，结束后继续 | `src/art/`、`src/ui/gamePresentation.ts`；表现／礼花测试 |
 | 声音 | 6 类、18 段 CC0 实录试听片段，按容器和接水起始水位选择；只随可见水流播放；原创合成礼花声；共用本地声音开关 | `src/art/pourAudio.ts`、`src/ui/PourSound.tsx`；`tests/pourSound.test.ts`；`assets/audio/README.md` |
-| 设置与语言 | 设置只有音效、辅助符号、隐私政策；13 种语言跟随系统，失败回退英语；无手动语言和完成效果入口；减少动态效果跟随系统 | `src/ui/MainlineMenu.tsx`、`src/i18n/`；`tests/i18n.test.ts` |
+| 设置与语言 | 设置只有音效、辅助符号、隐私政策；源码 21 种语言跟随系统（提交包仍为 13 种），失败回退英语；无手动语言和完成效果入口；减少动态效果跟随系统 | `src/ui/MainlineMenu.tsx`、`src/i18n/`；`tests/i18n.test.ts` |
 | 布局与输入 | 4–12 瓶、两排、每排至多 6 个，同窗口统一大瓶；手机全宽；平板横竖屏／宽窗侧栏；浏览器鼠标触摸键盘、TV 遥控焦点 | `src/ui/boardLayout.ts`、`deviceLayout.ts`、`boardNavigation.ts`；[跨设备证据](device-support.md) |
 | 内部工具 | 公开配置关闭；显式内部构建保留 C 对照、任意主线／副关预览和诊断，均不记进度 | `app.json`、`src/ui/buildConfig.ts`；`npm run start:internal` |
 

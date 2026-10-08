@@ -172,9 +172,9 @@ export function MemoryScreen({ vessel, symbols, sound, reduceMotion, onBack }: {
             {observing ? <Pressable hasTVPreferredFocus={Platform.isTV} accessibilityRole="button" accessibilityLabel={t('memoryReady')} disabled={tutorial} onPress={() => commit(readyMemory(current()), 'ready')} style={[styles.ready, rail && styles.readyRail]}>
               <Icon name="eye" size={38} color="#DDF9EC" /><UiText style={styles.readyText}>{t('memoryReady')}</UiText>
             </Pressable> : <>
-              <GameButton kind={rail ? 'wide' : 'tool'} style={!rail && styles.tool} compact={compact} icon="undo" label={t('undo')} onPress={undo} disabled={controlsDisabled || peeking || !game.history.length} />
-              <GameButton kind={rail ? 'wide' : 'tool'} style={!rail && styles.tool} compact={compact} tone="gold" icon="hint" label={t(searching ? 'searching' : 'hint')} onPress={hint} disabled={controlsDisabled || peeking || won} />
-              <GameButton kind={rail ? 'wide' : 'tool'} style={!rail && styles.tool} compact={compact} tone="blue" icon="reset" label={t('reset')} onPress={reset} disabled={controlsDisabled} />
+              <GameButton kind={rail ? 'wide' : 'tool'} style={!rail && styles.tool} compact={compact} icon="undo" label={t('undo')} accessibilityLabel={t('undoHint')} onPress={undo} disabled={controlsDisabled || peeking || !game.history.length} />
+              <GameButton kind={rail ? 'wide' : 'tool'} style={!rail && styles.tool} compact={compact} tone="gold" icon="hint" label={t(searching ? 'searching' : 'hint')} accessibilityLabel={t(searching ? 'searching' : 'hintHint')} onPress={hint} disabled={controlsDisabled || peeking || won} />
+              <GameButton kind={rail ? 'wide' : 'tool'} style={!rail && styles.tool} compact={compact} tone="blue" icon="reset" label={t('reset')} accessibilityLabel={t('resetHint')} onPress={reset} disabled={controlsDisabled} />
               <GameButton kind={rail ? 'wide' : 'tool'} style={!rail && styles.tool} compact={compact} tone="mint" icon={peeking ? 'eye-off' : 'eye'} label={t(peeking ? 'memorySort' : 'memoryView')} onPress={view} disabled={controlsDisabled || won} />
             </>}
           </View>
