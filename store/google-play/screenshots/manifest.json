@@ -1,0 +1,50 @@
+[
+  {
+    "file": "01-home.png",
+    "width": 1080,
+    "height": 1920,
+    "channels": 3,
+    "sha256": "22f7bfcb81138d56218a00acda87789cdafc948f2e6f7ee1f41d9bd69f39e0e4",
+    "pixelsUnchanged": true
+  },
+  {
+    "file": "02-level-one.png",
+    "width": 1080,
+    "height": 1920,
+    "channels": 3,
+    "sha256": "94306d1513d73292597557e910e29c35f00e955fb4d09aab199e5f3974da851d",
+    "pixelsUnchanged": true
+  },
+  {
+    "file": "03-level-four.png",
+    "width": 1080,
+    "height": 1920,
+    "channels": 3,
+    "sha256": "65fa28d482b52606dba018bb810b94a3bb023e55cf138c055f656edd3e610d1c",
+    "pixelsUnchanged": true
+  },
+  {
+    "file": "04-glass-choice.png",
+    "width": 1080,
+    "height": 1920,
+    "channels": 3,
+    "sha256": "aaed99accc0d71957701a86dbcdc95cb6c5efa6ff5310fefd22025ee4580e74e",
+    "pixelsUnchanged": true
+  },
+  {
+    "file": "05-color-symbols.png",
+    "width": 1080,
+    "height": 1920,
+    "channels": 3,
+    "sha256": "7d782115657d318f7a32edc3e2688dc5e671dcef2b82bc6778be9ba0e99b2fe1",
+    "pixelsUnchanged": true
+  },
+  {
+    "file": "06-levels.png",
+    "width": 1080,
+    "height": 1920,
+    "channels": 3,
+    "sha256": "45c4a8c913b6d5053c2f4c3a6c5a5428f47246a0a4a7ce205a635047464b34f1",
+    "pixelsUnchanged": true
+  }
+]

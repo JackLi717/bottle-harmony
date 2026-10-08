@@ -1,3 +1,3 @@
 import config from '../../app.json';
-/** This installed trial retains the user's calibration tools. */
-export const INTERNAL_TOOLS = config.expo.extra.internalTools;
+/** Public builds hide calibration tools; internal builds opt in explicitly. */
+export const INTERNAL_TOOLS = process.env.EXPO_PUBLIC_INTERNAL_TOOLS === 'true' || config.expo.extra.internalTools;

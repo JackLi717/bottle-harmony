@@ -9,6 +9,7 @@ export type Language = typeof LANGUAGES[number]['id'];
 export type LanguagePreference = Language | 'system';
 type Translations = readonly [string, string, string, string, string, string, string, string, string, string, string, string, string];
 export const MESSAGES = {
+  privacyPolicy: ['Privacy policy','隐私政策','隱私政策','Política de privacidad','Política de privacidade','Politique de confidentialité','Datenschutzerklärung','プライバシーポリシー','개인정보 처리방침','Политика конфиденциальности','سياسة الخصوصية','गोपनीयता नीति','Kebijakan privasi'],
   solidSideLabel: ['Bonus puzzle {n}','副关卡 {n}','副關卡 {n}','Reto extra {n}','Desafio extra {n}','Énigme bonus {n}','Bonusrätsel {n}','ボーナス問題 {n}','보너스 퍼즐 {n}','Доп. задача {n}','لغز إضافي {n}','बोनस पहेली {n}','Teka-teki bonus {n}'],
   solidInstruction: ['The bottom layer is frozen. Tap the flame to melt it.','瓶底已凝固。点火焰可融化。','瓶底已凝固。點火焰可融化。','La capa inferior está congelada. Toca la llama.','A camada inferior está congelada. Toque na chama.','La couche du fond est gelée. Touchez la flamme.','Die unterste Schicht ist gefroren. Flamme antippen.','底の層は凍っています。炎を押すと溶けます。','바닥층이 얼어 있습니다. 불꽃을 누르면 녹습니다.','Нижний слой замёрз. Нажмите на огонь.','الطبقة السفلى متجمدة. اضغط على اللهب لإذابتها.','नीचे की परत जमी है। पिघलाने के लिए आग दबाएँ।','Lapisan dasar membeku. Ketuk api untuk mencairkan.'],
   heat: ['Melt','融化','融化','Derretir','Derreter','Fondre','Schmelzen','溶かす','녹이기','Растопить','إذابة','पिघलाएँ','Cairkan'],

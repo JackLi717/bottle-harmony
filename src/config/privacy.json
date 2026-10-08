@@ -1,0 +1,36 @@
+{
+  "en": {
+    "title": "Privacy Policy",
+    "introduction": "Bottle Harmony is an offline puzzle game provided by Platon Games. This policy applies to the Android game and explains how information is handled, including when children play.",
+    "sections": [
+      {
+        "title": "Information in the game",
+        "body": "The game stores puzzle progress, undo history, earned hint credits and preferences such as language, sound, symbols and container style on your device. It does not require an account. Platon Games does not collect or receive this information from the game."
+      },
+      {
+        "title": "No advertising or tracking",
+        "body": "The game contains no advertising, in-app purchases, analytics or tracking services. It does not request access to your contacts, location, camera, microphone, advertising identifier or shared storage. The Android public build does not have network permission and does not upload gameplay or device information."
+      },
+      {
+        "title": "Children",
+        "body": "The game is intended for children and adults. The same privacy protections apply to every player: no accounts, personal-information requests, advertising or tracking. Children do not need to provide personal information to play. A parent or guardian should contact us on a child's behalf and avoid including unnecessary information about the child."
+      },
+      {
+        "title": "Storage and deletion",
+        "body": "Game data stays in the app's private storage until you clear the app's storage in Android settings or uninstall it. Doing so deletes your saved progress and preferences. The public Android build disables operating-system app backup. The game does not provide cloud saving or cross-device restoration."
+      },
+      {
+        "title": "Support correspondence",
+        "body": "If you choose to email support, we receive the email address and information you send. We use it to respond to your request, do not use it for advertising, and do not sell it. Only send information necessary to explain the problem. You may ask us to delete support correspondence; we retain it only as needed to resolve the request or meet applicable obligations. Sending an email uses your separate email service and is not required to play."
+      },
+      {
+        "title": "Website and Google Play",
+        "body": "Opening this policy on the website or using Google Play involves those services and their own data practices. Website hosting may process ordinary access logs such as IP address and browser information. These website or platform activities are separate from the offline game. This static policy page does not include analytics, advertising scripts or embedded third-party content. The hosting provider may use security-related cookies."
+      },
+      {
+        "title": "Changes and contact",
+        "body": "If the game's data practices change, we will update this policy and its date. For privacy questions or deletion requests concerning support messages, contact Platon Games at the email below."
+      }
+    ]
+  }
+}

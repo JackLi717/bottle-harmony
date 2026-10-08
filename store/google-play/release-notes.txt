@@ -1,0 +1,6 @@
+<en-US>
+First closed test of Water Sort - No Ads (Bottle Harmony): 1,000 offline mainline puzzles, 50 bonus puzzles, 15 glass styles, undo, restart, hints and local progress. Feedback: admin@readytradie.com.
+</en-US>
+<zh-CN>
+Water Sort - No Ads（Bottle Harmony）首次封闭测试：1000道离线主线谜题、50道副关卡、15种玻璃容器、撤销、重来、提示与本地存档。反馈邮箱：admin@readytradie.com。
+</zh-CN>

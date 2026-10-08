@@ -1,0 +1,67 @@
+{
+  "status": "Current v5 artifact checked; Console content sections saved as ready for review, not submitted to Google app review.",
+  "developer": "Platon Games",
+  "appName": "Bottle Harmony",
+  "packageName": "com.bottleharmony.app",
+  "category": "GAME_PUZZLE",
+  "price": "Free",
+  "distribution": "All countries and regions available in Google Play Console",
+  "track": "Closed testing first; open testing / Early Access after app production access is approved",
+  "supportEmail": "admin@readytradie.com",
+  "privacyPolicy": "https://readytradie.com/bottle-harmony/privacy.html",
+  "containsAds": false,
+  "containsInAppPurchases": false,
+  "requiresLogin": false,
+  "accessInstructions": "All game functionality is available without sign-in. Mainline puzzles unlock in sequence; completed puzzles can be replayed. Bonus puzzles appear after each group of twenty mainline puzzles. No access credentials, memberships or regional authentication are needed.",
+  "audienceIntent": "Owner confirmed ages 6 and above, including children and adults; do not select age 5 and under.",
+  "dataSafety": {
+    "collectedByAndroidGame": false,
+    "sharedByAndroidGame": false,
+    "accountCreation": false,
+    "localData": "Progress, undo history, earned hint credits and game preferences remain in private device storage. Android backup is disabled in the public build.",
+    "sensitivePermissions": "No advertising ID, microphone, camera, location, contacts or shared-storage access. Public Android build has no INTERNET permission.",
+    "deletion": "Clear app storage in Android settings or uninstall. Support emails are separate, optional correspondence and can be deleted on request.",
+    "playFamiliesCommitment": true
+  },
+  "contentRatingEvidence": {
+    "violence": false,
+    "sexualContent": false,
+    "gambling": false,
+    "userGeneratedContent": false,
+    "userCommunication": false,
+    "locationSharing": false,
+    "digitalPurchases": false,
+    "notes": "Answer IARC questions from actual final content. Do not preassign an official rating. Colourful liquid is water, with no alcohol consumption. Cosmetic style labels currently include Champagne Flute and Faceted Martini; disclose this terminology if the questionnaire asks about references, rather than assume every rating answer is No.",
+    "controlledSubstance": {
+      "alcohol": true,
+      "reference": true,
+      "use": false,
+      "encouragesOrGlamorises": false,
+      "frequency": "Rarely",
+      "source": "Champagne Flute and Faceted Martini cosmetic style labels"
+    },
+    "officialRatings": {
+      "ACB": "General",
+      "ClassInd": "All ages",
+      "ESRB": "Everyone - Alcohol reference",
+      "GRAC": "15+ - Drug, alcohol and tobacco references",
+      "DGSC": "Parental guidance 15 - Tobacco and alcohol",
+      "Gmedia": "12",
+      "PEGI": "3",
+      "USK": "All ages",
+      "IARCGeneric": "3+",
+      "Russia": "3+"
+    }
+  },
+  "storeTitle": "Water Sort - No Ads",
+  "sourceContentId": "mainline-1000-v5",
+  "futureFeatures": "Referral settlement and Premium are planned but not implemented in the current test build. Reassess app access, in-app purchases, networking, privacy and data safety before any build includes those features.",
+  "targetAgeGroups": [
+    "6–8",
+    "9–12",
+    "13–15",
+    "16–17",
+    "18+"
+  ],
+  "targetAgeSavedInConsole": true
+}

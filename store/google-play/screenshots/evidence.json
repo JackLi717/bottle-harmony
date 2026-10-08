@@ -1,0 +1,17 @@
+{
+  "sourceContentId": "mainline-1000-v5",
+  "aabSha256": "cbc29b5b19c9a58d9e8806f172320e514639d35fc818bd13046d65d343c0dfa1",
+  "apkSha256": "f3d2aabf184339cef3eb5c6a9aaa947592c142265dc71e97a8844aec99ae3f7a",
+  "device": "BottleHarmony_Play_16KB",
+  "serial": "emulator-5562",
+  "capture": "Actual UI screenshots after completing levels 1-3 through normal pours; no storage editing",
+  "conversion": "Opaque alpha removal only; raw RGB equality checked for all six files",
+  "consoleOrder": [
+    "01-home.png",
+    "06-levels.png",
+    "02-level-one.png",
+    "03-level-four.png",
+    "05-color-symbols.png",
+    "04-glass-choice.png"
+  ]
+}

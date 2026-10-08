@@ -13,6 +13,7 @@ import { StageArt } from '../art/StageArt';
 import { GameBackdrop } from '../art/GameBackdrop';
 import type { MessageKey } from '../i18n/messages';
 import { LanguagePicker } from './LanguagePicker';
+import { PrivacyPolicy } from './PrivacyPolicy';
 import { createPourPlan, type PourPlan } from '../art/pourGeometry';
 import { DEMO_LEVEL } from '../game/demo';
 import { getPour, type Board, type Pour } from '../game/rules';
@@ -72,6 +73,7 @@ export function DemoScreen() {
   const previousPreview = previewPosition && adjacentPreview(previewPosition, -1, MAINLINE.entries.length, SIDE_AFTER);
   const followingPreview = previewPosition && adjacentPreview(previewPosition, 1, MAINLINE.entries.length, SIDE_AFTER);
   const [menuVisible, setMenuVisible] = useState(false);
+  const [privacyVisible, setPrivacyVisible] = useState(false);
   const [menuSection, setMenuSection] = useState<'levels' | 'settings'>('levels');
   const [pickerVisible, setPickerVisible] = useState(false);
   const [difficultyVisible, setDifficultyVisible] = useState(false);
@@ -501,7 +503,8 @@ export function DemoScreen() {
         </>}
       </View>
       {debugReport && <DifficultyDebug visible={difficultyVisible} report={debugReport} human={debugHuman} sample={sample} label={label} onClose={() => setDifficultyVisible(false)} />}
-      {menuVisible && <MainlineMenu visible initialSection={menuSection} play={play} saveStatus={t(saveStatus)} onClose={() => setMenuVisible(false)} onResume={resumeCurrent} onSelect={chooseNumber} onSelectSide={chooseSide} onPreview={previewMainline} onSidePreview={previewSide} onSamples={() => { setMenuVisible(false); setPickerVisible(true); }} symbols={play.symbols} onSymbols={() => setPlay(Object.freeze({ ...play, symbols: !play.symbols }))} completionName={t(vesselCompletionEffect(vessel, completionEffect))} onLanguage={() => { setMenuVisible(false); setLanguageVisible(true); }} onCompletionEffects={() => { setMenuVisible(false); setCompletionPickerVisible(true); }} sound={sound} soundSaved={soundSaved} onSound={toggleSound} onCelebrationPreview={previewCelebration} onDebug={INTERNAL_TOOLS && !sideEntry ? openDifficulty : undefined} />}
+      {menuVisible && <MainlineMenu visible initialSection={menuSection} play={play} saveStatus={t(saveStatus)} onClose={() => setMenuVisible(false)} onResume={resumeCurrent} onSelect={chooseNumber} onSelectSide={chooseSide} onPreview={previewMainline} onSidePreview={previewSide} onSamples={() => { setMenuVisible(false); setPickerVisible(true); }} symbols={play.symbols} onSymbols={() => setPlay(Object.freeze({ ...play, symbols: !play.symbols }))} completionName={t(vesselCompletionEffect(vessel, completionEffect))} onLanguage={() => { setMenuVisible(false); setLanguageVisible(true); }} onCompletionEffects={() => { setMenuVisible(false); setCompletionPickerVisible(true); }} sound={sound} soundSaved={soundSaved} onSound={toggleSound} onCelebrationPreview={previewCelebration} onPrivacy={() => { setMenuVisible(false); setPrivacyVisible(true); }} onDebug={INTERNAL_TOOLS && !sideEntry ? openDifficulty : undefined} />}
+      <PrivacyPolicy visible={privacyVisible} onClose={() => { setPrivacyVisible(false); openMenu('settings'); }} />
       <LanguagePicker visible={languageVisible} onClose={() => { setLanguageVisible(false); openMenu('settings'); }} />
       <CompletionEffectPicker visible={completionPickerVisible} vessel={vessel} value={completionEffect} reduceMotion={reduceMotion} onSelect={effect => { setCompletionEffect(effect); setSelected(null); }} onClose={() => setCompletionPickerVisible(false)} />
       <Tutorial visible={page === 'game' && ready && !internalSession && !play.tutorialDone} onStart={() => setPlay(Object.freeze({ ...play, tutorialDone: true }))} onSkip={() => setPlay(Object.freeze({ ...play, tutorialDone: true }))} />
