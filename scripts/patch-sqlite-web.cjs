@@ -22,3 +22,15 @@ if (!source.includes('const deadline = performance.now() + 30000;')) {
     .replace('i > 1000_000_000', 'i % 1024 === 0 && performance.now() > deadline');
 }
 writeFileSync(path, source);
+// Sync calls are serial on the main thread. Reuse only successfully completed
+// bridge buffers, avoiding a new 1 MiB shared allocation for every tiny query.
+// A failed/timed-out call never returns its buffers to the pool, so a late
+// response cannot overwrite a subsequent query's response.
+if (!source.includes('const syncBuffers = new WeakMap')) {
+  source = source.replace('let messageId = 0;', 'const syncBuffers = new WeakMap<Worker, { lockBuffer: SharedArrayBuffer; resultBuffer: SharedArrayBuffer }>();\nlet messageId = 0;')
+    .replace('const lockBuffer = new SharedArrayBuffer(4);', 'const cached = syncBuffers.get(worker);\n  syncBuffers.delete(worker);\n  const lockBuffer = cached?.lockBuffer ?? new SharedArrayBuffer(4);')
+    .replace('const resultBuffer = new SharedArrayBuffer(1024 * 1024);', 'const resultBuffer = cached?.resultBuffer ?? new SharedArrayBuffer(1024 * 1024);')
+    .replace('  return result;\n}', '  syncBuffers.set(worker, { lockBuffer, resultBuffer });\n  return result;\n}');
+  if (!source.includes('syncBuffers.set(worker, { lockBuffer, resultBuffer })')) throw new Error('Review SQLite web buffer reuse after dependency update');
+  writeFileSync(path, source);
+}

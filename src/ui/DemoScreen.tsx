@@ -25,6 +25,7 @@ import { createSession, moveSession, resetSession, undoSession, meltSession, ext
 import { createSolver, type SolveResult, type SolverTask } from '../game/solver';
 import { HomeScreen } from './HomeScreen';
 import { MemoryScreen } from './MemoryScreen';
+import { MixingScreen } from './MixingScreen';
 import { GameHeader } from './GameHeader';
 import { GameFooter } from './GameFooter';
 import { Celebration } from './Celebration';
@@ -64,7 +65,7 @@ export function DemoScreen() {
   const SIDE_AFTER = SOLID_SIDES.entries.map(item => item.afterMainline);
   const { sound, ready: soundReady, saved: soundSaved, toggleSound } = useSoundPreference();
   const { vessel, ready: vesselReady, saved: vesselSaved, chooseVessel } = useVesselPreference();
-  const [page, setPage] = useState<'home' | 'game' | 'memory'>('home');
+  const [page, setPage] = useState<'home' | 'game' | 'memory' | 'mixing'>('home');
   const [internalSession, setInternalSession] = useState<GameSession | null>(null);
   const session = internalSession ?? visibleSession(play);
   const sample = CALIBRATION_SAMPLES.find(item => item.content.level.id === session.level.id) ?? null;
@@ -473,6 +474,8 @@ export function DemoScreen() {
 
   if (!ready || !soundReady || !vesselReady) return <LinearGradient colors={['#11171E', '#070B12']} style={[styles.screen, { alignItems: 'center', justifyContent: 'center' }]}><StatusBar style="light" /><UiText style={styles.loading}>{t('loading')}</UiText></LinearGradient>;
 
+  if (page === 'mixing' && INTERNAL_TOOLS) return <MixingScreen vessel={vessel} symbols={play.symbols} sound={sound} reduceMotion={reduceMotion} onBack={goHome} />;
+
   if (page === 'memory') return <MemoryScreen vessel={vessel} symbols={play.symbols} sound={sound} reduceMotion={reduceMotion} onBack={goHome} />;
 
   return (
@@ -540,7 +543,7 @@ export function DemoScreen() {
         </>}
       </View>
       {debugReport && <DifficultyDebug visible={difficultyVisible} report={debugReport} human={debugHuman} sample={sample} label={label} onClose={() => setDifficultyVisible(false)} />}
-      {menuVisible && <MainlineMenu visible initialSection={menuSection} showLevels={page === 'game'} play={play} saveStatus={t(saveStatus)} onClose={() => setMenuVisible(false)} onResume={resumeCurrent} onSelect={chooseNumber} onSelectSide={chooseSide} onPreview={previewMainline} onSidePreview={previewSide} onSamples={() => { setMenuVisible(false); setPickerVisible(true); }} symbols={play.symbols} onSymbols={() => setPlay(Object.freeze({ ...play, symbols: !play.symbols }), { type: 'preference', preference: 'symbols', value: String(!play.symbols) })} sound={sound} soundSaved={soundSaved} onSound={toggleSound} onCelebrationPreview={previewCelebration} onPrivacy={() => { setMenuVisible(false); setPrivacyVisible(true); }} onDebug={INTERNAL_TOOLS && !sideEntry ? openDifficulty : undefined} />}
+      {menuVisible && <MainlineMenu visible initialSection={menuSection} showLevels={page === 'game'} play={play} saveStatus={t(saveStatus)} onClose={() => setMenuVisible(false)} onResume={resumeCurrent} onSelect={chooseNumber} onSelectSide={chooseSide} onPreview={previewMainline} onSidePreview={previewSide} onSamples={() => { setMenuVisible(false); setPickerVisible(true); }} onMixingTrial={() => { setMenuVisible(false); setInternalSession(null); setPage('mixing'); }} symbols={play.symbols} onSymbols={() => setPlay(Object.freeze({ ...play, symbols: !play.symbols }), { type: 'preference', preference: 'symbols', value: String(!play.symbols) })} sound={sound} soundSaved={soundSaved} onSound={toggleSound} onCelebrationPreview={previewCelebration} onPrivacy={() => { setMenuVisible(false); setPrivacyVisible(true); }} onDebug={INTERNAL_TOOLS && !sideEntry ? openDifficulty : undefined} />}
       <GameNotice notice={notice} onClose={() => setNotice(null)} />
       <PrivacyPolicy visible={privacyVisible} onClose={() => { setPrivacyVisible(false); openMenu('settings'); }} />
       <Tutorial visible={page === 'game' && ready && !internalSession && !play.tutorialDone} onStart={() => setPlay(Object.freeze({ ...play, tutorialDone: true }))} onSkip={() => setPlay(Object.freeze({ ...play, tutorialDone: true }))} />

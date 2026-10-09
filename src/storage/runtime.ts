@@ -8,9 +8,12 @@ import { installInternalContent } from '../ui/content';
 import { INTERNAL_TOOLS } from '../ui/buildConfig';
 import app from '../../app.json';
 import { MemoryRepository } from './memoryRepository';
+import { MixingRepository } from './mixingRepository';
 
 let player: PlayerRepository | null = null;
 let memory: MemoryRepository | null = null;
+let mixing: MixingRepository | null = null;
+export function getMixing(): MixingRepository { if (!mixing) throw new Error('Mixing trial storage not ready'); return mixing; }
 export function getMemory(): MemoryRepository { if (!memory) throw new Error('Memory storage not ready'); return memory; }
 let initialization: Promise<void> | null = null;
 export function getPlayer(): PlayerRepository {
@@ -30,7 +33,7 @@ export function initializeStorage(): Promise<void> {
       installMainlineContent(content); installSideContent(content.sides);
       if (INTERNAL_TOOLS) installInternalContent(content);
       const db = await SQLite.openDatabaseAsync('player.sqlite');
-      try { player = await PlayerRepository.open(db, content.mainline, content.sides, app.expo.version); memory = await MemoryRepository.open(player, content); }
+      try { player = await PlayerRepository.open(db, content.mainline, content.sides, app.expo.version); memory = await MemoryRepository.open(player, content); if (INTERNAL_TOOLS) mixing = await MixingRepository.open(player); }
       catch (error) { await db.closeAsync(); throw error; }
     } catch (error) { await contentDb.closeAsync(); throw error; }
   })().catch(error => { initialization = null; throw error; });

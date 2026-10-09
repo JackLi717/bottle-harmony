@@ -39,7 +39,7 @@ function LiquidLayer({ color, layer, firstLayer, count, liquid, id, hidden = fal
   return <AnimatedPath animatedProps={props} fill={hidden ? MEMORY_UNKNOWN_FILL : `url(#${id}-${color})`} stroke="#FFFFFF" strokeOpacity={0.075} strokeWidth={0.5} />;
 }
 
-function LiquidSymbol({ color, layer, liquid, opacity }: { color: ColorId; layer: number; liquid: SharedValue<LiquidLayerFrame[]>; opacity: SharedValue<number> }) {
+function LiquidSymbol({ color, layer, liquid, opacity, symbols }: { color: ColorId; layer: number; liquid: SharedValue<LiquidLayerFrame[]>; opacity: SharedValue<number>; symbols: typeof LIQUID_SYMBOLS }) {
   const props = useAnimatedProps<{ opacity: number; matrix?: number[]; transform?: string }>(() => {
     const pose = liquid.value[layer]?.symbol;
     if (!pose) return { opacity: 0 };
@@ -50,11 +50,11 @@ function LiquidSymbol({ color, layer, liquid, opacity }: { color: ColorId; layer
     // Native SVG takes a numeric matrix; web SVG requires the transform attribute.
     return IS_WEB ? { opacity: alpha, transform: `matrix(${matrix.join(' ')})` } : { opacity: alpha, matrix };
   });
-  return <AnimatedG animatedProps={props}><SvgText x={0} y={16 * .35} fontSize={16} textAnchor="middle" fill={color === 'unknown' ? '#ECF0F2' : '#142F39'}>{LIQUID_SYMBOLS[color] ?? '?'}</SvgText></AnimatedG>;
+  return <AnimatedG animatedProps={props}><SvgText x={0} y={16 * .35} fontSize={16} textAnchor="middle" fill={color === 'unknown' ? '#ECF0F2' : '#142F39'}>{symbols[color] ?? '?'}</SvgText></AnimatedG>;
 }
 
 /** Gradients and the glass clip never change when a slot receives a new level. */
-const BottleDefinitions = memo(function BottleDefinitions({ id, vessel }: { id: string; vessel: VesselDesign }) {
+const BottleDefinitions = memo(function BottleDefinitions({ id, vessel, palette }: { id: string; vessel: VesselDesign; palette: typeof LIQUIDS }) {
   return (
     <Defs>
       <LinearGradient id={`${id}-glass`} x1="0" y1="0" x2="1" y2="0">
@@ -91,12 +91,12 @@ const BottleDefinitions = memo(function BottleDefinitions({ id, vessel }: { id: 
         <Stop offset="0" stopColor="#FFFFFF" stopOpacity={.65} />
         <Stop offset="1" stopColor="#FFFFFF" stopOpacity={0} />
       </RadialGradient>
-      {Object.keys(LIQUIDS).map(color => (
+      {Object.keys(palette).map(color => (
         <LinearGradient key={color} id={`${id}-${color}`} x1="0" y1="0" x2="1" y2="0.45">
-          <Stop offset="0" stopColor={LIQUIDS[color].dark} />
-          <Stop offset="0.22" stopColor={LIQUIDS[color].main} />
-          <Stop offset="0.7" stopColor={LIQUIDS[color].main} />
-          <Stop offset="1" stopColor={LIQUIDS[color].dark} />
+          <Stop offset="0" stopColor={palette[color].dark} />
+          <Stop offset="0.22" stopColor={palette[color].main} />
+          <Stop offset="0.7" stopColor={palette[color].main} />
+          <Stop offset="1" stopColor={palette[color].dark} />
         </LinearGradient>
       ))}
       <ClipPath id={`${id}-inside`}><Path d={vessel.inside} /></ClipPath>
@@ -105,6 +105,8 @@ const BottleDefinitions = memo(function BottleDefinitions({ id, vessel }: { id: 
 });
 
 export type BottleProps = {
+  palette?: typeof LIQUIDS;
+  symbolMap?: typeof LIQUID_SYMBOLS;
   index: number;
   colors: readonly ColorId[];
   hiddenPour?: boolean;
@@ -130,7 +132,7 @@ export type BottleProps = {
 };
 
 /** Glass art remains static; liquid paths and transforms update on the UI thread. */
-export const Bottle = memo(function Bottle({ index, colors, selected, completed, width, scale, plan, pour, progress, position, symbols = false, completionEffect = 'gold', completionScene = 'preview', completionReplay = 0, completionAnimations = true, vessel = DEFAULT_VESSEL, frozenBottom = false, hiddenLayers = [], markedLayers = [], revealingLayers = [], revealProgress, hiddenPour = false }: BottleProps) {
+export const Bottle = memo(function Bottle({ index, colors, selected, completed, width, scale, plan, pour, progress, position, symbols = false, completionEffect = 'gold', completionScene = 'preview', completionReplay = 0, completionAnimations = true, vessel = DEFAULT_VESSEL, frozenBottom = false, hiddenLayers = [], markedLayers = [], revealingLayers = [], revealProgress, hiddenPour = false, palette = LIQUIDS, symbolMap = LIQUID_SYMBOLS }: BottleProps) {
   const isSource = pour?.source === index;
   const isTarget = pour?.target === index;
   const id = `bottle-${index}-${vessel.id}`;
@@ -202,7 +204,7 @@ export const Bottle = memo(function Bottle({ index, colors, selected, completed,
     d: `M${50 + (plan?.direction ?? 1) * mouth.outlet},${mouth.y + 6} L${50 + (plan?.direction ?? 1) * mouth.outlet},${mouth.y}`,
     opacity: isSource ? streamOpacity(progress.value) : 0,
   }));
-  const flowColor = hiddenPour ? { main: MEMORY_UNKNOWN_FILL, light: '#64717C' } : pour ? LIQUIDS[pour.color] : LIQUIDS.jade;
+  const flowColor = hiddenPour ? { main: MEMORY_UNKNOWN_FILL, light: '#64717C' } : pour ? palette[pour.color] : LIQUIDS.jade;
   const shell = useAnimatedProps(() => {
     const finished = complete.value;
     const focus = pourFocus(progress.value, (isSource || isTarget) && completionAnimations);
@@ -222,7 +224,7 @@ export const Bottle = memo(function Bottle({ index, colors, selected, completed,
   return (
     <Animated.View pointerEvents="none" style={[{ width, height: width * 1.8, position: 'absolute', left: position.x * scale, top: (position.y - (selected ? 12 : 0)) * scale, zIndex: isSource ? 10 : 2 }, style]}>
       <Svg width="100%" height={width * 2.2} style={{ position: 'absolute', top: -40 * scale }} viewBox="0 -40 100 220">
-        <BottleDefinitions id={id} vessel={vessel} />
+        <BottleDefinitions id={id} vessel={vessel} palette={palette} />
         <BottleCelebration timeline={completionTimeline} complete={complete} id={id} shell={vessel.shell} />
         {effect === 'halo' && <AnimatedG animatedProps={completion}>
           <Ellipse cx={50} cy={170} rx={34} ry={7} fill="#E8CB8C" opacity={0.12} />
@@ -243,7 +245,7 @@ export const Bottle = memo(function Bottle({ index, colors, selected, completed,
             <Path d={`M50 ${iceMiddle - iceRadius} V${iceMiddle + iceRadius} M${50 - iceRadius} ${iceMiddle} H${50 + iceRadius} M${50 - iceRadius * .7} ${iceMiddle - iceRadius * .7} L${50 + iceRadius * .7} ${iceMiddle + iceRadius * .7} M${50 + iceRadius * .7} ${iceMiddle - iceRadius * .7} L${50 - iceRadius * .7} ${iceMiddle + iceRadius * .7}`}
               fill="none" stroke="#F2FDFF" strokeOpacity={0.85} strokeWidth={1.5} strokeLinecap="round" />
           </G>}
-          {colors.map((color, layer) => (symbols || hiddenLayers[layer]) && <LiquidSymbol key={`symbol-${layer}`} color={hiddenLayers[layer] ? 'unknown' : color} layer={layer} liquid={liquid} opacity={symbolOpacity} />)}
+          {colors.map((color, layer) => (symbols || hiddenLayers[layer]) && <LiquidSymbol key={`symbol-${layer}`} color={hiddenLayers[layer] ? 'unknown' : color} layer={layer} liquid={liquid} opacity={symbolOpacity} symbols={symbolMap} />)}
           {markedLayers.map((marked, layer) => {
             if (!marked) return null;
             const paint = memoryMarkPaint(colors[layer]);
@@ -256,7 +258,7 @@ export const Bottle = memo(function Bottle({ index, colors, selected, completed,
           })}
           {revealProgress && revealingLayers.map((revealing, layer) => revealing && <G key={`reveal-${layer}`}>
             <MemoryReveal layer={layer} vessel={vessel} id={id} color={colors[layer]} progress={revealProgress} />
-            {symbols && <LiquidSymbol color={colors[layer]} layer={layer} liquid={liquid} opacity={revealProgress} />}
+            {symbols && <LiquidSymbol color={colors[layer]} layer={layer} liquid={liquid} opacity={revealProgress} symbols={symbolMap} />}
           </G>)}
           <AnimatedEllipse cx={50} rx={24.5} ry={3.5} fill="#FFFFFF" animatedProps={surface} />
           <AnimatedPath animatedProps={innerStream} fill="none" stroke={flowColor.main} strokeWidth={3.3} strokeLinecap="round" />
@@ -264,7 +266,7 @@ export const Bottle = memo(function Bottle({ index, colors, selected, completed,
           <AnimatedEllipse cx={50} ry={1.8} fill={flowColor.light} animatedProps={splash} />
           {isTarget && completionAnimations && <PourRipples progress={progress} surface={surfaceLevel} enabled color="#F5FFFD" />}
           <AnimatedPath animatedProps={impact} fill="none" stroke={flowColor.light} strokeWidth={1.1} strokeLinecap="round" />
-          <AnimatedPath d={vessel.inside} fill={colors[0] ? LIQUIDS[colors[0]].light : '#FFFFFF'} animatedProps={colorGlow} />
+          <AnimatedPath d={vessel.inside} fill={colors[0] ? palette[colors[0]].light : '#FFFFFF'} animatedProps={colorGlow} />
           <AnimatedPath d={vessel.inside} fill={`url(#${id}-color-glow)`} animatedProps={colorGlow} />
         </G>
         {vessel.highlights.map((detail, index) => <Path key={`highlight-${index}`} d={detail.path} fill="none" stroke="#E9FFFF" strokeWidth={detail.width ?? 1.2} strokeOpacity={detail.opacity ?? .3} strokeLinecap="round" strokeLinejoin="round" />)}

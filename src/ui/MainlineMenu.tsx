@@ -12,8 +12,8 @@ import { MAINLINE } from './mainlineContent';
 import { SOLID_SIDES } from './solidSideContent';
 
 const NUMBERS = Array.from({ length: 1000 }, (_, i) => i + 1);
-type Props = { visible: boolean; initialSection: 'levels' | 'settings'; showLevels: boolean; play: MainlineState; saveStatus: string; onClose: () => void; onResume: () => void; onSelect: (number: number) => void; onSelectSide: (number: number) => void; onPreview: (number: number) => void; onSidePreview: (number: number) => void; onSamples: () => void; onSymbols: () => void; symbols: boolean; sound: boolean; soundSaved: boolean; onSound: () => void; onCelebrationPreview: (count: 2 | 3 | 4 | 5) => void; onDebug?: () => void; onPrivacy: () => void };
-export function MainlineMenu({ visible, initialSection, showLevels, play, saveStatus, onClose, onResume, onSelect, onSelectSide, onPreview, onSidePreview, onSamples, onSymbols, symbols, sound, soundSaved, onSound, onCelebrationPreview, onDebug, onPrivacy }: Props) {
+type Props = { visible: boolean; initialSection: 'levels' | 'settings'; showLevels: boolean; play: MainlineState; saveStatus: string; onClose: () => void; onResume: () => void; onSelect: (number: number) => void; onSelectSide: (number: number) => void; onPreview: (number: number) => void; onSidePreview: (number: number) => void; onSamples: () => void; onMixingTrial: () => void; onSymbols: () => void; symbols: boolean; sound: boolean; soundSaved: boolean; onSound: () => void; onCelebrationPreview: (count: 2 | 3 | 4 | 5) => void; onDebug?: () => void; onPrivacy: () => void };
+export function MainlineMenu({ visible, initialSection, showLevels, play, saveStatus, onClose, onResume, onSelect, onSelectSide, onPreview, onSidePreview, onSamples, onMixingTrial, onSymbols, symbols, sound, soundSaved, onSound, onCelebrationPreview, onDebug, onPrivacy }: Props) {
   const { t, rtl } = useI18n();
   const insets = useSafeAreaInsets();
   const { height } = useWindowDimensions();
@@ -92,7 +92,7 @@ export function MainlineMenu({ visible, initialSection, showLevels, play, saveSt
           <UiText style={styles.saveStatus}>{saveStatus}</UiText>
           {INTERNAL_TOOLS && <View style={styles.tools}>
             <Pressable accessibilityRole="button" accessibilityState={{ expanded: toolsVisible }} onPress={() => setToolsVisible(value => !value)} style={styles.toolsButton}><UiText style={styles.note}>开发工具 {toolsVisible ? '⌃' : '⌄'}</UiText></Pressable>
-            {toolsVisible && <>{onDebug && <Pressable accessibilityRole="button" onPress={onDebug} style={styles.toolsButton}><UiText style={styles.toolText}>当前关卡诊断 ›</UiText></Pressable>}<Pressable accessibilityRole="button" onPress={onSamples} style={styles.toolsButton}><UiText style={styles.toolText}>内部对照题 ›</UiText></Pressable>{([2, 3, 4, 5] as const).map(count => <Pressable key={count} accessibilityRole="button" onPress={() => onCelebrationPreview(count)} style={styles.toolsButton}><UiText style={styles.toolText}>{t('fireworksPreview')} · D{count - 1} ›</UiText></Pressable>)}</>}
+            {toolsVisible && <><Pressable accessibilityRole="button" onPress={onMixingTrial} style={styles.toolsButton}><UiText style={styles.toolText}>调色试验 · 六题 ›</UiText></Pressable>{onDebug && <Pressable accessibilityRole="button" onPress={onDebug} style={styles.toolsButton}><UiText style={styles.toolText}>当前关卡诊断 ›</UiText></Pressable>}<Pressable accessibilityRole="button" onPress={onSamples} style={styles.toolsButton}><UiText style={styles.toolText}>内部对照题 ›</UiText></Pressable>{([2, 3, 4, 5] as const).map(count => <Pressable key={count} accessibilityRole="button" onPress={() => onCelebrationPreview(count)} style={styles.toolsButton}><UiText style={styles.toolText}>{t('fireworksPreview')} · D{count - 1} ›</UiText></Pressable>)}</>}
           </View>}
         </ScrollView>}
         <UiText style={styles.brand}>BOTTLE HARMONY</UiText>

@@ -13,6 +13,7 @@ export type PourPlan = {
   geometry: VesselGeometry;
   source: Point;
   target: Point;
+  targetMouthY?: number;
   direction: number;
   sourceCount: number;
   amount: number;
@@ -86,7 +87,7 @@ export function bottleBounds(angle: number) {
 }
 
 /** Use the screen's existing header space. The recipient stays in its slot. */
-export function createPourPlan(source: Point, target: Point, sourceCount: number, amount: number, minY = -130, startLift = 12, width = STAGE_WIDTH, height = STAGE_HEIGHT, geometry: VesselGeometry = DEFAULT_VESSEL): PourPlan {
+export function createPourPlan(source: Point, target: Point, sourceCount: number, amount: number, minY = -130, startLift = 12, width = STAGE_WIDTH, height = STAGE_HEIGHT, geometry: VesselGeometry = DEFAULT_VESSEL, targetGeometry: VesselGeometry = geometry): PourPlan {
   const direction = target.x > source.x ? 1 : target.x < source.x ? -1 : target.x < width / 2 ? -1 : 1;
   const startAngle = pouringAngle(sourceCount, geometry);
   const endAngle = pouringAngle(sourceCount - amount, geometry);
@@ -99,9 +100,9 @@ export function createPourPlan(source: Point, target: Point, sourceCount: number
     minimumOutletY = Math.max(minimumOutletY, minY + MARGIN - bounds.minY + lip.y);
     maximumOutletY = Math.min(maximumOutletY, height - MARGIN - bounds.maxY + lip.y);
   }
-  const outletY = clamp(target.y + geometry.mouth.y - 38, minimumOutletY + 1, maximumOutletY - 1);
+  const outletY = clamp(target.y + targetGeometry.mouth.y - 38, minimumOutletY + 1, maximumOutletY - 1);
   return {
-    geometry, source, target, direction, sourceCount, amount,
+    geometry, source, target, targetMouthY: targetGeometry.mouth.y, direction, sourceCount, amount,
     outlet: { x: target.x + 50, y: outletY },
     minY, startLift, width, height,
     angles: Array.from({ length: 129 }, (_, index) => direction * pouringAngle(sourceCount - amount * index / 128, geometry)),
