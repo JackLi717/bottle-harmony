@@ -1,6 +1,6 @@
 # Bottle Harmony 封闭测试安排
 
-更新日期：2026 年 10 月 9 日。用户最新确认尚未进入玩家测试、没有玩家；当前版本 0.1.3（Android 7）。已创建独立 Google 测试群并保存 Alpha 绑定，本次版本更新已发送审核；测试起算日未建立，版本与 Console 证据见[发布记录](release-readiness.md)。
+更新日期：2026 年 10 月 9 日。用户最新确认尚未进入玩家测试、没有玩家；当前版本 0.1.4（Android 8）。已创建独立 Google 测试群并保存 Alpha 绑定，本次版本更新已发送审核；测试起算日未建立，版本与 Console 证据见[发布记录](release-readiness.md)。
 
 发布主体 Platon Games；免费游戏；支持与反馈 admin@readytradie.com。用户计划面向儿童及成年人，在 Google Play 可选的全部国家与地区测试。用户已确认 6 岁以上儿童及成年人，申报已提交；仍需实际儿童操作验证，不能把内容分级低等同于适合所有年龄。
 
