@@ -14,9 +14,7 @@ import type { LevelDefinition } from '../src/game/model.ts';
 import type { Pour } from '../src/game/rules.ts';
 import { decodeMemoryBank } from './memory-bank-lib.ts';
 import { MEMORY_CATALOG, MEMORY_COUNT } from '../src/game/memoryCatalog.ts';
-import { validateMemoryPuzzle } from '../src/game/memory.ts';
-import { replaySolution } from '../src/game/solver.ts';
-import { initialBoard } from '../src/game/model.ts';
+import { validateMemoryPuzzle, replayMemory } from '../src/game/memory.ts';
 
 export function nodeReader(db: DatabaseSync): ReadDatabase {
   return { getAllSync: <T>(sql: string, ...params: any[]) => db.prepare(sql).all(...params) as T[],
@@ -86,7 +84,7 @@ export function buildContent(output = 'assets/levels/content.sqlite') {
       assert.deepEqual(recovered.solution, expected.solution);
       assert.deepEqual(repository.route(recovered.level.id, 'alternative'), expected.alternative);
       assert.deepEqual(repository.evidence(recovered.level.id), expected);
-      replaySolution(initialBoard(recovered.level), recovered.solution);
+      replayMemory(recovered, recovered.solution);
     }
     const recovered = repository.mainline.entries.map(entry => ({ number: entry.number, level: entry.level, solution: entry.solution, rank: entry.rank, tier: entry.tier, score: entry.score }));
     assert.deepEqual(recovered, main.entries);

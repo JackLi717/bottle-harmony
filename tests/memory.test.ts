@@ -1,10 +1,9 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { createMemory, hiddenMemory, initialUnits, moveMemory, peekMemory, readyMemory, resetMemory, restoreMemory, undoMemory, validateMemoryPuzzle } from '../src/game/memory.ts';
-import { getLegalPours } from '../src/game/rules.ts';
-import { canonicalBottleStrings } from '../src/game/structure.ts';
-import { replaySolution } from '../src/game/solver.ts';
-import { initialBoard, parseLevel } from '../src/game/model.ts';
+import { createMemory, hiddenMemory, initialUnits, moveMemory, peekMemory, readyMemory, resetMemory, restoreMemory, undoMemory, revealMemory, continueMemory, memoryPour, validateMemoryPuzzle, MEMORY_RULES, type MemorySession } from '../src/game/memory.ts';
+import { createMemorySolver, memoryReferenceHint } from '../src/game/memorySolver.ts';
+import { parseLevel } from '../src/game/model.ts';
+import { solveBoard, type SolverTask } from '../src/game/solver.ts';
 import { ContentRepository } from '../src/storage/contentRepository.ts';
 import { PlayerRepository } from '../src/storage/playerRepository.ts';
 import { MemoryRepository } from '../src/storage/memoryRepository.ts';
@@ -13,149 +12,177 @@ import { TestDatabase } from './helpers/sqlite.ts';
 import { moveMainline } from '../src/game/mainline.ts';
 
 const source = new TestDatabase('assets/levels/content.sqlite'), content = new ContentRepository(source);
-const puzzle = content.memoryPuzzleById('memory-prototype-v1-3');
+const puzzle = content.memoryPuzzle(1);
+const fixture = { number: 1, skill: 'test', masks: [1, 3], solution: [], level: parseLevel({ format: 'bottle-harmony', version: 1, rules: 'water-sort', id: 'black-fixture', capacity: 4,
+  colors: ['jade', 'coral'], bottles: [['jade','jade','coral','coral'],['coral','coral','jade','jade'],[],[]].map((layers, i) => ({ id: `b${i}`, layers })) }) };
+const restore = (s: MemorySession) => restoreMemory(s.puzzle, { ...s, offset: s.game.historyOffset });
+const drain = (task: SolverTask) => { let result; do { result = task.step(32, 4); } while (!result); return result; };
 async function setup(db = new TestDatabase()) {
   const player = await PlayerRepository.open(db, content.mainline, content.sides, 'test');
   return { db, player, memory: await MemoryRepository.open(player, content) };
 }
-test('one hundred memory boards are distinct, bounded and replay to completion from SQLite', () => {
-  assert.equal(content.memory.length, 100);
-  const keys = new Set<string>();
-  for (let i = 1; i <= 100; i++) {
-    const p = content.memoryPuzzle(i); validateMemoryPuzzle(p);
-    assert.ok(p.level.colors.length <= 8); assert.ok(p.level.bottles.length <= 10);
-    keys.add(canonicalBottleStrings(initialBoard(p.level).map(b => b.map(c => p.level.colors.indexOf(c)))));
-    replaySolution(initialBoard(p.level), p.solution);
-  }
-  assert.equal(keys.size, 100);
-  assert.throws(() => validateMemoryPuzzle({ ...puzzle, masks: [3] }), /top run|mask/i);
-});
-test('observation cannot pour; ready masks exact portions; peek is temporary and pauses actions', () => {
-  const observation = createMemory(puzzle);
-  assert.equal(moveMemory(observation, 0, 4), null);
+
+test('observation and temporary peek cannot move; all four depths can be masked', () => {
+  for (const depth of [0,1,2,3]) validateMemoryPuzzle({ ...fixture, masks: [depth] });
+  assert.throws(() => validateMemoryPuzzle({ ...fixture, masks: [2,3] }), /nonadjacent/);
+  assert.throws(() => validateMemoryPuzzle({ ...fixture, masks: [0,4] }), /upper and lower/);
+  const observation = createMemory(fixture);
+  assert.equal(moveMemory(observation, 0, 2), null);
   assert.ok(hiddenMemory(observation).flat().every(v => !v));
-  const play = readyMemory(observation), knowledge = play.revealed;
-  assert.equal(hiddenMemory(play).flat().filter(Boolean).length, 4);
-  const peek = peekMemory(play);
-  assert.equal(peek.peeks, 1); assert.equal(peek.revealed, knowledge);
+  const play = readyMemory(observation), peek = peekMemory(play);
+  assert.equal(hiddenMemory(play).flat().filter(Boolean).length, 2);
+  assert.equal(peek.peeks, 1); assert.equal(peek.revealed, play.revealed);
   assert.ok(hiddenMemory(peek).flat().every(v => !v));
-  assert.equal(moveMemory(peek, 0, 4), null); assert.equal(undoMemory(peek), peek);
-  const back = peekMemory(peek);
-  assert.equal(back.phase, 'play'); assert.equal(back.peeks, 1);
-  assert.deepEqual(hiddenMemory(back), hiddenMemory(play));
+  assert.equal(moveMemory(peek, 0, 2), null); assert.equal(undoMemory(peek), peek);
+  assert.deepEqual(hiddenMemory(peekMemory(peek)), hiddenMemory(play));
 });
-test('newly exposed maximal run stays known through moving and undo; reset clears learned knowledge', () => {
-  let state = readyMemory(createMemory(puzzle));
-  const initial = state.revealed;
-  state = moveMemory(state, 0, 4)!.session; // azure
-  state = moveMemory(state, 0, 5)!.session; // amber exposes masked coral
-  assert.equal(state.revealed[1], 2); assert.equal(state.revealed[0], -1);
-  const undone = undoMemory(state);
-  assert.equal(undone.revealed[1], 2); assert.equal(undone.pours, 2); assert.equal(undone.undos, 1);
+test('black moves exactly one unit; visible runs stop at black; either black contact permits a mismatch', () => {
+  let s = readyMemory(createMemory(fixture));
+  const first = moveMemory(s, 0, 2)!;
+  assert.equal(first.event.pour.amount, 1); s = first.session;
+  assert.equal(s.units[2][0], 3); assert.equal(hiddenMemory(s)[2][0], true);
+  assert.equal(s.revealed[1], -1); assert.equal(s.revealed[3], -1);
+  assert.equal(moveMemory(s, 1, 0), null); // Both visible, different colors.
+  const wildcardReceiver = moveMemory(s, 1, 2)!;
+  assert.equal(wildcardReceiver.event.pour.amount, 2); // Visible jade onto hidden coral.
+  assert.deepEqual(wildcardReceiver.session.game.board[2], ['coral','jade','jade']);
+  assert.equal(wildcardReceiver.session.revealed[3], -1);
+  assert.equal(memoryPour([[0,1],[],[]], ['jade','jade'], [-1,-1], 0, 1)!.amount, 1);
+  assert.equal(memoryPour([[0,1],[],[]], ['jade','jade'], [-1,0], 0, 1)!.amount, 1);
+  assert.equal(memoryPour([[0],[1],[]], ['jade','coral'], [-1,-1], 0, 1)!.amount, 1);
+  assert.equal(memoryPour([[0],[1],[]], ['jade','coral'], [0,0], 0, 1), null);
+  assert.equal(moveMemory(s, 2, 0)!.event.pour.amount, 1); // Black source onto visible coral.
+});
+test('moving/exposing/finishing does not reveal or signal correctness before explicit submission', () => {
+  let s = readyMemory(createMemory(puzzle));
+  const original = s.revealed;
+  for (const p of puzzle.solution) {
+    s = moveMemory(s, p.source, p.target)!.session;
+    assert.equal(s.revealed, original);
+    assert.notEqual(s.game.status, 'solved');
+    assert.equal(hiddenMemory(s).flat().filter(Boolean).length, puzzle.masks.length);
+  }
+  const known = revealMemory(s);
+  assert.equal(known.game.status, 'solved'); assert.equal(known.judgement, 'correct');
+  assert.ok(hiddenMemory(known).flat().every(v => !v));
+  const undone = undoMemory(known);
+  assert.equal(undone.judgement, 'cleanup'); assert.ok(undone.revealed.every(n => n >= 0));
+  assert.deepEqual(restore(undone).units, undone.units);
   const reset = resetMemory(undone);
-  assert.equal(reset.phase, 'observe'); assert.deepEqual(reset.units, initialUnits(puzzle));
-  assert.deepEqual(reset.revealed, initial); assert.equal(reset.attempt, 2);
-  // A learned liquid identity follows the actual maximal pours, regardless of the destination.
-  let routed = readyMemory(createMemory(puzzle));
-  for (const p of puzzle.solution) routed = moveMemory(routed, p.source, p.target)!.session;
-  assert.equal(routed.revealed[1] >= 0, true);
-  assert.equal(routed.units.some((b, i) => i !== 0 && b.includes(1)), true);
-  const paired = content.memoryPuzzle(2);
-  // The two initial bottom jade portions are separately hidden, not every jade in the board.
-  assert.equal(hiddenMemory(readyMemory(createMemory(paired))).flat().filter(Boolean).length, 2);
+  assert.equal(reset.phase, 'observe'); assert.equal(reset.attempt, 2);
+  assert.deepEqual(reset.units, initialUnits(puzzle)); assert.ok(reset.revealed.some(n => n < 0));
 });
-test('restore rejects lost identities, forged moves, missing top knowledge and invalid phase', () => {
-  const state = moveMemory(readyMemory(createMemory(puzzle)), 0, 4)!.session;
-  const saved = { ...state, offset: state.game.historyOffset };
-  assert.deepEqual(restoreMemory(puzzle, saved).game, state.game);
-  assert.throws(() => restoreMemory(puzzle, { ...saved, units: state.units.map((b, i) => i === 4 ? [0] : b) }), /checkpoint/);
-  assert.throws(() => restoreMemory(puzzle, { ...saved, revealed: state.revealed.map((n, id) => id === 2 ? -1 : n) }), /knowledge/);
-  assert.throws(() => restoreMemory(puzzle, { ...saved, phase: 'observe' }), /observation/);
+test('wrong answers pause; continuation requires a replayed ordinary solution; undo keeps revealed knowledge', () => {
+  let s = readyMemory(createMemory(fixture));
+  s = moveMemory(s, 0, 2)!.session;
+  const wrong = revealMemory(s);
+  assert.equal(wrong.judgement, 'wrong'); assert.equal(moveMemory(wrong, 1, 3), null);
+  assert.throws(() => continueMemory(wrong, []));
+  const solved = solveBoard(wrong.game.board, { maxStates: 100000, maxMilliseconds: 5000 });
+  assert.equal(solved.status, 'solved');
+  if (solved.status !== 'solved') return;
+  let cleanup = continueMemory(wrong, solved.route);
+  assert.equal(cleanup.judgement, 'cleanup');
+  assert.deepEqual(restore(cleanup).units, cleanup.units);
+  for (const p of solved.route) cleanup = moveMemory(cleanup, p.source, p.target)!.session;
+  assert.equal(cleanup.game.status, 'solved');
+  const undone = undoMemory(wrong);
+  assert.equal(undone.revealAt, 0); assert.equal(undone.judgement, 'cleanup');
+  assert.ok(hiddenMemory(undone).flat().every(v => !v));
+  const ordinary = moveMemory(undone, 0, 2)!;
+  assert.equal(ordinary.event.pour.amount, 2);
+  assert.deepEqual(restore(ordinary.session).game, ordinary.session.game);
 });
-test('exposing a two-portion top run reveals both portions before the next maximal pour', () => {
-  const original = content.memoryPuzzle(1);
-  const level = parseLevel({ ...original.level, bottles: original.level.bottles.map((b, i) => ({ ...b, layers: i === 0 ? ['jade','jade','coral','coral'] : i === 1 ? ['coral','coral','jade','jade'] : [] })) });
-  const paired = { ...original, level, masks: [0, 1] };
-  validateMemoryPuzzle(paired);
-  let state = readyMemory(createMemory(paired));
-  assert.equal(hiddenMemory(state)[0].filter(Boolean).length, 2);
-  const move = moveMemory(state, 0, 2)!; assert.equal(move.event.pour.amount, 2); state = move.session;
-  assert.equal(state.revealed[0], 1); assert.equal(state.revealed[1], 1);
-  assert.ok(hiddenMemory(state)[0].every(v => !v));
-  assert.equal(moveMemory(state, 0, 3)!.event.pour.amount, 2);
-  const undone = undoMemory(state); assert.equal(undone.revealed[0], 1); assert.equal(undone.revealed[1], 1);
+test('complete exhaustion differs from search limits, and cannot enable continuation', () => {
+  const dead = { ...fixture, level: parseLevel({ ...fixture.level, bottles: fixture.level.bottles.slice(0,2) }) };
+  const wrong = revealMemory(readyMemory(createMemory(dead)));
+  assert.equal(solveBoard(wrong.game.board).status, 'unsolvable');
+  assert.throws(() => continueMemory(wrong, []));
+  const limited = drain(createMemorySolver(readyMemory(createMemory(fixture)), { maxStates: 1, maxMilliseconds: 1000 }));
+  assert.equal(limited.status, 'limitReached');
+  const cancelled = createMemorySolver(readyMemory(createMemory(fixture)));
+  assert.equal(cancelled.cancel().status, 'limitReached');
 });
-test('SQLite restores exact phase, stable knowledge, undo and tutorial independently from mainline', async () => {
-  const { db, player, memory } = await setup();
-  const original = player.state;
-  let state = readyMemory(createMemory(puzzle));
-  assert.equal(await memory.commit(state, 'ready'), true);
-  assert.equal(await memory.completeTutorial(), true);
-  state = moveMemory(state, 0, 4)!.session;
-  await memory.commit(state, 'pour');
-  state = peekMemory(state); await memory.commit(state, 'peek-open');
-  const reopened = await MemoryRepository.open(player, content);
-  assert.equal(reopened.tutorialDone, true); assert.equal(reopened.state!.phase, 'peek');
-  assert.equal(reopened.state!.peeks, 1); assert.deepEqual(reopened.state!.units, state.units);
-  state = undoMemory(peekMemory(reopened.state!)); await reopened.commit(state, 'undo');
-  const restored = (await MemoryRepository.open(player, content)).state!;
-  assert.deepEqual(restored.game.board, initialBoard(puzzle.level)); assert.equal(restored.undos, 1);
+test('hints use black rules and exact unit-route matches; found routes replay before reveal', () => {
+  let s = readyMemory(createMemory(puzzle));
+  assert.deepEqual(memoryReferenceHint(s), puzzle.solution[0]);
+  s = moveMemory(s, puzzle.solution[0].source, puzzle.solution[0].target)!.session;
+  assert.deepEqual(memoryReferenceHint(s), puzzle.solution[1]);
+  const result = drain(createMemorySolver(readyMemory(createMemory(fixture)), { maxStates: 100000, maxMilliseconds: 5000 }));
+  assert.equal(result.status, 'solved');
+  if (result.status !== 'solved') return;
+  let state = readyMemory(createMemory(fixture));
+  for (const p of result.route) { const next = moveMemory(state, p.source, p.target)!; assert.deepEqual(next.event.pour, p); state = next.session; }
+  assert.equal(revealMemory(state).judgement, 'correct');
+});
+test('restore rejects lost identities, forged history, partial disclosure and invalid phases', () => {
+  const s = moveMemory(readyMemory(createMemory(fixture)), 0, 2)!.session;
+  const saved = { ...s, offset: 0 };
+  assert.deepEqual(restoreMemory(fixture, saved).game, s.game);
+  assert.throws(() => restoreMemory(fixture, { ...saved, units: s.units.map((b,i) => i === 2 ? [0] : b) }), /checkpoint/);
+  assert.throws(() => restoreMemory(fixture, { ...saved, revealed: s.revealed.map((n,id) => id === 3 ? 0 : n) }), /knowledge/);
+  assert.throws(() => restoreMemory(fixture, { ...saved, phase: 'observe' }), /judgement/);
+  assert.throws(() => restoreMemory(fixture, { ...saved, units: initialUnits(fixture) }), /history/);
+});
+test('SQLite restores hidden/peek/reveal/undo boundaries and tutorial without changing mainline or wallet', async () => {
+  const { db, player, memory } = await setup(), original = player.state;
+  let s = readyMemory(memory.start()); await memory.commit(s, 'ready'); await memory.completeTutorial();
+  const p = s.puzzle.solution[0]; s = moveMemory(s, p.source, p.target)!.session; await memory.commit(s, 'pour');
+  s = peekMemory(s); await memory.commit(s, 'peek-open');
+  let loaded = await MemoryRepository.open(player, content);
+  assert.equal(loaded.state!.phase, 'peek'); assert.equal(loaded.tutorialDone, true); assert.deepEqual(loaded.state!.units, s.units);
+  s = revealMemory(peekMemory(loaded.state!)); await loaded.commit(s, 'reveal-answer');
+  loaded = await MemoryRepository.open(player, content);
+  assert.equal(loaded.state!.judgement, 'wrong'); assert.ok(loaded.state!.revealed.every(n => n >= 0));
+  s = undoMemory(loaded.state!); await loaded.commit(s, 'undo');
+  const reloaded = (await MemoryRepository.open(player, content)).state!;
+  assert.equal(reloaded.revealAt, 0); assert.equal(reloaded.judgement, 'cleanup');
   assert.equal(player.state, original); assert.equal(player.state.hintCredits, original.hintCredits);
-  assert.equal(db.getFirstSync<{ n: number }>("SELECT COUNT(*) AS n FROM events WHERE mode='memory' AND kind='peek-open'")!.n, 1);
   db.native.close();
 });
-test('failed memory transaction retries atomically in the shared mainline queue without duplicate counters', async () => {
+test('failed memory writes retry atomically in the shared player queue without duplicate counters', async () => {
   const { db, player, memory } = await setup();
-  let state = readyMemory(memory.start()); await memory.commit(state, 'ready');
-  state = peekMemory(state);
+  let s = readyMemory(memory.start()); await memory.commit(s, 'ready'); s = peekMemory(s);
   db.fail = sql => sql.startsWith('INSERT INTO events');
-  assert.equal(await memory.commit(state, 'peek-open'), false);
-  assert.equal(db.getFirstSync<{ peeks: number }>('SELECT peeks FROM memory_session')!.peeks, 0);
-  const step = content.mainline.entries[0].solution[0], moved = moveMainline(player.state, step.source, step.target)!;
+  assert.equal(await memory.commit(s, 'peek-open'), false);
+  assert.equal(db.getFirstSync<{ peeks: number }>('SELECT peeks FROM memory_black_session')!.peeks, 0);
   db.fail = null;
+  const p = content.mainline.entries[0].solution[0], moved = moveMainline(player.state, p.source, p.target)!;
   assert.equal(await player.commit(moved.state, { type: 'pour' }), true);
   assert.equal(await player.flush(), true);
-  assert.equal(db.getFirstSync<{ peeks: number }>('SELECT peeks FROM memory_session')!.peeks, 1);
-  assert.equal(db.getFirstSync<{ value: number }>("SELECT value FROM level_stats WHERE mode='memory' AND metric='peeks'")!.value, 1);
+  assert.equal(db.getFirstSync<{ peeks: number }>('SELECT peeks FROM memory_black_session')!.peeks, 1);
   assert.equal(db.getFirstSync<{ n: number }>("SELECT COUNT(*) AS n FROM events WHERE kind='peek-open'")!.n, 1);
   db.native.close();
 });
-test('completion/undo/recompletion do not award mainline credits or duplicate memory first completion', async () => {
+test('explicit correct/assisted completion is distinct and redoing does not overwrite the first result or grant credits', async () => {
   const { db, player, memory } = await setup();
-  let state = readyMemory(memory.start()); await memory.commit(state, 'ready');
-  for (const p of state.puzzle.solution) { state = moveMemory(state, p.source, p.target, true)!.session; await memory.commit(state, 'pour'); }
-  assert.equal(state.game.status, 'solved'); assert.equal(state.hints, state.pours);
-  assert.ok(hiddenMemory(state).flat().every(v => !v));
-  state = undoMemory(state); await memory.commit(state, 'undo');
-  const last = content.memoryPuzzle(1).solution.at(-1)!;
-  state = moveMemory(state, last.source, last.target)!.session; await memory.commit(state, 'pour');
+  let s = readyMemory(memory.start()); await memory.commit(s, 'ready');
+  for (const p of s.puzzle.solution) { s = moveMemory(s, p.source, p.target, true)!.session; await memory.commit(s, 'pour'); }
+  assert.equal(db.getFirstSync<{ n: number }>("SELECT COUNT(*) AS n FROM completions WHERE mode='memory'")!.n, 0);
+  s = revealMemory(s); await memory.commit(s, 'reveal-answer');
+  s = undoMemory(s); await memory.commit(s, 'undo');
+  const last = s.puzzle.solution.at(-1)!; s = moveMemory(s, last.source, last.target)!.session; await memory.commit(s, 'pour');
   assert.equal(db.getFirstSync<{ n: number }>("SELECT COUNT(*) AS n FROM completions WHERE mode='memory'")!.n, 1);
+  assert.equal(db.getFirstSync<{ result: string }>('SELECT result FROM memory_black_attempts WHERE id=?', `${player.installation}:${MEMORY_RULES}:${s.attempt}`)!.result, 'remembered');
   assert.equal(player.state.hintCredits, 0); assert.equal(player.state.completedThrough, 0);
-  const before = state; state = resetMemory(state); await memory.commit(state, 'reset');
-  assert.equal(db.getFirstSync<{ result: string }>('SELECT result FROM memory_attempts WHERE id=?', `${player.installation}:memory:${before.attempt}`)!.result, 'solved');
-  assert.equal(memory.tutorialDone, false); db.native.close();
-});
-test('bounded long memory undo history restores its identity anchor and learned information from paged SQLite', async () => {
-  let state = readyMemory(createMemory(content.memoryPuzzle(1)));
-  state = moveMemory(state, 0, 2)!.session;
-  state = moveMemory(state, 1, 3)!.session;
-  state = moveMemory(state, 2, 1)!.session;
-  for (let i = 0; i < 4100; i++) state = moveMemory(state, i % 2 ? 2 : 3, i % 2 ? 3 : 2)!.session;
-  assert.equal(state.history.length, 4096); assert.equal(state.game.historyOffset, 7);
-  const restored = restoreMemory(state.puzzle, { ...state, offset: state.game.historyOffset });
-  assert.deepEqual(restored.units, state.units); assert.deepEqual(restored.revealed, state.revealed);
-  assert.equal(getLegalPours(restored.game.board).length > 0, true);
-  const { db, player, memory } = await setup();
-  assert.equal(await memory.commit(state, 'checkpoint'), true);
-  // Continue past the retained boundary, trim one snapshot, then undo without losing the anchor.
-  state = moveMemory(state, 3, 2)!.session; await memory.commit(state, 'pour');
-  state = undoMemory(state); await memory.commit(state, 'undo');
-  const reloaded = (await MemoryRepository.open(player, content)).state!;
-  assert.deepEqual(reloaded.units, state.units); assert.deepEqual(reloaded.revealed, state.revealed);
-  assert.equal(reloaded.game.historyOffset, 8); assert.equal(reloaded.history.length, 4095);
   db.native.close();
 });
-test('memory clock separates observation/peek/available solving and excludes background and blocks', () => {
+test('4096-step undo checkpoints retain stable identities through truncation, reveal and restart', async () => {
+  let s = readyMemory(createMemory(puzzle));
+  const from = Math.floor(puzzle.masks[0] / 4), a = puzzle.level.colors.length, b = a + 1;
+  s = moveMemory(s, from, a)!.session;
+  for (let i = 0; i < 4100; i++) s = moveMemory(s, i % 2 ? b : a, i % 2 ? a : b)!.session;
+  assert.equal(s.history.length, 4096); assert.equal(s.game.historyOffset, 5);
+  assert.deepEqual(restore(s).units, s.units);
+  const { db, player, memory } = await setup(); await memory.commit(s, 'checkpoint');
+  s = revealMemory(s); await memory.commit(s, 'reveal-answer');
+  s = undoMemory(s); await memory.commit(s, 'undo');
+  const loaded = (await MemoryRepository.open(player, content)).state!;
+  assert.deepEqual(loaded.units, s.units); assert.deepEqual(loaded.revealed, s.revealed);
+  assert.equal(loaded.revealAt, s.game.historyOffset + s.history.length);
+  db.native.close();
+});
+test('memory clock excludes background and keeps observation, peek and blocked intervals separate', () => {
   const clock = new MemoryClock(0);
   clock.update(0, true, false, 'observe'); clock.update(100, true, false, 'play');
   clock.update(250, true, true, 'play'); clock.update(300, true, false, 'peek');

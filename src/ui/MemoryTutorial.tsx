@@ -15,7 +15,7 @@ export function MemoryTutorial({ visible, vessel, onStart, onBack }: { visible: 
       <ReadableScrollView contentContainerStyle={styles.content}>
         <UiText style={styles.title}>{t('memoryMode')}</UiText>
         <View pointerEvents="none" style={styles.preview}>
-          {[false, true].map((hidden, i) => <Bottle key={i} index={300 + i} vessel={vessel} colors={['jade', 'coral', 'amber', 'amber']} hiddenLayers={hidden ? [true, true] : []} markedLayers={hidden ? [] : [true, true]} selected={false} completed={false} width={65} scale={.65} position={{ x: i * 205, y: 0 }} plan={null} pour={null} progress={progress} completionAnimations={false} />)}
+          {[false, true].map((hidden, i) => <Bottle key={i} index={300 + i} vessel={vessel} colors={['jade', 'coral', 'amber', 'amber']} hiddenLayers={hidden ? [false, true, false, true] : []} markedLayers={hidden ? [] : [false, true, false, true]} selected={false} completed={false} width={65} scale={.65} position={{ x: i * 205, y: 0 }} plan={null} pour={null} progress={progress} completionAnimations={false} />)}
           <UiText style={styles.arrow}>→</UiText>
         </View>
         {(['memoryStep1', 'memoryStep2', 'memoryStep3'] as const).map((key, i) => <UiText key={key} style={styles.step}>{i + 1}. {t(key)}</UiText>)}

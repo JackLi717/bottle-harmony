@@ -12,12 +12,12 @@ import { MAINLINE } from './mainlineContent';
 import { SOLID_SIDES } from './solidSideContent';
 
 const NUMBERS = Array.from({ length: 1000 }, (_, i) => i + 1);
-type Props = { visible: boolean; initialSection: 'levels' | 'settings'; play: MainlineState; saveStatus: string; onClose: () => void; onResume: () => void; onSelect: (number: number) => void; onSelectSide: (number: number) => void; onPreview: (number: number) => void; onSidePreview: (number: number) => void; onSamples: () => void; onSymbols: () => void; symbols: boolean; sound: boolean; soundSaved: boolean; onSound: () => void; onCelebrationPreview: (count: 2 | 3 | 4 | 5) => void; onDebug?: () => void; onPrivacy: () => void };
-export function MainlineMenu({ visible, initialSection, play, saveStatus, onClose, onResume, onSelect, onSelectSide, onPreview, onSidePreview, onSamples, onSymbols, symbols, sound, soundSaved, onSound, onCelebrationPreview, onDebug, onPrivacy }: Props) {
+type Props = { visible: boolean; initialSection: 'levels' | 'settings'; showLevels: boolean; play: MainlineState; saveStatus: string; onClose: () => void; onResume: () => void; onSelect: (number: number) => void; onSelectSide: (number: number) => void; onPreview: (number: number) => void; onSidePreview: (number: number) => void; onSamples: () => void; onSymbols: () => void; symbols: boolean; sound: boolean; soundSaved: boolean; onSound: () => void; onCelebrationPreview: (count: 2 | 3 | 4 | 5) => void; onDebug?: () => void; onPrivacy: () => void };
+export function MainlineMenu({ visible, initialSection, showLevels, play, saveStatus, onClose, onResume, onSelect, onSelectSide, onPreview, onSidePreview, onSamples, onSymbols, symbols, sound, soundSaved, onSound, onCelebrationPreview, onDebug, onPrivacy }: Props) {
   const { t, rtl } = useI18n();
   const insets = useSafeAreaInsets();
   const { height } = useWindowDimensions();
-  const [section, setSection] = useState(initialSection);
+  const [section, setSection] = useState(showLevels ? initialSection : 'settings');
   const [toolsVisible, setToolsVisible] = useState(false);
   const [testing, setTesting] = useState(false);
   const [testGroup, setTestGroup] = useState<'main' | 'side'>('main');
@@ -36,7 +36,7 @@ export function MainlineMenu({ visible, initialSection, play, saveStatus, onClos
     <View style={[styles.backdrop, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 12 }]}>
       <LinearGradient colors={['#203745', '#102230']} style={styles.panel}>
         <View style={[styles.heading, rtl && styles.reverse]}><UiText style={styles.title}>{t(section)}</UiText><GameButton kind="icon" icon="close" label={t('close')} onPress={onClose} /></View>
-        <View style={[styles.tabs, rtl && styles.reverse]}>{(['levels', 'settings'] as const).map(tab => <Pressable key={tab} accessibilityRole="tab" accessibilityState={{ selected: section === tab }} onPress={() => setSection(tab)} style={[styles.tab, section === tab && styles.activeTab]}><UiText style={[styles.tabText, section === tab && styles.activeTabText]}>{t(tab)}</UiText></Pressable>)}</View>
+        {showLevels && <View style={[styles.tabs, rtl && styles.reverse]}>{(['levels', 'settings'] as const).map(tab => <Pressable key={tab} accessibilityRole="tab" accessibilityState={{ selected: section === tab }} onPress={() => setSection(tab)} style={[styles.tab, section === tab && styles.activeTab]}><UiText style={[styles.tabText, section === tab && styles.activeTabText]}>{t(tab)}</UiText></Pressable>)}</View>}
         {section === 'levels' ? <>
           <ScrollView keyboardShouldPersistTaps="handled" style={[styles.levelControls, { maxHeight: Math.max(80, Math.min(260, height * .28)) }]}>
           <View style={[styles.progressHeading, rtl && styles.reverse]}><UiText style={styles.progressText}>{t('completedCount', { n: play.completedThrough })}</UiText><UiText style={styles.note}>{t('totalLevels')}</UiText></View>

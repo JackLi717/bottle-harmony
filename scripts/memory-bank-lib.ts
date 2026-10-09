@@ -1,19 +1,19 @@
 import assert from 'node:assert/strict';
 import { contentMetrics, parseGeneratedContent, structureKey, type GeneratedContent } from '../src/game/generation.ts';
 import { initialBoard, type LevelDefinition } from '../src/game/model.ts';
-import { validateMemoryPuzzle, MEMORY_RULES, type MemoryPuzzle } from '../src/game/memory.ts';
+import { validateMemoryPuzzle, replayMemory, MEMORY_RULES, type MemoryPuzzle } from '../src/game/memory.ts';
 import { MEMORY_CATALOG, MEMORY_COUNT } from '../src/game/memoryCatalog.ts';
-import { applyPour, getLegalPours, type Pour } from '../src/game/rules.ts';
+import { applyPour, getPour, isSolved, type Pour } from '../src/game/rules.ts';
 import { replaySolution } from '../src/game/solver.ts';
 import { MEMORY_PROTOTYPES } from './memory-prototypes.ts';
 
 export type Target = { number: number; colors: number; hidden: number; bottles: number; grade: number; role: string; skill: string };
-export type Reveal = { first: number[]; remaining: number[]; maxDelay: number; meanDelay: number; deductionSteps: number[] };
-export type MemoryEvidence = { hidden: number; hiddenBottles: number; hiddenColors: number; depths: number[];
-  orderedPairs: number; linkedColors: number; inferableAtStart: boolean; reference: Reveal; alternative: Reveal;
-  sorting: ReturnType<typeof contentMetrics>; structureKey: string; maskStructureKey: string;
-  visibleControl: { masks: number[] }; lighterVariant: { masks: number[]; hidden: number } };
-export type MemoryRecord = MemoryPuzzle & { target: Target; source: GeneratedContent | { prototype: string }; alternative: readonly Pour[]; evidence: MemoryEvidence };
+export type RouteEvidence = { firstTransfer: number[]; blackTransfers: number; visibleIntoBlack: number; hiddenAfterEachMove: number[] };
+export type MemoryEvidence = { hidden: number; hiddenBottles: number; hiddenColors: number; depthHistogram: number[];
+  reference: RouteEvidence; alternative: RouteEvidence; sorting: ReturnType<typeof contentMetrics>;
+  structureKey: string; maskStructureKey: string; lighterVariant: { masks: number[]; hidden: number } };
+export type MemoryRecord = MemoryPuzzle & { target: Target; source: GeneratedContent | { prototype: string };
+  ordinaryReference: readonly Pour[]; ordinaryAlternative: readonly Pour[]; alternative: readonly Pour[]; evidence: MemoryEvidence };
 export type MemoryBank = { id: string; rules: string; recipe: string; records: MemoryRecord[] };
 const early = [
   [2,1,1,1], [3,2,2,1], [3,2,2,1], [3,3,3,2], [3,3,3,2], [3,3,3,2], [3,2,2,1], [4,2,2,2], [4,3,3,2], [4,4,4,2],
@@ -34,94 +34,102 @@ export function memoryTargets(): Target[] {
     }
     const role = number <= 3 ? 'teaching' : position === 6 ? 'subpeak' : position === 10 ? 'peak' : [1,2,7].includes(position) ? 'recovery' : 'ascent';
     const skill = number <= 3 ? (number === 1 ? 'single-position' : 'paired-bottles') : grade <= 2 ? (position % 2 ? 'paired-bottles' : 'cross-bottle')
-      : position === 6 ? 'delayed-use' : position === 9 ? 'memory-deduction' : grade === 4 ? 'combined-relations' : 'bottom-order';
+      : position === 6 ? 'delayed-use' : position === 9 ? 'memory-deduction' : grade === 4 ? 'combined-relations' : 'layer-tracking';
     return { number, colors, hidden, bottles, grade, role, skill };
   });
 }
-// Reuse the original boards and masks unchanged; numbering belongs to the current recipe.
+
 export const prototypePositions = new Map([[1,1], [2,2], [14,3], [10,4], [20,5]]);
 export function retainedPrototype(number: number) {
   const index = prototypePositions.get(number);
   return index ? MEMORY_PROTOTYPES[index - 1] : undefined;
 }
 
-/** Independent unit replay: no dependency on the runtime knowledge/undo implementation. */
-export function revealRoute(level: LevelDefinition, masks: readonly number[], route: readonly Pour[]): Reveal {
+/** Independent quantity/identity replay, without runtime memory moves or reveal logic. */
+export function blackRoute(level: LevelDefinition, masks: readonly number[], route: readonly Pour[]): RouteEvidence {
+  const colors = initialBoard(level).flat(), units = level.bottles.map((b, i) => b.layers.map((_, d) => i * 4 + d));
+  const hidden = new Set(masks), firstTransfer = masks.map(() => -1), hiddenAfterEachMove = [masks.length];
+  let blackTransfers = 0, visibleIntoBlack = 0;
+  route.forEach((p, step) => {
+    const from = units[p.source], to = units[p.target];
+    assert.ok(from?.length && to && from !== to && to.length < 4, 'Invalid black route bottles');
+    const id = from.at(-1)!, receiver = to.at(-1), black = hidden.has(id);
+    assert.equal(p.color, colors[id]);
+    if (receiver !== undefined) assert.ok(black || hidden.has(receiver) || colors[receiver] === p.color, 'Invalid visible contact');
+    let count = 1;
+    if (!black) while (count < from.length && !hidden.has(from[from.length - 1 - count]) && colors[from[from.length - 1 - count]] === p.color) count++;
+    assert.equal(p.amount, Math.min(count, 4 - to.length), 'Wrong black transfer quantity');
+    if (black) blackTransfers++;
+    else if (receiver !== undefined && hidden.has(receiver)) visibleIntoBlack++;
+    const moved = from.splice(-p.amount);
+    masks.forEach((unit, index) => { if (firstTransfer[index] < 0 && moved.includes(unit)) firstTransfer[index] = step + 1; });
+    to.push(...moved); hiddenAfterEachMove.push(masks.length);
+  });
+  assert.ok(isSolved(units.map(b => b.map(id => colors[id]))), 'Incomplete black route');
+  return { firstTransfer, blackTransfers, visibleIntoBlack, hiddenAfterEachMove };
+}
+/** Expand a verified ordinary solution at hidden-unit boundaries, preserving the whole route. */
+export function expandMemoryRoute(level: LevelDefinition, masks: readonly number[], ordinary: readonly Pour[]): readonly Pour[] {
   let board = initialBoard(level), id = 0;
-  const units = board.map(b => b.map(() => id++)), colors = board.flat();
-  const first = masks.map(() => -1), remaining: number[] = [], deductionSteps: number[] = [];
-  function inspect(step: number) {
-    masks.forEach((unit, m) => {
-      if (first[m] >= 0) return;
-      const b = units.findIndex(b => b.includes(unit)), depth = units[b].indexOf(unit);
-      if (board[b].slice(depth).every(c => c === colors[unit])) first[m] = step;
-    });
-    const unknown = masks.filter((_, m) => first[m] < 0);
-    remaining.push(unknown.length);
-    // With exactly one outstanding color, conservation determines all remaining unknown colors.
-    if (unknown.length >= 2 && new Set(unknown.map(u => colors[u])).size === 1) deductionSteps.push(step);
+  const units = board.map(b => b.map(() => id++)), hidden = new Set(masks), result: Pour[] = [];
+  for (const p of ordinary) {
+    assert.deepEqual(getPour(board, p.source, p.target), p);
+    let remaining = p.amount;
+    while (remaining) {
+      const from = units[p.source], to = units[p.target];
+      let amount = 1;
+      if (!hidden.has(from.at(-1)!)) while (amount < from.length && !hidden.has(from[from.length - 1 - amount]) && board[p.source][from.length - 1 - amount] === p.color) amount++;
+      amount = Math.min(amount, remaining, 4 - to.length);
+      result.push({ ...p, amount }); to.push(...from.splice(-amount)); remaining -= amount;
+    }
+    board = applyPour(board, p);
   }
-  inspect(0);
-  route.forEach((p, i) => { board = applyPour(board, p); units[p.target].push(...units[p.source].splice(-p.amount)); inspect(i+1); });
-  replaySolution(initialBoard(level), route);
-  assert.ok(first.every(n => n > 0), 'Every mask must start unknown and eventually be exposed');
-  return { first, remaining, maxDelay: Math.max(...first), meanDelay: first.reduce((a,b) => a+b,0)/first.length, deductionSteps };
+  blackRoute(level, masks, result);
+  return Object.freeze(result);
 }
 export function analyzeMemory(puzzle: MemoryPuzzle, alternative: readonly Pour[]): MemoryEvidence {
-  const colors = initialBoard(puzzle.level).flat(), positions = new Set(puzzle.masks.map(id => Math.floor(id/4)));
-  const depths = [...positions].sort((a,b) => a-b).map(b => puzzle.masks.filter(id => Math.floor(id/4) === b).length);
-  const orderedPairs = [...positions].filter(b => puzzle.masks.includes(4*b+1) && colors[4*b] !== colors[4*b+1]).length;
-  const hiddenColors = new Set(puzzle.masks.map(id => colors[id])).size;
-  const linkedColors = puzzle.level.colors.filter(c => new Set(puzzle.masks.filter(id => colors[id] === c).map(id => Math.floor(id/4))).size > 1).length;
-  const maskStructureKey = puzzle.level.bottles.map((b,i) => b.layers.map((_,d) => puzzle.masks.includes(i*4+d) ? '1' : '0').join('')).sort().join('/');
-  const bottoms = puzzle.masks.filter(id => id % 4 === 0);
-  const lighter = bottoms.length === puzzle.masks.length ? bottoms.slice(0,-1) : bottoms;
-  return { hidden: puzzle.masks.length, hiddenBottles: positions.size, hiddenColors, depths, orderedPairs, linkedColors, inferableAtStart: hiddenColors === 1,
-    reference: revealRoute(puzzle.level, puzzle.masks, puzzle.solution), alternative: revealRoute(puzzle.level, puzzle.masks, alternative),
+  const colors = initialBoard(puzzle.level).flat(), positions = new Set(puzzle.masks.map(id => Math.floor(id / 4)));
+  const depthHistogram = [0, 1, 2, 3].map(d => puzzle.masks.filter(id => id % 4 === d).length);
+  const maskStructureKey = puzzle.level.bottles.map((b, i) => b.layers.map((_, d) => puzzle.masks.includes(i * 4 + d) ? '1' : '0').join('')).sort().join('/');
+  const lighter = puzzle.masks.slice(0, Math.max(0, puzzle.masks.length - 2));
+  return { hidden: puzzle.masks.length, hiddenBottles: positions.size, hiddenColors: new Set(puzzle.masks.map(id => colors[id])).size, depthHistogram,
+    reference: blackRoute(puzzle.level, puzzle.masks, puzzle.solution), alternative: blackRoute(puzzle.level, puzzle.masks, alternative),
     sorting: contentMetrics(puzzle.level, puzzle.solution.length), structureKey: structureKey(puzzle.level), maskStructureKey,
-    visibleControl: { masks: [] }, lighterVariant: { masks: lighter, hidden: lighter.length } };
+    lighterVariant: { masks: lighter, hidden: lighter.length } };
 }
 export function acceptsEvidence(target: Target, e: MemoryEvidence) {
-  if (e.hidden !== target.hidden || e.hiddenBottles !== target.bottles) return false;
-  if (target.grade >= 2 && e.inferableAtStart) return false;
-  if (target.grade >= 3 && !e.orderedPairs) return false;
-  if (target.grade === 4 && !e.linkedColors) return false;
-  if ((target.skill === 'delayed-use' || target.grade === 4) && Math.min(e.reference.maxDelay,e.alternative.maxDelay) < (target.grade === 4 ? 8 : 6)) return false;
-  if (target.skill === 'memory-deduction' && !e.reference.deductionSteps.length) return false;
-  return true;
+  return e.hidden === target.hidden && e.hiddenBottles === target.bottles && (target.hidden === 1 || e.hiddenColors >= 2)
+    && e.depthHistogram[3] > 0 && (target.hidden < 4 || e.depthHistogram.every(n => n > 0))
+    && [e.reference, e.alternative].every(r => r.firstTransfer.filter(n => n > 0).length >= Math.ceil(target.hidden / 2));
 }
 export function decodeMemoryBank(input: unknown): MemoryBank {
   const bank = input as MemoryBank;
-  assert.equal(bank.id, MEMORY_CATALOG); assert.equal(bank.rules, MEMORY_RULES); assert.equal(bank.recipe, 'memory-ten-wave-v1');
+  assert.equal(bank.id, MEMORY_CATALOG); assert.equal(bank.rules, MEMORY_RULES); assert.equal(bank.recipe, 'memory-dispersed-wave-v1');
   assert.equal(bank.records.length, MEMORY_COUNT);
-  const targets = memoryTargets(), keys = new Set<string>(), ids = new Set<string>();
+  const targets = memoryTargets(), keys = new Set<string>(), ids = new Set<string>(), depths = [0, 0, 0, 0];
   bank.records.forEach((p, i) => {
-    assert.deepEqual(p.target, targets[i]); assert.equal(p.number, i+1);
+    assert.deepEqual(p.target, targets[i]); assert.equal(p.number, i + 1); assert.equal(p.skill, p.target.skill);
     const original = retainedPrototype(p.number);
-    if (original) { assert.deepEqual(p.source, { prototype: original.level.id }); assert.deepEqual(p.level, original.level); assert.deepEqual(p.masks, original.masks); assert.equal(p.skill, original.skill); }
-    else { const source = parseGeneratedContent(p.source); assert.deepEqual(p.level, source.level); assert.deepEqual(p.solution, source.solution); assert.equal(p.skill, p.target.skill); }
-    validateMemoryPuzzle(p); assert.equal(p.level.colors.length,p.target.colors);
-    assert.ok(p.level.bottles.slice(0,p.target.colors).every(b => b.layers.length === 4));
-    assert.equal(p.level.bottles.length,p.target.colors+2);
-    const e = analyzeMemory(p,p.alternative);
-    assert.deepEqual(p.evidence,e); assert.ok(acceptsEvidence(p.target,e), `Memory target ${p.number}`);
-    assert.notEqual(p.solution[0].source,p.alternative[0].source,'Alternative must change the opening source, not just swap empty bottles');
-    assert.ok(getLegalPours(initialBoard(p.level)).some(q => JSON.stringify(q) === JSON.stringify(p.alternative[0])));
-    assert.ok(!keys.has(e.structureKey), `Duplicate board ${p.number}`); keys.add(e.structureKey);
+    if (original) { assert.deepEqual(p.source, { prototype: original.level.id }); assert.deepEqual(p.level, original.level); }
+    else { const source = parseGeneratedContent(p.source); assert.deepEqual(p.level, source.level); assert.deepEqual(p.ordinaryReference, source.solution); }
+    validateMemoryPuzzle(p); assert.equal(p.level.colors.length, p.target.colors);
+    replaySolution(initialBoard(p.level), p.ordinaryReference); replaySolution(initialBoard(p.level), p.ordinaryAlternative);
+    assert.deepEqual(p.solution, expandMemoryRoute(p.level, p.masks, p.ordinaryReference));
+    assert.deepEqual(p.alternative, expandMemoryRoute(p.level, p.masks, p.ordinaryAlternative));
+    replayMemory(p, p.solution); replayMemory(p, p.alternative);
+    const evidence = analyzeMemory(p, p.alternative);
+    assert.deepEqual(p.evidence, evidence); assert.ok(acceptsEvidence(p.target, evidence), `Memory target ${p.number}`);
+    assert.notEqual(p.solution[0].source, p.alternative[0].source, 'Alternative must change the opening source');
+    assert.ok(!keys.has(evidence.structureKey), `Duplicate board ${p.number}`); keys.add(evidence.structureKey);
     assert.ok(!ids.has(p.level.id)); ids.add(p.level.id);
+    evidence.depthHistogram.forEach((n, d) => depths[d] += n);
     if (i > 2) {
-      const before = bank.records[i-1];
-      assert.ok(p.target.colors <= before.target.colors+1, 'Add at most one color');
-      assert.ok(p.target.hidden <= before.target.hidden+2, 'Add at most two hidden portions');
-      if (p.target.colors > before.target.colors) assert.ok(p.target.hidden <= before.target.hidden, 'No simultaneous color/hidden growth');
+      const previous = bank.records[i - 1];
+      assert.ok(p.target.colors <= previous.target.colors + 1); assert.ok(p.target.hidden <= previous.target.hidden + 2);
+      if (p.target.colors > previous.target.colors) assert.ok(p.target.hidden <= previous.target.hidden);
     }
   });
-  let peak = 0;
-  for (let i=9;i<MEMORY_COUNT;i+=10) { const p=bank.records[i]; assert.ok(p.target.hidden>=peak); peak=p.target.hidden; }
-  for (const p of bank.records) if (p.number>10 && p.target.role==='recovery') {
-    const peak = bank.records[Math.floor((p.number-1)/10)*10 + ((p.number-1)%10===6 ? 5 : -1)];
-    if (p.target.colors === peak.target.colors) assert.ok(p.solution.length <= peak.solution.length, `Sorting operations rise at recovery ${p.number}`);
-    assert.ok(p.target.grade<peak.target.grade || p.target.hidden<peak.target.hidden, `No recovery at ${p.number}`);
-  }
+  const total = depths.reduce((a, b) => a + b, 0);
+  assert.ok(depths.every(n => n / total >= .15 && n / total <= .35), `Unbalanced mask depths: ${depths}`);
   return bank;
 }

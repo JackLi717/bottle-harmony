@@ -2,11 +2,12 @@ import Animated, { useAnimatedProps, type SharedValue } from 'react-native-reani
 import Svg, { Path } from 'react-native-svg';
 import type { ColorId } from '../game/rules';
 import { LIQUIDS } from './palette';
+import { MEMORY_UNKNOWN_FILL } from './memoryPresentation';
 import { sourcePose, streamOpacity, type PourPlan } from './pourGeometry';
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
-export function PourStream({ plan, color, progress }: { plan: PourPlan; color: ColorId; progress: SharedValue<number> }) {
+export function PourStream({ plan, color, progress, hidden = false }: { plan: PourPlan; color: ColorId; progress: SharedValue<number>; hidden?: boolean }) {
   const props = useAnimatedProps(() => {
     const outlet = sourcePose(plan, progress.value).outlet;
     const bottom = plan.target.y + plan.geometry.mouth.y + 7;
@@ -17,8 +18,8 @@ export function PourStream({ plan, color, progress }: { plan: PourPlan; color: C
   });
   return (
     <Svg width="100%" height="100%" viewBox={`0 0 ${plan.width} ${plan.height}`} pointerEvents="none">
-      <AnimatedPath stroke={LIQUIDS[color].main} strokeWidth={3.5} strokeLinecap="round" fill="none" animatedProps={props} />
-      <AnimatedPath stroke={LIQUIDS[color].light} strokeWidth={0.9} strokeLinecap="round" fill="none" animatedProps={props} />
+      <AnimatedPath stroke={hidden ? MEMORY_UNKNOWN_FILL : LIQUIDS[color].main} strokeWidth={3.5} strokeLinecap="round" fill="none" animatedProps={props} />
+      <AnimatedPath stroke={hidden ? '#64717C' : LIQUIDS[color].light} strokeWidth={0.9} strokeLinecap="round" fill="none" animatedProps={props} />
     </Svg>
   );
 }

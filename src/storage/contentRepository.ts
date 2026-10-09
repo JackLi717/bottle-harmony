@@ -7,7 +7,7 @@ import type { SolidSideCatalog, SolidSideEntry } from '../game/solidSide.ts';
 import type { ReadDatabase, WriteDatabase } from './sql.ts';
 import { CONTENT_SCHEMA_VERSION } from './contentSchema.ts';
 import { MEMORY_CATALOG, MEMORY_COUNT } from '../game/memoryCatalog.ts';
-import { validateMemoryPuzzle, type MemoryPuzzle } from '../game/memory.ts';
+import { validateMemoryPuzzle, replayMemory, type MemoryPuzzle } from '../game/memory.ts';
 
 type LevelRow = { id: string; mode: string; number: number; capacity: number; color_count: number; bottle_count: number;
   rank: number; tier: PlayableEntry['tier']; score: number; frozen_bottle: number; after_mainline: number; reserve: number };
@@ -96,7 +96,11 @@ export class ContentRepository {
     const rows = this.db.getAllSync<Pour & { step: number }>('SELECT step,source,target,color,amount FROM solution_steps WHERE level_id=? AND variant=? ORDER BY step', id, variant);
     if (!rows.length || rows.some((row, i) => row.step !== i)) throw new Error('Invalid content route');
     const route = Object.freeze(rows.map(({ source, target, color, amount }) => Object.freeze({ source, target, color, amount })));
-    if (variant === 'main') replaySolution(initialBoard(this.level(id)), route);
+    const memory = this.db.getFirstSync<{ number: number }>("SELECT number FROM levels WHERE id=? AND mode='memory'", id);
+    if (memory) {
+      const p = this.memory[memory.number - 1];
+      replayMemory({ number: p.number, level: p.level, masks: p.masks, skill: p.skill, solution: route }, route);
+    } else if (variant === 'main') replaySolution(initialBoard(this.level(id)), route);
     return route;
   }
   evidence<T>(id: string): T {

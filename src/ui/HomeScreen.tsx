@@ -5,8 +5,9 @@ import { UiText, useI18n } from '../i18n/I18n';
 import { GameButton } from './GameButton';
 import { MAX_HINT_CREDITS } from '../game/mainline';
 
-export function HomeScreen({ current, sideNumber, hintCredits, compact, landscape = false, onPlay, onMemory, onLevels, onSettings, vessel, vesselSaved, reduceMotion, onVessel }: { current: number; sideNumber?: number | null; hintCredits: number; compact: boolean; landscape?: boolean; onPlay: () => void; onMemory: () => void; onLevels: () => void; onSettings: () => void; vessel: VesselDesign; vesselSaved: boolean; reduceMotion: boolean; onVessel: (id: VesselId) => void }) {
+export function HomeScreen({ current, sideNumber, hintCredits, compact, landscape = false, onPlay, onMemory, onSettings, vessel, vesselSaved, reduceMotion, onVessel }: { current: number; sideNumber?: number | null; hintCredits: number; compact: boolean; landscape?: boolean; onPlay: () => void; onMemory: () => void; onSettings: () => void; vessel: VesselDesign; vesselSaved: boolean; reduceMotion: boolean; onVessel: (id: VesselId) => void }) {
   const { t, rtl } = useI18n();
+  const currentLabel = sideNumber ? t('solidSideLabel', { n: sideNumber }) : t('continueLevel', { n: current });
   return <View style={styles.home}>
     <View style={[styles.top, rtl && styles.reverse]}><GameButton kind="icon" icon="settings" label={t('settings')} onPress={onSettings} /></View>
     <ScrollView contentContainerStyle={[styles.center, compact && styles.compactCenter, landscape && styles.landscape]} showsVerticalScrollIndicator={false}>
@@ -16,9 +17,11 @@ export function HomeScreen({ current, sideNumber, hintCredits, compact, landscap
       </View>
       <View style={[styles.actionSection, landscape && styles.landscapeSection]}>
       <View style={styles.actions}>
-        <GameButton preferredFocus kind="wide" tone="mint" icon="play" label={sideNumber ? t('solidSideLabel', { n: sideNumber }) : `Level ${current}`} accessibilityLabel={sideNumber ? t('solidSideLabel', { n: sideNumber }) : t('continueLevel', { n: current })} onPress={onPlay} />
+        <View style={styles.classicEntry}>
+          <GameButton preferredFocus kind="wide" tone="mint" icon="play" label={t('classicMode')} accessibilityLabel={`${t('classicMode')} · ${currentLabel}`} onPress={onPlay} />
+          <UiText style={styles.currentLevel}>{currentLabel}</UiText>
+        </View>
         <GameButton kind="wide" tone="gold" icon="eye" label={t('memoryMode')} onPress={onMemory} />
-        <GameButton kind="wide" tone="violet" icon="levels" label={t('levels')} onPress={onLevels} />
       </View>
       <UiText style={styles.hintCredits}>{t('hintCredits', { n: hintCredits, max: MAX_HINT_CREDITS })}</UiText>
       </View>
@@ -38,6 +41,8 @@ const styles = StyleSheet.create({
   brand: { color: '#EBD8AD', fontSize: 36, fontWeight: '500', letterSpacing: 7, textAlign: 'center', writingDirection: 'ltr' },
   compactBrand: { fontSize: 30 },
   subtitle: { color: '#9AAFBA', fontSize: 12, letterSpacing: 7, textAlign: 'center', writingDirection: 'ltr', marginTop: 10 },
+  classicEntry: { gap: 5 },
+  currentLevel: { color: '#9AAFBA', fontSize: 12, textAlign: 'center' },
   actions: { width: '100%', maxWidth: 280, gap: 12 },
   hintCredits: { color: '#CEBA8D', fontSize: 12, textAlign: 'center', marginTop: 12 },
 });

@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { Platform } from 'react-native';
 import Animated, { cancelAnimation, Easing, useAnimatedProps, useAnimatedReaction, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming, type SharedValue } from 'react-native-reanimated';
-import Svg, { ClipPath, Defs, Ellipse, G, LinearGradient, Path, RadialGradient, Rect, Stop, Text as SvgText } from 'react-native-svg';
+import Svg, { ClipPath, Defs, Ellipse, G, LinearGradient, Path, RadialGradient, Stop, Text as SvgText } from 'react-native-svg';
 import type { ColorId, Pour } from '../game/rules';
 import { liquidPath, liquidSurface } from './liquidGeometry';
 import { liquidFrame, type LiquidLayerFrame } from './liquidPresentation';
@@ -13,6 +13,8 @@ import { COMPLETION_DURATION, completionPose, completionSymbolOpacity, completio
 import { BottleCelebration } from './BottleCelebration';
 import { PourRipples } from './PourRipples';
 import { corkContact, pourFocus, receiverResponse } from './pourPresentation';
+import { MemoryReveal } from './MemoryReveal';
+import { MEMORY_UNKNOWN_FILL, memoryLayerGeometry, memoryMarkPaint } from './memoryPresentation';
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 const AnimatedEllipse = Animated.createAnimatedComponent(Ellipse);
@@ -34,7 +36,7 @@ function LiquidLayer({ color, layer, firstLayer, count, liquid, id, hidden = fal
     d: liquid.value[layer]?.path ?? '',
     opacity: count.value > firstLayer ? 1 : 0,
   }));
-  return <AnimatedPath animatedProps={props} fill={hidden ? '#65717B' : `url(#${id}-${color})`} stroke="#FFFFFF" strokeOpacity={0.075} strokeWidth={0.5} />;
+  return <AnimatedPath animatedProps={props} fill={hidden ? MEMORY_UNKNOWN_FILL : `url(#${id}-${color})`} stroke="#FFFFFF" strokeOpacity={0.075} strokeWidth={0.5} />;
 }
 
 function LiquidSymbol({ color, layer, liquid, opacity }: { color: ColorId; layer: number; liquid: SharedValue<LiquidLayerFrame[]>; opacity: SharedValue<number> }) {
@@ -105,6 +107,7 @@ const BottleDefinitions = memo(function BottleDefinitions({ id, vessel }: { id: 
 export type BottleProps = {
   index: number;
   colors: readonly ColorId[];
+  hiddenPour?: boolean;
   selected: boolean;
   completed: boolean;
   width: number;
@@ -122,10 +125,12 @@ export type BottleProps = {
   frozenBottom?: boolean;
   hiddenLayers?: readonly boolean[];
   markedLayers?: readonly boolean[];
+  revealingLayers?: readonly boolean[];
+  revealProgress?: SharedValue<number>;
 };
 
 /** Glass art remains static; liquid paths and transforms update on the UI thread. */
-export const Bottle = memo(function Bottle({ index, colors, selected, completed, width, scale, plan, pour, progress, position, symbols = false, completionEffect = 'gold', completionScene = 'preview', completionReplay = 0, completionAnimations = true, vessel = DEFAULT_VESSEL, frozenBottom = false, hiddenLayers = [], markedLayers = [] }: BottleProps) {
+export const Bottle = memo(function Bottle({ index, colors, selected, completed, width, scale, plan, pour, progress, position, symbols = false, completionEffect = 'gold', completionScene = 'preview', completionReplay = 0, completionAnimations = true, vessel = DEFAULT_VESSEL, frozenBottom = false, hiddenLayers = [], markedLayers = [], revealingLayers = [], revealProgress, hiddenPour = false }: BottleProps) {
   const isSource = pour?.source === index;
   const isTarget = pour?.target === index;
   const id = `bottle-${index}-${vessel.id}`;
@@ -197,7 +202,7 @@ export const Bottle = memo(function Bottle({ index, colors, selected, completed,
     d: `M${50 + (plan?.direction ?? 1) * mouth.outlet},${mouth.y + 6} L${50 + (plan?.direction ?? 1) * mouth.outlet},${mouth.y}`,
     opacity: isSource ? streamOpacity(progress.value) : 0,
   }));
-  const flowColor = pour ? LIQUIDS[pour.color] : LIQUIDS.jade;
+  const flowColor = hiddenPour ? { main: MEMORY_UNKNOWN_FILL, light: '#64717C' } : pour ? LIQUIDS[pour.color] : LIQUIDS.jade;
   const shell = useAnimatedProps(() => {
     const finished = complete.value;
     const focus = pourFocus(progress.value, (isSource || isTarget) && completionAnimations);
@@ -241,11 +246,18 @@ export const Bottle = memo(function Bottle({ index, colors, selected, completed,
           {colors.map((color, layer) => (symbols || hiddenLayers[layer]) && <LiquidSymbol key={`symbol-${layer}`} color={hiddenLayers[layer] ? 'unknown' : color} layer={layer} liquid={liquid} opacity={symbolOpacity} />)}
           {markedLayers.map((marked, layer) => {
             if (!marked) return null;
-            // Inset by volume first: the zero-volume surface of round bottoms has zero width.
-            const top = liquidSurface(layer + .88, vessel), bottom = liquidSurface(layer + .12, vessel);
-            const half = Math.max(3, Math.min(top.halfWidth, bottom.halfWidth) - 4);
-            return <Rect key={`mark-${layer}`} x={50 - half} y={top.y + 4} width={half * 2} height={Math.max(3, bottom.y - top.y - 8)} rx={3} fill="none" stroke="#F5DCA6" strokeWidth={1.4} strokeDasharray="3 2" />;
+            const paint = memoryMarkPaint(colors[layer]);
+            const { mark, path } = memoryLayerGeometry(layer, vessel), clip = `${id}-mark-${layer}`;
+            return <G key={`mark-${layer}`} clipPath={`url(#${clip})`}>
+              <Defs><ClipPath id={clip}><Path d={path} /></ClipPath></Defs>
+              <Path d={mark} fill="none" stroke={paint.backing} strokeWidth={4.2} strokeLinejoin="round" />
+              <Path d={mark} fill="none" stroke={paint.ink} strokeWidth={2.1} strokeDasharray="5 3" strokeLinecap="round" strokeLinejoin="round" />
+            </G>;
           })}
+          {revealProgress && revealingLayers.map((revealing, layer) => revealing && <G key={`reveal-${layer}`}>
+            <MemoryReveal layer={layer} vessel={vessel} id={id} color={colors[layer]} progress={revealProgress} />
+            {symbols && <LiquidSymbol color={colors[layer]} layer={layer} liquid={liquid} opacity={revealProgress} />}
+          </G>)}
           <AnimatedEllipse cx={50} rx={24.5} ry={3.5} fill="#FFFFFF" animatedProps={surface} />
           <AnimatedPath animatedProps={innerStream} fill="none" stroke={flowColor.main} strokeWidth={3.3} strokeLinecap="round" />
           <AnimatedPath animatedProps={innerStream} fill="none" stroke={flowColor.light} strokeWidth={0.9} strokeLinecap="round" />

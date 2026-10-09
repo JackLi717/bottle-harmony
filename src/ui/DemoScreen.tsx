@@ -463,7 +463,7 @@ export function DemoScreen() {
     if (finish.action === 'home') goHome();
     else if (finish.action === 'levels') {
       if (play.side && !play.replay) setPlay(nextMainline(play, MAINLINE, SOLID_SIDES));
-      goHome(); openMenu('levels');
+      setSelected(null); openMenu('levels');
     }
     else nextLevel();
   }
@@ -481,8 +481,8 @@ export function DemoScreen() {
       <PourSound progress={progress} pouring={!!animation} vessel={vessel.id} receiverLayers={animation ? animation.before[animation.pour.target].length : 0} enabled={sound && appActive && !reduceMotion && page === 'game'} />
       <View pointerEvents="none" style={StyleSheet.absoluteFill}><GameBackdrop width={dimensions.width} height={dimensions.height} /></View>
       <View style={[styles.safe, { paddingTop: safeTop, paddingBottom: Math.max(insets.bottom, verticalInset, 14), paddingLeft: Math.max(insets.left, horizontalInset), paddingRight: Math.max(insets.right, horizontalInset) }]}>
-        {page === 'home' ? <HomeScreen current={play.current} sideNumber={play.side ? play.current / 20 : null} hintCredits={play.hintCredits} compact={compact} landscape={rail} onPlay={resumeCurrent} onMemory={() => { setInternalSession(null); setPage('memory'); }} onLevels={() => openMenu('levels')} onSettings={() => openMenu('settings')} vessel={vessel} vesselSaved={vesselSaved} reduceMotion={reduceMotion} onVessel={chooseVessel} /> : <>
-        <GameHeader label={label} compact={compact} disabled={!!animation || searching} onBack={goHome}
+        {page === 'home' ? <HomeScreen current={play.current} sideNumber={play.side ? play.current / 20 : null} hintCredits={play.hintCredits} compact={compact} landscape={rail} onPlay={resumeCurrent} onMemory={() => { setInternalSession(null); setPage('memory'); }} onSettings={() => openMenu('settings')} vessel={vessel} vesselSaved={vesselSaved} reduceMotion={reduceMotion} onVessel={chooseVessel} /> : <>
+        <GameHeader label={label} compact={compact} disabled={!!animation || searching} onBack={goHome} onLevels={() => openMenu('levels')}
           previewNavigation={INTERNAL_TOOLS && previewPosition ? {
             detail: sideEntry ? `开发浏览 · 凝固最短 ${sideEntry.difficulty.frozenMoves} 步`
               : `开发浏览 · ${entry!.tier} · ${entry!.score} 分`,
@@ -540,7 +540,7 @@ export function DemoScreen() {
         </>}
       </View>
       {debugReport && <DifficultyDebug visible={difficultyVisible} report={debugReport} human={debugHuman} sample={sample} label={label} onClose={() => setDifficultyVisible(false)} />}
-      {menuVisible && <MainlineMenu visible initialSection={menuSection} play={play} saveStatus={t(saveStatus)} onClose={() => setMenuVisible(false)} onResume={resumeCurrent} onSelect={chooseNumber} onSelectSide={chooseSide} onPreview={previewMainline} onSidePreview={previewSide} onSamples={() => { setMenuVisible(false); setPickerVisible(true); }} symbols={play.symbols} onSymbols={() => setPlay(Object.freeze({ ...play, symbols: !play.symbols }), { type: 'preference', preference: 'symbols', value: String(!play.symbols) })} sound={sound} soundSaved={soundSaved} onSound={toggleSound} onCelebrationPreview={previewCelebration} onPrivacy={() => { setMenuVisible(false); setPrivacyVisible(true); }} onDebug={INTERNAL_TOOLS && !sideEntry ? openDifficulty : undefined} />}
+      {menuVisible && <MainlineMenu visible initialSection={menuSection} showLevels={page === 'game'} play={play} saveStatus={t(saveStatus)} onClose={() => setMenuVisible(false)} onResume={resumeCurrent} onSelect={chooseNumber} onSelectSide={chooseSide} onPreview={previewMainline} onSidePreview={previewSide} onSamples={() => { setMenuVisible(false); setPickerVisible(true); }} symbols={play.symbols} onSymbols={() => setPlay(Object.freeze({ ...play, symbols: !play.symbols }), { type: 'preference', preference: 'symbols', value: String(!play.symbols) })} sound={sound} soundSaved={soundSaved} onSound={toggleSound} onCelebrationPreview={previewCelebration} onPrivacy={() => { setMenuVisible(false); setPrivacyVisible(true); }} onDebug={INTERNAL_TOOLS && !sideEntry ? openDifficulty : undefined} />}
       <GameNotice notice={notice} onClose={() => setNotice(null)} />
       <PrivacyPolicy visible={privacyVisible} onClose={() => { setPrivacyVisible(false); openMenu('settings'); }} />
       <Tutorial visible={page === 'game' && ready && !internalSession && !play.tutorialDone} onStart={() => setPlay(Object.freeze({ ...play, tutorialDone: true }))} onSkip={() => setPlay(Object.freeze({ ...play, tutorialDone: true }))} />
