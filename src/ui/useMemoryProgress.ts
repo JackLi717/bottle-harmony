@@ -5,7 +5,7 @@ import { monotonicNow } from '../storage/gameplayClock';
 import { MemoryClock } from '../storage/memoryClock';
 import { getMemory } from '../storage/runtime';
 
-export function useMemoryProgress() {
+export function useMemoryProgress(visible = true) {
   const repository = getMemory();
   const [session, setSession] = useState(() => repository.start());
   const [tutorial, setTutorial] = useState(!repository.tutorialDone);
@@ -14,7 +14,7 @@ export function useMemoryProgress() {
   const clock = useRef(timer);
   const mounted = useRef(true), sequence = useRef(0), blocked = useRef(false), foreground = useRef(AppState.currentState === 'active');
   const current = useRef(session);
-  const tutorialRef = useRef(tutorial);
+  const tutorialRef = useRef(tutorial), shown = useRef(false);
   const report = useCallback((promise: Promise<boolean>) => {
     const revision = ++sequence.current;
     void promise.then(ok => { if (mounted.current && sequence.current === revision) setSaved(ok); });
@@ -31,24 +31,31 @@ export function useMemoryProgress() {
     }
     const now = monotonicNow();
     const timing = clock.current!.take(now);
-    clock.current!.update(now, foreground.current && !tutorialRef.current && next.game.status !== 'solved', blocked.current, next.phase);
+    clock.current!.update(now, foreground.current && shown.current && !tutorialRef.current && next.game.status !== 'solved', blocked.current, next.phase);
     current.current = next; setSession(next); report(repository.commit(next, kind, detail, timing));
   }
   const availability = useCallback((unavailable: boolean) => {
     blocked.current = unavailable;
     const value = current.current;
-    clock.current!.update(monotonicNow(), foreground.current && !tutorialRef.current && value.game.status !== 'solved', unavailable, value.phase);
+    clock.current!.update(monotonicNow(), foreground.current && shown.current && !tutorialRef.current && value.game.status !== 'solved', unavailable, value.phase);
   }, []);
+  useEffect(() => {
+    const wasShown = shown.current;
+    shown.current = visible;
+    availability(blocked.current);
+    if (visible) record('show');
+    else if (wasShown) record('pause');
+  }, [visible, availability, record]);
   function finishTutorial() { tutorialRef.current = false; setTutorial(false); report(repository.completeTutorial()); availability(blocked.current); record('tutorial-complete'); }
   useEffect(() => {
     const timer = clock.current;
     mounted.current = true;
-    availability(false); record('show');
+    availability(blocked.current);
     const subscription = AppState.addEventListener('change', state => {
-      foreground.current = state === 'active'; availability(blocked.current); record(foreground.current ? 'show' : 'background'); void repository.player.flush();
+      foreground.current = state === 'active'; availability(blocked.current); if (shown.current) record(foreground.current ? 'show' : 'background'); void repository.player.flush();
     });
-    const interval = setInterval(() => { if (foreground.current) record('clock'); else void repository.player.flush(); }, 10000);
-    return () => { mounted.current = false; subscription.remove(); clearInterval(interval); timer.update(monotonicNow(), false, false, current.current.phase); record('pause'); };
+    const interval = setInterval(() => { if (foreground.current && shown.current) record('clock'); else void repository.player.flush(); }, 10000);
+    return () => { mounted.current = false; subscription.remove(); clearInterval(interval); timer.update(monotonicNow(), false, false, current.current.phase); if (shown.current) record('pause'); };
   }, [availability, record, repository]);
   return { session, commit, record, tutorial, finishTutorial, availability, saved, repository };
 }

@@ -36,15 +36,21 @@ import { memoryDisplay, newlyRevealedMemory } from './memoryPresentation';
 import { MEMORY_REVEAL_MS } from '../art/memoryPresentation';
 
 type Animation = { before: MemorySession; pour: Pour; plan: PourPlan; revealed: readonly number[] };
-export function MemoryScreen({ vessel, symbols, sound, reduceMotion, onBack }: { vessel: VesselDesign; symbols: boolean; sound: boolean; reduceMotion: boolean; onBack: () => void }) {
+export function MemoryScreen({ vessel, symbols, sound, reduceMotion, onBack, visible = true, onReady }: { vessel: VesselDesign; symbols: boolean; sound: boolean; reduceMotion: boolean; onBack: () => void; visible?: boolean; onReady?: () => void }) {
   const { t } = useI18n();
-  const { session, commit, record, tutorial, finishTutorial, availability, saved, repository } = useMemoryProgress();
+  const { session, commit, record, tutorial, finishTutorial, availability, saved, repository } = useMemoryProgress(visible);
   const { game } = session;
   const dimensions = useWindowDimensions(), insets = useSafeAreaInsets();
   const { compact, rail, horizontalInset, verticalInset } = deviceLayout(dimensions.width, dimensions.height, Platform.isTV);
   const safeTop = Math.max(insets.top, verticalInset) + (compact ? 8 : 14);
   const [stage, setStage] = useState({ width: 0, height: 0, y: 0 }), [bodyY, setBodyY] = useState(0);
   const layout = boardLayout(game.board.length);
+  const entryReady = useRef(false);
+  function boardLaidOut() {
+    if (entryReady.current) return;
+    entryReady.current = true;
+    onReady?.();
+  }
   const { scale, minY } = fitBoard(layout, { ...stage, y: stage.y + bodyY }, safeTop);
   const [selected, setSelected] = useState<number | null>(null);
   const [animation, setAnimation] = useState<Animation | null>(null);
@@ -128,10 +134,10 @@ export function MemoryScreen({ vessel, symbols, sound, reduceMotion, onBack }: {
     setAssessment(result); record('answer-check-result', { status: result.status });
   }, [availability, record]);
   useEffect(() => {
-    if (session.judgement === 'wrong' && !animation && !reveal && active && !tutorial && checked.current !== session) {
+    if (visible && session.judgement === 'wrong' && !animation && !reveal && active && !tutorial && checked.current !== session) {
       checked.current = session; void assess(session);
     }
-  }, [session, animation, reveal, active, tutorial, assess, epoch]);
+  }, [visible, session, animation, reveal, active, tutorial, assess, epoch]);
   function pour(source: number, target: number, hinted = false, requestId?: string) {
     if (busy.current || tutorial) return;
     const before = current(), accepted = moveMemory(before, source, target, hinted);
@@ -199,25 +205,25 @@ export function MemoryScreen({ vessel, symbols, sound, reduceMotion, onBack }: {
     commit(continueMemory(current(), assessment.route), 'continue-after-reveal'); setAssessment(null);
   }
   const { units: displayedUnits, board: displayBoard, hidden, reveals } = memoryDisplay(session, animation, reveal?.units);
-  const controlsDisabled = !!animation || searching || tutorial;
+  const controlsDisabled = !visible || !!animation || searching || tutorial;
   const hiddenPour = !!animation && animation.before.revealed[animation.before.units[animation.pour.source].at(-1)!] < 0;
-  useBoardKeyboard({ enabled: !tutorial && !notice, disabled: controlsDisabled || observing || peeking || session.judgement === 'wrong', positions: layout.positions, onEscape: () => selected === null ? back() : setSelected(null) });
+  useBoardKeyboard({ enabled: visible && !tutorial && !notice, disabled: controlsDisabled || observing || peeking || session.judgement === 'wrong', positions: layout.positions, onEscape: () => selected === null ? back() : setSelected(null) });
   return <LinearGradient colors={['#11171E', '#090E16', '#070B12']} locations={[0,.58,1]} style={[styles.screen, Platform.OS === 'web' && { height: Math.max(dimensions.height, rail ? 400 : 520), flexGrow: 0, flexShrink: 0, flexBasis: 'auto' }]}>
     <StatusBar style="light" />
-    <PourSound progress={progress} pouring={!!animation} vessel={vessel.id} receiverLayers={animation?.before.game.board[animation.pour.target].length ?? 0} enabled={sound && active && !reduceMotion} />
+    <PourSound progress={progress} pouring={!!animation} vessel={vessel.id} receiverLayers={animation?.before.game.board[animation.pour.target].length ?? 0} enabled={visible && sound && active && !reduceMotion} />
     <View pointerEvents="none" style={StyleSheet.absoluteFill}><GameBackdrop width={dimensions.width} height={dimensions.height} /></View>
     <View style={[styles.safe, { paddingTop: safeTop, paddingBottom: Math.max(insets.bottom, verticalInset, 14), paddingLeft: Math.max(insets.left, horizontalInset), paddingRight: Math.max(insets.right, horizontalInset) }]}>
       <GameHeader label={`Level ${session.puzzle.number}`} compact={compact} disabled={false} onBack={back} />
       <View style={[styles.body, rail && styles.bodyRail]} onLayout={e => setBodyY(e.nativeEvent.layout.y)}>
         <View testID="memory-stage" style={styles.stage} onLayout={e => { const l = e.nativeEvent.layout; setStage(old => old.width === l.width && old.height === l.height && old.y === l.y ? old : l); }}>
-          {scale > 0 && <View style={{ width: layout.width * scale, height: layout.height * scale, overflow: 'visible' }}>
+          {scale > 0 && <View collapsable={false} onLayout={boardLaidOut} style={{ width: layout.width * scale, height: layout.height * scale, overflow: 'visible' }}>
             <View pointerEvents="none" style={StyleSheet.absoluteFill}><StageArt layout={layout} /></View>
             {layout.positions.map((position, index) => <Bottle key={index} index={index} vessel={vessel} position={position} colors={displayBoard[index]} hiddenLayers={hidden[index]} revealingLayers={reveals[index]} revealProgress={revealProgress} markedLayers={observing ? session.units[index].map(id => session.revealed[id] < 0) : []} selected={selected === index} completed={!hidden[index].some(Boolean) && isBottleComplete(displayBoard[index], 4)} hiddenPour={hiddenPour} width={100 * scale} scale={scale} plan={animation?.plan ?? null} pour={animation?.pour ?? null} progress={progress} symbols={symbols} completionEffect="cork" completionScene={`memory:${game.level.id}:${session.attempt}:${epoch}`} completionAnimations={active && !reduceMotion} />)}
             {layout.positions.map((position, index) => {
               const b = displayBoard[index], label = t('memoryBottle', { n: index + 1, layers: b.length, space: 4 - b.length,
                 colors: b.length ? b.map((c, d) => hidden[index][d] ? t('memoryUnknown') : observing && session.revealed[displayedUnits[index][d]] < 0 ? t('memoryMarked', { color: t(c as MessageKey) }) : t(c as MessageKey)).reverse().join(', ') : t('empty') });
               const width = bottleHitWidth(layout, scale), disabled = controlsDisabled || observing || peeking || won || session.judgement === 'wrong';
-              return <Pressable key={index} hasTVPreferredFocus={Platform.isTV && index === 0} focusIndicatorStyle={{ position: 'absolute', alignSelf: 'center', top: 15 * scale, width: 64 * scale, height: 160 * scale, borderRadius: 12 * scale }} nativeID={bottleControlId(index)} testID={bottleControlId(index)} accessibilityRole="button" accessibilityLabel={label} accessibilityState={{ disabled, selected: selected === index }} disabled={disabled} onPress={() => select(index)} style={{ position: 'absolute', left: (position.x + 50) * scale - width / 2, top: position.y * scale, width, height: 180 * scale, zIndex: 3 }} />;
+              return <Pressable key={index} hasTVPreferredFocus={visible && Platform.isTV && index === 0} focusIndicatorStyle={{ position: 'absolute', alignSelf: 'center', top: 15 * scale, width: 64 * scale, height: 160 * scale, borderRadius: 12 * scale }} nativeID={bottleControlId(index)} testID={bottleControlId(index)} accessibilityRole="button" accessibilityLabel={label} accessibilityState={{ disabled, selected: selected === index }} disabled={disabled} onPress={() => select(index)} style={{ position: 'absolute', left: (position.x + 50) * scale - width / 2, top: position.y * scale, width, height: 180 * scale, zIndex: 3 }} />;
             })}
             {animation && <View pointerEvents="none" style={[StyleSheet.absoluteFill, { zIndex: 11 }]}><PourStream plan={animation.plan} color={animation.pour.color} progress={progress} hidden={hiddenPour} /></View>}
           </View>}
@@ -233,7 +239,7 @@ export function MemoryScreen({ vessel, symbols, sound, reduceMotion, onBack }: {
                   : session.peeks > 0 && <UiText style={styles.note}>{t('memoryPeeks', { n: session.peeks })}</UiText>}
           </View>
           <View style={[styles.dock, compact && styles.compactDock, rail && styles.railDock]}>
-            {observing ? <Pressable hasTVPreferredFocus={Platform.isTV} accessibilityRole="button" accessibilityLabel={t('memoryReady')} disabled={tutorial} onPress={() => commit(readyMemory(current()), 'ready')} style={[styles.ready, rail && styles.readyRail]}>
+            {observing ? <Pressable hasTVPreferredFocus={visible && Platform.isTV} accessibilityRole="button" accessibilityLabel={t('memoryReady')} disabled={!visible || tutorial} onPress={() => commit(readyMemory(current()), 'ready')} style={[styles.ready, rail && styles.readyRail]}>
               <Icon name="eye" size={38} color="#DDF9EC" /><UiText style={styles.readyText}>{t('memoryReady')}</UiText>
             </Pressable> : <>
               <GameButton kind={rail ? 'wide' : 'tool'} style={!rail && styles.tool} compact={compact} icon="undo" label={t('undo')} accessibilityLabel={t('undoHint')} onPress={undo} disabled={!!animation || tutorial || peeking || !game.history.length} />
@@ -245,7 +251,7 @@ export function MemoryScreen({ vessel, symbols, sound, reduceMotion, onBack }: {
         </View>
       </View>
     </View>
-    <MemoryTutorial visible={tutorial} vessel={vessel} onStart={finishTutorial} onBack={back} />
+    <MemoryTutorial visible={visible && tutorial} vessel={vessel} onStart={finishTutorial} onBack={back} />
     <GameNotice notice={notice} onClose={() => setNotice(null)} />
   </LinearGradient>;
 }
