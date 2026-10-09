@@ -33,7 +33,10 @@ export class MemoryRepository {
     const db = player.db;
     // This rule set has its own SQLite tables; no old experimental session is imported or reset.
     // The mainline and existing preferences remain in the shared player database.
-    const ok = await player.enqueueWrite(async () => { await db.execAsync(SCHEMA); });
+    const ok = await player.enqueueWrite(async () => {
+      await db.execAsync(SCHEMA);
+      await db.runAsync("INSERT OR IGNORE INTO metadata VALUES('memory-black-summary-v2-since',?)", String(Date.now()));
+    });
     if (!ok) throw new Error('Unable to initialize memory storage');
     const row = db.getFirstSync<Saved>('SELECT * FROM memory_black_session WHERE id=1');
     let state: MemorySession | null = null;
@@ -76,9 +79,16 @@ export class MemoryRepository {
     const before = this.state, at = Date.now(); this.state = next;
     const db = this.player.db, attemptId = `${this.player.installation}:${MEMORY_RULES}:${next.attempt}`;
     return this.player.enqueueWrite(async revision => {
+      const add = async (metric: string, value = 1, levelId = next.puzzle.level.id) => {
+        if (!value) return;
+        await db.runAsync('INSERT INTO level_stats VALUES(?,?,?,?) ON CONFLICT(mode,level_id,metric) DO UPDATE SET value=value+excluded.value', 'memory', levelId, metric, value);
+        const date = new Date(at), day = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        await db.runAsync('INSERT INTO daily_stats VALUES(?,?,?,?) ON CONFLICT(day,timezone,metric) DO UPDATE SET value=value+excluded.value', day, `UTC${-date.getTimezoneOffset()}`, `memory_${metric}`, value);
+      };
       if (before !== next) await saveMemory(db, next, before);
       if (before && before.attempt !== next.attempt) await db.runAsync("UPDATE memory_black_attempts SET ended_at=COALESCE(ended_at,?),result=CASE WHEN result='playing' THEN 'reset' ELSE result END WHERE id=?", at, `${this.player.installation}:${MEMORY_RULES}:${before.attempt}`);
-      await db.runAsync("INSERT OR IGNORE INTO memory_black_attempts(id,level_id,started_at,last_at,result) VALUES(?,?,?,?,'playing')", attemptId, next.puzzle.level.id, at, at);
+      const started = await db.runAsync("INSERT OR IGNORE INTO memory_black_attempts(id,level_id,started_at,last_at,result) VALUES(?,?,?,?,'playing')", attemptId, next.puzzle.level.id, at, at);
+      if (started.changes) await add('attempts');
       const deltas = { pours: next.pours - (before?.attempt === next.attempt ? before.pours : 0), peeks: next.peeks - (before?.attempt === next.attempt ? before.peeks : 0),
         hints: next.hints - (before?.attempt === next.attempt ? before.hints : 0), undos: next.undos - (before?.attempt === next.attempt ? before.undos : 0),
         observation_ms: timing.observationMs ?? 0, peek_ms: timing.peekMs ?? 0, solve_ms: timing.solveMs ?? 0, blocked_ms: timing.blockedMs ?? 0 };
@@ -87,17 +97,31 @@ export class MemoryRepository {
         if (value) {
           // Metric names are constants from deltas above, never external input.
           await db.runAsync(`UPDATE memory_black_attempts SET ${metric}=${metric}+? WHERE id=?`, value, attemptId);
-          await db.runAsync('INSERT INTO level_stats VALUES(?,?,?,?) ON CONFLICT(mode,level_id,metric) DO UPDATE SET value=value+excluded.value', 'memory', next.puzzle.level.id, metric, value);
+          await add(metric, value);
         }
       }
-      if (kind === 'reset' && before && before.attempt !== next.attempt) await db.runAsync("INSERT INTO level_stats VALUES('memory',?,'resets',1) ON CONFLICT(mode,level_id,metric) DO UPDATE SET value=value+1", before.puzzle.level.id);
+      if (kind === 'reset' && before && before.attempt !== next.attempt) await add('resets', 1, before.puzzle.level.id);
+      if (before?.attempt === next.attempt && before.judgement === 'hidden' && (next.judgement === 'correct' || next.judgement === 'wrong')) {
+        await add('first_answers');
+        await add(next.judgement === 'correct' ? 'first_answer_correct' : 'first_answer_wrong');
+        const attempt = (await db.getFirstAsync<{ partial: number }>('SELECT partial FROM memory_black_attempts WHERE id=?', attemptId))!;
+        if (!attempt.partial && next.peeks === 0 && next.hints === 0) {
+          await add('unassisted_answers');
+          if (next.judgement === 'correct') await add('unassisted_correct');
+        }
+        if (attempt.partial) await add('partial_answers');
+      }
+      if (kind === 'hint-request') await add('hint_requests');
+      if (kind === 'hint-result' && ['solved', 'unsolvable', 'unknown', 'cancelled'].includes(String(detail.result))) await add(`hint_${detail.result}`);
       await db.runAsync('UPDATE memory_black_attempts SET last_at=? WHERE id=?', at, attemptId);
       if (next.game.status === 'solved') {
-        await db.runAsync("UPDATE memory_black_attempts SET result=CASE WHEN result='playing' THEN ? ELSE result END,ended_at=COALESCE(ended_at,?) WHERE id=?", next.judgement === 'correct' ? 'remembered' : 'recovered', at, attemptId);
+        const result = next.judgement === 'correct' ? 'remembered' : 'recovered';
+        const completed = await db.runAsync("UPDATE memory_black_attempts SET result=?,ended_at=COALESCE(ended_at,?) WHERE id=? AND result='playing'", result, at, attemptId);
+        if (completed.changes) await add(result);
         await db.runAsync("INSERT OR IGNORE INTO completions VALUES('memory',?,?)", next.puzzle.level.id, at);
       }
       await db.runAsync('INSERT INTO events VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', revision, `${this.player.installation}:${revision}`, revision, at,
-        null, null, attemptId, 'memory', next.puzzle.level.id, kind, this.player.statistics.appVersion, MEMORY_CATALOG, MEMORY_RULES, 'memory-free-v1', 'memory-black-tracking-v1',
+        null, null, attemptId, 'memory', next.puzzle.level.id, kind, this.player.statistics.appVersion, MEMORY_CATALOG, MEMORY_RULES, 'memory-free-v1', 'memory-black-tracking-v2',
         JSON.stringify({ ...detail, ...timing, phase: next.phase, judgement: next.judgement, routeStep: next.game.historyOffset + next.game.history.length,
           revealed: before?.attempt === next.attempt ? next.revealed.flatMap((step, id) => before.revealed[id] === -1 && step >= 0 ? [{ unit: id, step }] : []) : [] }));
       if (revision % 100 === 0) {
