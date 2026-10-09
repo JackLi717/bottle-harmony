@@ -1,6 +1,6 @@
 # 第一版实现基线
 
-更新日期：2026 年 10 月 9 日。第一版已完成；最新项目记录更正为正在申请上线、尚未进入玩家测试、没有玩家。应用 **0.1.3**，Android 手机／平板 **versionCode 7**，题库 **mainline-1000-v5**。Google Play 标题 Water Sort - No Ads，应用品牌 Bottle Harmony，包名 `com.bottleharmony.app`，开发者 Platon Games。
+更新日期：2026 年 10 月 9 日。第一版已完成；最新项目记录更正为正在申请上线、尚未进入玩家测试、没有玩家。应用 **0.1.4**，Android 手机／平板 **versionCode 8**，题库 **mainline-1000-v5**。Google Play 标题 Water Sort - No Ads，应用品牌 Bottle Harmony，包名 `com.bottleharmony.app`，开发者 Platon Games。
 
 10 月 9 日已将 `f90e961` 正式配置构建为 0.1.3（7）并上传 Alpha，发送审核后 Console 显示 Changes in review，快速检查仍在运行；内部工具关闭。上一版 0.1.2（6）在本轮 Console 核对时已显示 Available to selected testers；实际玩家加入、测试起算日与生产发行仍未确认。测试群沿用既有绑定，加入入口见[测试安排](play-testing-plan.md)，产物、审核及平台边界见[发布记录](release-readiness.md)。
 
@@ -26,6 +26,8 @@
 
 逻辑动作、完成与奖励先提交，再播放表现；动画和音频结束不授予进度。切后台、调整窗口、撤销或重来按既有流程取消表现，显示实际逻辑局面。倒水美术允许横向越界裁切，不为移动中的瓶子缩小棋盘。
 
+
+经典与记忆首次教学当前源码改为独立的手指完整通关示范，去掉大段说明，支持直接开始与重播，沿用原有教学偏好且不改变玩家进度；实现与设备验收分别见[游玩流程](play-flow.md)、[记忆专题](memory-mode-plan.md)与[设备记录](device-support.md)。该增量准备作为 0.1.4（8）Alpha 更新；提交状态由发布记录维护。
 
 ## 内容与后续边界
 

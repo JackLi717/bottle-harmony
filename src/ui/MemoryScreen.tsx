@@ -254,7 +254,7 @@ export function MemoryScreen({ vessel, symbols, sound, reduceMotion, onBack, vis
         </View>
       </View>
     </View>
-    <MemoryTutorial visible={visible && tutorial} vessel={vessel} onStart={finishTutorial} onBack={back} />
+    <MemoryTutorial visible={visible && tutorial} puzzle={repository.content.memory[0]} vessel={vessel} sound={sound} symbols={symbols} reduceMotion={reduceMotion} onStart={finishTutorial} onBack={back} />
     <GameNotice notice={notice} onClose={() => setNotice(null)} />
   </LinearGradient>;
 }

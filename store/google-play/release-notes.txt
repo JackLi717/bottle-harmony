@@ -1,6 +1,10 @@
 <en-US>
-Improves Color Memory hints after choosing a different empty bottle or moving away from the reference solution. Hints can use black portions as bridges, highlight the source and destination, and briefly explain each move without revealing hidden colors. No ads.
+Learn by watching: a hand now taps the bottles and pours through the complete first puzzle in Classic Sort and Color Memory.
+Memory demonstrations include observing colors, hiding them and revealing the completed answer.
+Skip or replay the demonstration anytime. Your progress and hint tickets are unchanged.
 </en-US>
 <zh-CN>
-修复颜色记忆在换用另一只空瓶或偏离参考解后提示不响应的问题。提示可利用黑块搭桥，高亮源瓶和目标瓶，并简短解释这一步；不会提前揭露隐藏颜色。始终无广告。
+首次教学改为手指点选瓶子、倒水并完整完成第一关，经典排序和颜色记忆均可观看。
+记忆教学包含观察颜色、变黑、整理与最后揭晓。
+支持直接开始和再看一次，不影响玩家进度或提示券。
 </zh-CN>
