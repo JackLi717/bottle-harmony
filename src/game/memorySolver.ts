@@ -1,20 +1,12 @@
 import { createSolver, type SolverTask, type SolverOptions, type SolveResult, type SearchStats } from './solver.ts';
+import { memoryReferenceRoute } from './memoryRoutes.ts';
 import { initialBoard } from './model.ts';
 import { isSolved, type Pour } from './rules.ts';
-import { initialUnits, memoryPour, memoryReadyToReveal, transferUnits, unitColors, type MemorySession, type UnitBoard } from './memory.ts';
+import { memoryPour, memoryReadyToReveal, transferUnits, unitColors, type MemorySession, type UnitBoard } from './memory.ts';
 
-/** A stored route helps only if its exact liquid identities match the current position. */
+/** Matches equivalent bottle permutations and replays the complete remaining route. */
 export function memoryReferenceHint(current: MemorySession): Pour | null {
-  if (current.judgement !== 'hidden') return null;
-  const colors = unitColors(current.puzzle), knowledge = colors.map((_, id) => current.puzzle.masks.includes(id) ? -1 : 0);
-  let units = initialUnits(current.puzzle);
-  for (const p of current.puzzle.solution) {
-    const actual = memoryPour(units, colors, knowledge, p.source, p.target);
-    if (!actual || actual.amount !== p.amount || actual.color !== p.color) return null;
-    if (JSON.stringify(units) === JSON.stringify(current.units)) return p;
-    units = transferUnits(units, p);
-  }
-  return null;
+  return memoryReferenceRoute(current)?.[0] ?? null;
 }
 
 /** Requested assistance searches black-unit rules; ordinary impossibility cannot condemn a hidden board. */

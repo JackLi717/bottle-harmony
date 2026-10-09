@@ -1,6 +1,6 @@
 <en-US>
-Adds 100 Color Memory puzzles alongside 1,000 classic levels and 50 bonus puzzles. Hidden portions reveal automatically when the board is arranged. Improves reveal animations and screen transitions, simplifies the home screen, and adds a 21-language selector. Progress and preferences are saved locally. No ads.
+Improves Color Memory hints after choosing a different empty bottle or moving away from the reference solution. Hints can use black portions as bridges, highlight the source and destination, and briefly explain each move without revealing hidden colors. No ads.
 </en-US>
 <zh-CN>
-新增100道颜色记忆谜题，保留1000道经典主线和50道副关卡。黑块整理到外观完成时自动揭晓；修复完成显色分块、闪回和卡顿，优化页面切换，精简首页，加入21种语言选择。本地保存进度和偏好，始终无广告。
+修复颜色记忆在换用另一只空瓶或偏离参考解后提示不响应的问题。提示可利用黑块搭桥，高亮源瓶和目标瓶，并简短解释这一步；不会提前揭露隐藏颜色。始终无广告。
 </zh-CN>

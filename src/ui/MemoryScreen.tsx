@@ -14,7 +14,7 @@ import { createPourPlan, POUR_DURATION_MS, type PourPlan } from '../art/pourGeom
 import { isBottleComplete } from '../art/bottleCompletion';
 import type { VesselDesign } from '../art/vesselDesigns';
 import { moveMemory, peekMemory, readyMemory, resetMemory, undoMemory, continueMemory, getMemoryPour, type MemorySession } from '../game/memory';
-import { createMemorySolver, memoryReferenceHint } from '../game/memorySolver';
+import { createMemoryHintPlanner, memoryHintReason, type MemoryHintTask, type MemoryHintResult } from '../game/memoryHints';
 import { type Board, type Pour } from '../game/rules';
 import { createSolver, type SolveResult, type SolverTask } from '../game/solver';
 import type { MessageKey } from '../i18n/messages';
@@ -56,6 +56,8 @@ export function MemoryScreen({ vessel, symbols, sound, reduceMotion, onBack, vis
   const [animation, setAnimation] = useState<Animation | null>(null);
   const [reveal, setReveal] = useState<{ key: number; units: readonly number[] } | null>(null);
   const [searching, setSearching] = useState(false);
+  const [hintFeedback, setHintFeedback] = useState<{ source: number; target: number; text: string } | null>(null);
+  const [hintPlanner] = useState(createMemoryHintPlanner);
   const [assessment, setAssessment] = useState<SolveResult | null>(null);
   const checked = useRef<MemorySession | null>(null);
   const [active, setActive] = useState(AppState.currentState === 'active');
@@ -63,13 +65,18 @@ export function MemoryScreen({ vessel, symbols, sound, reduceMotion, onBack, vis
   const [epoch, setEpoch] = useState(0);
   const [notice, setNotice] = useState<{ title: string; message: string } | null>(null);
   const [dismissedStalled, setDismissedStalled] = useState<Board | null>(null);
-  const progress = useSharedValue(1), busy = useRef(false), search = useRef<SolverTask | null>(null);
+  const progress = useSharedValue(1), busy = useRef(false), search = useRef<SolverTask | MemoryHintTask | null>(null);
   const pouring = useRef<Animation | null>(null);
   const revealProgress = useSharedValue(1), revealSequence = useRef(0);
   const request = useRef<{ id: string; started: number } | null>(null);
   function current() { return repository.state ?? session; }
   const won = game.status === 'solved', observing = session.phase === 'observe', peeking = session.phase === 'peek';
   useEffect(() => { availability(!!animation || searching || !!notice || tutorial || session.judgement === 'wrong'); }, [animation, searching, notice, tutorial, session.judgement, availability]);
+  useEffect(() => {
+    if (!hintFeedback || animation || reveal) return;
+    const timer = setTimeout(() => setHintFeedback(null), 4000);
+    return () => clearTimeout(timer);
+  }, [hintFeedback, animation, reveal]);
   const stopReveal = useCallback(() => {
     cancelAnimation(revealProgress); revealProgress.set(1); setReveal(null);
   }, [revealProgress]);
@@ -99,7 +106,7 @@ export function MemoryScreen({ vessel, symbols, sound, reduceMotion, onBack, vis
     record('hint-result', { requestId: request.current.id, result, durationMs: monotonicNow() - request.current.started }); request.current = null;
   }, [record]);
   const stopPresentation = useCallback(() => {
-    search.current?.cancel(); search.current = null; reportHint('cancelled'); setSearching(false);
+    search.current?.cancel(); search.current = null; reportHint('cancelled'); setSearching(false); setHintFeedback(null);
     pouring.current = null; cancelAnimation(progress); progress.set(1); busy.current = false; setAnimation(null); setSelected(null);
     stopReveal();
     setPendingWin(false); setCelebrating(false); setEpoch(n => n + 1);
@@ -143,6 +150,10 @@ export function MemoryScreen({ vessel, symbols, sound, reduceMotion, onBack, vis
     const before = current(), accepted = moveMemory(before, source, target, hinted);
     if (!accepted) return;
     stopReveal();
+    if (hinted) {
+      const text = t('memoryHintMove', { from: source + 1, to: target + 1, reason: t(memoryHintReason(before, accepted.event.pour)) });
+      setHintFeedback({ source, target, text }); AccessibilityInfo.announceForAccessibility(text);
+    } else setHintFeedback(null);
     busy.current = true; availability(true);
     commit(accepted.session, 'pour', { source, target, amount: accepted.event.pour.amount, hinted, requestId, automaticReveal: before.judgement === 'hidden' && accepted.session.judgement !== 'hidden' });
     if (accepted.session.game.status === 'solved') setPendingWin(true);
@@ -155,7 +166,7 @@ export function MemoryScreen({ vessel, symbols, sound, reduceMotion, onBack, vis
   }
   function select(index: number) {
     if (busy.current || tutorial || session.phase !== 'play' || session.judgement === 'wrong' || won) return;
-    stopReveal();
+    stopReveal(); setHintFeedback(null);
     if (selected === index) { setSelected(null); return; }
     if (selected === null) {
       if (game.board[index].length) { setSelected(index); AccessibilityInfo.announceForAccessibility(t('pourTarget')); }
@@ -167,17 +178,16 @@ export function MemoryScreen({ vessel, symbols, sound, reduceMotion, onBack, vis
   }
   function undo() { if (pouring.current) return; stopPresentation(); commit(undoMemory(current()), 'undo'); }
   function reset() { if (pouring.current) return; stopPresentation(); commit(resetMemory(current()), 'reset'); }
-  function view() { if (busy.current) return; stopReveal(); setSelected(null); const next = peekMemory(current()); commit(next, next.phase === 'peek' ? 'peek-open' : 'peek-close'); }
+  function view() { if (busy.current) return; stopReveal(); setSelected(null); setHintFeedback(null); const next = peekMemory(current()); commit(next, next.phase === 'peek' ? 'peek-open' : 'peek-close'); }
   async function hint() {
     if (busy.current || session.phase !== 'play' || session.judgement === 'wrong' || won || tutorial) return;
     stopReveal();
     const id = `${repository.player.installation}:memory-hint:${session.attempt}:${session.pours}:${monotonicNow()}`;
     request.current = { id, started: monotonicNow() }; record('hint-request', { requestId: id });
-    const reference = memoryReferenceHint(current());
-    if (reference) { reportHint('solved'); pour(reference.source, reference.target, true, id); return; }
-    const task = createMemorySolver(current(), { capacity: 4, maxStates: 100000, maxMilliseconds: 700 });
+    setHintFeedback(null);
+    const task = hintPlanner.create(current(), { capacity: 4, maxStates: 100000, maxMilliseconds: 700 });
     search.current = task; busy.current = true; availability(true); setSearching(true);
-    let result: SolveResult | null = null;
+    let result: MemoryHintResult | null = null;
     do {
       await new Promise<void>(resolve => setTimeout(resolve, 0));
       if (search.current !== task) return;
@@ -186,7 +196,7 @@ export function MemoryScreen({ vessel, symbols, sound, reduceMotion, onBack, vis
     search.current = null; busy.current = false; setSearching(false);
     reportHint(result.status === 'solved' ? 'solved' : result.status === 'unsolvable' ? 'unsolvable' : 'unknown');
     if (result.status === 'solved' && result.route.length) pour(result.route[0].source, result.route[0].target, true, id);
-    else { availability(false); if (result.status !== 'solved') setNotice({ title: t('hint'), message: t(result.status === 'unsolvable' ? 'unsolvableTitle' : 'searchLimit') }); }
+    else { availability(false); if (result.status !== 'solved') setNotice({ title: t('hint'), message: t(result.status === 'unsolvable' ? 'unsolvableTitle' : 'memoryHintUnknown') }); }
   }
   function next() {
     if (busy.current) return;
@@ -212,7 +222,7 @@ export function MemoryScreen({ vessel, symbols, sound, reduceMotion, onBack, vis
         <View testID="memory-stage" style={styles.stage} onLayout={e => { const l = e.nativeEvent.layout; setStage(old => old.width === l.width && old.height === l.height && old.y === l.y ? old : l); }}>
           {scale > 0 && <View collapsable={false} onLayout={boardLaidOut} style={{ width: layout.width * scale, height: layout.height * scale, overflow: 'visible' }}>
             <View pointerEvents="none" style={StyleSheet.absoluteFill}><StageArt layout={layout} /></View>
-            {layout.positions.map((position, index) => <Bottle key={index} index={index} vessel={vessel} position={position} colors={displayBoard[index]} hiddenLayers={hidden[index]} revealingLayers={reveals[index]} revealProgress={revealProgress} markedLayers={observing ? session.units[index].map(id => session.revealed[id] < 0) : []} selected={selected === index} completed={!hidden[index].some(Boolean) && !reveals[index].some(Boolean) && isBottleComplete(displayBoard[index], 4)} prepareCompletion={(!!animation?.revealed.length || !!reveal) && isBottleComplete(game.board[index], 4)} hiddenPour={hiddenPour} width={100 * scale} scale={scale} plan={animation?.plan ?? null} pour={animation?.pour ?? null} progress={progress} symbols={symbols} completionEffect="cork" completionScene={`memory:${game.level.id}:${session.attempt}:${epoch}`} completionAnimations={active && !reduceMotion} />)}
+            {layout.positions.map((position, index) => <Bottle key={index} index={index} vessel={vessel} position={position} colors={displayBoard[index]} hiddenLayers={hidden[index]} revealingLayers={reveals[index]} revealProgress={revealProgress} markedLayers={observing ? session.units[index].map(id => session.revealed[id] < 0) : []} selected={selected === index} hinted={hintFeedback?.source === index || hintFeedback?.target === index} completed={!hidden[index].some(Boolean) && !reveals[index].some(Boolean) && isBottleComplete(displayBoard[index], 4)} prepareCompletion={(!!animation?.revealed.length || !!reveal) && isBottleComplete(game.board[index], 4)} hiddenPour={hiddenPour} width={100 * scale} scale={scale} plan={animation?.plan ?? null} pour={animation?.pour ?? null} progress={progress} symbols={symbols} completionEffect="cork" completionScene={`memory:${game.level.id}:${session.attempt}:${epoch}`} completionAnimations={active && !reduceMotion} />)}
             {layout.positions.map((position, index) => {
               const b = displayBoard[index], label = t('memoryBottle', { n: index + 1, layers: b.length, space: 4 - b.length,
                 colors: b.length ? b.map((c, d) => hidden[index][d] ? t('memoryUnknown') : observing && session.revealed[displayedUnits[index][d]] < 0 ? t('memoryMarked', { color: t(c as MessageKey) }) : t(c as MessageKey)).reverse().join(', ') : t('empty') });
@@ -228,6 +238,7 @@ export function MemoryScreen({ vessel, symbols, sound, reduceMotion, onBack, vis
             {won && !animation && !reveal && !pendingWin && !celebrating ? <GameButton preferredFocus kind="wide" tone="mint" icon="play" label={t(session.puzzle.number === repository.content.memory.length ? 'memoryReplay' : 'memoryNext')} onPress={next} />
               : !saved ? <UiText accessibilityLiveRegion="polite" style={styles.note}>{t('saveFailed')}</UiText>
               : session.judgement === 'wrong' && !animation && !reveal ? <View style={styles.stalled}><UiText accessibilityLiveRegion="polite" style={[styles.note, { flex: 1 }]}>{t(searching ? 'memoryChecking' : assessment?.status === 'unsolvable' ? 'unsolvableTitle' : assessment?.status === 'solved' ? 'memoryWrong' : 'memoryCheckUnknown')}</UiText>{assessment?.status === 'solved' && <GameButton compact kind="wide" tone="mint" icon="play" style={{ flex: 1, width: 'auto' }} label={t('memoryContinue')} onPress={continueSorting} />}</View>
+              : hintFeedback && !peeking ? <UiText testID="memory-hint-feedback" accessibilityLiveRegion="polite" numberOfLines={3} adjustsFontSizeToFit minimumFontScale={.8} style={styles.note}>{hintFeedback.text}</UiText>
               : game.status === 'stalled' && !observing && !peeking && !animation && !searching && dismissedStalled !== game.board ? <View style={styles.stalled}><UiText style={[styles.note, { flex: 1 }]}>{t('stalled')}</UiText><GameButton kind="icon" icon="close" label={t('close')} onPress={() => { setDismissedStalled(game.board); record('dismiss-stalled'); }} /></View> : null}
           </View>
           <View style={[styles.dock, compact && styles.compactDock, rail && styles.railDock]}>

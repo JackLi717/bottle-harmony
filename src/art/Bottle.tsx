@@ -113,6 +113,7 @@ export type BottleProps = {
   colors: readonly ColorId[];
   hiddenPour?: boolean;
   selected: boolean;
+  hinted?: boolean;
   completed: boolean;
   prepareCompletion?: boolean;
   width: number;
@@ -135,7 +136,7 @@ export type BottleProps = {
 };
 
 /** Glass art remains static; liquid paths and transforms update on the UI thread. */
-export const Bottle = memo(function Bottle({ index, colors, selected, completed, prepareCompletion = false, width, scale, plan, pour, progress, position, symbols = false, completionEffect = 'gold', completionScene = 'preview', completionReplay = 0, completionAnimations = true, vessel = DEFAULT_VESSEL, frozenBottom = false, hiddenLayers = [], markedLayers = [], revealingLayers = [], revealProgress, hiddenPour = false, palette = LIQUIDS, symbolMap = LIQUID_SYMBOLS }: BottleProps) {
+export const Bottle = memo(function Bottle({ index, colors, selected, hinted = false, completed, prepareCompletion = false, width, scale, plan, pour, progress, position, symbols = false, completionEffect = 'gold', completionScene = 'preview', completionReplay = 0, completionAnimations = true, vessel = DEFAULT_VESSEL, frozenBottom = false, hiddenLayers = [], markedLayers = [], revealingLayers = [], revealProgress, hiddenPour = false, palette = LIQUIDS, symbolMap = LIQUID_SYMBOLS }: BottleProps) {
   const isSource = pour?.source === index;
   const isTarget = pour?.target === index;
   const id = `bottle-${index}-${vessel.id}`;
@@ -217,9 +218,9 @@ export const Bottle = memo(function Bottle({ index, colors, selected, completed,
     const finished = complete.value;
     const focus = (isSource || isTarget) && completionAnimations ? pourFocus(progress.value, true) : 0;
     return {
-      stroke: finished ? '#E8CB8C' : selected || focus > 0 ? '#B8F7E2' : vessel.edge,
-      strokeOpacity: selected || finished ? 0.95 : 0.65 + focus * .25,
-      strokeWidth: selected ? 2.1 : finished ? 1.8 : 1.3 + focus * .55,
+      stroke: hinted ? '#FFE3A3' : finished ? '#E8CB8C' : selected || focus > 0 ? '#B8F7E2' : vessel.edge,
+      strokeOpacity: hinted || selected || finished ? 0.95 : 0.65 + focus * .25,
+      strokeWidth: hinted ? 2.5 : selected ? 2.1 : finished ? 1.8 : 1.3 + focus * .55,
     };
   });
   const completion = useAnimatedProps(() => ({ opacity: complete.value ? 1 : 0 }));

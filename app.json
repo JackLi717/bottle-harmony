@@ -2,7 +2,7 @@
   "expo": {
     "name": "Bottle Harmony",
     "slug": "bottle-harmony",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "orientation": "portrait",
     "backgroundColor": "#0B1B2F",
     "icon": "./assets/icon.png",
@@ -15,7 +15,7 @@
       "bundleIdentifier": "com.bottleharmony.app"
     },
     "android": {
-      "versionCode": 6,
+      "versionCode": 7,
       "allowBackup": false,
       "blockedPermissions": [
         "android.permission.READ_EXTERNAL_STORAGE",
