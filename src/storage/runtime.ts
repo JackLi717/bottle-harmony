@@ -9,6 +9,7 @@ import { INTERNAL_TOOLS } from '../ui/buildConfig';
 import app from '../../app.json';
 import { MemoryRepository } from './memoryRepository';
 import { MixingRepository } from './mixingRepository';
+import { initializeAnalytics } from '../analytics/runtime';
 
 let player: PlayerRepository | null = null;
 let memory: MemoryRepository | null = null;
@@ -35,6 +36,7 @@ export function initializeStorage(): Promise<void> {
       const db = await SQLite.openDatabaseAsync('player.sqlite');
       try { player = await PlayerRepository.open(db, content.mainline, content.sides, app.expo.version); memory = await MemoryRepository.open(player, content); if (INTERNAL_TOOLS) mixing = await MixingRepository.open(player); }
       catch (error) { await db.closeAsync(); throw error; }
+      void initializeAnalytics(player).catch(() => {});
     } catch (error) { await contentDb.closeAsync(); throw error; }
   })().catch(error => { initialization = null; throw error; });
   return initialization;

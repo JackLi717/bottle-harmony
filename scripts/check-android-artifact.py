@@ -9,11 +9,13 @@ import struct
 import subprocess
 import sys
 import zipfile
+import xml.etree.ElementTree as ET
 
 parser = argparse.ArgumentParser()
 parser.add_argument('artifact', type=Path)
 parser.add_argument('--report', type=Path)
 parser.add_argument('--mapping', type=Path, help='Require this exact R8 mapping to be embedded in the AAB.')
+parser.add_argument('--analytics', action='store_true', help='Expect the Production Firebase store build with network permissions; omit for existing offline artifacts.')
 parser.add_argument('--bundletool', type=Path, default=Path('builds/tooling/bundletool.jar'))
 args = parser.parse_args()
 sdk = Path(os.environ.get('ANDROID_HOME', str(Path.home() / 'Library/Android/sdk')))
@@ -23,6 +25,7 @@ errors = []
 native = []
 warnings = []
 mapping = None
+analytics = None
 with zipfile.ZipFile(args.artifact) as archive:
     mapping_name = 'BUNDLE-METADATA/com.android.tools.build.obfuscation/proguard.map'
     if mapping_name in archive.namelist():
@@ -113,12 +116,41 @@ else:
         errors.append('Unexpected versionCode.')
     if 'android:debuggable="true"' in manifest:
         errors.append('AAB is debuggable.')
+    if args.analytics:
+        # Check the packaged resource, not just the build machine's selected config.
+        config = json.loads(Path('config/firebase/production/google-services.json').read_text())
+        if config['project_info']['project_id'] != 'bottle-harmony-production':
+            errors.append('The Production configuration file points to a different Firebase project.')
+        expected_app = next(client['client_info']['mobilesdk_app_id'] for client in config['client']
+                            if client['client_info']['android_client_info']['package_name'] == info['android']['package'])
+        packaged_app = command([java, '-jar', args.bundletool, 'dump', 'resources', f'--bundle={args.artifact}', '--resource=string/google_app_id', '--values'])
+        packaged_project = command([java, '-jar', args.bundletool, 'dump', 'resources', f'--bundle={args.artifact}', '--resource=string/project_id', '--values'])
+        if expected_app not in packaged_app or config['project_info']['project_id'] not in packaged_project:
+            errors.append('Packaged Firebase identity is not the Production Android app.')
+        namespace = '{http://schemas.android.com/apk/res/android}'
+        metadata = {element.get(namespace + 'name'): element.get(namespace + 'value')
+                    for element in ET.fromstring(manifest).findall('./application/meta-data')}
+        disabled = ['firebase_analytics_collection_enabled', 'google_analytics_adid_collection_enabled',
+                    'google_analytics_ssaid_collection_enabled', 'google_analytics_automatic_screen_reporting_enabled',
+                    'google_analytics_default_allow_analytics_storage', 'google_analytics_default_allow_ad_storage',
+                    'google_analytics_default_allow_ad_user_data', 'google_analytics_default_allow_ad_personalization_signals']
+        for key in disabled:
+            if metadata.get(key) != 'false':
+                errors.append('Expected disabled static Analytics flag: ' + key)
+        analytics = {'environment': 'production', 'project': config['project_info']['project_id'],
+                     'googleAppId': expected_app, 'packagedAppResource': packaged_app.strip(),
+                     'packagedProjectResource': packaged_project.strip(),
+                     'staticFlags': {key: metadata.get(key) for key in disabled}}
 if re.search(r'Android Debug|androiddebugkey', certificate, re.I):
     errors.append('The artifact uses an Android debug signing key.')
-for permission in ['INTERNET', 'ACCESS_NETWORK_STATE', 'READ_EXTERNAL_STORAGE', 'WRITE_EXTERNAL_STORAGE', 'SYSTEM_ALERT_WINDOW', 'RECORD_AUDIO', 'AD_ID', 'ACCESS_FINE_LOCATION', 'CAMERA', 'READ_CONTACTS']:
+for permission in ['INTERNET', 'ACCESS_NETWORK_STATE']:
+    present = bool(re.search(r'android\.permission\.' + permission + r'[\'\"]', permissions))
+    if present != args.analytics:
+        errors.append(('Missing analytics permission: ' if args.analytics else 'Unexpected offline permission: ') + permission)
+for permission in ['READ_EXTERNAL_STORAGE', 'WRITE_EXTERNAL_STORAGE', 'SYSTEM_ALERT_WINDOW', 'RECORD_AUDIO', 'AD_ID', 'ACCESS_ADSERVICES_AD_ID', 'ACCESS_ADSERVICES_ATTRIBUTION', 'ACCESS_ADSERVICES_TOPICS', 'ACCESS_FINE_LOCATION', 'CAMERA', 'READ_CONTACTS']:
     if re.search(r'(?:android|gms)\.permission\.' + permission + r'[\'\"]', permissions):
         errors.append('Unexpected public-game permission: ' + permission)
-report = {'artifact': str(args.artifact.resolve()), 'sha256': hashlib.sha256(args.artifact.read_bytes()).hexdigest(), 'mapping': mapping, 'nativeLibraries': native, 'certificate': certificate.strip(), 'errors': errors, 'warnings': warnings, 'staticChecksPassed': not errors, 'strictRelroChecklistPassed': all(row['relroAligned'] for row in native), 'runtime16KBTestRequired': True}
+report = {'artifact': str(args.artifact.resolve()), 'sha256': hashlib.sha256(args.artifact.read_bytes()).hexdigest(), 'mapping': mapping, 'analytics': analytics, 'nativeLibraries': native, 'certificate': certificate.strip(), 'errors': errors, 'warnings': warnings, 'staticChecksPassed': not errors, 'strictRelroChecklistPassed': all(row['relroAligned'] for row in native), 'runtime16KBTestRequired': True}
 if args.report:
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text(json.dumps(report, indent=2) + '\n')

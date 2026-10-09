@@ -1,5 +1,5 @@
 {
-  "status": "The owner clarified on 2026-10-08 that version one is complete and its release application is in progress, but player testing has not started and there are no players. This supersedes earlier wording that testing was live. Repository/mobile upload baseline remains 0.1.1 (5); last retained Console evidence is Alpha Changes in review. Console was not rechecked; approval, production access and testing start dates are not asserted. A fresh SQLite-only design for runtime content, saves, statistics and preferences is confirmed but not implemented; existing package declarations still describe the submitted build.",
+  "status": "2026-10-10 03:39 Australia/Melbourne: Alpha 0.1.5 (9), target audience 13+ and Data safety were sent for review. Console shows Changes in review and 3 changes sent for review. Public privacy policy is deployed. New release approval or availability is not yet confirmed. Player testing has not started.",
   "developer": "Platon Games",
   "appName": "Bottle Harmony",
   "packageName": "com.bottleharmony.app",
@@ -13,15 +13,56 @@
   "containsInAppPurchases": false,
   "requiresLogin": false,
   "accessInstructions": "All game functionality is available without sign-in. Mainline puzzles unlock in sequence; completed puzzles can be replayed. Bonus puzzles appear after each group of twenty mainline puzzles. No access credentials, memberships or regional authentication are needed.",
-  "audienceIntent": "Owner confirmed ages 6 and above, including children and adults; do not select age 5 and under.",
+  "audienceIntent": "Owner confirmed ages 13 and above on 2026-10-10, superseding the earlier 6+ target. Target 13–15, 16–17 and 18+; no in-app age verification is implemented.",
   "dataSafety": {
-    "collectedByAndroidGame": false,
-    "sharedByAndroidGame": false,
+    "collectedByAndroidGame": true,
+    "sharedByAndroidGame": true,
+    "sharingReview": "The Console declaration discloses Google receipt as sharing for Analytics for all four types. No service-provider exemption is asserted; Analytics account data-sharing settings were not changed or independently audited.",
     "accountCreation": false,
-    "localData": "Progress, undo history, earned hint credits and game preferences remain in private device storage. Android backup is disabled in the public build.",
-    "sensitivePermissions": "No advertising ID, microphone, camera, location, contacts or shared-storage access. Public Android build has no INTERNET permission.",
-    "deletion": "Clear app storage in Android settings or uninstall. Support emails are separate, optional correspondence and can be deleted on request.",
-    "playFamiliesCommitment": true
+    "localData": "Progress, undo history, earned hint credits, preferences, detailed product facts and durable summaries remain in private player SQLite. Android backup is disabled. Bounded analytics events are queued separately and delivered to Google; online reporting is not a cloud save.",
+    "encryptedInTransit": true,
+    "sensitivePermissions": "INTERNET and ACCESS_NETWORK_STATE are required for analytics. No advertising ID, AdServices, microphone, camera, location, contacts or shared-storage access.",
+    "collectionChoice": "First use defaults to collection enabled; no prompt or public settings switch. A previously stored disabled value is preserved. Declare these data types as required because users do not have a public opt-in/opt-out choice. Required describes collection behavior; it does not mean analytics is necessary to play or prove consent or a lawful basis. Data safety does not itself obtain user consent; assess applicable User Data and regional requirements separately.",
+    "deletion": "Clearing storage or uninstalling removes local data and stops future app collection. It does not delete Google reports already received. Do not claim a remote deletion feature that has not been implemented.",
+    "playFamiliesCommitment": null,
+    "familiesReview": "Owner changed the intended audience to ages 13+; 13–17 may still be children under local rules. Do not treat the age declaration as evidence of consent or a global collection exemption.",
+    "declarationReference": "https://support.google.com/googleplay/android-developer/answer/10787469",
+    "processedEphemerally": false,
+    "savedInConsole": true,
+    "collectedTypes": [
+      {
+        "type": "Approximate location",
+        "purpose": [
+          "Analytics"
+        ],
+        "required": true,
+        "detail": "Coarse location derived by Google from network IP metadata; no location permission or GPS access."
+      },
+      {
+        "type": "App interactions",
+        "purpose": [
+          "Analytics"
+        ],
+        "required": true,
+        "detail": "Gameplay lifecycle, progress, attempts, completion, timing, assistance, preferences and technical result events; see product-metrics-v1 whitelist."
+      },
+      {
+        "type": "Device or other IDs",
+        "purpose": [
+          "Analytics"
+        ],
+        "required": true,
+        "detail": "Firebase app-instance/install identifiers. No advertising ID, SSAID or product-managed cross-reinstall identity."
+      },
+      {
+        "type": "Diagnostics",
+        "purpose": [
+          "Analytics"
+        ],
+        "required": true,
+        "detail": "Bounded technical outcome events such as storage-write recovery and solver outcomes. No Crashlytics, raw logs or full crash stack upload."
+      }
+    ]
   },
   "contentRatingEvidence": {
     "violence": false,
@@ -57,13 +98,23 @@
   "sourceContentId": "mainline-1000-v5",
   "futureFeatures": "Referral settlement and Premium are planned but not implemented in the current test build. Reassess app access, in-app purchases, networking, privacy and data safety before any build includes those features.",
   "targetAgeGroups": [
-    "6–8",
-    "9–12",
     "13–15",
     "16–17",
     "18+"
   ],
   "targetAgeSavedInConsole": true,
-  "releaseVersion": "0.1.1",
-  "androidMobileVersionCode": 5
+  "releaseVersion": "0.1.5",
+  "androidMobileVersionCode": 9,
+  "lastObservedSubmission": {
+    "version": "0.1.5",
+    "androidMobileVersionCode": 9,
+    "observedAt": "2026-10-10T03:39:00+11:00",
+    "status": "Changes in review",
+    "changes": [
+      "Alpha release",
+      "Target audience 13+",
+      "Data safety"
+    ],
+    "evidence": "builds/release-0.1.5/changes-in-review.png"
+  }
 }

@@ -1,10 +1,11 @@
 import { visibleSession, hintAvailability, type MainlineState } from '../game/mainline.ts';
 import type { WriteDatabase } from './sql.ts';
+import type { MetricTimeSlice } from './metricTime.ts';
 import { METRICS_VERSION } from './playerSchema.ts';
 
 export type GameplayAction = {
-  type: 'show' | 'pause' | 'background' | 'clock' | 'pour' | 'undo' | 'reset' | 'reserve' | 'melt' | 'navigate' | 'select' | 'preference' | 'hint-request' | 'hint-result' | 'dismiss-stalled' | 'diagnostic';
-  hinted?: boolean; source?: string; target?: string; amount?: number; requestId?: string;
+  type: 'show' | 'pause' | 'background' | 'clock' | 'pour' | 'undo' | 'reset' | 'reserve' | 'melt' | 'navigate' | 'select' | 'preference' | 'hint-request' | 'hint-result' | 'dismiss-stalled' | 'diagnostic' | 'stalled-notice' | 'tutorial-show' | 'tutorial-complete';
+  slices?: MetricTimeSlice[]; hinted?: boolean; source?: string; target?: string; amount?: number; requestId?: string;
   result?: string; durationMs?: number; foregroundMs?: number; blockedMs?: number;
   preference?: string; value?: string; sinceInputMs?: number; reason?: string;
 };
@@ -145,7 +146,7 @@ export class StatisticsRecorder {
       scope.session.solid ? 'solid-bottom-v1' : 'water-sort-v1', 'hint-credits-v1', METRICS_VERSION, JSON.stringify({ ...action, effective,
         routePosition: scope.session.historyOffset + scope.session.history.length, hintResource: hintAvailability(before),
         melted: !!scope.session.solid?.melted, symbols: before.symbols, integrity: 'observed' }));
-    if (sequence % 100 === 0) await this.prune(at);
+
   }
   async prune(at: number, maxEvents = 50000, days = 30) {
     const cutoff = await this.db.getFirstAsync<{ sequence: number }>('SELECT MAX(sequence) AS sequence FROM events WHERE at<? OR sequence IN(SELECT sequence FROM events ORDER BY sequence DESC LIMIT -1 OFFSET ?)', at - days * 86400000, maxEvents);

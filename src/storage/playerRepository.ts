@@ -1,12 +1,15 @@
-import { createMainline, type MainlineState } from '../game/mainline.ts';
+import { createMainline, visibleSession, hintAvailability, type MainlineState } from '../game/mainline.ts';
 import type { PlayableMainline } from '../game/mainlinePlayable.ts';
 import type { SolidSideCatalog } from '../game/solidSide.ts';
 import type { WriteDatabase } from './sql.ts';
 import { transaction } from './sql.ts';
 import { loadSessions, saveSession } from './sessionStorage.ts';
 import { PLAYER_SCHEMA, PLAYER_SCHEMA_VERSION, METRICS_VERSION } from './playerSchema.ts';
-import { StatisticsRecorder, type GameplayAction } from './statistics.ts';
+import { StatisticsRecorder, sessionScope, type GameplayAction } from './statistics.ts';
+import { createProductionPlan } from '../game/productionPlan.ts';
+import { ProductMetrics } from './productMetrics.ts';
 
+const metricPlan = createProductionPlan();
 type ProgressRow = { catalog: string; current: number; completed: number; side_completed: number; tutorial: number; symbols: number; credits: number; free_hint_used: number };
 type Job = { revision: number; at: number; before: MainlineState; next: MainlineState; action: GameplayAction; resolve: (ok: boolean) => void; work?: (revision: number) => Promise<void> };
 
@@ -32,6 +35,9 @@ export class PlayerRepository {
   state: MainlineState;
   readonly installation: string;
   readonly statistics: StatisticsRecorder;
+  readonly metrics: ProductMetrics;
+  onCommitted?: () => void;
+  private writeFailures = 0;
   private revision: number;
   private pending: Job[] = [];
   private running: Promise<boolean> | null = null;
@@ -39,6 +45,7 @@ export class PlayerRepository {
     this.db = db; this.mainline = mainline; this.sides = sides; this.state = state;
     this.installation = installation; this.revision = revision;
     this.statistics = new StatisticsRecorder(db, installation, mainline.id, appVersion);
+    this.metrics = new ProductMetrics(db, appVersion, installation);
   }
   static async open(db: WriteDatabase, main: PlayableMainline, sides: SolidSideCatalog, appVersion: string) {
     await db.execAsync('PRAGMA foreign_keys=ON; PRAGMA busy_timeout=5000; PRAGMA journal_mode=WAL;');
@@ -80,7 +87,9 @@ export class PlayerRepository {
       }
       await db.runAsync("UPDATE hint_requests SET result='interrupted' WHERE result IS NULL");
     });
-    return new PlayerRepository(db, main, sides, state, metadata.get('installation')!, revision, appVersion);
+    const player = new PlayerRepository(db, main, sides, state, metadata.get('installation')!, revision, appVersion);
+    await transaction(db, () => player.metrics.initialize(Date.now()));
+    return player;
   }
   private static async putProgress(db: WriteDatabase, state: MainlineState, catalog: string) {
     await db.runAsync(`INSERT INTO progress VALUES(1,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET
@@ -88,7 +97,7 @@ export class PlayerRepository {
       tutorial=excluded.tutorial,symbols=excluded.symbols,credits=excluded.credits,free_hint_used=excluded.free_hint_used`,
     catalog, state.current, state.completedThrough, state.sideCompletedThrough, state.tutorialDone ? 1 : 0, state.symbols ? 1 : 0, state.hintCredits, state.freeHintUsed ? 1 : 0);
   }
-  preference(key: 'sound' | 'vessel' | 'symbols' | 'language'): string {
+  preference(key: 'sound' | 'vessel' | 'symbols' | 'language' | 'analytics'): string {
     const value = this.db.getFirstSync<{ value: string }>('SELECT value FROM preferences WHERE key=?', key)?.value;
     if (value === undefined && key === 'language') return 'system';
     if (value === undefined) throw new Error('Missing preference');
@@ -104,13 +113,52 @@ export class PlayerRepository {
     });
   }
   record(action: GameplayAction, at = Date.now()) { return this.commit(this.state, action, at); }
-  setPreference(key: 'sound' | 'vessel' | 'language', value: string) { return this.record({ type: 'preference', preference: key, value }); }
+  setPreference(key: 'sound' | 'vessel' | 'language' | 'analytics', value: string) { return this.record({ type: 'preference', preference: key, value }); }
   hintRequestId() { return `${this.installation}:hint:${this.revision + 1}`; }
   /** Feature writes share the player revision/transaction queue; never nest transactions. */
   enqueueWrite(work: (revision: number) => Promise<void>): Promise<boolean> {
     return new Promise(resolve => {
       this.pending.push({ revision: ++this.revision, at: Date.now(), before: this.state, next: this.state, action: { type: 'diagnostic' }, resolve, work });
       void this.flush();
+    });
+  }
+  private async pruneMetrics(revision: number, at: number) {
+    const last = Number(this.db.getFirstSync<{ value: string }>("SELECT value FROM metadata WHERE key='metrics-last-prune'")?.value ?? 0);
+    if (revision - last >= 100) { await this.statistics.prune(at); await this.metrics.prune(revision, at); }
+  }
+  private async recordProductMetrics(job: Job) {
+    const { before, next, action, revision, at } = job;
+    const scope = sessionScope(before), after = visibleSession(next);
+    const effective = action.type === 'reset' ? scope.session.history.length > 0 || scope.session.historyOffset > 0 || !!scope.session.solid?.melted
+      : ['pour', 'undo', 'reserve', 'melt'].includes(action.type) ? scope.session !== after : true;
+    const totals: Record<string, number> = { foreground_ms: Math.max(0, action.foregroundMs ?? 0), blocked_ms: Math.max(0, action.blockedMs ?? 0) };
+    totals.blocked_ms = Math.min(totals.foreground_ms, totals.blocked_ms);
+    totals.available_ms = totals.foreground_ms - totals.blocked_ms;
+    if (effective && action.type === 'pour') { totals.pours = 1; totals[action.hinted ? 'hint_pours' : 'manual_pours'] = 1; }
+    if (effective && ['undo', 'reset', 'melt', 'reserve'].includes(action.type)) totals[{ undo: 'undos', reset: 'resets', melt: 'melts', reserve: 'reserves' }[action.type as 'undo']] = 1;
+    if (action.hinted && effective && hintAvailability(before) === 'ticket') totals.credits_spent = 1;
+    const first = next.completedThrough > before.completedThrough || next.sideCompletedThrough > before.sideCompletedThrough;
+    if (first) {
+      totals.credits_expected = next.completedThrough > before.completedThrough ? before.current % 10 === 0 ? 2 : 1 : 0;
+      totals.credits_awarded = next.hintCredits - before.hintCredits + (totals.credits_spent ?? 0);
+      totals.credits_capped = totals.credits_expected - totals.credits_awarded;
+    }
+    const entry = (scope.session.solid ? this.sides.entries : this.mainline.entries).find(e => (e.levelId ?? e.level.id) === scope.levelId);
+    const number = entry?.number ?? 0;
+    const mainEntry = this.mainline.entries.find(e => (e.levelId ?? e.level.id) === scope.levelId);
+    await this.metrics.record(revision, at, {
+      slot: scope.slot, mode: scope.mode, levelId: scope.levelId, catalog: this.mainline.id,
+      rules: scope.session.solid ? 'solid-bottom-v1' : 'water-sort-v1', number,
+      attributes: { colors: scope.session.level.colors.length, stage: Math.ceil(number / (scope.session.solid ? 5 : 50)), tier: mainEntry?.tier ?? 'side', wave_role: scope.session.solid ? 'side' : metricPlan[number - 1]?.waveRole ?? 'unknown' },
+      existing: scope.session.history.length > 0 || scope.session.historyOffset > 0 || before.freeHintUsed,
+      completed: scope.session.status === 'solved', routePosition: after.level.id === scope.levelId ? after.historyOffset + after.history.length : scope.session.historyOffset + scope.session.history.length,
+    }, {
+      kind: action.type, effective, totals, slices: action.slices, requestId: action.requestId, result: action.result, durationMs: action.durationMs,
+      resource: hintAvailability(before), hinted: action.hinted,
+      completion: effective && action.type === 'pour' && after.status === 'solved' ? 'solved' : undefined,
+      stalled: scope.levelId === after.level.id && scope.session.status !== 'stalled' && after.status === 'stalled',
+      recovered: scope.session.status === 'stalled' && ['undo', 'reset', 'melt', 'reserve'].includes(action.type),
+      detail: action.type === 'preference' ? { preference: action.preference ?? 'unknown', value: action.value ?? 'unknown' } : undefined,
     });
   }
   /** Retain the failed head and all following jobs. Later actions/background retry in order. */
@@ -128,6 +176,8 @@ export class PlayerRepository {
             if (saved !== job.revision - 1) throw new Error('Player write revision gap');
             if (job.work) {
               await job.work(job.revision);
+              await this.pruneMetrics(job.revision, job.at);
+              if (this.writeFailures) await this.metrics.emit(job.revision, job.at, 'bh_quality', { operation: 'storage_write', result: 'recovered', count: this.writeFailures });
               await this.db.runAsync("UPDATE metadata SET value=? WHERE key='revision'", String(job.revision));
               return;
             }
@@ -138,12 +188,22 @@ export class PlayerRepository {
               await saveSession(this.db, 'replay', job.next.replay, job.before.replay);
               if (job.before.symbols !== job.next.symbols) await this.db.runAsync("UPDATE preferences SET value=? WHERE key='symbols'", String(job.next.symbols));
             }
+            if (job.action.type === 'preference' && job.action.preference === 'analytics') {
+              await this.db.runAsync('DELETE FROM metric_outbox');
+              await this.db.runAsync("UPDATE metadata SET value=CAST(CAST(value AS INTEGER)+1 AS TEXT) WHERE key='analytics-epoch'");
+            }
             if (job.action.type === 'preference' && job.action.preference && job.action.value !== undefined) await this.db.runAsync('INSERT INTO preferences VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value', job.action.preference, job.action.value);
             await this.statistics.record(job.revision, job.at, job.before, job.next, job.action);
+            await this.recordProductMetrics(job);
+            await this.pruneMetrics(job.revision, job.at);
+            if (this.writeFailures) await this.metrics.emit(job.revision, job.at, 'bh_quality', { operation: 'storage_write', result: 'recovered', count: this.writeFailures });
             await this.db.runAsync("UPDATE metadata SET value=? WHERE key='revision'", String(job.revision));
           });
+          this.writeFailures = 0;
           this.pending.shift(); job.resolve(true);
+          try { this.onCommitted?.(); } catch { /* Delivery is independent of the committed save. */ }
         } catch {
+          this.writeFailures = Math.min(1000000, this.writeFailures + 1);
           failedJob = job;
           return false;
         }

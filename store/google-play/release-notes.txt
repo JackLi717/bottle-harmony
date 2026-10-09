@@ -1,10 +1,10 @@
 <en-US>
-Learn by watching: a hand now taps the bottles and pours through the complete first puzzle in Classic Sort and Color Memory.
-Memory demonstrations include observing colors, hiding them and revealing the completed answer.
-Skip or replay the demonstration anytime. Your progress and hint tickets are unchanged.
+Adds local gameplay statistics and Google usage analytics to help improve progression, puzzle difficulty and reliability.
+The privacy policy now explains analytics data, purposes and Google processing.
+Closed-test and future production releases use the same reporting project. Your saved progress and hint credits are preserved.
 </en-US>
 <zh-CN>
-首次教学改为手指点选瓶子、倒水并完整完成第一关，经典排序和颜色记忆均可观看。
-记忆教学包含观察颜色、变黑、整理与最后揭晓。
-支持直接开始和再看一次，不影响玩家进度或提示券。
+新增本地游玩统计与 Google 使用分析，用于改进关卡进度、难度及可靠性。
+隐私政策补充采集字段、用途与 Google 数据处理说明。
+封闭测试和未来正式版本使用同一报告项目，保留现有进度与提示券。
 </zh-CN>

@@ -3,7 +3,7 @@ import { mkdirSync, copyFileSync, existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const apkOnly = process.argv.includes('--apk');
-const env: NodeJS.ProcessEnv = { ...process.env, APP_VARIANT: 'store', EXPO_PUBLIC_INTERNAL_TOOLS: 'false', CI: '1', NODE_ENV: 'production' };
+const env: NodeJS.ProcessEnv = { ...process.env, APP_VARIANT: 'store', ANALYTICS_ENV: 'production', EXPO_PUBLIC_INTERNAL_TOOLS: 'false', CI: '1', NODE_ENV: 'production' };
 function run(command: string, args: string[], cwd = process.cwd()) {
   const result = spawnSync(command, args, { cwd, env, stdio: 'inherit' });
   if (result.status !== 0) throw new Error(`${command} failed (${result.status}).`);

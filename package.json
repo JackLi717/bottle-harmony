@@ -1,12 +1,15 @@
 {
   "name": "bottle-harmony",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "main": "index.ts",
   "dependencies": {
     "@expo/metro-runtime": "~57.0.16",
+    "@react-native-firebase/analytics": "26.4.0",
+    "@react-native-firebase/app": "26.4.0",
     "expo": "~57.0.27",
     "expo-asset": "~57.0.19",
     "expo-audio": "~57.0.5",
+    "expo-build-properties": "~57.0.22",
     "expo-dev-client": "~57.0.19",
     "expo-linear-gradient": "~57.0.2",
     "expo-localization": "~57.0.2",
@@ -83,7 +86,8 @@
     "web:serve": "node --experimental-strip-types scripts/serve-web.ts",
     "memory:build": "node --experimental-strip-types scripts/memory-bank.ts build",
     "memory:verify": "node --experimental-strip-types scripts/memory-bank.ts verify",
-    "memory:rate": "node --experimental-strip-types scripts/memory-rating.ts"
+    "memory:rate": "node --experimental-strip-types scripts/memory-rating.ts",
+    "analytics:report": "node --experimental-strip-types scripts/analytics-report.ts"
   },
   "private": true,
   "engines": {
@@ -92,6 +96,7 @@
   "overrides": {
     "xcode": {
       "uuid": "^11.1.1"
-    }
+    },
+    "@grpc/grpc-js": "^1.13.6"
   }
 }

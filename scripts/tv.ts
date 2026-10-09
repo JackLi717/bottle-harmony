@@ -10,7 +10,7 @@ if (!['all', 'ios', 'android'].includes(platform) || (run && platform === 'all')
 const project = resolve(import.meta.dirname, '..');
 const target = resolve(project, 'builds/tv');
 mkdirSync(target, { recursive: true });
-for (const file of ['App.tsx', 'index.ts', 'package.json', 'package-lock.json', '.npmrc', 'app.json', 'app.config.js', 'tsconfig.json', 'babel.config.js', 'metro.config.js', 'src', 'assets', 'plugins']) {
+for (const file of ['App.tsx', 'index.ts', 'package.json', 'package-lock.json', '.npmrc', 'app.json', 'app.config.js', 'react-native.config.js', 'firebase.json', 'tsconfig.json', 'babel.config.js', 'metro.config.js', 'src', 'assets', 'plugins']) {
   if (existsSync(resolve(project, file))) cpSync(resolve(project, file), resolve(target, file), { recursive: true });
 }
 if (!existsSync(resolve(target, 'node_modules'))) symlinkSync(resolve(project, 'node_modules'), resolve(target, 'node_modules'), 'dir');

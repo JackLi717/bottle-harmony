@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "416852076322",
+    "project_id": "bottle-harmony-test",
+    "storage_bucket": "bottle-harmony-test.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:416852076322:android:6326743909ee4e9c45e77b",
+        "android_client_info": {
+          "package_name": "com.bottleharmony.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgssr974XzETqCpbweSkRSJWOqWTmBitc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

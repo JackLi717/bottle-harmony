@@ -1,3 +1,4 @@
+import type { MetricTimeSlice } from './metricTime.ts';
 import { MEMORY_CATALOG } from '../game/memoryCatalog.ts';
 import { createMemory, restoreMemory, MEMORY_RULES, type MemorySession, type UnitBoard } from '../game/memory.ts';
 import type { ContentRepository } from './contentRepository.ts';
@@ -20,7 +21,7 @@ CREATE TABLE IF NOT EXISTS memory_black_attempts(id TEXT PRIMARY KEY, level_id T
 INSERT OR IGNORE INTO preferences VALUES('memory-black-v1-tutorial','false');
 `;
 type Saved = { level_id: string; number: number; rules: string; attempt: number; phase: MemorySession['phase']; judgement: MemorySession['judgement']; reveal_at: number | null; history_start: number; history_depth: number; pours: number; peeks: number; hints: number; undos: number };
-export type MemoryTiming = { observationMs?: number; peekMs?: number; solveMs?: number; blockedMs?: number };
+export type MemoryTiming = { observationMs?: number; peekMs?: number; solveMs?: number; blockedMs?: number; slices?: MetricTimeSlice[] };
 export class MemoryRepository {
   state: MemorySession | null;
   tutorialDone: boolean;
@@ -64,7 +65,7 @@ export class MemoryRepository {
       state = restoreMemory(puzzle, { units, history, revealed: knowledge.map(r => r.first_step), phase: row.phase, judgement: row.judgement, revealAt: row.reveal_at,
         attempt: row.attempt, offset: row.history_start, pours: row.pours, peeks: row.peeks, hints: row.hints, undos: row.undos });
     }
-    if (!await player.enqueueWrite(async () => { await db.runAsync("UPDATE memory_black_attempts SET partial=1 WHERE result='playing'"); })) throw new Error('Unable to mark interrupted memory attempt');
+    if (!await player.enqueueWrite(async () => { await db.runAsync("UPDATE memory_black_attempts SET partial=1 WHERE result='playing' AND level_id IN(SELECT level_id FROM metric_runs WHERE slot='memory' AND partial=1 AND result='playing')"); })) throw new Error('Unable to mark interrupted memory attempt');
     const tutorial = db.getFirstSync<{ value: string }>("SELECT value FROM preferences WHERE key='memory-black-v1-tutorial'")?.value;
     if (tutorial !== 'true' && tutorial !== 'false') throw new Error('Invalid memory tutorial preference');
     return new MemoryRepository(player, content, state, tutorial === 'true');
@@ -114,12 +115,40 @@ export class MemoryRepository {
       if (kind === 'hint-request') await add('hint_requests');
       if (kind === 'hint-result' && ['solved', 'unsolvable', 'unknown', 'cancelled'].includes(String(detail.result))) await add(`hint_${detail.result}`);
       await db.runAsync('UPDATE memory_black_attempts SET last_at=? WHERE id=?', at, attemptId);
+      const alreadyCompleted = (await db.getFirstAsync<{ result: string }>('SELECT result FROM memory_black_attempts WHERE id=?', attemptId))?.result !== 'playing';
       if (next.game.status === 'solved') {
         const result = next.judgement === 'correct' ? 'remembered' : 'recovered';
         const completed = await db.runAsync("UPDATE memory_black_attempts SET result=?,ended_at=COALESCE(ended_at,?) WHERE id=? AND result='playing'", result, at, attemptId);
         if (completed.changes) await add(result);
         await db.runAsync("INSERT OR IGNORE INTO completions VALUES('memory',?,?)", next.puzzle.level.id, at);
       }
+      const previous = before?.attempt === next.attempt ? before : null;
+      const phase = previous?.phase ?? next.phase;
+      const metrics: Record<string, number> = {
+        foreground_ms: (timing.observationMs ?? 0) + (timing.peekMs ?? 0) + (timing.solveMs ?? 0) + (timing.blockedMs ?? 0),
+        blocked_ms: timing.blockedMs ?? 0, observation_ms: timing.observationMs ?? 0, peek_ms: timing.peekMs ?? 0,
+        hidden_ms: previous && previous.judgement !== 'hidden' ? 0 : timing.solveMs ?? 0,
+        cleanup_ms: previous && previous.judgement !== 'hidden' ? timing.solveMs ?? 0 : 0,
+        pours: deltas.pours, peeks: deltas.peeks, hint_pours: deltas.hints, undos: deltas.undos,
+      };
+      metrics.manual_pours = Math.max(0, metrics.pours - metrics.hint_pours);
+      if (kind === 'reset') metrics.resets = 1;
+      const finalBefore = alreadyCompleted || previous?.game.status === 'solved';
+      await this.player.metrics.record(revision, at, {
+        slot: 'memory', mode: finalBefore ? 'post-memory' : 'memory', levelId: next.puzzle.level.id,
+        catalog: MEMORY_CATALOG, rules: MEMORY_RULES, number: next.puzzle.number,
+        attributes: { colors: next.puzzle.level.colors.length, stage: Math.ceil(next.puzzle.number / 10), tier: 'memory', wave_role: 'memory' }, attemptKey: String(next.attempt),
+        existing: !previous && (next.pours > 0 || next.peeks > 0 || next.phase !== 'observe'), completed: !!finalBefore,
+        routePosition: next.game.historyOffset + next.game.history.length,
+      }, {
+        kind, effective: before !== next || ['show', 'pause', 'background', 'clock', 'hint-request', 'hint-result', 'answer-check-request', 'answer-check-result'].includes(kind),
+        totals: metrics, slices: timing.slices, requestId: typeof detail.requestId === 'string' ? detail.requestId : undefined,
+        result: String(detail.result ?? detail.status ?? 'unknown'), durationMs: Number(detail.durationMs ?? 0), resource: 'memory-free',
+        hinted: deltas.hints > 0, answer: previous?.judgement === 'hidden' && (next.judgement === 'correct' || next.judgement === 'wrong') ? next.judgement : undefined,
+        completion: next.game.status === 'solved' && !finalBefore ? next.judgement === 'correct' ? 'remembered' : 'recovered' : undefined,
+        stalled: previous?.game.status !== 'stalled' && next.game.status === 'stalled',
+        recovered: previous?.game.status === 'stalled' && ['undo', 'reset'].includes(kind), detail: { phase },
+      });
       await db.runAsync('INSERT INTO events VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', revision, `${this.player.installation}:${revision}`, revision, at,
         null, null, attemptId, 'memory', next.puzzle.level.id, kind, this.player.statistics.appVersion, MEMORY_CATALOG, MEMORY_RULES, 'memory-free-v1', 'memory-black-tracking-v2',
         JSON.stringify({ ...detail, ...timing, phase: next.phase, judgement: next.judgement, routeStep: next.game.historyOffset + next.game.history.length,
