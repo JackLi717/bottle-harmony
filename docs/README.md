@@ -17,7 +17,7 @@
 | [测试安排](play-testing-plan.md) | 实际测试任务与反馈方式 |
 | [后续产品规则与创意](gameplay-ideas.md) | 已确认未实施的商业规则与彩虹配方规则、已落地记忆专题索引，已接入的六题内部调色／成果试验，及区域方向与 157 项编号创意 |
 | [颜色解锁玩法规划](color-unlock-plan.md) | 待评审的机关规则、出题、难度、规模增长、坡度与原型验收 |
-| [颜色记忆玩法](memory-mode-plan.md) | 持续黑色规则、分散遮色百题、离线验证、恢复与真人校准边界 |
+| [颜色记忆玩法](memory-mode-plan.md) | 持续黑色规则、分散遮色百题、搭桥双轴评级、二十题校准配方、恢复与真人校准边界 |
 | [统计存储方案](gameplay-statistics-plan.md) | 已确认的全 SQLite 新基线、统计口径与验收 |
 
 素材与商店说明分别在[音频](../assets/audio/README.md)、[品牌](../assets/brand/README.md)、[Google Play](../store/google-play/README.md)及[商店截图](../store/google-play/screenshots/README.md)。

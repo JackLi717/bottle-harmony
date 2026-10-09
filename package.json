@@ -82,7 +82,8 @@
     "postinstall": "node scripts/patch-sqlite-web.cjs",
     "web:serve": "node --experimental-strip-types scripts/serve-web.ts",
     "memory:build": "node --experimental-strip-types scripts/memory-bank.ts build",
-    "memory:verify": "node --experimental-strip-types scripts/memory-bank.ts verify"
+    "memory:verify": "node --experimental-strip-types scripts/memory-bank.ts verify",
+    "memory:rate": "node --experimental-strip-types scripts/memory-rating.ts"
   },
   "private": true,
   "engines": {
