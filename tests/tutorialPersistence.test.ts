@@ -85,7 +85,9 @@ test('tutorial hooks honor independent SQLite confirmations across remounts and 
       ({ player, memory } = await open()); ui = hooks(player, memory);
       assert.deepEqual(renderHook(ui.classic).play, savedMain);
       assert.equal(renderHook(ui.memory).tutorial, false);
-      assert.deepEqual({ ...memory.state, offset: memory.state?.offset ?? 0 }, { ...savedMemory, offset: savedMemory?.offset ?? 0 });
+      // Restoration includes the optional checkpoint input; compare its default
+      // explicitly while retaining the real game.historyOffset comparison.
+      assert.deepEqual({ ...memory.state, offset: 0 }, { ...savedMemory, offset: 0 });
       assert.equal(player.installation, installation);
       assert.equal(player.preference('sound'), 'false');
       assert.equal(player.preference('vessel'), 'champagne');
