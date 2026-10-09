@@ -1,10 +1,6 @@
 <en-US>
-Adds local gameplay statistics and Google usage analytics to help improve progression, puzzle difficulty and reliability.
-The privacy policy now explains analytics data, purposes and Google processing.
-Closed-test and future production releases use the same reporting project. Your saved progress and hint credits are preserved.
+First-time tutorials remember your confirmation in Classic and Memory. Your puzzle progress, hints and preferences are preserved when updating.
 </en-US>
 <zh-CN>
-新增本地游玩统计与 Google 使用分析，用于改进关卡进度、难度及可靠性。
-隐私政策补充采集字段、用途与 Google 数据处理说明。
-封闭测试和未来正式版本使用同一报告项目，保留现有进度与提示券。
+经典排序与颜色记忆教学会分别记住确认，之后不再自动重复。更新保留关卡进度、提示券和个人设置。
 </zh-CN>
