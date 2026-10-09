@@ -1,6 +1,6 @@
 <en-US>
-First closed test of Water Sort - No Ads (Bottle Harmony): 1,000 offline mainline puzzles, 50 bonus puzzles, 15 glass styles, undo, restart, hints and local progress. Feedback: admin@readytradie.com.
+Adds 100 Color Memory puzzles alongside 1,000 classic levels and 50 bonus puzzles. Hidden portions reveal automatically when the board is arranged. Improves reveal animations and screen transitions, simplifies the home screen, and adds a 21-language selector. Progress and preferences are saved locally. No ads.
 </en-US>
 <zh-CN>
-Water Sort - No Ads（Bottle Harmony）首次封闭测试：1000道离线主线谜题、50道副关卡、15种玻璃容器、撤销、重来、提示与本地存档。反馈邮箱：admin@readytradie.com。
+新增100道颜色记忆谜题，保留1000道经典主线和50道副关卡。黑块整理到外观完成时自动揭晓；修复完成显色分块、闪回和卡顿，优化页面切换，精简首页，加入21种语言选择。本地保存进度和偏好，始终无广告。
 </zh-CN>
