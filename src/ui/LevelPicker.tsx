@@ -6,6 +6,7 @@ import { TIER_NAMES, TRIAL_TIERS, type CalibrationSample, type TrialTier } from 
 import { CALIBRATION_SAMPLES, DIFFICULTY } from './content';
 import { MAINLINE } from './mainlineContent';
 import { SOLID_SIDES } from './solidSideContent';
+import { internalPreviewEntries } from './internalPreviewEntries';
 
 type Props = { visible: boolean; currentCode: string | null; onClose: () => void; onSelect: (sample: CalibrationSample | null) => void; onPreview: (number: number) => void; onSidePreview: (number: number) => void };
 
@@ -13,6 +14,7 @@ export function LevelPicker({ visible, currentCode, onClose, onSelect, onPreview
   const insets = useSafeAreaInsets();
   const [tier, setTier] = useState<TrialTier>('D1');
   const [sideVisible, setSideVisible] = useState(false);
+  if (!visible) return null;
   return <Modal visible={visible} animationType="fade" transparent onRequestClose={onClose}>
     <View style={[styles.backdrop, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 12 }]}>
       <View style={styles.panel}>
@@ -20,8 +22,8 @@ export function LevelPicker({ visible, currentCode, onClose, onSelect, onPreview
         <Text style={styles.note}>内部题可用于对照，不解锁主线。返回主页后可继续原来的主线局面。</Text>
         <View accessibilityRole="tablist" style={styles.filters}>{TRIAL_TIERS.map(value => <Pressable key={value} accessibilityRole="tab" accessibilityState={{ selected: tier === value }} accessibilityLabel={`${value} ${TIER_NAMES[value]}试排题`} onPress={() => setTier(value)} style={[styles.filter, tier === value && styles.selected]}><Text style={styles.filterText}>{value}</Text><Text style={styles.filterText}>{TIER_NAMES[value]}</Text></Pressable>)}</View>
         <ScrollView contentContainerStyle={styles.list}>
-          {[MAINLINE.entries.find(e => e.level.colors.length === 11)!, MAINLINE.entries.find(e => e.level.colors.length === 10 && e.level.bottles.length === 12)!, MAINLINE.entries[999]].map(entry => <Pressable key={entry.number} accessibilityRole="button" onPress={() => onPreview(entry.number)} style={styles.card}>
-            <Text style={styles.name}>内部预览 · 第 {entry.number} 关</Text><Text style={styles.detail}>{entry.level.colors.length} 色 · {entry.level.bottles.length} 瓶 · 内部 {entry.rank} 级</Text>
+          {internalPreviewEntries(MAINLINE.entries).map(entry => <Pressable key={entry.number} accessibilityRole="button" onPress={() => onPreview(entry.number)} style={styles.card}>
+            <Text style={styles.name}>内部预览 · 第 {entry.number} 关</Text><Text style={styles.detail}>{entry.colorCount} 色 · {entry.bottleCount} 瓶 · 内部 {entry.rank} 级</Text>
           </Pressable>)}
           <Pressable accessibilityRole="button" accessibilityState={{ expanded: sideVisible }} onPress={() => setSideVisible(value => !value)} style={styles.card}>
             <Text style={styles.name}>凝固目标瓶 · 50 道副关卡 {sideVisible ? '⌃' : '⌄'}</Text>

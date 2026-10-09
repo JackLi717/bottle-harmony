@@ -159,7 +159,7 @@ export function DemoScreen() {
   const celebrationFinished = useCallback(() => setCelebration(null), []);
   function previewCelebration(count: 2 | 3 | 4 | 5) {
     if (busy.current) return;
-    const preview = MAINLINE.entries.find(item => item.level.bottles.length === 8)!;
+    const preview = MAINLINE.entries.find(item => item.bottleCount === 8)!;
     setInternalSession(completedPreviewSession(preview));
     setPendingCelebration(null);
     setCelebration(reduceMotion ? null : count);
@@ -547,7 +547,7 @@ export function DemoScreen() {
       <GameNotice notice={notice} onClose={() => setNotice(null)} />
       <PrivacyPolicy visible={privacyVisible} onClose={() => { setPrivacyVisible(false); openMenu('settings'); }} />
       <Tutorial visible={page === 'game' && ready && !internalSession && !play.tutorialDone} onStart={() => setPlay(Object.freeze({ ...play, tutorialDone: true }))} onSkip={() => setPlay(Object.freeze({ ...play, tutorialDone: true }))} />
-      {INTERNAL_TOOLS && <LevelPicker visible={pickerVisible} currentCode={sample?.code ?? null} onClose={() => setPickerVisible(false)} onSelect={chooseSample} onPreview={previewMainline} onSidePreview={previewSide} />}
+      {INTERNAL_TOOLS && pickerVisible && <LevelPicker visible currentCode={sample?.code ?? null} onClose={() => setPickerVisible(false)} onSelect={chooseSample} onPreview={previewMainline} onSidePreview={previewSide} />}
     </LinearGradient>
   );
 }
