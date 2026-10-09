@@ -1,6 +1,6 @@
 # Bottle Harmony 第一版系统架构
 
-更新日期：2026 年 10 月 8 日。本文描述已完成、尚未进入玩家测试的第一版源码架构；功能与版本总览见[实现基线](current-baseline.md)，逐项玩家行为见[游玩流程](play-flow.md)。后续方案与候选见[产品规则与创意](gameplay-ideas.md)。
+更新日期：2026 年 10 月 10 日。本文描述当前已实现的源码架构，已进入 Google Play 封闭测试，状态见[发布记录](release-readiness.md)；功能与版本总览见[实现基线](current-baseline.md)，逐项玩家行为见[游玩流程](play-flow.md)。后续方案与候选见[产品规则与创意](gameplay-ideas.md)。
 
 ## 数据流与职责
 
@@ -23,6 +23,13 @@ flowchart TD
     M --> I
     I --> N[参考路线匹配或增量提示搜索]
     J --> N
+    P[固定记忆百题与黑块规则] --> Q[记忆会话与有界提示]
+    Q --> K
+    Q --> M
+    R[内部调色六题与独立规则] --> K
+    R --> M
+    M --> S[已提交白名单指标队列]
+    S --> T[手机原生 SDK 与独立分析环境]
     E -.内部按需加载.-> O[难度诊断]
 ```
 
@@ -41,6 +48,9 @@ flowchart TD
 | `levelFeatures.ts`、`featureDistribution.ts` | 结构事实、路线观察与精确分支标签及统计 |
 | `productionPlan.ts`、`waveSelection.ts` | 50 个二十关周期、次峰／主峰和回落约束、候选分配 |
 | `mainlineCatalog.ts`、`mainlinePlayable.ts`、`solidSide.ts` | 完整目录、严格投影与副关资产载入 |
+| `memory.ts`、`memorySolver.ts`、`memoryRoutes.ts` | 稳定单位、黑色兼容规则、自动揭晓、路线映射与有界提示 |
+| `memoryDifficulty.ts`、`memoryRatingSearch.ts` | 记忆双轴离线评级；不在手机运行 |
+| `mixing.ts`、`mixingCatalog.ts` | 内部六题、两份配方、自动交付与整步撤销 |
 
 主线生产内容最多 11 色／12 瓶、四层；通用模型保护上限 12 色／16 瓶／容量 8，不能据此声称产品支持变容量或十八瓶。生成器支持全打乱、一层底色混排及旧来源重建，现行千关不采用双层固定底色。制作契约见[生成](generation.md)与[配方](production-plan.md)。
 
@@ -48,17 +58,17 @@ flowchart TD
 
 ## 进度与保存
 
-记忆玩法由 `game/memory.ts` 包装共享 `GameSession`：稳定液体单位、固定遮色、永久揭示和观察／整理／查看阶段独立于普通规则。`MemoryScreen.tsx` 复用原有玻璃、布局、倒水、水声与完成表现。`memoryRepository.ts` 使用同一玩家库和修订队列，增量保存单位快照／知识、独立尝试及辅助事实；不改变主线状态或钱包。具体契约与百题制作见[记忆专题](memory-mode-plan.md)。
+记忆玩法由 `game/memory.ts` 保存稳定液体单位、GameSession 兼容快照与固定遮色；黑块兼容／一次一份和公开终局自动揭晓由独立记忆规则判定，不能直接调用普通同色规则代替。观察／整理／查看与答错后的显色整理分开，揭晓后知识不回退。`MemoryScreen.tsx` 复用原有玻璃、布局、倒水、水声与完成表现。`memoryRepository.ts` 使用同一玩家库和修订队列，增量保存单位快照／知识、独立尝试及辅助事实；不改变主线状态或钱包。具体契约与百题制作见[记忆专题](memory-mode-plan.md)。内部调色由 MixingRepository 保存独立会话／交付及最近 256 步历史，仅内部构建初始化，见[调色实现](mixing-mode.md)。
 
 `mainline.ts` 管理主线、当前副关和已完成关卡的独立重玩。合法倒水先更新会话，立即记录首次完成、提示奖励及副关完成位置；继续操作再切入对应副关或下一主线。第 1000 题后完成副关 50 即结束。重玩和内部预览不推进待完成的主线。
 
 `src/storage/runtime.ts` 初始化两个 SQLite 库；`contentRepository.ts` 按需构造独立核心模型，布局最多缓存 32 关。`playerRepository.ts` 串行事务提交修订、恢复快照、偏好、统计及去重边界；`sessionStorage.ts` 增量追加撤销快照并恢复时校验，`statistics.ts` 维护挑战、尝试、摘要与有界事实。`usePlayProgress.ts` 连接已接受动作和页面／生命周期，单调计时每十秒及动作边界保存，不按帧写库。数据库事务不包含求解和表现。
 
-声音、符号和容器偏好均在玩家库；系统语言不保存。初始化只对真正空的新库执行一次；错误保留已有库并显示重试。用户确认无玩家，本次不继承旧开发存档。旧 codec 与 writer 只用于离线回归，不参与新版运行保存，没有 AsyncStorage 依赖、双写、导入或回退。统计及新基线边界详见[存储方案](gameplay-statistics-plan.md)，没有云同步或上传。
+声音、符号、容器和显式语言选择均在玩家库；选择跟随系统时保存 system，具体系统语言在运行时读取。初始化只对真正空的新库执行一次；错误保留已有库并显示重试。SQLite 基线建立时未继承旧开发存档；闭测已开始，后续更新必须保留现有玩家数据，错误不得触发清库或覆盖。旧 codec 与 writer 只用于离线回归，不参与新版运行保存，没有 AsyncStorage 依赖、双写、导入或回退。product-metrics-v1 在同一事务维护首次事实、时间切片、长期摘要与有界上传队列；src/analytics/ 在提交后异步发送。手机／平板按保存偏好配置原生 SDK，默认新安装开启；Production／Test 分开，Web／TV 离线。没有账号或云存档同步。统计、采集与新基线边界见[统计专题](gameplay-statistics-plan.md)。
 
 ## 界面、输入与表现
 
-`App.tsx` 提供安全区域及语言上下文，`DemoScreen.tsx` 虽沿用旧文件名，实际已承载主页／游戏切换、主线与副关、输入、提示、表现及菜单协调。`HomeScreen.tsx` 和 `VesselCarousel.tsx` 负责当前进度及十五款外观；`MainlineMenu.tsx` 负责虚拟选关、重玩和设置，内部入口受构建配置控制。
+`App.tsx` 提供安全区域及语言上下文，`DemoScreen.tsx` 虽沿用旧文件名，实际已承载主页／游戏切换、主线与副关、输入、提示、表现及菜单协调。`HomeScreen.tsx` 和 `VesselCarousel.tsx` 负责经典／记忆入口及十五款外观；`MainlineMenu.tsx` 负责虚拟选关、重玩和设置，内部入口受构建配置控制。
 
 `boardLayout.ts` 保留 4–12 瓶统一尺寸、两排最多六列；`deviceLayout.ts` 选择底栏／侧栏及 TV 安全区；`boardNavigation.ts`、`useBoardKeyboard.ts` 与 `FocusablePressable.tsx` 提供键盘／遥控焦点。窗口变化重排显示并取消当前视觉动作，保持已提交液体和进度。实际平台证据见[设备支持](device-support.md)。
 

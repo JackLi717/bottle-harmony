@@ -1,8 +1,8 @@
 # Bottle Harmony
 
-倒水排序游戏。第一版已完成，正在申请上线；应用 0.1.1，Android 手机／平板 versionCode 5，题库 mainline-1000-v5。第二版范围尚未选定。
+倒水排序游戏。当前已实现经典千关、50 道副关、黑色记忆百题、SQLite 保存与使用统计；六题调色仅内部构建开放。版本、内容与商店状态以[当前实现基线](docs/current-baseline.md)为准，Google Play 封闭测试已于 2026 年 10 月 10 日正式开始，见[测试安排](docs/play-testing-plan.md)。
 
-从[第一版基线](docs/current-baseline.md)与[文档索引](docs/README.md)进入现行规则、架构、内容、设备和发布说明。后续决定与候选统一见[产品规则与创意](docs/gameplay-ideas.md)，已确认的全 SQLite 新基线见[统计存储方案](docs/gameplay-statistics-plan.md)。
+从[第一版基线](docs/current-baseline.md)与[文档索引](docs/README.md)进入现行规则、架构、内容、设备和发布说明。已实现的统计、存储与在线分析见[统计专题](docs/gameplay-statistics-plan.md)；后续决定与候选见[产品规则与创意](docs/gameplay-ideas.md)，钥匙／盖布解锁见[机关规划](docs/color-unlock-plan.md)，均按各自状态评审。
 
 ## 环境
 
@@ -49,12 +49,12 @@ npx expo-doctor
 
 ## 内容与发布工具
 
-正式内容替换必须先完成[生成与验证](docs/generation.md)，当前 SQLite 新基线不导入旧开发数据，之后的玩家数据需保护。内部开发用 `npm run start:internal`，公开构建关闭内部入口。
+正式内容替换必须先完成[生成与验证](docs/generation.md)，当前 SQLite 基线不导入旧开发数据；闭测已经开始，现有玩家进度、统计与偏好必须保留。内部开发用 `npm run start:internal`，公开构建关闭内部入口。手机／平板开发分析环境默认 Test，商店 Production，Web／TV 离线；客户端配置及构建要求见统计专题。下列检查示例使用当前含分析 SDK 的包，实际路径以发布记录为准。
 
 ```sh
 npm run android:store
-npm run android:apks -- builds/play/bottle-harmony-0.1.1-5.aab
-npm run android:inspect -- builds/play/bottle-harmony-0.1.1-5.aab --report builds/play/artifact-report.json
+npm run android:apks -- builds/play/bottle-harmony-0.1.5-9.aab
+npm run android:inspect -- builds/play/bottle-harmony-0.1.5-9.aab --analytics --report builds/play/artifact-report.json
 ```
 
 构建依赖、签名、产物与声明以[发布记录](docs/release-readiness.md)及[商店材料](store/google-play/README.md)为准。密钥与密码只在忽略目录安全保存，不提交仓库；不同签名覆盖失败时不得卸载玩家应用。跨平台命令见[设备支持](docs/device-support.md)。

@@ -13,8 +13,8 @@ With Node.js 24, run `node --experimental-strip-types scripts/render-icons.ts` f
 
 Android layers keep visible artwork within the central 66/108 safe circle with a small antialiasing margin. The background is separate and opaque. Store and iOS artwork has no baked-in rounded corners.
 
-Export validation passed: configured asset paths exist, app icon is opaque 1024×1024, Play icon is 512×512 RGBA under 1 MB, and both adaptive alpha masks stay within the safe circle. The two export scripts passed ESLint. The preview was visually checked. The approved assets are included in the 0.1.1 (Android mobile versionCode 5) test build; native/simulator evidence and remaining real-device checks are recorded in [device support](../../docs/device-support.md).
+The approved exports are used by the current app configuration and store materials. Validation covers configured paths, an opaque 1024×1024 app icon, a 512×512 Play icon under 1 MB, and adaptive masks inside the safe circle. Native/simulator evidence and remaining device checks are owned by [device support](../../docs/device-support.md).
 
 Specifications: [Google Play icon design](https://developer.android.com/distribute/google-play/resources/icon-design-specifications), [Android adaptive icon safe zone](https://developer.android.com/codelabs/basic-android-kotlin-compose-training-change-app-icon).
 
-Changing these files requires a new native build to update installed launcher artwork. That build has been made for the current 0.1.1 test release; do not treat the older 0.1.0 AAB as the current upload. Store materials and release status are tracked in [Google Play materials](../../store/google-play/README.md) and [release status](../../docs/release-readiness.md).
+Changing these files requires a new native build to update installed launcher artwork. Current versions, exact upload artifacts and store status are tracked in [Google Play materials](../../store/google-play/README.md) and [release status](../../docs/release-readiness.md); this asset document does not maintain a separate release version.
