@@ -4,19 +4,20 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { I18nProvider, UiText, useI18n } from './src/i18n/I18n';
 import { DemoScreen } from './src/ui/DemoScreen';
 import { GameButton } from './src/ui/GameButton';
-import { initializeStorage } from './src/storage/runtime';
+import { getPlayer, initializeStorage } from './src/storage/runtime';
+import { languagePreference } from './src/i18n/systemLanguage';
 
 function StorageGate() {
-  const { t } = useI18n();
+  const { t, setLanguagePreference } = useI18n();
   const [ready, setReady] = useState(false), [failed, setFailed] = useState(false), [attempt, setAttempt] = useState(0);
   useEffect(() => {
     let alive = true;
-    initializeStorage().then(() => { if (alive) setReady(true); }).catch(error => {
+    initializeStorage().then(() => { if (alive) { setLanguagePreference(languagePreference(getPlayer().preference('language'))); setReady(true); } }).catch(error => {
       console.error('SQLite initialization failed', error);
       if (alive) setFailed(true);
     });
     return () => { alive = false; };
-  }, [attempt]);
+  }, [attempt, setLanguagePreference]);
   if (!ready) return <View style={styles.loading}><UiText style={styles.message}>{t(failed ? 'storageUnavailable' : 'loading')}</UiText>{failed && <GameButton icon="reset" label={t('retry')} onPress={() => { setFailed(false); setAttempt(value => value + 1); }} />}</View>;
   return Platform.OS === 'web' ? <ScrollView contentContainerStyle={styles.webContent}><DemoScreen /></ScrollView> : <DemoScreen />;
 }

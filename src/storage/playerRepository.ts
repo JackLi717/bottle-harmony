@@ -50,7 +50,7 @@ export class PlayerRepository {
         await db.execAsync(PLAYER_SCHEMA);
         const id = (await db.getFirstAsync<{ id: string }>('SELECT lower(hex(randomblob(16))) AS id'))!.id;
         for (const [key, value] of Object.entries({ installation: id, revision: '0', metrics: METRICS_VERSION, initialized: '1' })) await db.runAsync('INSERT INTO metadata VALUES(?,?)', key, value);
-        for (const [key, value] of Object.entries({ sound: 'true', vessel: 'classic', symbols: 'false' })) await db.runAsync('INSERT INTO preferences VALUES(?,?)', key, value);
+        for (const [key, value] of Object.entries({ sound: 'true', vessel: 'classic', symbols: 'false', language: 'system' })) await db.runAsync('INSERT INTO preferences VALUES(?,?)', key, value);
         const initial = createMainline(main);
         await PlayerRepository.putProgress(db, initial, main.id);
         await saveSession(db, 'main', initial.main, null);
@@ -88,8 +88,9 @@ export class PlayerRepository {
       tutorial=excluded.tutorial,symbols=excluded.symbols,credits=excluded.credits,free_hint_used=excluded.free_hint_used`,
     catalog, state.current, state.completedThrough, state.sideCompletedThrough, state.tutorialDone ? 1 : 0, state.symbols ? 1 : 0, state.hintCredits, state.freeHintUsed ? 1 : 0);
   }
-  preference(key: 'sound' | 'vessel' | 'symbols'): string {
+  preference(key: 'sound' | 'vessel' | 'symbols' | 'language'): string {
     const value = this.db.getFirstSync<{ value: string }>('SELECT value FROM preferences WHERE key=?', key)?.value;
+    if (value === undefined && key === 'language') return 'system';
     if (value === undefined) throw new Error('Missing preference');
     return value;
   }
@@ -103,7 +104,7 @@ export class PlayerRepository {
     });
   }
   record(action: GameplayAction, at = Date.now()) { return this.commit(this.state, action, at); }
-  setPreference(key: 'sound' | 'vessel', value: string) { return this.record({ type: 'preference', preference: key, value }); }
+  setPreference(key: 'sound' | 'vessel' | 'language', value: string) { return this.record({ type: 'preference', preference: key, value }); }
   hintRequestId() { return `${this.installation}:hint:${this.revision + 1}`; }
   /** Feature writes share the player revision/transaction queue; never nest transactions. */
   enqueueWrite(work: (revision: number) => Promise<void>): Promise<boolean> {
@@ -137,7 +138,7 @@ export class PlayerRepository {
               await saveSession(this.db, 'replay', job.next.replay, job.before.replay);
               if (job.before.symbols !== job.next.symbols) await this.db.runAsync("UPDATE preferences SET value=? WHERE key='symbols'", String(job.next.symbols));
             }
-            if (job.action.type === 'preference' && job.action.preference && job.action.value !== undefined) await this.db.runAsync('UPDATE preferences SET value=? WHERE key=?', job.action.value, job.action.preference);
+            if (job.action.type === 'preference' && job.action.preference && job.action.value !== undefined) await this.db.runAsync('INSERT INTO preferences VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value', job.action.preference, job.action.value);
             await this.statistics.record(job.revision, job.at, job.before, job.next, job.action);
             await this.db.runAsync("UPDATE metadata SET value=? WHERE key='revision'", String(job.revision));
           });

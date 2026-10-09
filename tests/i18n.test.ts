@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
-import { systemLanguage } from '../src/i18n/systemLanguage.ts';
+import { languagePreference, preferredLanguage, systemLanguage } from '../src/i18n/systemLanguage.ts';
 import { LANGUAGES, localizedLanguageName, MESSAGES, resolveLanguage, translate } from '../src/i18n/messages.ts';
 
 test('all public messages cover all languages and preserve interpolation fields', () => {
@@ -63,4 +63,15 @@ test('system language reads preferred locales and falls back to English when una
   assert.equal(systemLanguage(() => []), 'en');
   assert.equal(systemLanguage(() => [{ languageTag: 'sv-SE' }]), 'en');
   assert.equal(systemLanguage(() => { throw new Error('Locale service unavailable'); }), 'en');
+});
+test('explicit language overrides device changes until follow-device is selected', () => {
+  for (const language of LANGUAGES) {
+    assert.equal(languagePreference(language.id), language.id);
+    assert.equal(preferredLanguage(language.id, () => [{ languageTag: 'ar-EG' }]), language.id);
+    assert.equal(preferredLanguage(language.id, () => { throw new Error('unavailable'); }), language.id);
+  }
+  assert.equal(languagePreference('system'), 'system');
+  assert.equal(languagePreference('unsupported'), 'system');
+  assert.equal(preferredLanguage('system', () => [{ languageTag: 'zh-Hant' }]), 'zh-Hant');
+  assert.equal(preferredLanguage('system', () => [{ languageTag: 'nl-BE' }]), 'nl');
 });

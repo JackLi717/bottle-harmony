@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { createMemory, hiddenMemory, initialUnits, moveMemory, peekMemory, readyMemory, resetMemory, restoreMemory, undoMemory, revealMemory, continueMemory, memoryPour, validateMemoryPuzzle, MEMORY_RULES, type MemorySession } from '../src/game/memory.ts';
+import { createMemory, hiddenMemory, initialUnits, moveMemory, peekMemory, readyMemory, resetMemory, restoreMemory, undoMemory, revealMemory, continueMemory, memoryPour, memoryReadyToReveal, unitColors, validateMemoryPuzzle, MEMORY_RULES, type MemorySession } from '../src/game/memory.ts';
 import { createMemorySolver, memoryReferenceHint } from '../src/game/memorySolver.ts';
 import { parseLevel } from '../src/game/model.ts';
 import { solveBoard, type SolverTask } from '../src/game/solver.ts';
@@ -53,16 +53,19 @@ test('black moves exactly one unit; visible runs stop at black; either black con
   assert.equal(memoryPour([[0],[1],[]], ['jade','coral'], [0,0], 0, 1), null);
   assert.equal(moveMemory(s, 2, 0)!.event.pour.amount, 1); // Black source onto visible coral.
 });
-test('moving/exposing/finishing does not reveal or signal correctness before explicit submission', () => {
+test('hidden moves keep knowledge until the publicly sorted board automatically reveals', () => {
   let s = readyMemory(createMemory(puzzle));
-  const original = s.revealed;
-  for (const p of puzzle.solution) {
+  const original = s.revealed, route = puzzle.solution;
+  for (const p of route) {
     s = moveMemory(s, p.source, p.target)!.session;
-    assert.equal(s.revealed, original);
-    assert.notEqual(s.game.status, 'solved');
-    assert.equal(hiddenMemory(s).flat().filter(Boolean).length, puzzle.masks.length);
+    if (p !== route.at(-1)) {
+      assert.equal(s.revealed, original);
+      assert.notEqual(s.game.status, 'solved');
+      assert.equal(hiddenMemory(s).flat().filter(Boolean).length, puzzle.masks.length);
+    }
   }
-  const known = revealMemory(s);
+  const known = s;
+  assert.equal(known.revealAt, puzzle.solution.length);
   assert.equal(known.game.status, 'solved'); assert.equal(known.judgement, 'correct');
   assert.ok(hiddenMemory(known).flat().every(v => !v));
   const undone = undoMemory(known);
@@ -71,6 +74,35 @@ test('moving/exposing/finishing does not reveal or signal correctness before exp
   const reset = resetMemory(undone);
   assert.equal(reset.phase, 'observe'); assert.equal(reset.attempt, 2);
   assert.deepEqual(reset.units, initialUnits(puzzle)); assert.ok(reset.revealed.some(n => n < 0));
+});
+test('automatic answer eligibility ignores true hidden colors but requires full, visibly consistent bottles', () => {
+  const colors = unitColors(fixture), knowledge = createMemory(fixture).revealed;
+  assert.equal(memoryReadyToReveal([[0,1],[2,3],[4,5],[6,7]], colors, knowledge), false);
+  assert.equal(memoryReadyToReveal(initialUnits(fixture), colors, knowledge), false);
+  // Both full bottles look sorted, though their black portions contain the opposite color.
+  const sorted = [[], [4,5,2,1], [3,6,7,0], []];
+  assert.equal(memoryReadyToReveal(sorted, colors, knowledge), true);
+  const changed = colors.map((c,id) => knowledge[id] < 0 ? 'azure' : c);
+  assert.equal(memoryReadyToReveal(sorted, changed, knowledge), true);
+  assert.equal(memoryReadyToReveal([[0,1,2,3], []], colors, colors.map(() => -1)), true);
+  assert.equal(memoryReadyToReveal([[], []], [], []), false);
+});
+test('an incorrect automatic answer never grants completion and keeps ordinary recovery available', () => {
+  let s = readyMemory(createMemory(fixture));
+  for (const [source, target] of [[0,2],[1,2],[0,1],[0,1],[0,2]]) s = moveMemory(s, source, target)!.session;
+  assert.equal(s.judgement, 'wrong'); assert.notEqual(s.game.status, 'solved');
+  assert.equal(s.revealAt, 5); assert.ok(s.revealed.every(n => n >= 0));
+  assert.equal(moveMemory(s, 1, 0), null);
+  assert.deepEqual(restore(s).game, s.game);
+  const solved = solveBoard(s.game.board);
+  assert.equal(solved.status, 'solved');
+  if (solved.status === 'solved') {
+    let cleanup = continueMemory(s, solved.route);
+    for (const p of solved.route) cleanup = moveMemory(cleanup, p.source, p.target)!.session;
+    assert.equal(cleanup.game.status, 'solved'); assert.equal(cleanup.judgement, 'cleanup');
+  }
+  const undo = undoMemory(s);
+  assert.equal(undo.judgement, 'cleanup'); assert.ok(undo.revealed.every(n => n >= 0));
 });
 test('wrong answers pause; continuation requires a replayed ordinary solution; undo keeps revealed knowledge', () => {
   let s = readyMemory(createMemory(fixture));
@@ -151,15 +183,18 @@ test('failed memory writes retry atomically in the shared player queue without d
   assert.equal(await player.commit(moved.state, { type: 'pour' }), true);
   assert.equal(await player.flush(), true);
   assert.equal(db.getFirstSync<{ peeks: number }>('SELECT peeks FROM memory_black_session')!.peeks, 1);
+  assert.equal(db.getFirstSync<{ peeks: number }>('SELECT peeks FROM memory_black_attempts')!.peeks, 1);
+  assert.equal(db.getFirstSync<{ value: number }>("SELECT value FROM level_stats WHERE mode='memory' AND metric='peeks'")!.value, 1);
   assert.equal(db.getFirstSync<{ n: number }>("SELECT COUNT(*) AS n FROM events WHERE kind='peek-open'")!.n, 1);
   db.native.close();
 });
-test('explicit correct/assisted completion is distinct and redoing does not overwrite the first result or grant credits', async () => {
+test('automatic correct/assisted completion is distinct and redoing does not overwrite the first result or grant credits', async () => {
   const { db, player, memory } = await setup();
   let s = readyMemory(memory.start()); await memory.commit(s, 'ready');
   for (const p of s.puzzle.solution) { s = moveMemory(s, p.source, p.target, true)!.session; await memory.commit(s, 'pour'); }
-  assert.equal(db.getFirstSync<{ n: number }>("SELECT COUNT(*) AS n FROM completions WHERE mode='memory'")!.n, 0);
-  s = revealMemory(s); await memory.commit(s, 'reveal-answer');
+  assert.equal(db.getFirstSync<{ n: number }>("SELECT COUNT(*) AS n FROM completions WHERE mode='memory'")!.n, 1);
+  const loaded = (await MemoryRepository.open(player, content)).state!;
+  assert.equal(loaded.judgement, 'correct'); assert.deepEqual(loaded.units, s.units);
   s = undoMemory(s); await memory.commit(s, 'undo');
   const last = s.puzzle.solution.at(-1)!; s = moveMemory(s, last.source, last.target)!.session; await memory.commit(s, 'pour');
   assert.equal(db.getFirstSync<{ n: number }>("SELECT COUNT(*) AS n FROM completions WHERE mode='memory'")!.n, 1);

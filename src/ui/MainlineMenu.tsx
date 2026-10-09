@@ -10,11 +10,22 @@ import { GameButton } from './GameButton';
 import { Icon } from './Icon';
 import { MAINLINE } from './mainlineContent';
 import { SOLID_SIDES } from './solidSideContent';
+import { LANGUAGES, localizedLanguageName } from '../i18n/messages';
+import type { LanguagePreference } from '../i18n/systemLanguage';
+import { getPlayer } from '../storage/runtime';
 
 const NUMBERS = Array.from({ length: 1000 }, (_, i) => i + 1);
 type Props = { visible: boolean; initialSection: 'levels' | 'settings'; showLevels: boolean; play: MainlineState; saveStatus: string; onClose: () => void; onResume: () => void; onSelect: (number: number) => void; onSelectSide: (number: number) => void; onPreview: (number: number) => void; onSidePreview: (number: number) => void; onSamples: () => void; onMixingTrial: () => void; onSymbols: () => void; symbols: boolean; sound: boolean; soundSaved: boolean; onSound: () => void; onCelebrationPreview: (count: 2 | 3 | 4 | 5) => void; onDebug?: () => void; onPrivacy: () => void };
 export function MainlineMenu({ visible, initialSection, showLevels, play, saveStatus, onClose, onResume, onSelect, onSelectSide, onPreview, onSidePreview, onSamples, onMixingTrial, onSymbols, symbols, sound, soundSaved, onSound, onCelebrationPreview, onDebug, onPrivacy }: Props) {
-  const { t, rtl } = useI18n();
+  const { t, rtl, language, preference, setLanguagePreference } = useI18n();
+  const [languagePicker, setLanguagePicker] = useState(false);
+  const [languageSaved, setLanguageSaved] = useState(true);
+  const languageRevision = useRef(0);
+  function chooseLanguage(next: LanguagePreference) {
+    const revision = ++languageRevision.current;
+    setLanguagePreference(next); setLanguagePicker(false);
+    void getPlayer().setPreference('language', next).then(saved => { if (revision === languageRevision.current) setLanguageSaved(saved); });
+  }
   const insets = useSafeAreaInsets();
   const { height } = useWindowDimensions();
   const [section, setSection] = useState(showLevels ? initialSection : 'settings');
@@ -32,12 +43,17 @@ export function MainlineMenu({ visible, initialSection, showLevels, play, saveSt
     mainList.current?.scrollToIndex({ index: Math.floor((number - 1) / 5), animated: false });
     Keyboard.dismiss();
   }
-  return <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+  return <Modal visible={visible} transparent animationType="fade" onRequestClose={languagePicker ? () => setLanguagePicker(false) : onClose}>
     <View style={[styles.backdrop, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 12 }]}>
       <LinearGradient colors={['#203745', '#102230']} style={styles.panel}>
-        <View style={[styles.heading, rtl && styles.reverse]}><UiText style={styles.title}>{t(section)}</UiText><GameButton kind="icon" icon="close" label={t('close')} onPress={onClose} /></View>
-        {showLevels && <View style={[styles.tabs, rtl && styles.reverse]}>{(['levels', 'settings'] as const).map(tab => <Pressable key={tab} accessibilityRole="tab" accessibilityState={{ selected: section === tab }} onPress={() => setSection(tab)} style={[styles.tab, section === tab && styles.activeTab]}><UiText style={[styles.tabText, section === tab && styles.activeTabText]}>{t(tab)}</UiText></Pressable>)}</View>}
-        {section === 'levels' ? <>
+        <View style={[styles.heading, rtl && styles.reverse]}><UiText style={styles.title}>{t(languagePicker ? 'language' : section)}</UiText><GameButton kind="icon" icon={languagePicker ? 'back' : 'close'} label={t(languagePicker ? 'back' : 'close')} onPress={languagePicker ? () => setLanguagePicker(false) : onClose} /></View>
+        {showLevels && !languagePicker && <View style={[styles.tabs, rtl && styles.reverse]}>{(['levels', 'settings'] as const).map(tab => <Pressable key={tab} accessibilityRole="tab" accessibilityState={{ selected: section === tab }} onPress={() => setSection(tab)} style={[styles.tab, section === tab && styles.activeTab]}><UiText style={[styles.tabText, section === tab && styles.activeTabText]}>{t(tab)}</UiText></Pressable>)}</View>}
+        {languagePicker ? <ScrollView style={styles.settings} contentContainerStyle={styles.settingsContent}>
+          {([{ id: 'system', name: t('system') }, ...LANGUAGES] as const).map(item => <Pressable key={item.id} accessibilityRole="radio" accessibilityState={{ checked: preference === item.id }} onPress={() => chooseLanguage(item.id)} style={[styles.settingRow, rtl && styles.reverse]}>
+            <View style={styles.settingCopy}><UiText style={styles.settingTitle}>{item.name}</UiText>{item.id !== 'system' && <UiText style={styles.settingNote}>{localizedLanguageName(item.id, language)}</UiText>}</View>
+            <UiText style={styles.settingValue}>{preference === item.id ? '✓' : ''}</UiText>
+          </Pressable>)}
+        </ScrollView> : section === 'levels' ? <>
           <ScrollView keyboardShouldPersistTaps="handled" style={[styles.levelControls, { maxHeight: Math.max(80, Math.min(260, height * .28)) }]}>
           <View style={[styles.progressHeading, rtl && styles.reverse]}><UiText style={styles.progressText}>{t('completedCount', { n: play.completedThrough })}</UiText><UiText style={styles.note}>{t('totalLevels')}</UiText></View>
           <View style={styles.progressTrack}><View style={[styles.progressFill, { width: `${play.completedThrough / 10}%` }]} /></View>
@@ -88,6 +104,7 @@ export function MainlineMenu({ visible, initialSection, showLevels, play, saveSt
           <View style={styles.settingsHero}><Icon name="spark" color="#DEC797" size={22} /><UiText style={styles.settingsBrand}>BOTTLE HARMONY</UiText></View>
           <Pressable accessibilityRole="switch" accessibilityLabel={t('sound')} accessibilityState={{ checked: sound }} onPress={onSound} style={[styles.settingRow, rtl && styles.reverse]}><View style={styles.settingCopy}><UiText style={styles.settingTitle}>{t('sound')}</UiText><UiText style={styles.settingNote}>{t(soundSaved ? 'soundNote' : 'saveFailed')}</UiText></View><View style={[styles.toggle, sound && styles.toggleOn]}><View style={[styles.toggleThumb, sound && styles.toggleThumbOn]} /></View></Pressable>
           <Pressable accessibilityRole="switch" accessibilityLabel={t('symbols')} accessibilityState={{ checked: symbols }} onPress={onSymbols} style={[styles.settingRow, rtl && styles.reverse]}><View style={styles.settingCopy}><UiText style={styles.settingTitle}>{t('symbols')}</UiText><UiText style={styles.settingNote}>{t('symbolsNote')}</UiText></View><View style={[styles.toggle, symbols && styles.toggleOn]}><View style={[styles.toggleThumb, symbols && styles.toggleThumbOn]} /></View></Pressable>
+          <Pressable accessibilityRole="button" onPress={() => setLanguagePicker(true)} style={[styles.settingRow, rtl && styles.reverse]}><View style={styles.settingCopy}><UiText style={styles.settingTitle}>{t('language')}</UiText><UiText style={styles.settingNote}>{t(languageSaved ? 'languageNote' : 'saveFailed')}</UiText></View><UiText style={styles.settingValue}>{preference === 'system' ? t('system') : LANGUAGES.find(item => item.id === preference)!.name} ›</UiText></Pressable>
           <Pressable accessibilityRole="button" onPress={onPrivacy} style={[styles.settingRow, rtl && styles.reverse]}><UiText style={styles.settingTitle}>{t('privacyPolicy')}</UiText><UiText style={styles.settingValue}>›</UiText></Pressable>
           <UiText style={styles.saveStatus}>{saveStatus}</UiText>
           {INTERNAL_TOOLS && <View style={styles.tools}>

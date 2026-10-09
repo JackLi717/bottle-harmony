@@ -56,7 +56,7 @@ export function VesselCarousel({ vessel, compact, saved, reduceMotion, onSelect 
       <Pressable onPress={() => move(1)} disabled={index === VESSELS.length - 1} accessibilityRole="button" accessibilityLabel={t('nextStyle')} accessibilityState={{ disabled: index === VESSELS.length - 1 }}
         style={({ pressed }) => [styles.arrow, index === VESSELS.length - 1 && styles.disabled, pressed && styles.pressed]}><View style={styles.flip}><Icon name="back" size={18} color="#BBCDD3" /></View></Pressable>
     </View>
-    <UiText style={styles.hint}>{t(saved ? choiceHint : 'saveFailed')}</UiText>
+    {!saved && <UiText style={styles.hint}>{t('saveFailed')}</UiText>}
   </View>;
 }
 const styles = StyleSheet.create({

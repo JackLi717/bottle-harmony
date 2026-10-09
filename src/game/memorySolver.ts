@@ -1,7 +1,7 @@
 import { createSolver, type SolverTask, type SolverOptions, type SolveResult, type SearchStats } from './solver.ts';
 import { initialBoard } from './model.ts';
 import { isSolved, type Pour } from './rules.ts';
-import { initialUnits, memoryPour, transferUnits, unitColors, type MemorySession, type UnitBoard } from './memory.ts';
+import { initialUnits, memoryPour, memoryReadyToReveal, transferUnits, unitColors, type MemorySession, type UnitBoard } from './memory.ts';
 
 /** A stored route helps only if its exact liquid identities match the current position. */
 export function memoryReferenceHint(current: MemorySession): Pour | null {
@@ -51,6 +51,8 @@ export function createMemorySolver(current: MemorySession, options: SolverOption
           elapsed += performance.now() - started;
           return finish({ status: 'solved', route: route.reverse(), shortest: true, stats: stats() });
         }
+        // An incorrect automatic answer ends black play; a hint cannot route through it.
+        if (node.pair === 0 && memoryReadyToReveal(node.units, colors, current.revealed)) { expanded++; cursor++; continue; }
         while (node.pair < n * n) {
           if (elapsed + performance.now() - started >= maxMs) return end('time');
           if (performance.now() - started >= sliceMilliseconds) return end(null);

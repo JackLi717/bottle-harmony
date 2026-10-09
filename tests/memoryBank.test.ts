@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFileSync } from 'node:fs';
 import { decodeMemoryBank, analyzeMemory, prototypePositions } from '../scripts/memory-bank-lib.ts';
-import { createMemory, readyMemory, moveMemory, hiddenMemory, undoMemory, restoreMemory, revealMemory, validateMemoryPuzzle } from '../src/game/memory.ts';
+import { createMemory, readyMemory, moveMemory, hiddenMemory, undoMemory, restoreMemory, validateMemoryPuzzle } from '../src/game/memory.ts';
 import { initialBoard } from '../src/game/model.ts';
 import { replaySolution, solveBoard } from '../src/game/solver.ts';
 import { nextMemoryNumber } from '../src/game/memoryCatalog.ts';
@@ -32,21 +32,26 @@ test('100 unique sourced boards have dispersed four-depth masks and two independ
   }
   assert.deepEqual(histogram, [239,149,146,243]); source.native.close();
 });
-test('every recorded quantity agrees with black-unit rules; knowledge is fixed until explicit reveal', () => {
+test('every recorded quantity agrees with black-unit rules; all 200 routes automatically reveal only on the final move', () => {
   for (const p of bank.records) for (const route of [p.solution, p.alternative]) {
     let state = readyMemory(createMemory(p));
     const knowledge = state.revealed;
     for (const q of route) {
       const before = state, accepted = moveMemory(state, q.source, q.target)!;
       assert.deepEqual(accepted.event.pour, q); state = accepted.session;
-      assert.equal(state.revealed, knowledge);
-      assert.equal(hiddenMemory(state).flat().filter(Boolean).length, p.masks.length);
-      assert.notEqual(state.game.status, 'solved');
+      if (q !== route.at(-1)) {
+        assert.equal(state.revealed, knowledge);
+        assert.equal(hiddenMemory(state).flat().filter(Boolean).length, p.masks.length);
+        assert.notEqual(state.game.status, 'solved');
+      } else {
+        assert.equal(state.judgement, 'correct');
+        assert.ok(state.revealed.every(n => n >= 0));
+      }
       const undo = undoMemory(state);
-      assert.deepEqual(undo.units, before.units); assert.equal(undo.revealed, knowledge);
+      assert.deepEqual(undo.units, before.units); assert.equal(undo.revealed, state.revealed);
     }
     assert.deepEqual(restoreMemory(p, { ...state, offset: state.game.historyOffset }).units, state.units);
-    state = revealMemory(state); assert.equal(state.judgement, 'correct'); assert.equal(state.game.status, 'solved');
+    assert.equal(state.judgement, 'correct'); assert.equal(state.game.status, 'solved');
     assert.deepEqual(restoreMemory(p, { ...state, offset: state.game.historyOffset }).revealed, state.revealed);
   }
 });

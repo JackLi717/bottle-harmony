@@ -1,33 +1,21 @@
-import Animated, { useAnimatedProps, type SharedValue } from 'react-native-reanimated';
-import { ClipPath, Defs, G, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
-import { memoryLayerGeometry, memoryRevealPose } from './memoryPresentation';
+import { useMemo } from 'react';
+import Animated, { useAnimatedProps, useDerivedValue, type SharedValue } from 'react-native-reanimated';
+import { G, Path } from 'react-native-svg';
+import { MEMORY_UNKNOWN_FILL, memoryRevealCover, memoryRevealPath } from './memoryPresentation';
 import type { VesselGeometry } from './vesselDesigns';
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
-const AnimatedRect = Animated.createAnimatedComponent(Rect);
 
-/** Only mounted after the source is upright at home. Never changes liquid or knowledge. */
-export function MemoryReveal({ layer, vessel, id, color, progress }: { layer: number; vessel: VesselGeometry; id: string; color: string; progress: SharedValue<number> }) {
-  const { path, top, bottom } = memoryLayerGeometry(layer, vessel);
-  const clip = `${id}-memory-reveal-${layer}`, light = `${clip}-light`;
-  const height = Math.max(3, (bottom - top) * .3);
-  const fill = useAnimatedProps(() => ({ opacity: memoryRevealPose(progress.value).colorOpacity }));
-  const glow = useAnimatedProps(() => ({ opacity: memoryRevealPose(progress.value).glowOpacity }));
-  const sweep = useAnimatedProps(() => {
-    const pose = memoryRevealPose(progress.value);
-    return { y: bottom - (bottom - top + height) * pose.sweep, opacity: pose.glowOpacity };
-  });
-  return <G clipPath={`url(#${clip})`}>
-    <Defs>
-      <ClipPath id={clip}><Path d={path} /></ClipPath>
-      <LinearGradient id={light} x1="0" y1="0" x2="0" y2="1">
-        <Stop offset="0" stopColor="#FFF3CE" stopOpacity={0} />
-        <Stop offset=".5" stopColor="#FFF3CE" stopOpacity={.7} />
-        <Stop offset="1" stopColor="#FFF3CE" stopOpacity={0} />
-      </LinearGradient>
-    </Defs>
-    <AnimatedPath d={path} fill={`url(#${id}-${color})`} opacity={0} animatedProps={fill} />
-    <AnimatedRect x={0} width={100} height={height} fill={`url(#${light})`} opacity={0} animatedProps={sweep} />
-    <AnimatedPath d={path} fill="none" stroke="#FFF0B6" strokeWidth={1.4} opacity={0} animatedProps={glow} />
+/** Prepared during the last pour; uncovers the already merged real liquid at home. */
+export function MemoryReveal({ layers, vessel, pourProgress, visibleLayers, progress }: { layers: readonly boolean[]; vessel: VesselGeometry; pourProgress: SharedValue<number>; visibleLayers: SharedValue<number>; progress: SharedValue<number> }) {
+  const key = layers.map(Number).join('');
+  const path = useMemo(() => memoryRevealPath([...key].map(n => n === '1'), vessel), [key, vessel]);
+  // Subscribe SVG opacity to this boolean edge, not every frame of the last pour.
+  const ready = useDerivedValue(() => pourProgress.value >= 1 && visibleLayers.value > 0);
+  const cover = useAnimatedProps(() => ({ opacity: memoryRevealCover(ready.value ? 1 : 0, progress.value, 1).opacity }));
+  const glow = useAnimatedProps(() => ({ opacity: memoryRevealCover(ready.value ? 1 : 0, progress.value, 1).glow }));
+  return <G>
+    <AnimatedPath d={path} fill={MEMORY_UNKNOWN_FILL} animatedProps={cover} />
+    <AnimatedPath d={path} fill="#FFF3CE" animatedProps={glow} />
   </G>;
 }

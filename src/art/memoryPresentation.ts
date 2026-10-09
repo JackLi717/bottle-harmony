@@ -30,9 +30,33 @@ export function memoryLayerGeometry(layer: number, vessel: VesselGeometry) {
   return { path: pathOf(polygon), mark: pathOf(mark), top, bottom };
 }
 
+/** Adjacent covers share a contour, with no artificial quarter seams. */
+export function memoryRevealPath(layers: readonly boolean[], vessel: VesselGeometry) {
+  const paths: string[] = [];
+  for (let start = 0; start < layers.length; start++) {
+    if (!layers[start]) continue;
+    let end = start;
+    while (layers[end + 1]) end++;
+    const bottom = liquidSurface(start, vessel).y;
+    const polygon = clipBelow(liquidPolygon(end + 1, 0, vessel).map(p => ({ x: p.x, y: -p.y })), -bottom)
+      .map(p => ({ x: p.x, y: -p.y }));
+    paths.push(pathOf(polygon));
+    start = end;
+  }
+  return paths.join(' ');
+}
+
 export function memoryRevealPose(progress: number) {
   'worklet';
   const p = Math.max(0, Math.min(1, progress));
   const color = Math.max(0, Math.min(1, (p - .08) / .72));
   return { colorOpacity: color * color * (3 - 2 * color), glowOpacity: Math.sin(Math.PI * p) * .5, sweep: p };
+}
+
+/** The cover is already opaque on the UI thread before RN commits the real liquid. */
+export function memoryRevealCover(pourProgress: number, revealProgress: number, visibleLayers: number) {
+  'worklet';
+  if (pourProgress < 1 || visibleLayers <= 0) return { opacity: 0, glow: 0 };
+  const pose = memoryRevealPose(revealProgress);
+  return { opacity: 1 - pose.colorOpacity, glow: pose.glowOpacity * .35 };
 }

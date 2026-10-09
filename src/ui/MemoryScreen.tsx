@@ -13,7 +13,7 @@ import { PourStream } from '../art/PourStream';
 import { createPourPlan, POUR_DURATION_MS, type PourPlan } from '../art/pourGeometry';
 import { isBottleComplete } from '../art/bottleCompletion';
 import type { VesselDesign } from '../art/vesselDesigns';
-import { moveMemory, peekMemory, readyMemory, resetMemory, undoMemory, revealMemory, continueMemory, getMemoryPour, type MemorySession } from '../game/memory';
+import { moveMemory, peekMemory, readyMemory, resetMemory, undoMemory, continueMemory, getMemoryPour, type MemorySession } from '../game/memory';
 import { createMemorySolver, memoryReferenceHint } from '../game/memorySolver';
 import { type Board, type Pour } from '../game/rules';
 import { createSolver, type SolveResult, type SolverTask } from '../game/solver';
@@ -114,10 +114,10 @@ export function MemoryScreen({ vessel, symbols, sound, reduceMotion, onBack, vis
     return () => { app.remove(); resize.remove(); motion.remove(); hardware.remove(); search.current?.cancel(); pouring.current = null; cancelAnimation(progress); cancelAnimation(revealProgress); };
   }, [back, stopPresentation, progress, revealProgress]);
   useEffect(() => {
-    if (!pendingWin || animation || !active || !won) return;
+    if (!pendingWin || animation || reveal || !active || !won) return;
     const timer = setTimeout(() => { setPendingWin(false); setCelebrating(!reduceMotion); }, reduceMotion ? 0 : 1000);
     return () => clearTimeout(timer);
-  }, [pendingWin, animation, active, won, reduceMotion]);
+  }, [pendingWin, animation, reveal, active, won, reduceMotion]);
   const celebrationFinished = useCallback(() => setCelebrating(false), []);
   const assess = useCallback(async (value: MemorySession) => {
     const task = createSolver(value.game.board, { capacity: 4, maxStates: 100000, maxMilliseconds: 1500 });
@@ -144,12 +144,13 @@ export function MemoryScreen({ vessel, symbols, sound, reduceMotion, onBack, vis
     if (!accepted) return;
     stopReveal();
     busy.current = true; availability(true);
-    commit(accepted.session, 'pour', { source, target, amount: accepted.event.pour.amount, hinted, requestId });
+    commit(accepted.session, 'pour', { source, target, amount: accepted.event.pour.amount, hinted, requestId, automaticReveal: before.judgement === 'hidden' && accepted.session.judgement !== 'hidden' });
     if (accepted.session.game.status === 'solved') setPendingWin(true);
     if (reduceMotion) { busy.current = false; setSelected(null); availability(false); return; }
     progress.set(0);
     const p = accepted.event.pour;
     const presentation = { before, pour: p, revealed: newlyRevealedMemory(before, accepted.session), plan: createPourPlan(layout.positions[p.source], layout.positions[p.target], before.game.board[p.source].length, p.amount, minY, selected === p.source ? 12 : 0, layout.width, layout.height, vessel) };
+    if (presentation.revealed.length) revealProgress.set(0);
     pouring.current = presentation; setAnimation(presentation);
   }
   function select(index: number) {
@@ -185,20 +186,13 @@ export function MemoryScreen({ vessel, symbols, sound, reduceMotion, onBack, vis
     search.current = null; busy.current = false; setSearching(false);
     reportHint(result.status === 'solved' ? 'solved' : result.status === 'unsolvable' ? 'unsolvable' : 'unknown');
     if (result.status === 'solved' && result.route.length) pour(result.route[0].source, result.route[0].target, true, id);
-    else { availability(false); setNotice({ title: t('hint'), message: t(result.status === 'solved' ? 'memoryReveal' : result.status === 'unsolvable' ? 'unsolvableTitle' : 'searchLimit') }); }
+    else { availability(false); if (result.status !== 'solved') setNotice({ title: t('hint'), message: t(result.status === 'unsolvable' ? 'unsolvableTitle' : 'searchLimit') }); }
   }
   function next() {
     if (busy.current) return;
     stopReveal();
     setPendingWin(false); setCelebrating(false); setSelected(null);
     commit(repository.select(nextMemoryNumber(session.puzzle.number, repository.content.memory.length)), 'next');
-  }
-  function submit() {
-    if (busy.current || tutorial || current().judgement !== 'hidden' || current().phase !== 'play') return;
-    const before = current(), next = revealMemory(before);
-    stopReveal(); setSelected(null); commit(next, 'reveal-answer');
-    if (!reduceMotion) { revealProgress.set(0); setReveal({ key: ++revealSequence.current, units: newlyRevealedMemory(before, next) }); }
-    if (next.game.status === 'solved') setPendingWin(true);
   }
   function continueSorting() {
     if (assessment?.status !== 'solved' || busy.current) return;
@@ -218,7 +212,7 @@ export function MemoryScreen({ vessel, symbols, sound, reduceMotion, onBack, vis
         <View testID="memory-stage" style={styles.stage} onLayout={e => { const l = e.nativeEvent.layout; setStage(old => old.width === l.width && old.height === l.height && old.y === l.y ? old : l); }}>
           {scale > 0 && <View collapsable={false} onLayout={boardLaidOut} style={{ width: layout.width * scale, height: layout.height * scale, overflow: 'visible' }}>
             <View pointerEvents="none" style={StyleSheet.absoluteFill}><StageArt layout={layout} /></View>
-            {layout.positions.map((position, index) => <Bottle key={index} index={index} vessel={vessel} position={position} colors={displayBoard[index]} hiddenLayers={hidden[index]} revealingLayers={reveals[index]} revealProgress={revealProgress} markedLayers={observing ? session.units[index].map(id => session.revealed[id] < 0) : []} selected={selected === index} completed={!hidden[index].some(Boolean) && isBottleComplete(displayBoard[index], 4)} hiddenPour={hiddenPour} width={100 * scale} scale={scale} plan={animation?.plan ?? null} pour={animation?.pour ?? null} progress={progress} symbols={symbols} completionEffect="cork" completionScene={`memory:${game.level.id}:${session.attempt}:${epoch}`} completionAnimations={active && !reduceMotion} />)}
+            {layout.positions.map((position, index) => <Bottle key={index} index={index} vessel={vessel} position={position} colors={displayBoard[index]} hiddenLayers={hidden[index]} revealingLayers={reveals[index]} revealProgress={revealProgress} markedLayers={observing ? session.units[index].map(id => session.revealed[id] < 0) : []} selected={selected === index} completed={!hidden[index].some(Boolean) && !reveals[index].some(Boolean) && isBottleComplete(displayBoard[index], 4)} prepareCompletion={(!!animation?.revealed.length || !!reveal) && isBottleComplete(game.board[index], 4)} hiddenPour={hiddenPour} width={100 * scale} scale={scale} plan={animation?.plan ?? null} pour={animation?.pour ?? null} progress={progress} symbols={symbols} completionEffect="cork" completionScene={`memory:${game.level.id}:${session.attempt}:${epoch}`} completionAnimations={active && !reduceMotion} />)}
             {layout.positions.map((position, index) => {
               const b = displayBoard[index], label = t('memoryBottle', { n: index + 1, layers: b.length, space: 4 - b.length,
                 colors: b.length ? b.map((c, d) => hidden[index][d] ? t('memoryUnknown') : observing && session.revealed[displayedUnits[index][d]] < 0 ? t('memoryMarked', { color: t(c as MessageKey) }) : t(c as MessageKey)).reverse().join(', ') : t('empty') });
@@ -231,12 +225,10 @@ export function MemoryScreen({ vessel, symbols, sound, reduceMotion, onBack, vis
         </View>
         <View style={[styles.footer, rail && styles.railFooter]}>
           <View style={[styles.feedback, compact && styles.compactFeedback]}>
-            {won && !animation && !pendingWin && !celebrating ? <GameButton preferredFocus kind="wide" tone="mint" icon="play" label={t(session.puzzle.number === repository.content.memory.length ? 'memoryReplay' : 'memoryNext')} onPress={next} />
+            {won && !animation && !reveal && !pendingWin && !celebrating ? <GameButton preferredFocus kind="wide" tone="mint" icon="play" label={t(session.puzzle.number === repository.content.memory.length ? 'memoryReplay' : 'memoryNext')} onPress={next} />
               : !saved ? <UiText accessibilityLiveRegion="polite" style={styles.note}>{t('saveFailed')}</UiText>
-              : session.judgement === 'wrong' ? <View style={styles.stalled}><UiText accessibilityLiveRegion="polite" style={[styles.note, { flex: 1 }]}>{t(searching ? 'memoryChecking' : assessment?.status === 'unsolvable' ? 'unsolvableTitle' : assessment?.status === 'solved' ? 'memoryWrong' : 'memoryCheckUnknown')}</UiText>{assessment?.status === 'solved' && <GameButton compact kind="wide" tone="mint" icon="play" style={{ flex: 1, width: 'auto' }} label={t('memoryContinue')} onPress={continueSorting} />}</View>
-              : session.judgement === 'hidden' && !observing && !peeking ? <GameButton compact={compact} kind="wide" icon="spark" label={t('memoryReveal')} onPress={submit} disabled={controlsDisabled} />
-                : game.status === 'stalled' && !animation && !searching && dismissedStalled !== game.board ? <View style={styles.stalled}><UiText style={[styles.note, { flex: 1 }]}>{t('stalled')}</UiText><GameButton kind="icon" icon="close" label={t('close')} onPress={() => { setDismissedStalled(game.board); record('dismiss-stalled'); }} /></View>
-                  : session.peeks > 0 && <UiText style={styles.note}>{t('memoryPeeks', { n: session.peeks })}</UiText>}
+              : session.judgement === 'wrong' && !animation && !reveal ? <View style={styles.stalled}><UiText accessibilityLiveRegion="polite" style={[styles.note, { flex: 1 }]}>{t(searching ? 'memoryChecking' : assessment?.status === 'unsolvable' ? 'unsolvableTitle' : assessment?.status === 'solved' ? 'memoryWrong' : 'memoryCheckUnknown')}</UiText>{assessment?.status === 'solved' && <GameButton compact kind="wide" tone="mint" icon="play" style={{ flex: 1, width: 'auto' }} label={t('memoryContinue')} onPress={continueSorting} />}</View>
+              : game.status === 'stalled' && !observing && !peeking && !animation && !searching && dismissedStalled !== game.board ? <View style={styles.stalled}><UiText style={[styles.note, { flex: 1 }]}>{t('stalled')}</UiText><GameButton kind="icon" icon="close" label={t('close')} onPress={() => { setDismissedStalled(game.board); record('dismiss-stalled'); }} /></View> : null}
           </View>
           <View style={[styles.dock, compact && styles.compactDock, rail && styles.railDock]}>
             {observing ? <Pressable hasTVPreferredFocus={visible && Platform.isTV} accessibilityRole="button" accessibilityLabel={t('memoryReady')} disabled={!visible || tutorial} onPress={() => commit(readyMemory(current()), 'ready')} style={[styles.ready, rail && styles.readyRail]}>

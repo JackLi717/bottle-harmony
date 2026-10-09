@@ -10,8 +10,11 @@ export function memoryDisplay(session: MemorySession, animation: MemoryPourPrese
   const board = animation ? animation.before.game.board.map((b, i) => i === animation.pour.target
     ? [...b, ...Array<string>(animation.pour.amount).fill(animation.pour.color)] : b) : session.game.board;
   const knowledge = animation?.before ?? session;
-  const hidden = hiddenMemory(knowledge, units).map((b, i) => b.map((masked, layer) => masked || (!animation && revealing.includes(units[i][layer]))));
-  const reveals = units.map(b => b.map(id => !animation && revealing.includes(id)));
+  // At home the real liquid is already merged; fade a black cover off it.
+  const hidden = hiddenMemory(knowledge, units);
+  // Prepare reveal art during the final pour, before it becomes visible.
+  const prepared = animation ? newlyRevealedMemory(animation.before, session) : revealing;
+  const reveals = units.map(b => b.map(id => prepared.includes(id)));
   return { units, board, hidden, reveals };
 }
 

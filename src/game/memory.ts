@@ -70,6 +70,11 @@ export function revealMemory(current: MemorySession): MemorySession {
   const game = gameOf(current.game, current.units, revealed, current.game.history, current.game.historyOffset);
   return Object.freeze({ ...current, game, revealed, revealAt, judgement: game.status === 'solved' ? 'correct' : 'wrong' });
 }
+/** Public arrangement only: black portions fit any color, but every occupied bottle must be full. */
+export function memoryReadyToReveal(units: UnitBoard, colors: readonly string[], revealed: readonly number[]): boolean {
+  return units.some(b => b.length > 0) && units.every(b => !b.length || b.length === 4
+    && new Set(b.filter(id => revealed[id] >= 0).map(id => colors[id])).size <= 1);
+}
 /** Only a fully replayed ordinary solution opens the post-answer continuation. */
 export function continueMemory(current: MemorySession, route: readonly Pour[]): MemorySession {
   if (current.judgement !== 'wrong' || current.phase !== 'play') return current;
@@ -82,8 +87,9 @@ export function moveMemory(current: MemorySession, source: number, target: numbe
   const units = transferUnits(current.units, pour), trimmed = current.history.length === SESSION_HISTORY_LIMIT;
   const history = Object.freeze([...(trimmed ? current.history.slice(1) : current.history), current.units]);
   const game = gameOf(current.game, units, current.revealed, [...(trimmed ? current.game.history.slice(1) : current.game.history), current.game.board], current.game.historyOffset + (trimmed ? 1 : 0));
-  return { event: Object.freeze({ before: current.game.board, after: game.board, pour: Object.freeze(pour), sourceId: game.level.bottles[source].id, targetId: game.level.bottles[target].id }),
-    session: Object.freeze({ ...current, game, units, history, pours: current.pours + 1, hints: current.hints + (hinted ? 1 : 0) }) };
+  const next = Object.freeze({ ...current, game, units, history, pours: current.pours + 1, hints: current.hints + (hinted ? 1 : 0) });
+  const session = next.judgement === 'hidden' && memoryReadyToReveal(units, unitColors(current.puzzle), next.revealed) ? revealMemory(next) : next;
+  return { event: Object.freeze({ before: current.game.board, after: game.board, pour: Object.freeze(pour), sourceId: game.level.bottles[source].id, targetId: game.level.bottles[target].id }), session };
 }
 export function undoMemory(current: MemorySession): MemorySession {
   if (current.phase !== 'play' || !current.history.length) return current;
@@ -147,7 +153,7 @@ export function restoreMemory(puzzle: MemoryPuzzle, input: Omit<MemorySession, '
     || input.judgement === 'wrong' && (game.status === 'solved' || input.revealAt !== input.offset + input.history.length)) throw new Error('Invalid memory judgement');
   return Object.freeze({ ...input, puzzle, game, units: freezeUnits(input.units), history: Object.freeze(input.history.map(freezeUnits)), revealed: Object.freeze([...input.revealed]) });
 }
-/** Verify recorded quantities as well as destinations, then explicitly reveal to finish. */
+/** Verify recorded quantities and destinations, including the automatic answer boundary. */
 export function replayMemory(puzzle: MemoryPuzzle, route: readonly Pour[]): MemorySession {
   let state = readyMemory(createMemory(puzzle));
   for (const p of route) {
@@ -156,7 +162,6 @@ export function replayMemory(puzzle: MemoryPuzzle, route: readonly Pour[]): Memo
       || accepted.event.pour.amount !== p.amount || accepted.event.pour.color !== p.color) throw new Error('Invalid black memory route');
     state = accepted.session;
   }
-  const result = revealMemory(state);
-  if (result.judgement !== 'correct') throw new Error('Incomplete black memory route');
-  return result;
+  if (state.judgement !== 'correct') throw new Error('Incomplete black memory route');
+  return state;
 }

@@ -2,18 +2,23 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import { AppState, Platform, StyleSheet, Text, type TextProps } from 'react-native';
 import { getLocales } from 'expo-localization';
 import { translate, type MessageKey } from './messages';
-import { systemLanguage } from './systemLanguage';
+import { preferredLanguage, systemLanguage, type LanguagePreference } from './systemLanguage';
 
 function useLanguage() {
-  const [language, setLanguage] = useState(() => systemLanguage(getLocales));
+  const [preference, setPreference] = useState<LanguagePreference>('system');
+  const [deviceLanguage, setDeviceLanguage] = useState(() => systemLanguage(getLocales));
+  const setLanguagePreference = useCallback((next: LanguagePreference) => {
+    setPreference(next); setDeviceLanguage(systemLanguage(getLocales));
+  }, []);
+  const language = preferredLanguage(preference, () => [{ languageTag: deviceLanguage }]);
   useEffect(() => {
     const subscription = AppState.addEventListener('change', state => {
-      if (state === 'active') setLanguage(systemLanguage(getLocales));
+      if (state === 'active') setDeviceLanguage(systemLanguage(getLocales));
     });
     return () => subscription.remove();
   }, []);
   const t = useCallback((key: MessageKey, params?: Record<string, string | number>) => translate(language, key, params), [language]);
-  return useMemo(() => ({ language, t, rtl: language === 'ar' }), [language, t]);
+  return useMemo(() => ({ language, preference, setLanguagePreference, t, rtl: language === 'ar' }), [language, preference, setLanguagePreference, t]);
 }
 const I18nContext = createContext<ReturnType<typeof useLanguage> | null>(null);
 export function I18nProvider({ children }: PropsWithChildren) {
