@@ -1,0 +1,37 @@
+[Android] 15–20 testers wanted for Water Sort - No Ads — offline puzzles, 1,000 levels
+
+Hi everyone,
+
+I’m developing Water Sort - No Ads (Bottle Harmony) by Platon Games and recruiting 15–20 Android volunteers for its Google Play closed test. I’d value people who can stay opted in for 14 consecutive days, actually try the game, and share honest feedback.
+
+Pour colored water between glass containers until each filled container holds a single color.
+
+The current test version includes:
+• 1,000 main levels and 50 bonus puzzles
+• Offline play, no ads, no in-app purchases, and no in-game account required
+• Free undo and reset; one free successful hint on each new puzzle, with later hints using credits earned in the game
+• 15 freely selectable glass-container styles
+• Saved progress and optional symbols to help distinguish colors
+
+Android phones and tablets running Android 7.0 or later are welcome. If possible, please stay opted in for 14 consecutive days, keep the game installed, and play regularly. The first 10–20 levels are a useful starting point; there is no daily quota or requirement to finish the game.
+
+I’d especially appreciate feedback on the pouring controls, difficulty, small-screen readability, crashes, lag, sound, and whether your progress restores after reopening.
+
+How to join — use the same Google account for all three steps:
+
+1. Join the Google Group:
+https://groups.google.com/g/bottle-harmony-beta-testers
+
+2. Opt in to the closed test:
+https://play.google.com/apps/testing/com.bottleharmony.app
+
+3. Install from Google Play:
+https://play.google.com/store/apps/details?id=com.bottleharmony.app
+
+If joining or installing fails, please tell me what message you see.
+
+Please leave feedback in this thread.
+
+For bugs, please include your device model, Android version, app version, level number, and what happened. Please don’t post your Google email or other personal information publicly.
+
+This is voluntary, unpaid testing. No purchase, rating, or public Play Store review is required. Honest criticism is welcome. Thanks for helping make the game better!

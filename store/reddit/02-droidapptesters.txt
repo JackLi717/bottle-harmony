@@ -1,0 +1,41 @@
+[Android closed test] Water Sort - No Ads — feedback on pouring controls and saved progress
+
+Hi everyone,
+
+I’m the developer of Water Sort - No Ads (Bottle Harmony) by Platon Games, a pre-release Android puzzle game. I’d like help checking the first-use experience: can you understand the pouring controls, try undo/reset, then close and reopen the game with your progress intact?
+
+Pour colored water between glass containers until each filled container holds a single color.
+
+The current test version includes:
+• 1,000 main levels and 50 bonus puzzles
+• Offline play, no ads, no in-app purchases, and no in-game account required
+• Free undo and reset; one free successful hint on each new puzzle, with later hints using credits earned in the game
+• 15 freely selectable glass-container styles
+• Saved progress and optional symbols to help distinguish colors
+
+Android phones and tablets running Android 7.0 or later are welcome. If possible, please stay opted in for 14 consecutive days, keep the game installed, and play regularly. The first 10–20 levels are a useful starting point; there is no daily quota or requirement to finish the game.
+
+A short testing checklist:
+1. Play the first few levels and tell me if any tap or pouring behavior is confusing.
+2. Try undo and reset, then close and reopen the app.
+3. If you continue to levels 10–20, tell me where the difficulty feels too sudden.
+4. On a small phone or tablet, check whether the colors, symbols, and buttons are readable.
+
+How to join — use the same Google account for all three steps:
+
+1. Join the Google Group:
+https://groups.google.com/g/bottle-harmony-beta-testers
+
+2. Opt in to the closed test:
+https://play.google.com/apps/testing/com.bottleharmony.app
+
+3. Install from Google Play:
+https://play.google.com/store/apps/details?id=com.bottleharmony.app
+
+If joining or installing fails, please tell me what message you see.
+
+Leave feedback here or email admin@readytradie.com.
+
+For bugs, please include your device model, Android version, app version, level number, and what happened. Please don’t post your Google email or other personal information publicly.
+
+This is voluntary, unpaid testing. No purchase, rating, or public Play Store review is required. Honest criticism is welcome. Thanks for helping make the game better!

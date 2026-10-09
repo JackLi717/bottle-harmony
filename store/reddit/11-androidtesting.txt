@@ -1,0 +1,16 @@
+[Closed test] Water Sort - No Ads — how does the pouring feel on your Android phone?
+
+Hello! I’m preparing Water Sort - No Ads (Bottle Harmony) for release and would appreciate Android players checking how it feels on real devices, especially older phones. I’m the developer, posting as Platon Games.
+
+The interaction is simple: tap a source glass and then a destination to pour a matching color. I’m interested in any hesitation, missed tap, animation stutter, awkward sound timing or cramped layout you notice. Trying the opening levels, muting/unmuting sound, and reopening an unfinished board would cover several useful checks.
+
+The attached screenshot shows a later board with twelve containers; new players start with simpler puzzles. The current test has 1,000 main puzzles and 50 bonus puzzles, with free undo/reset and 15 free container styles. A new puzzle’s first successful one-step hint is free, and additional hints use earned credits. There are no ads or in-app purchases, no in-game account, and the game works offline after installation.
+
+Android 7.0+ phones and tablets can join through Google Play. Use one Google account for all three links:
+Group: https://groups.google.com/g/bottle-harmony-beta-testers
+Test opt-in: https://play.google.com/apps/testing/com.bottleharmony.app
+Install: https://play.google.com/store/apps/details?id=com.bottleharmony.app
+
+If you can, please stay opted in for 14 consecutive days and play regularly. Testing is voluntary and unpaid, without a daily quota or a request for ratings/reviews. Please share your device model, Android version and level number if reporting a problem. Feedback is welcome here or at admin@readytradie.com; please don’t share your Google email publicly. Thanks for giving it a try!
+
+Attachment: store/google-play/screenshots/en-US/03-prism-level-673.png

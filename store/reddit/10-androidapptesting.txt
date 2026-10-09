@@ -1,0 +1,17 @@
+Water Sort - No Ads: Android testers wanted for color symbols and small-screen readability
+
+I’m the developer of Water Sort - No Ads (Bottle Harmony). I’m looking for players who can help check whether its glass boards are comfortable to read on different Android screens.
+
+There is an optional symbol for each liquid color, shown in the attached gameplay screenshot. I’d like to know whether those symbols help you follow a color while planning a pour, whether any colors are hard to distinguish, and whether the glasses or bottom buttons feel cramped on your device. Feedback with a device model and level number is especially useful.
+
+This is a free Google Play closed test, compatible with Android 7.0+ phones and tablets. The game offers offline play, 1,000 main puzzles, 50 bonus puzzles and 15 freely selectable glass styles. It has no ads, in-app purchases or in-game account. Undo/reset are free; each new puzzle has one free successful hint, with later hints using credits earned through play.
+
+How to get access:
+1. Join the tester group: https://groups.google.com/g/bottle-harmony-beta-testers
+2. Opt in: https://play.google.com/apps/testing/com.bottleharmony.app
+3. Install: https://play.google.com/store/apps/details?id=com.bottleharmony.app
+Use the same Google account throughout.
+
+I’d appreciate volunteers who can stay opted in for 14 consecutive days and actually play during that time. No daily quota, payment, purchase, rating or public review is required. Please leave feedback in this thread, or send bug details to admin@readytradie.com. Keep your Google email private. Thanks for helping me improve the game!
+
+Attachment: store/google-play/screenshots/en-US/04-crystal-symbols-level-910.png

@@ -1,0 +1,19 @@
+Water Sort - No Ads — free Android closed beta, looking for feedback on the first 20 puzzles
+
+Game Title: Water Sort - No Ads (Bottle Harmony)
+
+Playable Link: https://play.google.com/apps/testing/com.bottleharmony.app
+
+This is a Google Play closed test. Please join https://groups.google.com/g/bottle-harmony-beta-testers first, then open the playable link with the same Google account, opt in, and install. Store link: https://play.google.com/store/apps/details?id=com.bottleharmony.app
+
+Platform: Android 7.0+ phones and tablets.
+
+Description: Pour colored water between glass containers until each filled container holds a single color. The test build has 1,000 sequential main levels and 50 bonus puzzles, with free undo/reset and 15 freely selectable container styles. Each new puzzle includes one free successful hint; later hints use credits earned through play. It works offline after installation, saves progress, and offers optional symbols to help distinguish colors.
+
+Free to Play Status: The current closed test is free, with no ads or in-app purchases. No in-game account or NDA is required. Testing is voluntary and unpaid; no ratings or public reviews are requested.
+
+Involvement: I’m the developer, posting as Platon Games. This is our first player recruitment for Bottle Harmony.
+
+I’d love to hear which of the first 10–20 levels makes you stop and think, where the pouring controls feel confusing, and whether you want to keep playing. If you leave and reopen the game, does your board restore correctly? A short comment with the level number and your experience is helpful.
+
+If you can, please stay opted in for 14 consecutive days and play regularly. There is no daily quota or requirement to finish all the levels. Feedback is welcome here or at admin@readytradie.com. For bugs, please include device model, Android/app version, level number, and steps to reproduce. Please keep your Google email private. Thank you!

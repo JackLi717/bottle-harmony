@@ -1,0 +1,35 @@
+15–20 Android testers wanted: Water Sort - No Ads (free closed test, 1,000 levels)
+
+Hi everyone, I’m the developer of Bottle Harmony, listed on Google Play as Water Sort - No Ads. I’m recruiting our first Android players for a closed test and would appreciate real gameplay feedback before release.
+
+Pour colored water between glass containers until each filled container holds a single color.
+
+The current test version includes:
+• 1,000 main levels and 50 bonus puzzles
+• Offline play, no ads, no in-app purchases, and no in-game account required
+• Free undo and reset; one free successful hint on each new puzzle, with later hints using credits earned in the game
+• 15 freely selectable glass-container styles
+• Saved progress and optional symbols to help distinguish colors
+
+Android phones and tablets running Android 7.0 or later are welcome. If possible, please stay opted in for 14 consecutive days, keep the game installed, and play regularly. The first 10–20 levels are a useful starting point; there is no daily quota or requirement to finish the game.
+
+Please tell me where the first 10–20 levels feel unclear, too easy, too hard, or repetitive, and whether undo/reset, hints, and saved progress work as expected on your phone.
+
+How to join — use the same Google account for all three steps:
+
+1. Join the Google Group:
+https://groups.google.com/g/bottle-harmony-beta-testers
+
+2. Opt in to the closed test:
+https://play.google.com/apps/testing/com.bottleharmony.app
+
+3. Install from Google Play:
+https://play.google.com/store/apps/details?id=com.bottleharmony.app
+
+If joining or installing fails, please tell me what message you see.
+
+Feedback is welcome in the comments or at admin@readytradie.com.
+
+For bugs, please include your device model, Android version, app version, level number, and what happened. Please don’t post your Google email or other personal information publicly.
+
+This is voluntary, unpaid testing. No purchase, rating, or public Play Store review is required. Honest criticism is welcome. Thanks for helping make the game better!

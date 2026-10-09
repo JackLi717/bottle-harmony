@@ -1,0 +1,21 @@
+[Android] Help check undo, hints and resume in my glass-sorting game
+
+Hi TestMyApp — I’m looking for Android volunteers to check a few everyday interactions in Water Sort - No Ads, my game under the Bottle Harmony brand.
+
+The puzzle is to sort colored water between glass containers. I’d particularly value a quick check of this sequence:
+• Make a pour, undo it, then restart the puzzle.
+• Use a one-step hint and see whether the suggestion is understandable.
+• Leave a board unfinished, close the app, and return to it.
+
+Did anything behave differently from what you expected? If so, the level number, Android version and device model would help me investigate.
+
+The current closed-test build is free, has no ads or in-app purchases, saves progress locally, and works offline after installation. Undo/reset cost nothing. A new puzzle’s first successful hint is free; further hints use earned credits. It includes 1,000 main puzzles, 50 bonus puzzles and 15 free glass styles.
+
+Access is through Google Play on Android 7.0 or newer. With the same Google account:
+Join https://groups.google.com/g/bottle-harmony-beta-testers
+Then opt in at https://play.google.com/apps/testing/com.bottleharmony.app
+Install from https://play.google.com/store/apps/details?id=com.bottleharmony.app
+
+If possible, remain opted in for 14 consecutive days and play regularly. A few opening puzzles are a useful start, with no daily quota. This is voluntary, unpaid testing; I’m asking for honest feedback, not ratings or public reviews. Reply here or email admin@readytradie.com. Please don’t post your Google email publicly. Thank you!
+
+Attachment: store/google-play/screenshots/en-US/01-tulip-level-279.png

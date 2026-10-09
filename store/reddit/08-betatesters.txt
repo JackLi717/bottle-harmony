@@ -1,0 +1,18 @@
+Android puzzle beta: does Water Sort - No Ads make you want to play another level?
+
+Hi beta testers! I’m the developer of Water Sort - No Ads (Bottle Harmony), and I’d like to hear how the opening puzzles feel to someone playing for the first time.
+
+You tap one glass, then another, to move the top color. The goal is to leave each filled container with one color. This build has 1,000 main puzzles and 50 bonus puzzles, but you certainly don’t need to finish them to help. Try a few levels and tell me when the game becomes interesting, confusing, or repetitive.
+
+It’s a free Google Play closed test for Android 7.0+ phones and tablets. There are no ads or in-app purchases, play works offline after installation, and undo/reset are free. Each new puzzle has one free successful hint; later hints use credits earned in the game.
+
+To join, use the same Google account for these steps:
+1. Join the group: https://groups.google.com/g/bottle-harmony-beta-testers
+2. Become a tester: https://play.google.com/apps/testing/com.bottleharmony.app
+3. Install: https://play.google.com/store/apps/details?id=com.bottleharmony.app
+
+I’m hoping to find 15–20 volunteers who can stay opted in for 14 consecutive days and play regularly. There is no daily quota. Testing is unpaid, and no purchase, rating, or public review is requested.
+
+If you try it, a comment with the level number and one thing you liked or struggled with would be helpful. Bug reports can go here or to admin@readytradie.com; please keep your Google email private. Thanks for your time!
+
+Attachment: store/google-play/screenshots/en-US/02-moon-level-042.png

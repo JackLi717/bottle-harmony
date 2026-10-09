@@ -1,0 +1,26 @@
+Bottle Harmony / Water Sort - No Ads — glass sorting puzzles for Android, looking for first players
+
+I’m the developer of Bottle Harmony, listed on Google Play as Water Sort - No Ads by Platon Games. I’ve finished the first version and I’m looking for its first Android players.
+
+The basic rule is familiar: pour colored water between containers until each filled one holds a single color. I’ve focused on large glass containers, tap-to-pour controls, free undo/reset, and a fixed sequence of 1,000 main puzzles plus 50 bonus puzzles. There are 15 freely selectable container styles; changing the glass changes the presentation, not the puzzle rules. The current closed test is free, works offline after installation, has no ads or in-app purchases, and needs no in-game account. New puzzles have one free successful hint, with later hints using credits earned through play.
+
+I’d value feedback from puzzle players on two things: do the first 10–20 levels make you want to continue, and do the different glass shapes stay easy to read while planning a move? Tell me a specific level or moment that feels awkward, too obvious, or frustrating. Bugs and saved-progress problems are useful too.
+
+How to join — use the same Google account for all three steps:
+
+1. Join the Google Group:
+https://groups.google.com/g/bottle-harmony-beta-testers
+
+2. Opt in to the closed test:
+https://play.google.com/apps/testing/com.bottleharmony.app
+
+3. Install from Google Play:
+https://play.google.com/store/apps/details?id=com.bottleharmony.app
+
+If joining or installing fails, please tell me what message you see.
+
+Android 7.0+ phones and tablets are supported. If possible, stay opted in for 14 consecutive days and play regularly; there is no daily quota. This is voluntary, unpaid testing, with no purchase, rating, or review request. Feedback can go here or to admin@readytradie.com; please keep your Google email private.
+
+AI disclosure: AI assistance was used in development and in drafting this post. The game uses fixed, offline, solver-validated puzzles. The attached image is an existing gameplay screenshot. Thanks for taking a look!
+
+Attachment: store/google-play/screenshots/en-US/01-tulip-level-279.png
