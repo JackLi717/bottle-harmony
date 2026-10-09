@@ -2,7 +2,7 @@
 
 倒水排序游戏。当前已实现经典千关、50 道副关、黑色记忆百题、SQLite 保存与使用统计；六题调色仅内部构建开放。版本、内容与商店状态以[当前实现基线](docs/current-baseline.md)为准，Google Play 封闭测试已于 2026 年 10 月 10 日正式开始，见[测试安排](docs/play-testing-plan.md)。
 
-从[第一版基线](docs/current-baseline.md)与[文档索引](docs/README.md)进入现行规则、架构、内容、设备和发布说明。已实现的统计、存储与在线分析见[统计专题](docs/gameplay-statistics-plan.md)；后续决定与候选见[产品规则与创意](docs/gameplay-ideas.md)，钥匙／盖布解锁见[机关规划](docs/color-unlock-plan.md)，均按各自状态评审。
+从[第一版基线](docs/current-baseline.md)与[文档索引](docs/README.md)进入现行规则、架构、内容、设备和发布说明。已实现的统计、存储与在线分析见[统计专题](docs/gameplay-statistics-plan.md)；后续决定与候选见[产品规则与创意](docs/gameplay-ideas.md)，经典关卡后续的钥匙／盖布／逐层显色变化见[扩展规划](docs/color-unlock-plan.md)，均按各自状态评审。
 
 ## 环境
 

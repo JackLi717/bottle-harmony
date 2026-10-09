@@ -25,7 +25,7 @@
 
 | 文档 | 状态与范围 |
 | --- | --- |
-| [机关解谜规划](color-unlock-plan.md) | 仅规划：底部钥匙与颜色盖布；列明建议、未定规则、验证与原型顺序 |
+| [经典关卡扩展](color-unlock-plan.md) | 未实现：经典排序渐进引入钥匙、盖布与逐层显色；已确认规则、底层扩展设计、验证与待定编排 |
 | [商业规则与创意](gameplay-ideas.md) | 已确认待实现的产品规则与待评审候选分开；保留 1–157 稳定编号 |
 
 素材与商店说明分别在[音频](../assets/audio/README.md)、[品牌](../assets/brand/README.md)、[Google Play](../store/google-play/README.md)及[商店截图](../store/google-play/screenshots/README.md)。

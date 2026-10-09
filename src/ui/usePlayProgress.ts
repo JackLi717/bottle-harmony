@@ -9,7 +9,8 @@ import { MetricClock } from '../storage/metricTime';
 import { GameplayClock, monotonicNow } from '../storage/gameplayClock';
 export function usePlayProgress() {
   const repository = getPlayer();
-  const [play, updatePlay] = useState(repository.state);
+  // SQLite confirmation owns first-run teaching, including experience builds.
+  const [play, updatePlay] = useState<MainlineState>(() => repository.state);
   const [saveStatus, setSaveStatus] = useState<MessageKey>('localProgress');
   const [timer] = useState(() => new GameplayClock(monotonicNow()));
   const clock = useRef(timer);

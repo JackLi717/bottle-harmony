@@ -9,7 +9,8 @@ import { getMemory } from '../storage/runtime';
 export function useMemoryProgress(visible = true) {
   const repository = getMemory();
   const [session, setSession] = useState(() => repository.start());
-  const [tutorial, setTutorial] = useState(!repository.tutorialDone);
+  // Keep memory's persisted confirmation independent from classic teaching.
+  const [tutorial, setTutorial] = useState(() => !repository.tutorialDone);
   const [saved, setSaved] = useState(true);
   const [timer] = useState(() => new MemoryClock(monotonicNow()));
   const [metricsClock] = useState(() => new MetricClock(monotonicNow()));
