@@ -7,6 +7,8 @@ import { scheduleOnRN } from 'react-native-worklets';
 import { UiText, useI18n } from '../i18n/I18n';
 import type { MessageKey } from '../i18n/messages';
 import { Bottle } from '../art/Bottle';
+import { ContainerRestraint } from '../art/ContainerRestraint';
+import { containerRestraintState } from '../art/containerRestraintState';
 import { PourStream } from '../art/PourStream';
 import { BottleKey, LegacyCover, UnlockBottleVisibility, UnlockCover } from '../art/UnlockCover';
 import { CLASSIC_UNKNOWN_FILL, COVER_FAMILIES, coverGroups, pourPresentation, type CoverFamily } from '../art/unlockPresentation';
@@ -144,12 +146,24 @@ export function EnginePreview({ vessel: preferredVessel, symbols: showSymbols, s
       : zh ? `装满四份${colorName(trigger.when.color)}` : `Fill four ${colorName(trigger.when.color)} portions`).join(' / ');
   }
   function keyLabel(i: number) { return (zh ? ['青铜圆头钥匙','不锈钢菱形钥匙','红铜六角钥匙'] : ['patinated-bronze round key','stainless-steel diamond key','copper hexagonal key'])[i % 3] + (i >= 3 ? ` ${i + 1}` : ''); }
+  function restraintLabel(container: VisibleEngineContainer) {
+    const state = containerRestraintState(container);
+    return state === 'receive-only' ? zh ? '只能倒入' : 'Receive only'
+      : state === 'sealed' ? zh ? '不可倒入或倒出' : 'No transfers'
+      : state === 'fixed' ? zh ? '固定位置' : 'Fixed position' : '';
+  }
   function chooseBottle(i: number) {
     if (busy.current || searching || artRun.current || renderRun.current || handoffRun.current >= 0) return;
     if (visible[i].locked) { setNotice(condition(visible[i].id)); return; }
     if (session.status === 'solved') return;
     if (selected === i) { setSelected(null); return; }
-    if (selected === null) { if (visible[i].canSource && visible[i].colors.length) setSelected(i); return; }
+    if (selected === null) {
+      if (visible[i].canSource && visible[i].colors.length) setSelected(i);
+      else if (!visible[i].canSource) setNotice(visible[i].canReceive
+        ? zh ? '这只瓶子只能倒入，请先选择另一只瓶子。' : 'Receive only. Select another bottle to pour into this one.'
+        : zh ? '这只瓶子不能倒入或倒出。' : 'This bottle cannot receive or pour.');
+      return;
+    }
     const action: EngineAction = { type: 'transfer', source: visible[selected].id, target: visible[i].id };
     if (!execute(action)) setNotice(zh ? '这里暂时倒不进去。' : 'This transfer is unavailable.');
   }
@@ -344,8 +358,10 @@ export function EnginePreview({ vessel: preferredVessel, symbols: showSymbols, s
               baseDecoration={artEnabled && keys.map(trigger => <BottleKey key={trigger.id} shape={puzzle.triggers.indexOf(trigger)} vessel={designs[i]}
                 progress={progress} triggered={session.state.fired.includes(trigger.id)} />)} />
             </UnlockBottleVisibility>
+            {artEnabled && <ContainerRestraint state={containerRestraintState(visible[i])} position={position} scale={scale} id={'restraint-' + container.id} />}
             <View style={{ position: 'absolute', left: (position.x + 50 - Math.min(82, layout.slotWidth - 2) / 2) * scale, top: (position.y + 177) * scale, width: Math.min(82, layout.slotWidth - 2) * scale }}>
-              <UiText style={styles.capacity}>{container.locked && !artEnabled ? '🔒 ' : ''}{container.count === null ? '?' : container.colors.length}/{container.capacity}{container.fixed ? ' ▣' : ''}</UiText>
+              <UiText style={styles.capacity}>{container.locked && !artEnabled ? '🔒 ' : ''}{container.count === null ? '?' : container.colors.length}/{container.capacity}{container.fixed && !artEnabled ? ' ▣' : ''}</UiText>
+              {!!restraintLabel(visible[i]) && <UiText style={styles.condition}>{restraintLabel(visible[i])}</UiText>}
               {!container.locked && puzzle.containers[i].acceptColors && <UiText numberOfLines={2} style={styles.condition}>{puzzle.containers[i].acceptColors!.map(colorName).join(' / ')}</UiText>}
             </View>
           </View>;
@@ -354,7 +370,7 @@ export function EnginePreview({ vessel: preferredVessel, symbols: showSymbols, s
           neckWidth={Math.min(30, designs[group.indices[0]].mouth.outer + 2)} triggerIndices={group.conditions.map(trigger => puzzle.triggers.indexOf(trigger))} />)
           : covers.filter(group => group.state !== 'relocked').flatMap(group => group.indices.map(i => <LegacyCover key={i} x={layout.positions[i].x} y={layout.positions[i].y} scale={scale} opening={group.state === 'opening'} progress={progress} />))}
         {shown.map((container, i) => <Pressable key={container.id} nativeID={bottleControlId(i)} testID={bottleControlId(i)} accessibilityRole="button"
-          accessibilityLabel={`${i + 1}: ${container.locked ? `${zh ? '锁定' : 'Locked'}; ${condition(container.id)}; ` : ''}${container.count === null ? '?' : [...container.colors].reverse().map(colorName).join(', ')}; ${container.capacity}${puzzle.triggers.filter(trigger => trigger.when.type === 'empty' && trigger.when.container === container.id).map(trigger => '; ' + keyLabel(puzzle.triggers.indexOf(trigger))).join('')}`}
+          accessibilityLabel={`${i + 1}: ${container.locked ? `${zh ? '锁定' : 'Locked'}; ${condition(container.id)}; ` : ''}${container.count === null ? '?' : [...container.colors].reverse().map(colorName).join(', ')}; ${container.capacity}${restraintLabel(visible[i]) ? '; ' + restraintLabel(visible[i]) : ''}${puzzle.triggers.filter(trigger => trigger.when.type === 'empty' && trigger.when.container === container.id).map(trigger => '; ' + keyLabel(puzzle.triggers.indexOf(trigger))).join('')}`}
           accessibilityState={{ selected: selected === i, disabled: !!animation || searching }} disabled={!Platform.isTV && (!!animation || searching)} onPress={() => chooseBottle(i)}
           style={{ position: 'absolute', left: (layout.positions[i].x + 50) * scale - bottleHitWidth(layout, scale) / 2, top: layout.positions[i].y * scale, width: bottleHitWidth(layout, scale), height: 180 * scale, zIndex: 3 }} />)}
         {animation && <View pointerEvents="none" style={[StyleSheet.absoluteFill, { zIndex: 11 }]}><PourStream plan={animation.plan} color={animation.pour.color} progress={progress} /></View>}

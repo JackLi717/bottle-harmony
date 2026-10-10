@@ -7,6 +7,7 @@ import { LIQUIDS, LIQUID_SYMBOLS } from './palette';
 import { bottleKeyAnchor, bottleKeyPose, coverFamilyForConditions, coverPose, keyIdentity, type CoverFamily, type CoverGroup, type CoverState } from './unlockPresentation';
 import type { VesselGeometry } from './vesselDesigns';
 import { FLOW_END } from './pourGeometry';
+import { RestraintBase } from './ContainerRestraint';
 
 const AnimatedG = Animated.createAnimatedComponent(G);
 const AnimatedRect = Animated.createAnimatedComponent(Rect);
@@ -182,14 +183,13 @@ export const UnlockCover = memo(function UnlockCover({ group, family: requestedF
   return <View pointerEvents="none" style={{ position: 'absolute', left: group.x * scale, top: group.y * scale, width: width * scale, height: height * scale, zIndex: 2 }}>
     <Svg width="100%" height="100%" viewBox={'0 0 ' + width + ' ' + height}>
       <MaterialDefinitions id={id} width={width} height={height} />
-      {state === 'relocked' ? <G>
-        <Ellipse cx={width / 2} cy={height - 3.5} rx={width / 2 - 2} ry={3.2} fill={wood ? 'url(#' + id + '-wood)' : 'url(#' + id + '-rail)'} stroke={wood ? '#9D7359' : '#8497A3'} strokeWidth={.75} />
+      {state === 'relocked' ? <RestraintBase width={width} height={height} fill={wood ? 'url(#' + id + '-wood)' : 'url(#' + id + '-rail)'} edge={wood ? '#9D7359' : '#8497A3'}>
         {group.conditions.slice(0, 2).map((trigger, i) => <G key={trigger.id} transform={'translate(' + (width - 10 - i * 17) + ' ' + (height - 16) + ')'}>
           {family === 'cloth' ? <ClothBadge trigger={trigger} symbols={symbols} radius={7} />
             : <G transform="scale(.7)"><ConditionLock trigger={trigger} shape={triggerIndices[i]} id={id} symbols={symbols} /></G>}
         </G>)}
         {family === 'louver' && <Path d={'M3 ' + (height - 3) + ' V10 M' + (width - 3) + ' ' + (height - 3) + ' V10'} fill="none" stroke="#8297A4" strokeWidth={1.2} />}
-      </G> : <AnimatedG animatedProps={shell} clipPath={'url(#' + id + '-slot)'}>
+      </RestraintBase> : <AnimatedG animatedProps={shell} clipPath={'url(#' + id + '-slot)'}>
         {family === 'cloth' ? <Cloth id={id} width={width} height={height} state={state} progress={progress} neckWidth={neckWidth} /> : <>
           {edges.map(({ left, right }, i) => family === 'wood' ? <G key={i}>
             <WoodLeaf x={left + 2} width={(right - left - 4) / 2} right={false} id={id} state={state} progress={progress} />

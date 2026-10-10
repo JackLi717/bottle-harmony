@@ -3,6 +3,7 @@ import type { SortingPuzzle, SortingTrigger } from '../game/engineModel.ts';
 import { liquidPolygon, type Point } from './liquidGeometry.ts';
 import type { VesselGeometry } from './vesselDesigns.ts';
 import { FLOW_END, POUR_DURATION_MS } from './pourGeometry.ts';
+import { containerRestraintState } from './containerRestraintState.ts';
 
 export const COVER_FAMILIES = ['wood', 'louver', 'cloth', 'roller'] as const;
 export type CoverFamily = typeof COVER_FAMILIES[number];
@@ -31,7 +32,8 @@ export function coverGroups(puzzle: SortingPuzzle, visible: readonly VisibleEngi
   positions: readonly Point[], family: CoverFamily): readonly CoverGroup[] {
   const groups: CoverGroup[] = [];
   visible.forEach((container, i) => {
-    const state: CoverState | null = container.locked ? container.count === null ? 'closed' : 'relocked'
+    const restriction = containerRestraintState(container);
+    const state: CoverState | null = container.locked ? restriction === 'concealed' ? 'closed' : 'relocked'
       : before?.[i].locked ? 'opening' : null;
     if (!state) return;
     const conditions = puzzle.triggers.filter(trigger => trigger.unlock.includes(container.id));
