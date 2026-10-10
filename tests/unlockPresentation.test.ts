@@ -1,15 +1,74 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { createEngineSession, moveEngineSession, resetEngineSession, undoEngineSession, visibleEngineState } from '../src/game/engine.ts';
+import { createEngineSession, evaluateEngineGoal, moveEngineSession, resetEngineSession, undoEngineSession, visibleEngineState } from '../src/game/engine.ts';
+import { replayEngineRoute } from '../src/game/engineSearch.ts';
 import { engineFixture, ENGINE_EXAMPLES } from '../src/game/engineExamples.ts';
-import { unlockArtExample } from '../src/game/unlockArtExamples.ts';
-import { CLASSIC_UNKNOWN_FILL, COVER_FAMILIES, coverGroups, coverPose, pourPresentation, revealOpacity, UNIT_REVEAL_MS, UNLOCK_DURATION_MS } from '../src/art/unlockPresentation.ts';
+import { unlockArtExample, unlockKeyPairsExample } from '../src/game/unlockArtExamples.ts';
+import { bottleKeyAnchor, bottleKeyPose, CLASSIC_UNKNOWN_FILL, COVER_FAMILIES, coverFamilyForConditions, coverGroups, coverPose, keyIdentity, pourPresentation, revealOpacity, UNIT_REVEAL_MS, UNLOCK_DURATION_MS } from '../src/art/unlockPresentation.ts';
 import { boardLayout } from '../src/ui/boardLayout.ts';
 import { FLOW_END, POUR_DURATION_MS } from '../src/art/pourGeometry.ts';
 import { VESSELS } from '../src/art/vesselDesigns.ts';
 import { liquidFrame } from '../src/art/liquidPresentation.ts';
 import { LIQUIDS } from '../src/art/palette.ts';
+import { liquidPolygon, type Point } from '../src/art/liquidGeometry.ts';
 const visible = (s: ReturnType<typeof createEngineSession>) => visibleEngineState(s.runtime, s.state, s.known, s.seen);
+
+test('keys rest inside every cavity floor and bottom portion, without sliding or following the final poured liquid', () => {
+  const inside = (point: Point, polygon: readonly Point[]) => {
+    let result = false;
+    for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+      const a = polygon[i], b = polygon[j];
+      if ((a.y > point.y) !== (b.y > point.y) && point.x < (b.x - a.x) * (point.y - a.y) / (b.y - a.y) + a.x) result = !result;
+    }
+    return result;
+  };
+  for (const vessel of VESSELS) {
+    const anchor = bottleKeyAnchor(vessel), initial = bottleKeyPose(anchor, false, 0);
+    assert.ok(Object.values(anchor).every(Number.isFinite));
+    assert.ok(anchor.scale > 0 && anchor.scale <= .9);
+    assert.ok(anchor.scale > .66, `${vessel.id}: horizontal key remains legible`);
+    // Include the full head/shaft and stroke, rather than checking only the center.
+    for (const x of [-6.5, 6.5]) for (const y of [-9.5, 11.5]) {
+      const [a,b,c,d,tx,ty] = initial.matrix;
+      const corner = { x: tx + a * x + c * y, y: ty + b * x + d * y };
+      assert.ok(inside(corner, vessel.interior), `${vessel.id}: key stays in glass cavity`);
+      assert.ok(inside(corner, liquidPolygon(1, 0, vessel)), `${vessel.id}: key stays in bottom portion`);
+    }
+    for (let i = 0; i <= 100; i++) {
+      const p = i / 100;
+      assert.deepEqual(bottleKeyPose(anchor, false, p), initial);
+      const triggered = bottleKeyPose(anchor, true, p);
+      assert.deepEqual(triggered.matrix, initial.matrix, 'Even the final emptying move only fades the fixed key');
+      if (p <= FLOW_END) assert.equal(triggered.opacity, 1);
+    }
+    assert.equal(bottleKeyPose(anchor, true, 1).opacity, 0);
+  }
+});
+
+test('three material/shape key pairs open only their mapped group; cloth never mislabels a key gate as a color achievement', () => {
+  const p = unlockKeyPairsExample();
+  let s = createEngineSession(p, 'pairs');
+  assert.equal(new Set(p.triggers.map((_, i) => keyIdentity(i).fill)).size, 3);
+  assert.equal(new Set(p.triggers.map((_, i) => keyIdentity(i).shape)).size, 3);
+  for (let pair = 0; pair < 3; pair++) {
+    const source = pair * 2;
+    const next = moveEngineSession(s, { type: 'transfer', source: `b${source}`, target: `b${source + 1}` })!;
+    assert.deepEqual(next.events.filter(e => e.type === 'unlock').flatMap(e => e.triggers), [p.triggers[pair].id]);
+    const open = visible(next.session);
+    for (let i = 6; i < 12; i++) assert.equal(open[i].locked, i >= 8 + pair * 2);
+    assert.equal(coverFamilyForConditions('cloth', [p.triggers[pair]]), 'wood');
+    s = next.session;
+  }
+  const color = unlockArtExample(1, 'color').triggers;
+  assert.equal(coverFamilyForConditions('cloth', color), 'cloth');
+  for (const family of ['wood','louver','roller'] as const) assert.equal(coverFamilyForConditions(family, p.triggers), family);
+  // Additional pairs keep an explicit identity even after material/shape reuse.
+  assert.equal(keyIdentity(3).number, 4); assert.equal(keyIdentity(4).number, 5);
+  const route = [[0,1],[2,3],[4,5],[6,0],[7,2],[6,2],[7,0],[8,4],[9,6],[8,6],[9,4],[10,7],[11,8],[10,8],[11,7]];
+  const initial = createEngineSession(p, 'full-pair-route');
+  const final = replayEngineRoute(initial.runtime, initial, route.map(([source,target]) => ({ type:'transfer', source:`b${source}`, target:`b${target}` })));
+  assert.equal(evaluateEngineGoal(initial.runtime, final.state), true);
+});
 
 test('every one/two/three-bottle sample opens atomically with either condition; undo keeps contents visible and reset covers again', () => {
   for (const count of [1,2,3] as const) for (const condition of ['key','color'] as const) for (const family of COVER_FAMILIES) {

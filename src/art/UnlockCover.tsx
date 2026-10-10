@@ -1,10 +1,11 @@
-import { memo, type ReactNode } from 'react';
+import { memo, useMemo, type ReactNode } from 'react';
 import { Platform, View } from 'react-native';
 import Animated, { useAnimatedProps, useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
 import Svg, { Circle, ClipPath, Defs, Ellipse, G, LinearGradient, Path, Pattern, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import type { SortingTrigger } from '../game/engineModel';
 import { LIQUIDS, LIQUID_SYMBOLS } from './palette';
-import { coverPose, type CoverFamily, type CoverGroup, type CoverState } from './unlockPresentation';
+import { bottleKeyAnchor, bottleKeyPose, coverFamilyForConditions, coverPose, keyIdentity, type CoverFamily, type CoverGroup, type CoverState } from './unlockPresentation';
+import type { VesselGeometry } from './vesselDesigns';
 import { FLOW_END } from './pourGeometry';
 
 const AnimatedG = Animated.createAnimatedComponent(G);
@@ -17,24 +18,29 @@ function matrixProps(matrix: number[]): { transform?: string; matrix?: number[];
 
 /** Three key heads remain legible at phone size; target badges use the identical silhouette. */
 export function KeyGlyph({ shape, hole = false }: { shape: number; hole?: boolean }) {
+  const identity = keyIdentity(shape);
   const head = shape % 3 === 0 ? 'M-5 -3 A5 5 0 1 0 5 -3 A5 5 0 1 0 -5 -3'
     : shape % 3 === 1 ? 'M0 -9 L6 -3 L0 3 L-6 -3 Z' : 'M-3 -8 H3 L6 -3 L3 2 H-3 L-6 -3 Z';
   return <G>
-    <Path d={head} fill={hole ? '#211C18' : '#F1D39B'} stroke={hole ? '#B38E53' : '#8C6539'} strokeWidth={.7} />
-    {shape >= 3 && <SvgText x={7} y={-2} fontSize={6} fill={hole ? '#281D15' : '#F1D39B'}>{shape + 1}</SvgText>}
+    <Path d={head} fill={hole ? identity.dark : identity.fill} stroke={hole ? identity.fill : identity.edge} strokeWidth={.7} />
+    {identity.number && <SvgText x={0} y={-1.4} textAnchor="middle" fontSize={identity.number > 9 ? 3.5 : 4.8} fill={hole ? identity.light : identity.dark}>{identity.number}</SvgText>}
     {hole ? <Path d="M-1 -1 H1 L1.6 6 H-1.6 Z" fill="#211C18" /> : <>
-      <Circle cy={-3} r={2.1} fill="#765536" />
-      <Path d="M-1.2 1 V10 H3 V7 H1.4 V5 H3.8" fill="none" stroke="#F1D39B" strokeWidth={2.2} strokeLinejoin="round" />
-      <Path d="M-3 -6 Q0 -8 3 -6" fill="none" stroke="#FFF3CF" strokeWidth={.65} />
+      {!identity.number && <Circle cy={-3} r={2.1} fill={identity.dark} />}
+      <Path d="M-1.2 1 V10 H3 V7 H1.4 V5 H3.8" fill="none" stroke={identity.dark} strokeWidth={3.5} strokeLinejoin="round" />
+      <Path d="M-1.2 1 V10 H3 V7 H1.4 V5 H3.8" fill="none" stroke={identity.fill} strokeWidth={2.2} strokeLinejoin="round" />
+      <Path d="M-1.6 2 V9" fill="none" stroke={identity.light} strokeWidth={.55} />
+      <Path d="M-3 -6 Q0 -8 3 -6" fill="none" stroke={identity.light} strokeWidth={.65} />
     </>}
   </G>;
 }
 
-export function ConditionBadge({ trigger, shape, symbols, id, radius = 10 }: { trigger: SortingTrigger; shape: number; symbols: boolean; id: string; radius?: number }) {
+export function ConditionBadge({ trigger, shape, symbols, id, radius = 10, fabric = false }: { trigger: SortingTrigger; shape: number; symbols: boolean; id: string; radius?: number; fabric?: boolean }) {
   const color = trigger.when.type === 'color-full' ? trigger.when.color : null;
+  const identity = keyIdentity(shape);
   return <G transform={'scale(' + radius / 10 + ')'}>
     <Ellipse cy={1} rx={10.5} ry={11.1} fill="#080D13" opacity={.65} />
-    <Circle r={10} fill={color ? LIQUIDS[color]?.dark ?? '#315A58' : 'url(#' + id + '-gold)'} stroke={color ? '#91C7BF' : '#F2D5A2'} strokeWidth={.75} />
+    <Circle r={10} fill={color ? fabric ? '#344B61' : LIQUIDS[color]?.dark ?? '#315A58' : identity.fill} stroke={color ? '#C1D0DC' : identity.edge} strokeWidth={.75} />
+    {fabric && <Circle r={8.7} fill="none" stroke="#E0D3B7" strokeWidth={.55} strokeDasharray="1.3 1.5" />}
     {color ? <>
       <Circle cy={-1.5} r={5.5} fill={LIQUIDS[color]?.main ?? '#328B80'} stroke="#EFFAF2" strokeWidth={.7} />
       {symbols && <SvgText y={1} fontSize={8} textAnchor="middle" fill="#F7FFF8">{LIQUID_SYMBOLS[color]}</SvgText>}
@@ -140,9 +146,10 @@ function Cloth({ id, width, height, state, progress, neckWidth }: { id: string; 
   </AnimatedG>;
 }
 
-export const UnlockCover = memo(function UnlockCover({ group, family, progress, scale, symbols, triggerIndices, neckWidth = 18 }: {
+export const UnlockCover = memo(function UnlockCover({ group, family: requestedFamily, progress, scale, symbols, triggerIndices, neckWidth = 18 }: {
   group: CoverGroup; family: CoverFamily; progress: SharedValue<number>; scale: number; symbols: boolean; triggerIndices: readonly number[]; neckWidth?: number;
 }) {
+  const family = coverFamilyForConditions(requestedFamily, group.conditions);
   const { width, height, state, centers } = group, id = 'cover-' + family + '-' + group.id;
   const shell = useAnimatedProps(() => ({ opacity: coverPose(progress.value, state).opacity }));
   const latch = useAnimatedProps(() => ({ opacity: coverPose(progress.value, state).latch }));
@@ -152,13 +159,18 @@ export const UnlockCover = memo(function UnlockCover({ group, family, progress, 
   });
   const edges = centers.map((c, i) => ({ left: i ? (centers[i - 1] + c) / 2 : 0, right: i === centers.length - 1 ? width : (c + centers[i + 1]) / 2 }));
   const wood = family === 'wood' || family === 'roller';
+  const relockIdentity = group.conditions[0]?.when.type === 'empty' ? keyIdentity(triggerIndices[0]) : null;
   return <View pointerEvents="none" style={{ position: 'absolute', left: group.x * scale, top: group.y * scale, width: width * scale, height: height * scale, zIndex: 2 }}>
     <Svg width="100%" height="100%" viewBox={'0 0 ' + width + ' ' + height}>
       <MaterialDefinitions id={id} width={width} height={height} />
       {state === 'relocked' ? <G>
         <Ellipse cx={width / 2} cy={height - 3.5} rx={width / 2 - 2} ry={3.2} fill={wood ? 'url(#' + id + '-wood)' : 'url(#' + id + '-rail)'} stroke={wood ? '#9D7359' : '#8497A3'} strokeWidth={.75} />
-        <Rect x={width - 10} y={height - 26} width={5.5} height={25} rx={1} fill={'url(#' + id + '-gold)'} stroke="#E5C595" strokeWidth={.7} />
-        <Circle cx={width - 6.8} cy={height - 18} r={3.8} fill={'url(#' + id + '-gold)'} stroke="#F5DCB0" strokeWidth={.7} />
+        {family === 'cloth' ? group.conditions.slice(0, 1).map((trigger, i) => <G key={trigger.id} transform={'translate(' + (width - 10) + ' ' + (height - 16) + ')'}>
+          <ConditionBadge trigger={trigger} shape={triggerIndices[i]} id={id} symbols={symbols} radius={7} fabric />
+        </G>) : <>
+          <Rect x={width - 10} y={height - 26} width={5.5} height={25} rx={1} fill={relockIdentity?.fill ?? 'url(#' + id + '-gold)'} stroke={relockIdentity?.edge ?? '#E5C595'} strokeWidth={.7} />
+          <Circle cx={width - 6.8} cy={height - 18} r={3.8} fill={relockIdentity?.fill ?? 'url(#' + id + '-gold)'} stroke={relockIdentity?.edge ?? '#F5DCB0'} strokeWidth={.7} />
+        </>}
         {family === 'louver' && <Path d={'M3 ' + (height - 3) + ' V10 M' + (width - 3) + ' ' + (height - 3) + ' V10'} fill="none" stroke="#8297A4" strokeWidth={1.2} />}
       </G> : <AnimatedG animatedProps={shell} clipPath={'url(#' + id + '-slot)'}>
         {family === 'cloth' ? <Cloth id={id} width={width} height={height} state={state} progress={progress} neckWidth={neckWidth} /> : <>
@@ -176,8 +188,8 @@ export const UnlockCover = memo(function UnlockCover({ group, family, progress, 
         </>}
         <AnimatedG animatedProps={latch}><AnimatedG animatedProps={clothBadge}>
           {group.conditions.slice(0, 2).map((trigger, i, list) => <G key={trigger.id} transform={'translate(' + (width / 2 + (i - (list.length - 1) / 2) * 23) + ' ' + (family === 'cloth' ? 76 : 31) + ')'}>
-            <ConditionBadge trigger={trigger} shape={triggerIndices[i]} id={id} symbols={symbols} radius={family === 'cloth' ? 11 : 9} />
-            {trigger.when.type === 'color-full' && <Rect x={-2.3} y={13} width={4.6} height={11} rx={2} fill={'url(#' + id + '-gold)'} stroke="#F4D6A3" strokeWidth={.65} />}
+            <ConditionBadge trigger={trigger} shape={triggerIndices[i]} id={id} symbols={symbols} radius={family === 'cloth' ? 11 : 9} fabric={family === 'cloth'} />
+            {family !== 'cloth' && trigger.when.type === 'color-full' && <Rect x={-2.3} y={13} width={4.6} height={11} rx={2} fill={'url(#' + id + '-gold)'} stroke="#F4D6A3" strokeWidth={.65} />}
           </G>)}
           {group.conditions.length > 2 && <SvgText x={width / 2} y={53} textAnchor="middle" fontSize={9} fill="#F0DAB6">+{group.conditions.length - 2}</SvgText>}
         </AnimatedG></AnimatedG>
@@ -186,10 +198,11 @@ export const UnlockCover = memo(function UnlockCover({ group, family, progress, 
   </View>;
 });
 
-export function BottleKey({ shape, triggered, progress, bottom }: { shape: number; triggered: boolean; progress: SharedValue<number>; bottom: number }) {
+export function BottleKey({ shape, triggered, progress, vessel }: { shape: number; triggered: boolean; progress: SharedValue<number>; vessel: VesselGeometry }) {
+  const anchor = useMemo(() => bottleKeyAnchor(vessel), [vessel]);
   const props = useAnimatedProps(() => {
-    const open = coverPose(progress.value, triggered ? 'opening' : 'closed').open;
-    return { opacity: 1 - open, ...matrixProps([.66, 0, 0, .66, 50, bottom + 2 - open * 4]) };
+    const pose = bottleKeyPose(anchor, triggered, progress.value);
+    return { opacity: pose.opacity, ...matrixProps(pose.matrix) };
   });
   return <AnimatedG animatedProps={props}><KeyGlyph shape={shape} /></AnimatedG>;
 }

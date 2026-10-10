@@ -17,7 +17,7 @@ import { isBottleComplete } from '../art/bottleCompletion';
 import { createEngineSession, moveEngineSession, resetEngineSession, undoEngineSession, visibleEngineState, type EngineAction, type EngineSession, type VisibleEngineContainer } from '../game/engine';
 import { createEngineHintTask, type EngineHintTask } from '../game/engineSearch';
 import { ENGINE_EXAMPLES } from '../game/engineExamples';
-import { UNLOCK_ART_CASES, unlockArtExample } from '../game/unlockArtExamples';
+import { UNLOCK_ART_CASES, unlockArtExample, unlockKeyPairsExample } from '../game/unlockArtExamples';
 import { POUR_HANDOFF_CASES } from '../game/pourHandoffCases';
 import { ENGINE_RENDER_ROUTES, engineRenderCase, type EngineRenderRun } from '../game/engineRenderWorkload';
 import { scheduleCooperativeWork, yieldToHost } from '../runtime/cooperativeWork';
@@ -140,9 +140,10 @@ export function EnginePreview({ vessel: preferredVessel, symbols: showSymbols, s
   const colorName = (color: string | null) => color === null ? '?' : Object.hasOwn(LIQUIDS, color) ? t(color as MessageKey) : color;
   function condition(container: string) {
     return puzzle.triggers.filter(trigger => trigger.unlock.includes(container)).map(trigger => trigger.when.type === 'empty'
-      ? zh ? `清空瓶 ${runtime.containerIndex.get(trigger.when.container)! + 1}` : `Empty bottle ${runtime.containerIndex.get(trigger.when.container)! + 1}`
+      ? (zh ? `清空瓶 ${runtime.containerIndex.get(trigger.when.container)! + 1}` : `Empty bottle ${runtime.containerIndex.get(trigger.when.container)! + 1}`) + ' · ' + keyLabel(puzzle.triggers.indexOf(trigger))
       : zh ? `装满四份${colorName(trigger.when.color)}` : `Fill four ${colorName(trigger.when.color)} portions`).join(' / ');
   }
+  function keyLabel(i: number) { return (zh ? ['青铜圆头钥匙','不锈钢菱形钥匙','红铜六角钥匙'] : ['patinated-bronze round key','stainless-steel diamond key','copper hexagonal key'])[i % 3] + (i >= 3 ? ` ${i + 1}` : ''); }
   function chooseBottle(i: number) {
     if (busy.current || searching || artRun.current || renderRun.current || handoffRun.current >= 0) return;
     if (visible[i].locked) { setNotice(condition(visible[i].id)); return; }
@@ -166,13 +167,23 @@ export function EnginePreview({ vessel: preferredVessel, symbols: showSymbols, s
     };
     cancelWork.current = scheduleCooperativeWork(step);
   }
-  function selectExample(next: number) { cancel(); setHandoffCase(null); setArtCount(null); setIndex(next); commit(createEngineSession(ENGINE_EXAMPLES[next], `preview-${next}`)); }
+  function selectExample(next: number) { cancel(); setHandoffCase(null); setArtCount(null); setIndex(next); if (next === 0 && family === 'cloth') setFamily('wood'); commit(createEngineSession(ENGINE_EXAMPLES[next], `preview-${next}`)); }
   function selectArt(count: 1 | 2 | 3) {
     cancel(); setHandoffCase(null); setArtCount(count);
-    const kind = index === 1 ? 'color' : 'key'; setIndex(kind === 'color' ? 1 : 0);
+    const kind = family === 'cloth' || index === 1 ? 'color' : 'key'; setIndex(kind === 'color' ? 1 : 0);
     commit(createEngineSession(unlockArtExample(count, kind), `art-${kind}-${count}`));
   }
-  function selectFamily(next: CoverFamily) { cancel(); setFamily(next); }
+  function selectFamily(next: CoverFamily) {
+    cancel(); setFamily(next);
+    if (next === 'cloth' && index === 0) {
+      setIndex(1);
+      commit(createEngineSession(artCount ? unlockArtExample(artCount, 'color') : ENGINE_EXAMPLES[1], 'art-cloth-color'));
+    }
+  }
+  function selectKeyPairs() {
+    cancel(); setHandoffCase(null); setArtCount(null); setIndex(0); if (family === 'cloth') setFamily('wood');
+    commit(createEngineSession(unlockKeyPairsExample(), 'art-key-pairs'));
+  }
   function artCheck() {
     if (artRun.current) { cancel(); return; }
     if (reduceMotion || !active || scale <= 0) return;
@@ -304,7 +315,8 @@ export function EnginePreview({ vessel: preferredVessel, symbols: showSymbols, s
     <View style={styles.artTools}>{COVER_FAMILIES.map((name, i) => <Pressable key={name} accessibilityRole="button" accessibilityState={{ selected: family === name }}
       onPress={() => selectFamily(name)} style={[styles.artTab, family === name && styles.activeTab]}><UiText style={styles.text}>{(zh ? ['木匣','百叶','布盖','卷帘'] : ['Wood','Louver','Cloth','Roller'])[i]}</UiText></Pressable>)}</View>
     <View style={styles.artTools}>{([1,2,3] as const).map(count => <Pressable key={count} accessibilityRole="button" accessibilityState={{ selected: artCount === count }} onPress={() => selectArt(count)} style={[styles.artTab, artCount === count && styles.activeTab]}><UiText style={styles.text}>{count}{zh ? ' 瓶' : ' bottle'}</UiText></Pressable>)}
-      <Pressable accessibilityRole="button" accessibilityLabel={zh ? '下一款容器' : 'Next vessel'} onPress={() => { cancel(); setArtVessel(VESSELS[(VESSELS.findIndex(v => v.id === vessel.id) + 1) % VESSELS.length]); }} style={styles.artTab}><UiText style={styles.text}>◇ {VESSELS.findIndex(v => v.id === vessel.id) + 1}/15</UiText></Pressable></View>
+      <Pressable accessibilityRole="button" accessibilityLabel={zh ? '下一款容器' : 'Next vessel'} onPress={() => { cancel(); setArtVessel(VESSELS[(VESSELS.findIndex(v => v.id === vessel.id) + 1) % VESSELS.length]); }} style={styles.artTab}><UiText style={styles.text}>◇ {VESSELS.findIndex(v => v.id === vessel.id) + 1}/15</UiText></Pressable>
+      <Pressable accessibilityRole="button" onPress={selectKeyPairs} style={[styles.artTab, puzzle.id === 'art-key-pairs' && styles.activeTab]}><UiText style={styles.text}>{zh ? '三钥匙' : '3 keys'}</UiText></Pressable></View>
     <Pressable accessibilityRole="button" onPress={() => setMeasurements(!measurements)} style={styles.measureToggle}><UiText style={styles.capacity}>{zh ? '测量工具' : 'Measurement tools'} {measurements ? '−' : '+'}</UiText></Pressable>
     {measurements && <>
     <View style={styles.artTools}><Pressable accessibilityRole="button" disabled={artChecking || !!animation} onPress={() => { cancel(); setArtEnabled(!artEnabled); }} style={styles.artTab}><UiText style={styles.text}>{artEnabled ? 'Art' : 'Baseline'}</UiText></Pressable>
@@ -329,11 +341,11 @@ export function EnginePreview({ vessel: preferredVessel, symbols: showSymbols, s
               plan={animation?.plan ?? null} pour={animation?.pour ?? null} progress={progress} symbols={showSymbols}
               completionEffect="cork" completionScene={puzzle.id} completionAnimations={active && !reduceMotion}
               unknownFill={CLASSIC_UNKNOWN_FILL} progressiveLayers={presentation?.revealing[i]} separateLayers={puzzle.hidden.length > 0}
-              baseDecoration={artEnabled && keys.map(trigger => <BottleKey key={trigger.id} shape={puzzle.triggers.indexOf(trigger)} bottom={designs[i].bottomY}
+              baseDecoration={artEnabled && keys.map(trigger => <BottleKey key={trigger.id} shape={puzzle.triggers.indexOf(trigger)} vessel={designs[i]}
                 progress={progress} triggered={session.state.fired.includes(trigger.id)} />)} />
             </UnlockBottleVisibility>
             <View style={{ position: 'absolute', left: (position.x + 50 - Math.min(82, layout.slotWidth - 2) / 2) * scale, top: (position.y + 177) * scale, width: Math.min(82, layout.slotWidth - 2) * scale }}>
-              <UiText style={styles.capacity}>{container.locked ? '🔒 ' : ''}{container.count === null ? '?' : container.colors.length}/{container.capacity}{container.fixed ? ' ▣' : ''}{puzzle.triggers.some(trigger => trigger.when.type === 'empty' && trigger.when.container === container.id) ? ' 🔑' : ''}</UiText>
+              <UiText style={styles.capacity}>{container.locked && !artEnabled ? '🔒 ' : ''}{container.count === null ? '?' : container.colors.length}/{container.capacity}{container.fixed ? ' ▣' : ''}</UiText>
               {!container.locked && puzzle.containers[i].acceptColors && <UiText numberOfLines={2} style={styles.condition}>{puzzle.containers[i].acceptColors!.map(colorName).join(' / ')}</UiText>}
             </View>
           </View>;
@@ -342,7 +354,7 @@ export function EnginePreview({ vessel: preferredVessel, symbols: showSymbols, s
           neckWidth={Math.min(30, designs[group.indices[0]].mouth.outer + 2)} triggerIndices={group.conditions.map(trigger => puzzle.triggers.indexOf(trigger))} />)
           : covers.filter(group => group.state !== 'relocked').flatMap(group => group.indices.map(i => <LegacyCover key={i} x={layout.positions[i].x} y={layout.positions[i].y} scale={scale} opening={group.state === 'opening'} progress={progress} />))}
         {shown.map((container, i) => <Pressable key={container.id} nativeID={bottleControlId(i)} testID={bottleControlId(i)} accessibilityRole="button"
-          accessibilityLabel={`${i + 1}: ${container.locked ? `${zh ? '锁定' : 'Locked'}; ${condition(container.id)}; ` : ''}${container.count === null ? '?' : [...container.colors].reverse().map(colorName).join(', ')}; ${container.capacity}`}
+          accessibilityLabel={`${i + 1}: ${container.locked ? `${zh ? '锁定' : 'Locked'}; ${condition(container.id)}; ` : ''}${container.count === null ? '?' : [...container.colors].reverse().map(colorName).join(', ')}; ${container.capacity}${puzzle.triggers.filter(trigger => trigger.when.type === 'empty' && trigger.when.container === container.id).map(trigger => '; ' + keyLabel(puzzle.triggers.indexOf(trigger))).join('')}`}
           accessibilityState={{ selected: selected === i, disabled: !!animation || searching }} disabled={!Platform.isTV && (!!animation || searching)} onPress={() => chooseBottle(i)}
           style={{ position: 'absolute', left: (layout.positions[i].x + 50) * scale - bottleHitWidth(layout, scale) / 2, top: layout.positions[i].y * scale, width: bottleHitWidth(layout, scale), height: 180 * scale, zIndex: 3 }} />)}
         {animation && <View pointerEvents="none" style={[StyleSheet.absoluteFill, { zIndex: 11 }]}><PourStream plan={animation.plan} color={animation.pour.color} progress={progress} /></View>}
@@ -358,6 +370,6 @@ export function EnginePreview({ vessel: preferredVessel, symbols: showSymbols, s
 const styles = StyleSheet.create({
   screen: { flex: 1 }, tabs: { flexGrow: 0, maxHeight: 52 }, tabContent: { gap: 8, paddingHorizontal: 12 }, tab: { minHeight: 44, justifyContent: 'center', paddingHorizontal: 12, borderRadius: 10, backgroundColor: '#22303E' }, activeTab: { backgroundColor: '#365252' },
   text: { color: '#DFE9E8', fontSize: 13 }, goal: { color: '#D8C9A7', textAlign: 'center', fontSize: 13, minHeight: 34, padding: 8 }, stage: { flex: 1, alignItems: 'center', justifyContent: 'center', overflow: 'visible' },
-  artTools: { flexDirection: 'row', justifyContent: 'center', gap: 5, paddingVertical: 3 }, artTab: { minHeight: 36, justifyContent: 'center', paddingHorizontal: 9, borderRadius: 8, backgroundColor: '#202C37' }, measureToggle: { minHeight: 26, justifyContent: 'center' }, capacity: { textAlign: 'center', color: '#C4D4D7', fontSize: 11 },
+  artTools: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 5, paddingVertical: 3 }, artTab: { minHeight: 36, justifyContent: 'center', paddingHorizontal: 9, borderRadius: 8, backgroundColor: '#202C37' }, measureToggle: { minHeight: 26, justifyContent: 'center' }, capacity: { textAlign: 'center', color: '#C4D4D7', fontSize: 11 },
   condition: { color: '#C8BCA0', fontSize: 9, textAlign: 'center' }, tools: { flexDirection: 'row', justifyContent: 'center', gap: 24, paddingVertical: 4 }, notice: { textAlign: 'center', color: '#C6D8D8', fontSize: 12, minHeight: 34, paddingHorizontal: 12 },
 });
