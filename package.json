@@ -89,7 +89,8 @@
     "memory:build": "node --experimental-strip-types scripts/memory-bank.ts build",
     "memory:verify": "node --experimental-strip-types scripts/memory-bank.ts verify",
     "memory:rate": "node --experimental-strip-types scripts/memory-rating.ts",
-    "analytics:report": "node --experimental-strip-types scripts/analytics-report.ts"
+    "analytics:report": "node --experimental-strip-types scripts/analytics-report.ts",
+    "unlock:verify": "node --experimental-strip-types scripts/unlock-trial.ts"
   },
   "private": true,
   "engines": {

@@ -1,0 +1,1180 @@
+[
+  {
+    "number": 1,
+    "focus": "ordinary",
+    "definitionSha256": "fce780394725d14425441bdd56ace533ea9cde20d84bad973a10da07e6678201",
+    "structureSha256": "ba2eabc1d2c043c831aaee1c39129528f319626d96c2d75f4545a72e70362a79",
+    "status": "complete",
+    "states": 310,
+    "edges": 1320,
+    "deadEnds": 0,
+    "shortestMoves": 10,
+    "route": [
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b2",
+        "target": "b0"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b1"
+      },
+      {
+        "type": "transfer",
+        "source": "b2",
+        "target": "b0"
+      },
+      {
+        "type": "transfer",
+        "source": "b2",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b1"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b3"
+      }
+    ],
+    "stages": [],
+    "earliestTriggers": {},
+    "firedSets": [
+      ""
+    ],
+    "simultaneous": [],
+    "participatingLocked": [],
+    "informationCriterion": "all-reachable-public-legal-actions-preserve-completability",
+    "allOpen": {
+      "states": 310,
+      "shortestMoves": 10
+    },
+    "limits": "Fixed layouts, forward legal play until completion; excludes undo histories and alternative secret initial layouts. No human difficulty grade."
+  },
+  {
+    "number": 2,
+    "focus": "key-teaching",
+    "definitionSha256": "c4ad16867b59cd8a30618e6ad99821edad9ee2c8c4039c8f05b3bfe622311a5a",
+    "structureSha256": "37a5f8d94d2906d1f0ddb72eea7f1f30551a66c18af5712206ef28e36567f624",
+    "status": "complete",
+    "states": 2831,
+    "edges": 23264,
+    "deadEnds": 0,
+    "shortestMoves": 9,
+    "route": [
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b0"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b1"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b3",
+        "target": "b1"
+      },
+      {
+        "type": "transfer",
+        "source": "b3",
+        "target": "b4"
+      },
+      {
+        "type": "transfer",
+        "source": "b3",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b3",
+        "target": "b4"
+      }
+    ],
+    "stages": [
+      {
+        "step": 5,
+        "triggers": [
+          "key-a"
+        ],
+        "opened": [
+          "b3",
+          "b4",
+          "b5"
+        ]
+      }
+    ],
+    "earliestTriggers": {
+      "key-a": 3
+    },
+    "firedSets": [
+      "",
+      "key-a"
+    ],
+    "simultaneous": [],
+    "participatingLocked": [
+      "b3",
+      "b4"
+    ],
+    "informationCriterion": "all-reachable-public-legal-actions-preserve-completability",
+    "allOpen": {
+      "states": 510,
+      "shortestMoves": 8
+    },
+    "limits": "Fixed layouts, forward legal play until completion; excludes undo histories and alternative secret initial layouts. No human difficulty grade."
+  },
+  {
+    "number": 3,
+    "focus": "cover-teaching",
+    "definitionSha256": "c980e08c86b1c7f2081f761268f0506ad9d1f11124d50cdf2f2ac7e2629940d7",
+    "structureSha256": "0e9c30c700501a77f36c242c5e2e418f08e68e5265efc6f011b590426ee6df2e",
+    "status": "complete",
+    "states": 195,
+    "edges": 1625,
+    "deadEnds": 0,
+    "shortestMoves": 8,
+    "route": [
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b0"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b1"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b3",
+        "target": "b4"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b3"
+      }
+    ],
+    "stages": [
+      {
+        "step": 6,
+        "triggers": [
+          "cover-a"
+        ],
+        "opened": [
+          "b3",
+          "b4",
+          "b5"
+        ]
+      }
+    ],
+    "earliestTriggers": {
+      "cover-a": 5
+    },
+    "firedSets": [
+      "",
+      "cover-a"
+    ],
+    "simultaneous": [],
+    "participatingLocked": [
+      "b3",
+      "b4"
+    ],
+    "informationCriterion": "all-reachable-public-legal-actions-preserve-completability",
+    "allOpen": {
+      "states": 325,
+      "shortestMoves": 7
+    },
+    "limits": "Fixed layouts, forward legal play until completion; excludes undo histories and alternative secret initial layouts. No human difficulty grade."
+  },
+  {
+    "number": 4,
+    "focus": "reveal-teaching",
+    "definitionSha256": "142ad850dbc887aeb2e337f431d999790926d2846b9ee5a70d3abc7da663045a",
+    "structureSha256": "9a7f13db5e1e6f2c8d6e5b22a8a8cfc53ac22deb0c4178ab9fb82d91ca2908b1",
+    "status": "complete",
+    "states": 71,
+    "edges": 314,
+    "deadEnds": 0,
+    "shortestMoves": 7,
+    "route": [
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b0"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b0"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b1"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b2"
+      }
+    ],
+    "stages": [],
+    "earliestTriggers": {},
+    "firedSets": [
+      ""
+    ],
+    "simultaneous": [],
+    "participatingLocked": [],
+    "informationCriterion": "all-reachable-public-legal-actions-preserve-completability",
+    "allOpen": {
+      "states": 71,
+      "shortestMoves": 7
+    },
+    "limits": "Fixed layouts, forward legal play until completion; excludes undo histories and alternative secret initial layouts. No human difficulty grade."
+  },
+  {
+    "number": 5,
+    "focus": "key-preparation",
+    "definitionSha256": "aeeb865bcbe26c9e425d2a698eb1073b82b7d613bbcfaf806d5cd2fcf2d0ffea",
+    "structureSha256": "620a2394933ac44f8ef3c01d1d477feb115e3945f027c50c2932c21c8984d34b",
+    "status": "complete",
+    "states": 173711,
+    "edges": 2125236,
+    "deadEnds": 0,
+    "shortestMoves": 13,
+    "route": [
+      {
+        "type": "transfer",
+        "source": "b2",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b1"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b2",
+        "target": "b0"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b5",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b5",
+        "target": "b6"
+      },
+      {
+        "type": "transfer",
+        "source": "b5",
+        "target": "b0"
+      },
+      {
+        "type": "transfer",
+        "source": "b6",
+        "target": "b5"
+      },
+      {
+        "type": "transfer",
+        "source": "b6",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b5",
+        "target": "b6"
+      }
+    ],
+    "stages": [
+      {
+        "step": 7,
+        "triggers": [
+          "key-a"
+        ],
+        "opened": [
+          "b5",
+          "b6",
+          "b7"
+        ]
+      }
+    ],
+    "earliestTriggers": {
+      "key-a": 3
+    },
+    "firedSets": [
+      "",
+      "key-a"
+    ],
+    "simultaneous": [],
+    "participatingLocked": [
+      "b5",
+      "b6"
+    ],
+    "informationCriterion": "all-reachable-public-legal-actions-preserve-completability",
+    "allOpen": {
+      "states": 13073,
+      "shortestMoves": 12
+    },
+    "limits": "Fixed layouts, forward legal play until completion; excludes undo histories and alternative secret initial layouts. No human difficulty grade."
+  },
+  {
+    "number": 6,
+    "focus": "cover-order",
+    "definitionSha256": "3a07c84de3ea1a60fb7883ac240cb966bef2cce34f5bf05596e24631ca7d429b",
+    "structureSha256": "496da3682974e75c1316deab680fcfd11317930398d3abb542621d9e473f96a3",
+    "status": "complete",
+    "states": 6388,
+    "edges": 97989,
+    "deadEnds": 0,
+    "shortestMoves": 13,
+    "route": [
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b0"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b1"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b0"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b5",
+        "target": "b4"
+      },
+      {
+        "type": "transfer",
+        "source": "b5",
+        "target": "b6"
+      },
+      {
+        "type": "transfer",
+        "source": "b4",
+        "target": "b5"
+      },
+      {
+        "type": "transfer",
+        "source": "b4",
+        "target": "b6"
+      },
+      {
+        "type": "transfer",
+        "source": "b5",
+        "target": "b4"
+      },
+      {
+        "type": "transfer",
+        "source": "b5",
+        "target": "b6"
+      }
+    ],
+    "stages": [
+      {
+        "step": 6,
+        "triggers": [
+          "cover-a"
+        ],
+        "opened": [
+          "b4",
+          "b7"
+        ]
+      },
+      {
+        "step": 7,
+        "triggers": [
+          "cover-b"
+        ],
+        "opened": [
+          "b5",
+          "b6"
+        ]
+      }
+    ],
+    "earliestTriggers": {
+      "cover-a": 6,
+      "cover-b": 6
+    },
+    "firedSets": [
+      "",
+      "cover-a",
+      "cover-a,cover-b",
+      "cover-b"
+    ],
+    "simultaneous": [],
+    "participatingLocked": [
+      "b4",
+      "b5",
+      "b6"
+    ],
+    "informationCriterion": "all-reachable-public-legal-actions-preserve-completability",
+    "allOpen": {
+      "states": 7074,
+      "shortestMoves": 13
+    },
+    "limits": "Fixed layouts, forward legal play until completion; excludes undo histories and alternative secret initial layouts. No human difficulty grade."
+  },
+  {
+    "number": 7,
+    "focus": "key-chain",
+    "definitionSha256": "796d6ea410b06fb11ec8eb3c468cf80f9250e70ea7d7c9fdc096c70d83a476fd",
+    "structureSha256": "48ff36363601d99e6a3603fb5f26d03365ad649fe193b8d24ff61654b7ac6efd",
+    "status": "complete",
+    "states": 90745,
+    "edges": 775351,
+    "deadEnds": 0,
+    "shortestMoves": 13,
+    "route": [
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b1"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b4"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b3",
+        "target": "b0"
+      },
+      {
+        "type": "transfer",
+        "source": "b4",
+        "target": "b1"
+      },
+      {
+        "type": "transfer",
+        "source": "b3",
+        "target": "b4"
+      },
+      {
+        "type": "transfer",
+        "source": "b3",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b4",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b6",
+        "target": "b0"
+      },
+      {
+        "type": "transfer",
+        "source": "b6",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b6"
+      }
+    ],
+    "stages": [
+      {
+        "step": 3,
+        "triggers": [
+          "key-a"
+        ],
+        "opened": [
+          "b3",
+          "b4",
+          "b5"
+        ]
+      },
+      {
+        "step": 10,
+        "triggers": [
+          "key-b"
+        ],
+        "opened": [
+          "b6"
+        ]
+      }
+    ],
+    "earliestTriggers": {
+      "key-a": 3,
+      "key-b": 5
+    },
+    "firedSets": [
+      "",
+      "key-a",
+      "key-a,key-b"
+    ],
+    "simultaneous": [],
+    "participatingLocked": [
+      "b3",
+      "b4",
+      "b6"
+    ],
+    "informationCriterion": "all-reachable-public-legal-actions-preserve-completability",
+    "allOpen": {
+      "states": 4042,
+      "shortestMoves": 12
+    },
+    "limits": "Fixed layouts, forward legal play until completion; excludes undo histories and alternative secret initial layouts. No human difficulty grade."
+  },
+  {
+    "number": 8,
+    "focus": "reveal-planning",
+    "definitionSha256": "2b97ecbcc6a9eef336089b79f70c1d4841ce07fb3eb523e34a49518c763c08ec",
+    "structureSha256": "2f1715a0c83005e89e04f87a3c938df338b2dab558ad3610d9f7e3fad125dd0d",
+    "status": "complete",
+    "states": 310,
+    "edges": 1320,
+    "deadEnds": 0,
+    "shortestMoves": 10,
+    "route": [
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b0"
+      },
+      {
+        "type": "transfer",
+        "source": "b2",
+        "target": "b1"
+      },
+      {
+        "type": "transfer",
+        "source": "b2",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b0"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b2",
+        "target": "b1"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b3"
+      }
+    ],
+    "stages": [],
+    "earliestTriggers": {},
+    "firedSets": [
+      ""
+    ],
+    "simultaneous": [],
+    "participatingLocked": [],
+    "informationCriterion": "all-reachable-public-legal-actions-preserve-completability",
+    "allOpen": {
+      "states": 310,
+      "shortestMoves": 10
+    },
+    "limits": "Fixed layouts, forward legal play until completion; excludes undo histories and alternative secret initial layouts. No human difficulty grade."
+  },
+  {
+    "number": 9,
+    "focus": "simultaneous",
+    "definitionSha256": "052911ea9dee5cd9e5bb939e0cc87daea87fb27ae56d8761cf10bf8dfe957b12",
+    "structureSha256": "f0c3f1a0003f2055a2185d71cbbf691dede97e27914db6ef62923845da7b2061",
+    "status": "complete",
+    "states": 3119,
+    "edges": 40389,
+    "deadEnds": 0,
+    "shortestMoves": 9,
+    "route": [
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b0"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b1"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b4",
+        "target": "b5"
+      },
+      {
+        "type": "transfer",
+        "source": "b4",
+        "target": "b1"
+      },
+      {
+        "type": "transfer",
+        "source": "b4",
+        "target": "b5"
+      }
+    ],
+    "stages": [
+      {
+        "step": 6,
+        "triggers": [
+          "key-a",
+          "cover-a"
+        ],
+        "opened": [
+          "b4",
+          "b5",
+          "b6"
+        ]
+      }
+    ],
+    "earliestTriggers": {
+      "key-a": 3,
+      "cover-a": 5
+    },
+    "firedSets": [
+      "",
+      "cover-a",
+      "cover-a,key-a",
+      "key-a"
+    ],
+    "simultaneous": [
+      "cover-a,key-a"
+    ],
+    "participatingLocked": [
+      "b4",
+      "b5"
+    ],
+    "informationCriterion": "all-reachable-public-legal-actions-preserve-completability",
+    "allOpen": {
+      "states": 724,
+      "shortestMoves": 8
+    },
+    "limits": "Fixed layouts, forward legal play until completion; excludes undo histories and alternative secret initial layouts. No human difficulty grade."
+  },
+  {
+    "number": 10,
+    "focus": "key-cover-chain",
+    "definitionSha256": "83fe666d1800570081e4370dfa3afda3a7fe35927500750a9e7413365874b7d5",
+    "structureSha256": "b8f85a3f8c7dcac878bd2c3c3fd4f664a32bcb6dfa234c155766c8e534902f93",
+    "status": "complete",
+    "states": 12252,
+    "edges": 111430,
+    "deadEnds": 0,
+    "shortestMoves": 13,
+    "route": [
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b1"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b4"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b3",
+        "target": "b0"
+      },
+      {
+        "type": "transfer",
+        "source": "b4",
+        "target": "b1"
+      },
+      {
+        "type": "transfer",
+        "source": "b3",
+        "target": "b4"
+      },
+      {
+        "type": "transfer",
+        "source": "b3",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b3",
+        "target": "b4"
+      },
+      {
+        "type": "transfer",
+        "source": "b6",
+        "target": "b0"
+      },
+      {
+        "type": "transfer",
+        "source": "b6",
+        "target": "b4"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b6"
+      }
+    ],
+    "stages": [
+      {
+        "step": 3,
+        "triggers": [
+          "key-a"
+        ],
+        "opened": [
+          "b3",
+          "b4",
+          "b5"
+        ]
+      },
+      {
+        "step": 9,
+        "triggers": [
+          "cover-a"
+        ],
+        "opened": [
+          "b6"
+        ]
+      }
+    ],
+    "earliestTriggers": {
+      "key-a": 3,
+      "cover-a": 8
+    },
+    "firedSets": [
+      "",
+      "cover-a,key-a",
+      "key-a"
+    ],
+    "simultaneous": [],
+    "participatingLocked": [
+      "b3",
+      "b4",
+      "b6"
+    ],
+    "informationCriterion": "all-reachable-public-legal-actions-preserve-completability",
+    "allOpen": {
+      "states": 4042,
+      "shortestMoves": 12
+    },
+    "limits": "Fixed layouts, forward legal play until completion; excludes undo histories and alternative secret initial layouts. No human difficulty grade."
+  },
+  {
+    "number": 11,
+    "focus": "key-reveal",
+    "definitionSha256": "284fb7c3e66f55650d2bf3306ed97c846dde29b3317409febf25493fb3a8da5c",
+    "structureSha256": "bb96f20107a0ddb643332ebef6385932b3941a6b5cbb02785055db5f2166a587",
+    "status": "complete",
+    "states": 2831,
+    "edges": 23264,
+    "deadEnds": 0,
+    "shortestMoves": 9,
+    "route": [
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b0"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b1"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b3",
+        "target": "b1"
+      },
+      {
+        "type": "transfer",
+        "source": "b3",
+        "target": "b4"
+      },
+      {
+        "type": "transfer",
+        "source": "b3",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b3",
+        "target": "b4"
+      }
+    ],
+    "stages": [
+      {
+        "step": 5,
+        "triggers": [
+          "key-a"
+        ],
+        "opened": [
+          "b3",
+          "b4",
+          "b5"
+        ]
+      }
+    ],
+    "earliestTriggers": {
+      "key-a": 3
+    },
+    "firedSets": [
+      "",
+      "key-a"
+    ],
+    "simultaneous": [],
+    "participatingLocked": [
+      "b3",
+      "b4"
+    ],
+    "informationCriterion": "all-reachable-public-legal-actions-preserve-completability",
+    "allOpen": {
+      "states": 510,
+      "shortestMoves": 8
+    },
+    "limits": "Fixed layouts, forward legal play until completion; excludes undo histories and alternative secret initial layouts. No human difficulty grade."
+  },
+  {
+    "number": 12,
+    "focus": "cover-key-reveal",
+    "definitionSha256": "af25b6b3bd410b3412352d5aa261d8343b6b443bd29cb64be8206728353d2f6c",
+    "structureSha256": "c485626c8e3d1fd61ea268ab328ab249892f099cdbb30f24cc84579843e42616",
+    "status": "complete",
+    "states": 31195,
+    "edges": 291432,
+    "deadEnds": 0,
+    "shortestMoves": 16,
+    "route": [
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b1"
+      },
+      {
+        "type": "transfer",
+        "source": "b2",
+        "target": "b0"
+      },
+      {
+        "type": "transfer",
+        "source": "b2",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b4",
+        "target": "b5"
+      },
+      {
+        "type": "transfer",
+        "source": "b4",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b4"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b4",
+        "target": "b1"
+      },
+      {
+        "type": "transfer",
+        "source": "b5",
+        "target": "b4"
+      },
+      {
+        "type": "transfer",
+        "source": "b5",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b5",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b6",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b6",
+        "target": "b4"
+      },
+      {
+        "type": "transfer",
+        "source": "b2",
+        "target": "b6"
+      }
+    ],
+    "stages": [
+      {
+        "step": 4,
+        "triggers": [
+          "cover-a"
+        ],
+        "opened": [
+          "b4",
+          "b5"
+        ]
+      },
+      {
+        "step": 13,
+        "triggers": [
+          "key-b"
+        ],
+        "opened": [
+          "b6"
+        ]
+      }
+    ],
+    "earliestTriggers": {
+      "cover-a": 4,
+      "key-b": 8
+    },
+    "firedSets": [
+      "",
+      "cover-a",
+      "cover-a,key-b"
+    ],
+    "simultaneous": [],
+    "participatingLocked": [
+      "b4",
+      "b5",
+      "b6"
+    ],
+    "informationCriterion": "all-reachable-public-legal-actions-preserve-completability",
+    "allOpen": {
+      "states": 18506,
+      "shortestMoves": 14
+    },
+    "limits": "Fixed layouts, forward legal play until completion; excludes undo histories and alternative secret initial layouts. No human difficulty grade."
+  }
+]
