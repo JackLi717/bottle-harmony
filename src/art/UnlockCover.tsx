@@ -195,7 +195,10 @@ export function BottleKey({ shape, triggered, progress, bottom }: { shape: numbe
 }
 
 export function UnlockBottleVisibility({ concealed, delayed, progress, children }: { concealed: boolean; delayed: boolean; progress: SharedValue<number>; children: ReactNode }) {
-  const style = useAnimatedStyle(() => ({ opacity: concealed || delayed && progress.value < FLOW_END ? 0 : 1 }));
+  // Mount the real glass only after its first disclosure. A native SVG mounted
+  // under an initially invisible animated parent can retain an empty surface.
+  const style = useAnimatedStyle(() => ({ opacity: delayed && progress.value < FLOW_END ? 0 : 1 }));
+  if (concealed) return null;
   return <Animated.View pointerEvents="none" style={[{ position: 'absolute', inset: 0 }, style]}>{children}</Animated.View>;
 }
 
