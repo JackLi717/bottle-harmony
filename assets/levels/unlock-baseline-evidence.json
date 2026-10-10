@@ -1,0 +1,4884 @@
+{
+  "method": "classic-baseline-trial-v1",
+  "catalog": "mainline-1000-v5",
+  "admission": "At least one fully replayed legal completion from the initial layout is required; not every legal choice must remain solvable. Free undo/reset remains available. Forward dead ends are reported, not a difficulty bonus. Mandatory midpoint, source, exact classic rating and public disclosure policy are separately verified.",
+  "pairs": [
+    {
+      "mainline": 496,
+      "sourceSha256": "ac4dedf0d35ffbdf741b9e3949f1dc7d527e9cdf4b16dcddcf41d73afeacc57c",
+      "origin": {
+        "generator": "balanced-shuffle-v1",
+        "seed": 10000256,
+        "candidateIndex": 0,
+        "config": {
+          "colors": [
+            "jade",
+            "coral",
+            "amber",
+            "azure",
+            "violet",
+            "rose"
+          ],
+          "emptyBottles": 1,
+          "minSolutionMoves": 1,
+          "maxSolutionMoves": 60,
+          "mixing": "diverse"
+        }
+      },
+      "classicHuman": {
+        "model": "human-decision-v1",
+        "structureKey": "water-sort:4:6:7:/ABBC/BDEF/CEDD/CFAA/DBAE/EFCF",
+        "planningRank": 4,
+        "shortestMoves": 17,
+        "status": "rated",
+        "reason": null,
+        "decisions": [
+          {
+            "moveIndex": 0,
+            "choices": 6,
+            "safeChoices": 1,
+            "deadEnds": 5,
+            "costlyDetours": 0,
+            "deceptiveChoices": 0,
+            "risk": 0.5
+          },
+          {
+            "moveIndex": 5,
+            "choices": 1,
+            "safeChoices": 1,
+            "deadEnds": 0,
+            "costlyDetours": 0,
+            "deceptiveChoices": 0,
+            "risk": 0
+          },
+          {
+            "moveIndex": 11,
+            "choices": 1,
+            "safeChoices": 1,
+            "deadEnds": 0,
+            "costlyDetours": 0,
+            "deceptiveChoices": 0,
+            "risk": 0
+          }
+        ],
+        "score": {
+          "planning": 4,
+          "trapPeak": 13,
+          "trapRepeat": 3,
+          "space": 14,
+          "visual": 7,
+          "operations": 8,
+          "total": 49
+        }
+      },
+      "variants": [
+        {
+          "puzzle": "classic-unlock-baseline-01",
+          "variant": "classic",
+          "definitionSha256": "cf79c66402fd7ad6bed016618f20aa3a9a8e4eff80d0a189c617a8474b76f9d5",
+          "structureSha256": "d35f4a3b03b048538175431dedd0f1ca29d73d85d49d12dba480e6966111ba2d",
+          "status": "complete",
+          "states": 88,
+          "edges": 146,
+          "deadEnds": 29,
+          "shortestMoves": 17,
+          "route": [
+            {
+              "type": "transfer",
+              "source": "b0",
+              "target": "b6"
+            },
+            {
+              "type": "transfer",
+              "source": "b2",
+              "target": "b0"
+            },
+            {
+              "type": "transfer",
+              "source": "b1",
+              "target": "b2"
+            },
+            {
+              "type": "transfer",
+              "source": "b5",
+              "target": "b0"
+            },
+            {
+              "type": "transfer",
+              "source": "b4",
+              "target": "b5"
+            },
+            {
+              "type": "transfer",
+              "source": "b4",
+              "target": "b6"
+            },
+            {
+              "type": "transfer",
+              "source": "b4",
+              "target": "b1"
+            },
+            {
+              "type": "transfer",
+              "source": "b3",
+              "target": "b4"
+            },
+            {
+              "type": "transfer",
+              "source": "b5",
+              "target": "b3"
+            },
+            {
+              "type": "transfer",
+              "source": "b5",
+              "target": "b4"
+            },
+            {
+              "type": "transfer",
+              "source": "b1",
+              "target": "b5"
+            },
+            {
+              "type": "transfer",
+              "source": "b1",
+              "target": "b6"
+            },
+            {
+              "type": "transfer",
+              "source": "b0",
+              "target": "b1"
+            },
+            {
+              "type": "transfer",
+              "source": "b2",
+              "target": "b0"
+            },
+            {
+              "type": "transfer",
+              "source": "b2",
+              "target": "b1"
+            },
+            {
+              "type": "transfer",
+              "source": "b3",
+              "target": "b2"
+            },
+            {
+              "type": "transfer",
+              "source": "b0",
+              "target": "b3"
+            }
+          ],
+          "triggers": [],
+          "trace": [
+            {
+              "step": 1,
+              "action": {
+                "type": "transfer",
+                "source": "b0",
+                "target": "b6"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 21
+            },
+            {
+              "step": 2,
+              "action": {
+                "type": "transfer",
+                "source": "b2",
+                "target": "b0"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 20
+            },
+            {
+              "step": 3,
+              "action": {
+                "type": "transfer",
+                "source": "b1",
+                "target": "b2"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 19
+            },
+            {
+              "step": 4,
+              "action": {
+                "type": "transfer",
+                "source": "b5",
+                "target": "b0"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 18
+            },
+            {
+              "step": 5,
+              "action": {
+                "type": "transfer",
+                "source": "b4",
+                "target": "b5"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 17
+            },
+            {
+              "step": 6,
+              "action": {
+                "type": "transfer",
+                "source": "b4",
+                "target": "b6"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 16
+            },
+            {
+              "step": 7,
+              "action": {
+                "type": "transfer",
+                "source": "b4",
+                "target": "b1"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 15
+            },
+            {
+              "step": 8,
+              "action": {
+                "type": "transfer",
+                "source": "b3",
+                "target": "b4"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 14
+            },
+            {
+              "step": 9,
+              "action": {
+                "type": "transfer",
+                "source": "b5",
+                "target": "b3"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 13
+            },
+            {
+              "step": 10,
+              "action": {
+                "type": "transfer",
+                "source": "b5",
+                "target": "b4"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 12
+            },
+            {
+              "step": 11,
+              "action": {
+                "type": "transfer",
+                "source": "b1",
+                "target": "b5"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 11
+            },
+            {
+              "step": 12,
+              "action": {
+                "type": "transfer",
+                "source": "b1",
+                "target": "b6"
+              },
+              "fired": [],
+              "emptyReceivers": 1,
+              "remainingRuns": 10
+            },
+            {
+              "step": 13,
+              "action": {
+                "type": "transfer",
+                "source": "b0",
+                "target": "b1"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 10
+            },
+            {
+              "step": 14,
+              "action": {
+                "type": "transfer",
+                "source": "b2",
+                "target": "b0"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 9
+            },
+            {
+              "step": 15,
+              "action": {
+                "type": "transfer",
+                "source": "b2",
+                "target": "b1"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 8
+            },
+            {
+              "step": 16,
+              "action": {
+                "type": "transfer",
+                "source": "b3",
+                "target": "b2"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 7
+            },
+            {
+              "step": 17,
+              "action": {
+                "type": "transfer",
+                "source": "b0",
+                "target": "b3"
+              },
+              "fired": [],
+              "emptyReceivers": 1,
+              "remainingRuns": 6
+            }
+          ],
+          "participatingLocked": [],
+          "allOpen": {
+            "status": "complete",
+            "shortestMoves": 17,
+            "deadEnds": 29
+          },
+          "limits": "Exact fixed-layout forward graph until completion. Before/after facts cover all globally shortest corridors; moves, space and runs are not difficulty grades. Alternative hidden worlds, visual quality and human breakthrough experience remain unvalidated.",
+          "disclosure": null
+        },
+        {
+          "puzzle": "classic-unlock-baseline-02",
+          "variant": "key",
+          "definitionSha256": "7faa438a4e80385ec08833c65399fee0ba91c7dd758ed4959531ac96a5ef8bc3",
+          "structureSha256": "36571ab6b3ff24e88c314131da38ec31ab43afd39023d518458ebe489ec22adc",
+          "status": "complete",
+          "states": 286,
+          "edges": 478,
+          "deadEnds": 58,
+          "shortestMoves": 18,
+          "route": [
+            {
+              "type": "transfer",
+              "source": "b0",
+              "target": "b6"
+            },
+            {
+              "type": "transfer",
+              "source": "b2",
+              "target": "b0"
+            },
+            {
+              "type": "transfer",
+              "source": "b1",
+              "target": "b2"
+            },
+            {
+              "type": "transfer",
+              "source": "b5",
+              "target": "b0"
+            },
+            {
+              "type": "transfer",
+              "source": "b4",
+              "target": "b5"
+            },
+            {
+              "type": "transfer",
+              "source": "b4",
+              "target": "b6"
+            },
+            {
+              "type": "transfer",
+              "source": "b1",
+              "target": "b4"
+            },
+            {
+              "type": "transfer",
+              "source": "b1",
+              "target": "b6"
+            },
+            {
+              "type": "transfer",
+              "source": "b0",
+              "target": "b1"
+            },
+            {
+              "type": "transfer",
+              "source": "b2",
+              "target": "b0"
+            },
+            {
+              "type": "transfer",
+              "source": "b2",
+              "target": "b1"
+            },
+            {
+              "type": "transfer",
+              "source": "b5",
+              "target": "b2"
+            },
+            {
+              "type": "transfer",
+              "source": "b3",
+              "target": "b5"
+            },
+            {
+              "type": "transfer",
+              "source": "b3",
+              "target": "b2"
+            },
+            {
+              "type": "transfer",
+              "source": "b0",
+              "target": "b3"
+            },
+            {
+              "type": "transfer",
+              "source": "b4",
+              "target": "b0"
+            },
+            {
+              "type": "transfer",
+              "source": "b5",
+              "target": "b4"
+            },
+            {
+              "type": "transfer",
+              "source": "b0",
+              "target": "b5"
+            }
+          ],
+          "triggers": [
+            {
+              "id": "key-a",
+              "mandatory": true,
+              "solvedWithoutMilestone": 0,
+              "minimumMovesToMilestone": 8,
+              "shortestCrossings": [
+                {
+                  "before": 8,
+                  "after": 10,
+                  "completeColors": 1,
+                  "remainingRuns": 14,
+                  "emptyReceivers": 1
+                }
+              ],
+              "before": {
+                "observations": 14,
+                "emptyReceivers": {
+                  "count": 14,
+                  "min": 0,
+                  "max": 1,
+                  "median": 0,
+                  "histogram": {
+                    "0": 13,
+                    "1": 1
+                  }
+                },
+                "minimumCompatibleSlots": {
+                  "count": 14,
+                  "min": 0,
+                  "max": 4,
+                  "median": 0,
+                  "histogram": {
+                    "0": 13,
+                    "4": 1
+                  }
+                },
+                "colorRuns": {
+                  "count": 14,
+                  "min": 15,
+                  "max": 21,
+                  "median": 18,
+                  "histogram": {
+                    "15": 1,
+                    "16": 1,
+                    "17": 2,
+                    "18": 3,
+                    "19": 3,
+                    "20": 2,
+                    "21": 2
+                  }
+                }
+              },
+              "after": {
+                "observations": 48,
+                "emptyReceivers": {
+                  "count": 48,
+                  "min": 0,
+                  "max": 1,
+                  "median": 0,
+                  "histogram": {
+                    "0": 34,
+                    "1": 14
+                  }
+                },
+                "minimumCompatibleSlots": {
+                  "count": 48,
+                  "min": 0,
+                  "max": 4,
+                  "median": 0,
+                  "histogram": {
+                    "0": 34,
+                    "4": 14
+                  }
+                },
+                "colorRuns": {
+                  "count": 48,
+                  "min": 6,
+                  "max": 14,
+                  "median": 8,
+                  "histogram": {
+                    "6": 8,
+                    "7": 7,
+                    "8": 9,
+                    "9": 4,
+                    "10": 7,
+                    "11": 3,
+                    "12": 3,
+                    "13": 3,
+                    "14": 4
+                  }
+                }
+              }
+            }
+          ],
+          "trace": [
+            {
+              "step": 1,
+              "action": {
+                "type": "transfer",
+                "source": "b0",
+                "target": "b6"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 21
+            },
+            {
+              "step": 2,
+              "action": {
+                "type": "transfer",
+                "source": "b2",
+                "target": "b0"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 20
+            },
+            {
+              "step": 3,
+              "action": {
+                "type": "transfer",
+                "source": "b1",
+                "target": "b2"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 19
+            },
+            {
+              "step": 4,
+              "action": {
+                "type": "transfer",
+                "source": "b5",
+                "target": "b0"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 18
+            },
+            {
+              "step": 5,
+              "action": {
+                "type": "transfer",
+                "source": "b4",
+                "target": "b5"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 17
+            },
+            {
+              "step": 6,
+              "action": {
+                "type": "transfer",
+                "source": "b4",
+                "target": "b6"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 16
+            },
+            {
+              "step": 7,
+              "action": {
+                "type": "transfer",
+                "source": "b1",
+                "target": "b4"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 15
+            },
+            {
+              "step": 8,
+              "action": {
+                "type": "transfer",
+                "source": "b1",
+                "target": "b6"
+              },
+              "fired": [
+                "key-a"
+              ],
+              "emptyReceivers": 1,
+              "remainingRuns": 14
+            },
+            {
+              "step": 9,
+              "action": {
+                "type": "transfer",
+                "source": "b0",
+                "target": "b1"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 14
+            },
+            {
+              "step": 10,
+              "action": {
+                "type": "transfer",
+                "source": "b2",
+                "target": "b0"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 13
+            },
+            {
+              "step": 11,
+              "action": {
+                "type": "transfer",
+                "source": "b2",
+                "target": "b1"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 12
+            },
+            {
+              "step": 12,
+              "action": {
+                "type": "transfer",
+                "source": "b5",
+                "target": "b2"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 11
+            },
+            {
+              "step": 13,
+              "action": {
+                "type": "transfer",
+                "source": "b3",
+                "target": "b5"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 10
+            },
+            {
+              "step": 14,
+              "action": {
+                "type": "transfer",
+                "source": "b3",
+                "target": "b2"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 9
+            },
+            {
+              "step": 15,
+              "action": {
+                "type": "transfer",
+                "source": "b0",
+                "target": "b3"
+              },
+              "fired": [],
+              "emptyReceivers": 1,
+              "remainingRuns": 8
+            },
+            {
+              "step": 16,
+              "action": {
+                "type": "transfer",
+                "source": "b4",
+                "target": "b0"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 8
+            },
+            {
+              "step": 17,
+              "action": {
+                "type": "transfer",
+                "source": "b5",
+                "target": "b4"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 7
+            },
+            {
+              "step": 18,
+              "action": {
+                "type": "transfer",
+                "source": "b0",
+                "target": "b5"
+              },
+              "fired": [],
+              "emptyReceivers": 1,
+              "remainingRuns": 6
+            }
+          ],
+          "participatingLocked": [
+            "b3"
+          ],
+          "allOpen": {
+            "status": "complete",
+            "shortestMoves": 17,
+            "deadEnds": 29
+          },
+          "limits": "Exact fixed-layout forward graph until completion. Before/after facts cover all globally shortest corridors; moves, space and runs are not difficulty grades. Alternative hidden worlds, visual quality and human breakthrough experience remain unvalidated.",
+          "disclosure": {
+            "status": "proved",
+            "criterion": "common-public-prefix-then-visible-completion-v1",
+            "prefix": [
+              {
+                "type": "transfer",
+                "source": "b0",
+                "target": "b6"
+              },
+              {
+                "type": "transfer",
+                "source": "b2",
+                "target": "b0"
+              },
+              {
+                "type": "transfer",
+                "source": "b1",
+                "target": "b2"
+              },
+              {
+                "type": "transfer",
+                "source": "b5",
+                "target": "b0"
+              },
+              {
+                "type": "transfer",
+                "source": "b4",
+                "target": "b5"
+              },
+              {
+                "type": "transfer",
+                "source": "b4",
+                "target": "b6"
+              },
+              {
+                "type": "transfer",
+                "source": "b1",
+                "target": "b4"
+              },
+              {
+                "type": "transfer",
+                "source": "b1",
+                "target": "b6"
+              }
+            ],
+            "worlds": [
+              {
+                "order": [
+                  "jade",
+                  "amber",
+                  "rose",
+                  "rose"
+                ],
+                "continuation": [
+                  {
+                    "type": "transfer",
+                    "source": "b0",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b2"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b3",
+                    "target": "b5"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b3",
+                    "target": "b2"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b3",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b3"
+                  }
+                ]
+              },
+              {
+                "order": [
+                  "jade",
+                  "rose",
+                  "amber",
+                  "rose"
+                ],
+                "continuation": [
+                  {
+                    "type": "transfer",
+                    "source": "b0",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b2"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b3",
+                    "target": "b5"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b3",
+                    "target": "b2"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b5"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b3",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b3",
+                    "target": "b0"
+                  }
+                ]
+              },
+              {
+                "order": [
+                  "jade",
+                  "rose",
+                  "rose",
+                  "amber"
+                ],
+                "continuation": [
+                  {
+                    "type": "transfer",
+                    "source": "b0",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b3",
+                    "target": "b2"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b2"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b5"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b3",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b3",
+                    "target": "b0"
+                  }
+                ]
+              },
+              {
+                "order": [
+                  "amber",
+                  "jade",
+                  "rose",
+                  "rose"
+                ],
+                "continuation": [
+                  {
+                    "type": "transfer",
+                    "source": "b0",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b2"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b3",
+                    "target": "b5"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b3",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b3",
+                    "target": "b2"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b3"
+                  }
+                ]
+              },
+              {
+                "order": [
+                  "amber",
+                  "rose",
+                  "jade",
+                  "rose"
+                ],
+                "continuation": [
+                  {
+                    "type": "transfer",
+                    "source": "b0",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b2"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b3",
+                    "target": "b5"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b3",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b5"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b3",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b3",
+                    "target": "b2"
+                  }
+                ]
+              },
+              {
+                "order": [
+                  "amber",
+                  "rose",
+                  "rose",
+                  "jade"
+                ],
+                "continuation": [
+                  {
+                    "type": "transfer",
+                    "source": "b0",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b3",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b2"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b5"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b3",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b3",
+                    "target": "b2"
+                  }
+                ]
+              },
+              {
+                "order": [
+                  "rose",
+                  "jade",
+                  "amber",
+                  "rose"
+                ],
+                "continuation": [
+                  {
+                    "type": "transfer",
+                    "source": "b0",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b2"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b3",
+                    "target": "b5"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b3",
+                    "target": "b2"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b3",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b5"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b3"
+                  }
+                ]
+              },
+              {
+                "order": [
+                  "rose",
+                  "jade",
+                  "rose",
+                  "amber"
+                ],
+                "continuation": [
+                  {
+                    "type": "transfer",
+                    "source": "b0",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b3",
+                    "target": "b2"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b2"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b3",
+                    "target": "b5"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b3",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b5"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b3"
+                  }
+                ]
+              },
+              {
+                "order": [
+                  "rose",
+                  "amber",
+                  "jade",
+                  "rose"
+                ],
+                "continuation": [
+                  {
+                    "type": "transfer",
+                    "source": "b0",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b2"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b3",
+                    "target": "b5"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b3",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b3",
+                    "target": "b2"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b5"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b3"
+                  }
+                ]
+              },
+              {
+                "order": [
+                  "rose",
+                  "amber",
+                  "rose",
+                  "jade"
+                ],
+                "continuation": [
+                  {
+                    "type": "transfer",
+                    "source": "b0",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b3",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b2"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b3",
+                    "target": "b5"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b3",
+                    "target": "b2"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b5"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b3"
+                  }
+                ]
+              },
+              {
+                "order": [
+                  "rose",
+                  "rose",
+                  "jade",
+                  "amber"
+                ],
+                "continuation": [
+                  {
+                    "type": "transfer",
+                    "source": "b0",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b3",
+                    "target": "b2"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b3",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b2"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b5"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b3"
+                  }
+                ]
+              },
+              {
+                "order": [
+                  "rose",
+                  "rose",
+                  "amber",
+                  "jade"
+                ],
+                "continuation": [
+                  {
+                    "type": "transfer",
+                    "source": "b0",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b3",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b3",
+                    "target": "b2"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b2"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b5"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b3"
+                  }
+                ]
+              }
+            ],
+            "limits": "Only this one initially full locked bottle and public four-per-color inventory. Does not prove all choices safe, human discoverability or balanced phase difficulty."
+          }
+        }
+      ]
+    },
+    {
+      "mainline": 775,
+      "sourceSha256": "89fad5928046dcc990f4ed67ce87c8db3ff2d52ecfef66af4d34d553412d70a0",
+      "origin": {
+        "generator": "anchored-shuffle-v1",
+        "seed": 6100327,
+        "candidateIndex": 0,
+        "config": {
+          "colors": [
+            "jade",
+            "coral",
+            "amber",
+            "azure",
+            "violet",
+            "rose",
+            "tangerine"
+          ],
+          "emptyBottles": 1,
+          "minSolutionMoves": 1,
+          "maxSolutionMoves": 60,
+          "mixing": "diverse"
+        }
+      },
+      "classicHuman": {
+        "model": "human-decision-v1",
+        "structureKey": "water-sort:4:7:8:/AABC/BDEF/CAAG/DBFG/ECDE/FCDE/GGFB",
+        "planningRank": 4,
+        "shortestMoves": 20,
+        "status": "rated",
+        "reason": null,
+        "decisions": [
+          {
+            "moveIndex": 0,
+            "choices": 7,
+            "safeChoices": 2,
+            "deadEnds": 5,
+            "costlyDetours": 0,
+            "deceptiveChoices": 0,
+            "risk": 0.42857142857142855
+          },
+          {
+            "moveIndex": 6,
+            "choices": 2,
+            "safeChoices": 2,
+            "deadEnds": 0,
+            "costlyDetours": 0,
+            "deceptiveChoices": 0,
+            "risk": 0
+          },
+          {
+            "moveIndex": 13,
+            "choices": 1,
+            "safeChoices": 1,
+            "deadEnds": 0,
+            "costlyDetours": 0,
+            "deceptiveChoices": 0,
+            "risk": 0
+          }
+        ],
+        "score": {
+          "planning": 4,
+          "trapPeak": 12,
+          "trapRepeat": 3,
+          "space": 14,
+          "visual": 8,
+          "operations": 9,
+          "total": 50
+        }
+      },
+      "variants": [
+        {
+          "puzzle": "classic-unlock-baseline-03",
+          "variant": "classic",
+          "definitionSha256": "d30e0f886398cbce2786e3043b6ea3095c71b03f4c52b7537fad076185ec2222",
+          "structureSha256": "10fc1a0c4a3c0f915a50879b87e502efb5f930fb64c33dbe9759ddb70e4ad10e",
+          "status": "complete",
+          "states": 95,
+          "edges": 143,
+          "deadEnds": 29,
+          "shortestMoves": 20,
+          "route": [
+            {
+              "type": "transfer",
+              "source": "b3",
+              "target": "b7"
+            },
+            {
+              "type": "transfer",
+              "source": "b4",
+              "target": "b7"
+            },
+            {
+              "type": "transfer",
+              "source": "b3",
+              "target": "b4"
+            },
+            {
+              "type": "transfer",
+              "source": "b6",
+              "target": "b3"
+            },
+            {
+              "type": "transfer",
+              "source": "b0",
+              "target": "b6"
+            },
+            {
+              "type": "transfer",
+              "source": "b5",
+              "target": "b0"
+            },
+            {
+              "type": "transfer",
+              "source": "b5",
+              "target": "b7"
+            },
+            {
+              "type": "transfer",
+              "source": "b4",
+              "target": "b5"
+            },
+            {
+              "type": "transfer",
+              "source": "b4",
+              "target": "b3"
+            },
+            {
+              "type": "transfer",
+              "source": "b0",
+              "target": "b4"
+            },
+            {
+              "type": "transfer",
+              "source": "b1",
+              "target": "b0"
+            },
+            {
+              "type": "transfer",
+              "source": "b1",
+              "target": "b4"
+            },
+            {
+              "type": "transfer",
+              "source": "b2",
+              "target": "b0"
+            },
+            {
+              "type": "transfer",
+              "source": "b6",
+              "target": "b1"
+            },
+            {
+              "type": "transfer",
+              "source": "b2",
+              "target": "b6"
+            },
+            {
+              "type": "transfer",
+              "source": "b3",
+              "target": "b2"
+            },
+            {
+              "type": "transfer",
+              "source": "b3",
+              "target": "b7"
+            },
+            {
+              "type": "transfer",
+              "source": "b1",
+              "target": "b3"
+            },
+            {
+              "type": "transfer",
+              "source": "b5",
+              "target": "b1"
+            },
+            {
+              "type": "transfer",
+              "source": "b3",
+              "target": "b5"
+            }
+          ],
+          "triggers": [],
+          "trace": [
+            {
+              "step": 1,
+              "action": {
+                "type": "transfer",
+                "source": "b3",
+                "target": "b7"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 25
+            },
+            {
+              "step": 2,
+              "action": {
+                "type": "transfer",
+                "source": "b4",
+                "target": "b7"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 24
+            },
+            {
+              "step": 3,
+              "action": {
+                "type": "transfer",
+                "source": "b3",
+                "target": "b4"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 23
+            },
+            {
+              "step": 4,
+              "action": {
+                "type": "transfer",
+                "source": "b6",
+                "target": "b3"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 22
+            },
+            {
+              "step": 5,
+              "action": {
+                "type": "transfer",
+                "source": "b0",
+                "target": "b6"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 21
+            },
+            {
+              "step": 6,
+              "action": {
+                "type": "transfer",
+                "source": "b5",
+                "target": "b0"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 20
+            },
+            {
+              "step": 7,
+              "action": {
+                "type": "transfer",
+                "source": "b5",
+                "target": "b7"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 19
+            },
+            {
+              "step": 8,
+              "action": {
+                "type": "transfer",
+                "source": "b4",
+                "target": "b5"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 18
+            },
+            {
+              "step": 9,
+              "action": {
+                "type": "transfer",
+                "source": "b4",
+                "target": "b3"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 17
+            },
+            {
+              "step": 10,
+              "action": {
+                "type": "transfer",
+                "source": "b0",
+                "target": "b4"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 16
+            },
+            {
+              "step": 11,
+              "action": {
+                "type": "transfer",
+                "source": "b1",
+                "target": "b0"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 15
+            },
+            {
+              "step": 12,
+              "action": {
+                "type": "transfer",
+                "source": "b1",
+                "target": "b4"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 14
+            },
+            {
+              "step": 13,
+              "action": {
+                "type": "transfer",
+                "source": "b2",
+                "target": "b0"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 13
+            },
+            {
+              "step": 14,
+              "action": {
+                "type": "transfer",
+                "source": "b6",
+                "target": "b1"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 12
+            },
+            {
+              "step": 15,
+              "action": {
+                "type": "transfer",
+                "source": "b2",
+                "target": "b6"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 11
+            },
+            {
+              "step": 16,
+              "action": {
+                "type": "transfer",
+                "source": "b3",
+                "target": "b2"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 10
+            },
+            {
+              "step": 17,
+              "action": {
+                "type": "transfer",
+                "source": "b3",
+                "target": "b7"
+              },
+              "fired": [],
+              "emptyReceivers": 1,
+              "remainingRuns": 9
+            },
+            {
+              "step": 18,
+              "action": {
+                "type": "transfer",
+                "source": "b1",
+                "target": "b3"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 9
+            },
+            {
+              "step": 19,
+              "action": {
+                "type": "transfer",
+                "source": "b5",
+                "target": "b1"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 8
+            },
+            {
+              "step": 20,
+              "action": {
+                "type": "transfer",
+                "source": "b3",
+                "target": "b5"
+              },
+              "fired": [],
+              "emptyReceivers": 1,
+              "remainingRuns": 7
+            }
+          ],
+          "participatingLocked": [],
+          "allOpen": {
+            "status": "complete",
+            "shortestMoves": 20,
+            "deadEnds": 29
+          },
+          "limits": "Exact fixed-layout forward graph until completion. Before/after facts cover all globally shortest corridors; moves, space and runs are not difficulty grades. Alternative hidden worlds, visual quality and human breakthrough experience remain unvalidated.",
+          "disclosure": null
+        },
+        {
+          "puzzle": "classic-unlock-baseline-04",
+          "variant": "key",
+          "definitionSha256": "a934402398a0ed0ea0e7b9cbf55b0242c49d28bdf78f59b963f2a1ee7b226268",
+          "structureSha256": "e469d7e77568cf54513be4fba188c5701ef2786360d237df28fb4cbfcffe00dd",
+          "status": "complete",
+          "states": 328,
+          "edges": 572,
+          "deadEnds": 54,
+          "shortestMoves": 21,
+          "route": [
+            {
+              "type": "transfer",
+              "source": "b3",
+              "target": "b7"
+            },
+            {
+              "type": "transfer",
+              "source": "b4",
+              "target": "b7"
+            },
+            {
+              "type": "transfer",
+              "source": "b3",
+              "target": "b4"
+            },
+            {
+              "type": "transfer",
+              "source": "b6",
+              "target": "b3"
+            },
+            {
+              "type": "transfer",
+              "source": "b0",
+              "target": "b6"
+            },
+            {
+              "type": "transfer",
+              "source": "b5",
+              "target": "b0"
+            },
+            {
+              "type": "transfer",
+              "source": "b5",
+              "target": "b7"
+            },
+            {
+              "type": "transfer",
+              "source": "b4",
+              "target": "b5"
+            },
+            {
+              "type": "transfer",
+              "source": "b3",
+              "target": "b4"
+            },
+            {
+              "type": "transfer",
+              "source": "b3",
+              "target": "b7"
+            },
+            {
+              "type": "transfer",
+              "source": "b0",
+              "target": "b3"
+            },
+            {
+              "type": "transfer",
+              "source": "b1",
+              "target": "b0"
+            },
+            {
+              "type": "transfer",
+              "source": "b1",
+              "target": "b3"
+            },
+            {
+              "type": "transfer",
+              "source": "b2",
+              "target": "b0"
+            },
+            {
+              "type": "transfer",
+              "source": "b6",
+              "target": "b1"
+            },
+            {
+              "type": "transfer",
+              "source": "b2",
+              "target": "b6"
+            },
+            {
+              "type": "transfer",
+              "source": "b4",
+              "target": "b2"
+            },
+            {
+              "type": "transfer",
+              "source": "b3",
+              "target": "b4"
+            },
+            {
+              "type": "transfer",
+              "source": "b1",
+              "target": "b3"
+            },
+            {
+              "type": "transfer",
+              "source": "b5",
+              "target": "b1"
+            },
+            {
+              "type": "transfer",
+              "source": "b3",
+              "target": "b5"
+            }
+          ],
+          "triggers": [
+            {
+              "id": "key-a",
+              "mandatory": true,
+              "solvedWithoutMilestone": 0,
+              "minimumMovesToMilestone": 10,
+              "shortestCrossings": [
+                {
+                  "before": 10,
+                  "after": 11,
+                  "completeColors": 1,
+                  "remainingRuns": 16,
+                  "emptyReceivers": 1
+                }
+              ],
+              "before": {
+                "observations": 17,
+                "emptyReceivers": {
+                  "count": 17,
+                  "min": 0,
+                  "max": 1,
+                  "median": 0,
+                  "histogram": {
+                    "0": 16,
+                    "1": 1
+                  }
+                },
+                "minimumCompatibleSlots": {
+                  "count": 17,
+                  "min": 0,
+                  "max": 4,
+                  "median": 0,
+                  "histogram": {
+                    "0": 16,
+                    "4": 1
+                  }
+                },
+                "colorRuns": {
+                  "count": 17,
+                  "min": 17,
+                  "max": 25,
+                  "median": 21,
+                  "histogram": {
+                    "17": 1,
+                    "18": 2,
+                    "19": 2,
+                    "20": 2,
+                    "21": 2,
+                    "22": 2,
+                    "23": 2,
+                    "24": 1,
+                    "25": 3
+                  }
+                }
+              },
+              "after": {
+                "observations": 43,
+                "emptyReceivers": {
+                  "count": 43,
+                  "min": 0,
+                  "max": 1,
+                  "median": 0,
+                  "histogram": {
+                    "0": 32,
+                    "1": 11
+                  }
+                },
+                "minimumCompatibleSlots": {
+                  "count": 43,
+                  "min": 0,
+                  "max": 4,
+                  "median": 0,
+                  "histogram": {
+                    "0": 32,
+                    "4": 11
+                  }
+                },
+                "colorRuns": {
+                  "count": 43,
+                  "min": 7,
+                  "max": 16,
+                  "median": 9,
+                  "histogram": {
+                    "7": 7,
+                    "8": 6,
+                    "9": 9,
+                    "10": 2,
+                    "11": 2,
+                    "12": 3,
+                    "13": 4,
+                    "14": 4,
+                    "15": 3,
+                    "16": 3
+                  }
+                }
+              }
+            }
+          ],
+          "trace": [
+            {
+              "step": 1,
+              "action": {
+                "type": "transfer",
+                "source": "b3",
+                "target": "b7"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 25
+            },
+            {
+              "step": 2,
+              "action": {
+                "type": "transfer",
+                "source": "b4",
+                "target": "b7"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 24
+            },
+            {
+              "step": 3,
+              "action": {
+                "type": "transfer",
+                "source": "b3",
+                "target": "b4"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 23
+            },
+            {
+              "step": 4,
+              "action": {
+                "type": "transfer",
+                "source": "b6",
+                "target": "b3"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 22
+            },
+            {
+              "step": 5,
+              "action": {
+                "type": "transfer",
+                "source": "b0",
+                "target": "b6"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 21
+            },
+            {
+              "step": 6,
+              "action": {
+                "type": "transfer",
+                "source": "b5",
+                "target": "b0"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 20
+            },
+            {
+              "step": 7,
+              "action": {
+                "type": "transfer",
+                "source": "b5",
+                "target": "b7"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 19
+            },
+            {
+              "step": 8,
+              "action": {
+                "type": "transfer",
+                "source": "b4",
+                "target": "b5"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 18
+            },
+            {
+              "step": 9,
+              "action": {
+                "type": "transfer",
+                "source": "b3",
+                "target": "b4"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 17
+            },
+            {
+              "step": 10,
+              "action": {
+                "type": "transfer",
+                "source": "b3",
+                "target": "b7"
+              },
+              "fired": [
+                "key-a"
+              ],
+              "emptyReceivers": 1,
+              "remainingRuns": 16
+            },
+            {
+              "step": 11,
+              "action": {
+                "type": "transfer",
+                "source": "b0",
+                "target": "b3"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 16
+            },
+            {
+              "step": 12,
+              "action": {
+                "type": "transfer",
+                "source": "b1",
+                "target": "b0"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 15
+            },
+            {
+              "step": 13,
+              "action": {
+                "type": "transfer",
+                "source": "b1",
+                "target": "b3"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 14
+            },
+            {
+              "step": 14,
+              "action": {
+                "type": "transfer",
+                "source": "b2",
+                "target": "b0"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 13
+            },
+            {
+              "step": 15,
+              "action": {
+                "type": "transfer",
+                "source": "b6",
+                "target": "b1"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 12
+            },
+            {
+              "step": 16,
+              "action": {
+                "type": "transfer",
+                "source": "b2",
+                "target": "b6"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 11
+            },
+            {
+              "step": 17,
+              "action": {
+                "type": "transfer",
+                "source": "b4",
+                "target": "b2"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 10
+            },
+            {
+              "step": 18,
+              "action": {
+                "type": "transfer",
+                "source": "b3",
+                "target": "b4"
+              },
+              "fired": [],
+              "emptyReceivers": 1,
+              "remainingRuns": 9
+            },
+            {
+              "step": 19,
+              "action": {
+                "type": "transfer",
+                "source": "b1",
+                "target": "b3"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 9
+            },
+            {
+              "step": 20,
+              "action": {
+                "type": "transfer",
+                "source": "b5",
+                "target": "b1"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 8
+            },
+            {
+              "step": 21,
+              "action": {
+                "type": "transfer",
+                "source": "b3",
+                "target": "b5"
+              },
+              "fired": [],
+              "emptyReceivers": 1,
+              "remainingRuns": 7
+            }
+          ],
+          "participatingLocked": [
+            "b2"
+          ],
+          "allOpen": {
+            "status": "complete",
+            "shortestMoves": 20,
+            "deadEnds": 29
+          },
+          "limits": "Exact fixed-layout forward graph until completion. Before/after facts cover all globally shortest corridors; moves, space and runs are not difficulty grades. Alternative hidden worlds, visual quality and human breakthrough experience remain unvalidated.",
+          "disclosure": {
+            "status": "proved",
+            "criterion": "common-public-prefix-then-visible-completion-v1",
+            "prefix": [
+              {
+                "type": "transfer",
+                "source": "b3",
+                "target": "b7"
+              },
+              {
+                "type": "transfer",
+                "source": "b4",
+                "target": "b7"
+              },
+              {
+                "type": "transfer",
+                "source": "b3",
+                "target": "b4"
+              },
+              {
+                "type": "transfer",
+                "source": "b6",
+                "target": "b3"
+              },
+              {
+                "type": "transfer",
+                "source": "b0",
+                "target": "b6"
+              },
+              {
+                "type": "transfer",
+                "source": "b5",
+                "target": "b0"
+              },
+              {
+                "type": "transfer",
+                "source": "b5",
+                "target": "b7"
+              },
+              {
+                "type": "transfer",
+                "source": "b4",
+                "target": "b5"
+              },
+              {
+                "type": "transfer",
+                "source": "b3",
+                "target": "b4"
+              },
+              {
+                "type": "transfer",
+                "source": "b3",
+                "target": "b7"
+              }
+            ],
+            "worlds": [
+              {
+                "order": [
+                  "amber",
+                  "tangerine",
+                  "tangerine",
+                  "jade"
+                ],
+                "continuation": [
+                  {
+                    "type": "transfer",
+                    "source": "b0",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b6",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b6"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b2"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b4"
+                  }
+                ]
+              },
+              {
+                "order": [
+                  "amber",
+                  "tangerine",
+                  "jade",
+                  "tangerine"
+                ],
+                "continuation": [
+                  {
+                    "type": "transfer",
+                    "source": "b0",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b6",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b6"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b6"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b2"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b4"
+                  }
+                ]
+              },
+              {
+                "order": [
+                  "amber",
+                  "jade",
+                  "tangerine",
+                  "tangerine"
+                ],
+                "continuation": [
+                  {
+                    "type": "transfer",
+                    "source": "b0",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b6",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b6"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b2"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b4"
+                  }
+                ]
+              },
+              {
+                "order": [
+                  "tangerine",
+                  "amber",
+                  "tangerine",
+                  "jade"
+                ],
+                "continuation": [
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b0",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b6",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b6"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b6"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b2"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b2"
+                  }
+                ]
+              },
+              {
+                "order": [
+                  "tangerine",
+                  "amber",
+                  "jade",
+                  "tangerine"
+                ],
+                "continuation": [
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b0",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b6",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b6"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b6"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b2"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b2"
+                  }
+                ]
+              },
+              {
+                "order": [
+                  "tangerine",
+                  "tangerine",
+                  "amber",
+                  "jade"
+                ],
+                "continuation": [
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b0",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b6",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b6"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b2"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b2"
+                  }
+                ]
+              },
+              {
+                "order": [
+                  "tangerine",
+                  "tangerine",
+                  "jade",
+                  "amber"
+                ],
+                "continuation": [
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b0",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b6",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b6"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b2"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b2"
+                  }
+                ]
+              },
+              {
+                "order": [
+                  "tangerine",
+                  "jade",
+                  "amber",
+                  "tangerine"
+                ],
+                "continuation": [
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b0",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b6",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b6"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b6"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b2"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b2"
+                  }
+                ]
+              },
+              {
+                "order": [
+                  "tangerine",
+                  "jade",
+                  "tangerine",
+                  "amber"
+                ],
+                "continuation": [
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b0",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b6",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b6"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b6"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b2"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b2"
+                  }
+                ]
+              },
+              {
+                "order": [
+                  "jade",
+                  "amber",
+                  "tangerine",
+                  "tangerine"
+                ],
+                "continuation": [
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b0",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b6",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b6"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b2"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b2"
+                  }
+                ]
+              },
+              {
+                "order": [
+                  "jade",
+                  "tangerine",
+                  "amber",
+                  "tangerine"
+                ],
+                "continuation": [
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b0",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b6",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b6"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b6"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b2"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b2"
+                  }
+                ]
+              },
+              {
+                "order": [
+                  "jade",
+                  "tangerine",
+                  "tangerine",
+                  "amber"
+                ],
+                "continuation": [
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b0",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b6",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b6"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b2",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b2"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b2"
+                  }
+                ]
+              }
+            ],
+            "limits": "Only this one initially full locked bottle and public four-per-color inventory. Does not prove all choices safe, human discoverability or balanced phase difficulty."
+          }
+        }
+      ]
+    },
+    {
+      "mainline": 220,
+      "sourceSha256": "09fad22389e0471f68d7a81f77263a27e6de32268c3fa5e2efca565931fbf2aa",
+      "origin": {
+        "generator": "balanced-shuffle-v1",
+        "seed": 10003740,
+        "candidateIndex": 0,
+        "config": {
+          "colors": [
+            "jade",
+            "coral",
+            "amber",
+            "azure",
+            "violet",
+            "rose"
+          ],
+          "emptyBottles": 1,
+          "minSolutionMoves": 1,
+          "maxSolutionMoves": 60,
+          "mixing": "diverse"
+        }
+      },
+      "classicHuman": {
+        "model": "human-decision-v1",
+        "structureKey": "water-sort:4:6:7:/AABC/DADE/DAFC/EBCF/EDBE/FCBF",
+        "planningRank": 6,
+        "shortestMoves": 20,
+        "status": "rated",
+        "reason": null,
+        "decisions": [
+          {
+            "moveIndex": 0,
+            "choices": 6,
+            "safeChoices": 2,
+            "deadEnds": 4,
+            "costlyDetours": 0,
+            "deceptiveChoices": 0,
+            "risk": 0.39999999999999997
+          },
+          {
+            "moveIndex": 6,
+            "choices": 1,
+            "safeChoices": 1,
+            "deadEnds": 0,
+            "costlyDetours": 0,
+            "deceptiveChoices": 0,
+            "risk": 0
+          },
+          {
+            "moveIndex": 13,
+            "choices": 2,
+            "safeChoices": 2,
+            "deadEnds": 0,
+            "costlyDetours": 0,
+            "deceptiveChoices": 0,
+            "risk": 0
+          }
+        ],
+        "score": {
+          "planning": 7,
+          "trapPeak": 11,
+          "trapRepeat": 3,
+          "space": 14,
+          "visual": 7,
+          "operations": 9,
+          "total": 51
+        }
+      },
+      "variants": [
+        {
+          "puzzle": "classic-unlock-baseline-05",
+          "variant": "classic",
+          "definitionSha256": "d968391168aa12e770af80d7d4fbaf0e1d57a4e1513bdc6f6505f280af2f5f32",
+          "structureSha256": "123fb7c7db9a451bf76d38b8ca040c36dcc924c2c911ddc92559cac09caec0db",
+          "status": "complete",
+          "states": 89,
+          "edges": 152,
+          "deadEnds": 55,
+          "shortestMoves": 20,
+          "route": [
+            {
+              "type": "transfer",
+              "source": "b0",
+              "target": "b6"
+            },
+            {
+              "type": "transfer",
+              "source": "b2",
+              "target": "b0"
+            },
+            {
+              "type": "transfer",
+              "source": "b3",
+              "target": "b6"
+            },
+            {
+              "type": "transfer",
+              "source": "b2",
+              "target": "b3"
+            },
+            {
+              "type": "transfer",
+              "source": "b2",
+              "target": "b6"
+            },
+            {
+              "type": "transfer",
+              "source": "b0",
+              "target": "b2"
+            },
+            {
+              "type": "transfer",
+              "source": "b1",
+              "target": "b2"
+            },
+            {
+              "type": "transfer",
+              "source": "b1",
+              "target": "b6"
+            },
+            {
+              "type": "transfer",
+              "source": "b3",
+              "target": "b1"
+            },
+            {
+              "type": "transfer",
+              "source": "b3",
+              "target": "b0"
+            },
+            {
+              "type": "transfer",
+              "source": "b1",
+              "target": "b3"
+            },
+            {
+              "type": "transfer",
+              "source": "b4",
+              "target": "b1"
+            },
+            {
+              "type": "transfer",
+              "source": "b4",
+              "target": "b3"
+            },
+            {
+              "type": "transfer",
+              "source": "b5",
+              "target": "b1"
+            },
+            {
+              "type": "transfer",
+              "source": "b4",
+              "target": "b5"
+            },
+            {
+              "type": "transfer",
+              "source": "b1",
+              "target": "b4"
+            },
+            {
+              "type": "transfer",
+              "source": "b0",
+              "target": "b1"
+            },
+            {
+              "type": "transfer",
+              "source": "b5",
+              "target": "b0"
+            },
+            {
+              "type": "transfer",
+              "source": "b5",
+              "target": "b1"
+            },
+            {
+              "type": "transfer",
+              "source": "b0",
+              "target": "b5"
+            }
+          ],
+          "triggers": [],
+          "trace": [
+            {
+              "step": 1,
+              "action": {
+                "type": "transfer",
+                "source": "b0",
+                "target": "b6"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 23
+            },
+            {
+              "step": 2,
+              "action": {
+                "type": "transfer",
+                "source": "b2",
+                "target": "b0"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 22
+            },
+            {
+              "step": 3,
+              "action": {
+                "type": "transfer",
+                "source": "b3",
+                "target": "b6"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 21
+            },
+            {
+              "step": 4,
+              "action": {
+                "type": "transfer",
+                "source": "b2",
+                "target": "b3"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 20
+            },
+            {
+              "step": 5,
+              "action": {
+                "type": "transfer",
+                "source": "b2",
+                "target": "b6"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 19
+            },
+            {
+              "step": 6,
+              "action": {
+                "type": "transfer",
+                "source": "b0",
+                "target": "b2"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 18
+            },
+            {
+              "step": 7,
+              "action": {
+                "type": "transfer",
+                "source": "b1",
+                "target": "b2"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 17
+            },
+            {
+              "step": 8,
+              "action": {
+                "type": "transfer",
+                "source": "b1",
+                "target": "b6"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 16
+            },
+            {
+              "step": 9,
+              "action": {
+                "type": "transfer",
+                "source": "b3",
+                "target": "b1"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 15
+            },
+            {
+              "step": 10,
+              "action": {
+                "type": "transfer",
+                "source": "b3",
+                "target": "b0"
+              },
+              "fired": [],
+              "emptyReceivers": 1,
+              "remainingRuns": 14
+            },
+            {
+              "step": 11,
+              "action": {
+                "type": "transfer",
+                "source": "b1",
+                "target": "b3"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 14
+            },
+            {
+              "step": 12,
+              "action": {
+                "type": "transfer",
+                "source": "b4",
+                "target": "b1"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 13
+            },
+            {
+              "step": 13,
+              "action": {
+                "type": "transfer",
+                "source": "b4",
+                "target": "b3"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 12
+            },
+            {
+              "step": 14,
+              "action": {
+                "type": "transfer",
+                "source": "b5",
+                "target": "b1"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 11
+            },
+            {
+              "step": 15,
+              "action": {
+                "type": "transfer",
+                "source": "b4",
+                "target": "b5"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 10
+            },
+            {
+              "step": 16,
+              "action": {
+                "type": "transfer",
+                "source": "b1",
+                "target": "b4"
+              },
+              "fired": [],
+              "emptyReceivers": 1,
+              "remainingRuns": 9
+            },
+            {
+              "step": 17,
+              "action": {
+                "type": "transfer",
+                "source": "b0",
+                "target": "b1"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 9
+            },
+            {
+              "step": 18,
+              "action": {
+                "type": "transfer",
+                "source": "b5",
+                "target": "b0"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 8
+            },
+            {
+              "step": 19,
+              "action": {
+                "type": "transfer",
+                "source": "b5",
+                "target": "b1"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 7
+            },
+            {
+              "step": 20,
+              "action": {
+                "type": "transfer",
+                "source": "b0",
+                "target": "b5"
+              },
+              "fired": [],
+              "emptyReceivers": 1,
+              "remainingRuns": 6
+            }
+          ],
+          "participatingLocked": [],
+          "allOpen": {
+            "status": "complete",
+            "shortestMoves": 20,
+            "deadEnds": 55
+          },
+          "limits": "Exact fixed-layout forward graph until completion. Before/after facts cover all globally shortest corridors; moves, space and runs are not difficulty grades. Alternative hidden worlds, visual quality and human breakthrough experience remain unvalidated.",
+          "disclosure": null
+        },
+        {
+          "puzzle": "classic-unlock-baseline-06",
+          "variant": "key",
+          "definitionSha256": "8c7a10f75d401e58decd647602294740a342157701a9969a921d6304893beb36",
+          "structureSha256": "aa82e00f192d764a778f17356211fb3841e80b9e54457fa3f364dfd353de473b",
+          "status": "complete",
+          "states": 245,
+          "edges": 437,
+          "deadEnds": 77,
+          "shortestMoves": 20,
+          "route": [
+            {
+              "type": "transfer",
+              "source": "b0",
+              "target": "b6"
+            },
+            {
+              "type": "transfer",
+              "source": "b2",
+              "target": "b0"
+            },
+            {
+              "type": "transfer",
+              "source": "b3",
+              "target": "b6"
+            },
+            {
+              "type": "transfer",
+              "source": "b2",
+              "target": "b3"
+            },
+            {
+              "type": "transfer",
+              "source": "b2",
+              "target": "b6"
+            },
+            {
+              "type": "transfer",
+              "source": "b0",
+              "target": "b2"
+            },
+            {
+              "type": "transfer",
+              "source": "b1",
+              "target": "b2"
+            },
+            {
+              "type": "transfer",
+              "source": "b1",
+              "target": "b6"
+            },
+            {
+              "type": "transfer",
+              "source": "b3",
+              "target": "b1"
+            },
+            {
+              "type": "transfer",
+              "source": "b3",
+              "target": "b0"
+            },
+            {
+              "type": "transfer",
+              "source": "b1",
+              "target": "b3"
+            },
+            {
+              "type": "transfer",
+              "source": "b4",
+              "target": "b1"
+            },
+            {
+              "type": "transfer",
+              "source": "b4",
+              "target": "b3"
+            },
+            {
+              "type": "transfer",
+              "source": "b5",
+              "target": "b1"
+            },
+            {
+              "type": "transfer",
+              "source": "b4",
+              "target": "b5"
+            },
+            {
+              "type": "transfer",
+              "source": "b1",
+              "target": "b4"
+            },
+            {
+              "type": "transfer",
+              "source": "b0",
+              "target": "b1"
+            },
+            {
+              "type": "transfer",
+              "source": "b5",
+              "target": "b0"
+            },
+            {
+              "type": "transfer",
+              "source": "b5",
+              "target": "b1"
+            },
+            {
+              "type": "transfer",
+              "source": "b0",
+              "target": "b5"
+            }
+          ],
+          "triggers": [
+            {
+              "id": "key-a",
+              "mandatory": true,
+              "solvedWithoutMilestone": 0,
+              "minimumMovesToMilestone": 10,
+              "shortestCrossings": [
+                {
+                  "before": 10,
+                  "after": 10,
+                  "completeColors": 2,
+                  "remainingRuns": 14,
+                  "emptyReceivers": 1
+                }
+              ],
+              "before": {
+                "observations": 15,
+                "emptyReceivers": {
+                  "count": 15,
+                  "min": 0,
+                  "max": 1,
+                  "median": 0,
+                  "histogram": {
+                    "0": 14,
+                    "1": 1
+                  }
+                },
+                "minimumCompatibleSlots": {
+                  "count": 15,
+                  "min": 0,
+                  "max": 4,
+                  "median": 0,
+                  "histogram": {
+                    "0": 14,
+                    "4": 1
+                  }
+                },
+                "colorRuns": {
+                  "count": 15,
+                  "min": 15,
+                  "max": 23,
+                  "median": 19,
+                  "histogram": {
+                    "15": 1,
+                    "16": 2,
+                    "17": 2,
+                    "18": 2,
+                    "19": 1,
+                    "20": 1,
+                    "21": 1,
+                    "22": 2,
+                    "23": 3
+                  }
+                }
+              },
+              "after": {
+                "observations": 18,
+                "emptyReceivers": {
+                  "count": 18,
+                  "min": 0,
+                  "max": 1,
+                  "median": 0,
+                  "histogram": {
+                    "0": 13,
+                    "1": 5
+                  }
+                },
+                "minimumCompatibleSlots": {
+                  "count": 18,
+                  "min": 0,
+                  "max": 4,
+                  "median": 0,
+                  "histogram": {
+                    "0": 13,
+                    "4": 5
+                  }
+                },
+                "colorRuns": {
+                  "count": 18,
+                  "min": 6,
+                  "max": 14,
+                  "median": 9,
+                  "histogram": {
+                    "6": 2,
+                    "7": 2,
+                    "8": 2,
+                    "9": 4,
+                    "10": 1,
+                    "11": 1,
+                    "12": 2,
+                    "13": 2,
+                    "14": 2
+                  }
+                }
+              }
+            }
+          ],
+          "trace": [
+            {
+              "step": 1,
+              "action": {
+                "type": "transfer",
+                "source": "b0",
+                "target": "b6"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 23
+            },
+            {
+              "step": 2,
+              "action": {
+                "type": "transfer",
+                "source": "b2",
+                "target": "b0"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 22
+            },
+            {
+              "step": 3,
+              "action": {
+                "type": "transfer",
+                "source": "b3",
+                "target": "b6"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 21
+            },
+            {
+              "step": 4,
+              "action": {
+                "type": "transfer",
+                "source": "b2",
+                "target": "b3"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 20
+            },
+            {
+              "step": 5,
+              "action": {
+                "type": "transfer",
+                "source": "b2",
+                "target": "b6"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 19
+            },
+            {
+              "step": 6,
+              "action": {
+                "type": "transfer",
+                "source": "b0",
+                "target": "b2"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 18
+            },
+            {
+              "step": 7,
+              "action": {
+                "type": "transfer",
+                "source": "b1",
+                "target": "b2"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 17
+            },
+            {
+              "step": 8,
+              "action": {
+                "type": "transfer",
+                "source": "b1",
+                "target": "b6"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 16
+            },
+            {
+              "step": 9,
+              "action": {
+                "type": "transfer",
+                "source": "b3",
+                "target": "b1"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 15
+            },
+            {
+              "step": 10,
+              "action": {
+                "type": "transfer",
+                "source": "b3",
+                "target": "b0"
+              },
+              "fired": [
+                "key-a"
+              ],
+              "emptyReceivers": 1,
+              "remainingRuns": 14
+            },
+            {
+              "step": 11,
+              "action": {
+                "type": "transfer",
+                "source": "b1",
+                "target": "b3"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 14
+            },
+            {
+              "step": 12,
+              "action": {
+                "type": "transfer",
+                "source": "b4",
+                "target": "b1"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 13
+            },
+            {
+              "step": 13,
+              "action": {
+                "type": "transfer",
+                "source": "b4",
+                "target": "b3"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 12
+            },
+            {
+              "step": 14,
+              "action": {
+                "type": "transfer",
+                "source": "b5",
+                "target": "b1"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 11
+            },
+            {
+              "step": 15,
+              "action": {
+                "type": "transfer",
+                "source": "b4",
+                "target": "b5"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 10
+            },
+            {
+              "step": 16,
+              "action": {
+                "type": "transfer",
+                "source": "b1",
+                "target": "b4"
+              },
+              "fired": [],
+              "emptyReceivers": 1,
+              "remainingRuns": 9
+            },
+            {
+              "step": 17,
+              "action": {
+                "type": "transfer",
+                "source": "b0",
+                "target": "b1"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 9
+            },
+            {
+              "step": 18,
+              "action": {
+                "type": "transfer",
+                "source": "b5",
+                "target": "b0"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 8
+            },
+            {
+              "step": 19,
+              "action": {
+                "type": "transfer",
+                "source": "b5",
+                "target": "b1"
+              },
+              "fired": [],
+              "emptyReceivers": 0,
+              "remainingRuns": 7
+            },
+            {
+              "step": 20,
+              "action": {
+                "type": "transfer",
+                "source": "b0",
+                "target": "b5"
+              },
+              "fired": [],
+              "emptyReceivers": 1,
+              "remainingRuns": 6
+            }
+          ],
+          "participatingLocked": [
+            "b4"
+          ],
+          "allOpen": {
+            "status": "complete",
+            "shortestMoves": 20,
+            "deadEnds": 55
+          },
+          "limits": "Exact fixed-layout forward graph until completion. Before/after facts cover all globally shortest corridors; moves, space and runs are not difficulty grades. Alternative hidden worlds, visual quality and human breakthrough experience remain unvalidated.",
+          "disclosure": {
+            "status": "proved",
+            "criterion": "common-public-prefix-then-visible-completion-v1",
+            "prefix": [
+              {
+                "type": "transfer",
+                "source": "b0",
+                "target": "b6"
+              },
+              {
+                "type": "transfer",
+                "source": "b2",
+                "target": "b0"
+              },
+              {
+                "type": "transfer",
+                "source": "b3",
+                "target": "b6"
+              },
+              {
+                "type": "transfer",
+                "source": "b2",
+                "target": "b3"
+              },
+              {
+                "type": "transfer",
+                "source": "b2",
+                "target": "b6"
+              },
+              {
+                "type": "transfer",
+                "source": "b0",
+                "target": "b2"
+              },
+              {
+                "type": "transfer",
+                "source": "b1",
+                "target": "b2"
+              },
+              {
+                "type": "transfer",
+                "source": "b1",
+                "target": "b6"
+              },
+              {
+                "type": "transfer",
+                "source": "b3",
+                "target": "b1"
+              },
+              {
+                "type": "transfer",
+                "source": "b3",
+                "target": "b0"
+              }
+            ],
+            "worlds": [
+              {
+                "order": [
+                  "rose",
+                  "coral",
+                  "azure",
+                  "rose"
+                ],
+                "continuation": [
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b5"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b0",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b0"
+                  }
+                ]
+              },
+              {
+                "order": [
+                  "rose",
+                  "coral",
+                  "rose",
+                  "azure"
+                ],
+                "continuation": [
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b5"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b0",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b0"
+                  }
+                ]
+              },
+              {
+                "order": [
+                  "rose",
+                  "azure",
+                  "coral",
+                  "rose"
+                ],
+                "continuation": [
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b5"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b0",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b0"
+                  }
+                ]
+              },
+              {
+                "order": [
+                  "rose",
+                  "azure",
+                  "rose",
+                  "coral"
+                ],
+                "continuation": [
+                  {
+                    "type": "transfer",
+                    "source": "b0",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b5"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b5"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b1"
+                  }
+                ]
+              },
+              {
+                "order": [
+                  "rose",
+                  "rose",
+                  "coral",
+                  "azure"
+                ],
+                "continuation": [
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b5"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b0",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b0"
+                  }
+                ]
+              },
+              {
+                "order": [
+                  "rose",
+                  "rose",
+                  "azure",
+                  "coral"
+                ],
+                "continuation": [
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b5"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b0",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b0"
+                  }
+                ]
+              },
+              {
+                "order": [
+                  "coral",
+                  "rose",
+                  "azure",
+                  "rose"
+                ],
+                "continuation": [
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b5"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b0",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b0"
+                  }
+                ]
+              },
+              {
+                "order": [
+                  "coral",
+                  "rose",
+                  "rose",
+                  "azure"
+                ],
+                "continuation": [
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b5"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b0",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b0"
+                  }
+                ]
+              },
+              {
+                "order": [
+                  "coral",
+                  "azure",
+                  "rose",
+                  "rose"
+                ],
+                "continuation": [
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b5"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b0",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b0"
+                  }
+                ]
+              },
+              {
+                "order": [
+                  "azure",
+                  "rose",
+                  "coral",
+                  "rose"
+                ],
+                "continuation": [
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b5"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b0",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b0"
+                  }
+                ]
+              },
+              {
+                "order": [
+                  "azure",
+                  "rose",
+                  "rose",
+                  "coral"
+                ],
+                "continuation": [
+                  {
+                    "type": "transfer",
+                    "source": "b0",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b5"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b5"
+                  }
+                ]
+              },
+              {
+                "order": [
+                  "azure",
+                  "coral",
+                  "rose",
+                  "rose"
+                ],
+                "continuation": [
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b4",
+                    "target": "b5"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b4"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b1",
+                    "target": "b3"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b0",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b0"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b1"
+                  },
+                  {
+                    "type": "transfer",
+                    "source": "b5",
+                    "target": "b0"
+                  }
+                ]
+              }
+            ],
+            "limits": "Only this one initially full locked bottle and public four-per-color inventory. Does not prove all choices safe, human discoverability or balanced phase difficulty."
+          }
+        }
+      ]
+    }
+  ]
+}

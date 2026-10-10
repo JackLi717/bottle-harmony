@@ -19,7 +19,7 @@ import { isBottleComplete } from '../art/bottleCompletion';
 import { createEngineSession, moveEngineSession, resetEngineSession, undoEngineSession, visibleEngineState, type EngineAction, type EngineSession, type VisibleEngineContainer } from '../game/engine';
 import { createEngineHintTask, type EngineHintTask } from '../game/engineSearch';
 import { ENGINE_EXAMPLES } from '../game/engineExamples';
-import { UNLOCK_TRIAL, nextUnlockTrialIndex } from '../game/unlockTrial';
+import { UNLOCK_TRIAL, nextUnlockTrialIndex, type UnlockTrialLevel } from '../game/unlockTrial';
 import { UNLOCK_ART_CASES, unlockArtExample, unlockKeyPairsExample } from '../game/unlockArtExamples';
 import { POUR_HANDOFF_CASES } from '../game/pourHandoffCases';
 import { ENGINE_RENDER_ROUTES, engineRenderCase, type EngineRenderRun } from '../game/engineRenderWorkload';
@@ -38,12 +38,12 @@ import { bottleControlId, useBoardKeyboard } from './useBoardKeyboard';
 const palette = { ...LIQUIDS, unknown: { light: '#9AABBC', main: CLASSIC_UNKNOWN_FILL, dark: '#425368', name: '?' } };
 const symbols = { ...LIQUID_SYMBOLS, unknown: '?' };
 type Animation = { before: readonly VisibleEngineContainer[]; unitsBefore: readonly (readonly string[])[]; firedBefore: readonly string[]; pour: Pour; plan: PourPlan };
-type Props = { vessel: VesselDesign; symbols: boolean; sound: boolean; reduceMotion: boolean; onBack: () => void; trial?: boolean };
+type Props = { vessel: VesselDesign; symbols: boolean; sound: boolean; reduceMotion: boolean; onBack: () => void; trial?: boolean; trialLevels?: readonly UnlockTrialLevel[] };
 
 /** Internal classic-board acceptance. Never persists, unlocks or credits player progress. */
-export function EnginePreview({ vessel: preferredVessel, symbols: showSymbols, sound, reduceMotion, onBack, trial = false }: Props) {
+export function EnginePreview({ vessel: preferredVessel, symbols: showSymbols, sound, reduceMotion, onBack, trial = false, trialLevels = UNLOCK_TRIAL }: Props) {
   const { t, language } = useI18n(), zh = language.startsWith('zh'), insets = useSafeAreaInsets(), dimensions = useWindowDimensions();
-  const [index, setIndex] = useState(0), [session, setSession] = useState(() => createEngineSession(trial ? UNLOCK_TRIAL[0].puzzle : ENGINE_EXAMPLES[0], 'preview-0'));
+  const [index, setIndex] = useState(0), [session, setSession] = useState(() => createEngineSession(trial ? trialLevels[0].puzzle : ENGINE_EXAMPLES[0], 'preview-0'));
   const current = useRef(session);
   const tabs = useRef<ScrollView>(null), tabOffsets = useRef<number[]>([]);
   useEffect(() => { tabs.current?.scrollTo({ x: Math.max(0,(tabOffsets.current[index] ?? 0) - 12), animated: !reduceMotion }); }, [index, reduceMotion]);
@@ -200,9 +200,9 @@ export function EnginePreview({ vessel: preferredVessel, symbols: showSymbols, s
   }
   function selectExample(next: number) { cancel(); setHandoffCase(null); setArtCount(null); setIndex(next); if (next === 0 && family === 'cloth') setFamily('wood'); commit(createEngineSession(ENGINE_EXAMPLES[next], `preview-${next}`)); }
   function selectTrial(next: number) {
-    if (!Number.isInteger(next) || next < 0 || next >= UNLOCK_TRIAL.length) return;
-    cancel(); setIndex(next); setFamily(UNLOCK_TRIAL[next].puzzle.triggers.some(t => t.when.type === 'empty') ? 'wood' : 'cloth');
-    commit(createEngineSession(UNLOCK_TRIAL[next].puzzle, `trial-${next}`));
+    if (!Number.isInteger(next) || next < 0 || next >= trialLevels.length) return;
+    cancel(); setIndex(next); setFamily(trialLevels[next].puzzle.triggers.some(t => t.when.type === 'empty') ? 'wood' : 'cloth');
+    commit(createEngineSession(trialLevels[next].puzzle, `trial-${next}`));
   }
   function selectArt(count: 1 | 2 | 3) {
     cancel(); setHandoffCase(null); setArtCount(count);
@@ -345,9 +345,9 @@ export function EnginePreview({ vessel: preferredVessel, symbols: showSymbols, s
   const covers = coverGroups(puzzle, visible, animation?.before ?? null, layout.positions, family);
   const names = zh ? ['底部钥匙', '颜色盖布', '逐层显色', '十二份收集', '彩虹层序'] : ['Bottom key', 'Color cover', 'Progressive reveal', 'Twelve portions', 'Ordered colors'];
   return <LinearGradient colors={['#11171E', '#090E16', '#070B12']} style={[styles.screen, { paddingTop: Math.max(10, insets.top), paddingBottom: Math.max(12, insets.bottom) }]}>
-    <GameHeader label={`${trial ? zh ? '内部体验' : 'Internal trial' : zh ? '引擎验收' : 'Engine acceptance'} · ${index + 1}/${trial ? UNLOCK_TRIAL.length : 5}`} compact disabled={false} onBack={back} />
-    <ScrollView ref={tabs} horizontal style={styles.tabs} contentContainerStyle={styles.tabContent}>{(trial ? UNLOCK_TRIAL.map((entry,i) => `${i + 1} · ${entry.title[zh ? 0 : 1]}`) : names).map((name, i) => <Pressable key={name} accessibilityRole="button" accessibilityState={{ selected: i === index }} onLayout={event => { tabOffsets.current[i] = event.nativeEvent.layout.x; }} onPress={() => trial ? selectTrial(i) : selectExample(i)} style={[styles.tab, i === index && styles.activeTab]}><UiText style={styles.text}>{name}</UiText></Pressable>)}</ScrollView>
-    <UiText style={styles.goal}>{trial ? UNLOCK_TRIAL[index].introduction[zh ? 0 : 1] : goalText(puzzle.goal)}</UiText>
+    <GameHeader label={`${trial ? zh ? '内部体验' : 'Internal trial' : zh ? '引擎验收' : 'Engine acceptance'} · ${index + 1}/${trial ? trialLevels.length : 5}`} compact disabled={false} onBack={back} />
+    <ScrollView ref={tabs} horizontal style={styles.tabs} contentContainerStyle={styles.tabContent}>{(trial ? trialLevels.map((entry,i) => `${i + 1} · ${entry.title[zh ? 0 : 1]}`) : names).map((name, i) => <Pressable key={name} accessibilityRole="button" accessibilityState={{ selected: i === index }} onLayout={event => { tabOffsets.current[i] = event.nativeEvent.layout.x; }} onPress={() => trial ? selectTrial(i) : selectExample(i)} style={[styles.tab, i === index && styles.activeTab]}><UiText style={styles.text}>{name}</UiText></Pressable>)}</ScrollView>
+    <UiText style={styles.goal}>{trial ? trialLevels[index].introduction[zh ? 0 : 1] : goalText(puzzle.goal)}</UiText>
     {!trial && <>
     <View style={styles.artTools}>{COVER_FAMILIES.map((name, i) => <Pressable key={name} accessibilityRole="button" accessibilityState={{ selected: family === name }}
       onPress={() => selectFamily(name)} style={[styles.artTab, family === name && styles.activeTab]}><UiText style={styles.text}>{(zh ? ['木匣','百叶','布盖','卷帘'] : ['Wood','Louver','Cloth','Roller'])[i]}</UiText></Pressable>)}</View>
@@ -405,9 +405,9 @@ export function EnginePreview({ vessel: preferredVessel, symbols: showSymbols, s
       <GameButton icon="hint" label={t('hint')} disabled={!!animation || searching || artChecking || session.status === 'solved'} onPress={hint} />
       <GameButton icon="reset" label={t('reset')} onPress={() => { cancel(); commit(resetEngineSession(current.current)); }} /></View>
     {trial && session.status === 'solved' && !animation && <Pressable accessibilityRole="button" testID="unlock-trial-continue" style={styles.continueButton} onPress={() => {
-      const next = nextUnlockTrialIndex(index, current.current.status === 'solved');
+      const next = nextUnlockTrialIndex(index, current.current.status === 'solved', trialLevels.length);
       if (next !== null) selectTrial(next); else if (current.current.status === 'solved') back();
-    }}><UiText style={styles.text}>{index + 1 < UNLOCK_TRIAL.length ? zh ? '下一关 →' : 'Next puzzle →' : zh ? '十二关体验完成 · 返回首页' : 'Twelve puzzles complete · Home'}</UiText></Pressable>}
+    }}><UiText style={styles.text}>{index + 1 < trialLevels.length ? zh ? '下一关 →' : 'Next puzzle →' : zh ? '本组体验完成 · 返回首页' : 'Trial complete · Home'}</UiText></Pressable>}
     <PourSound progress={progress} pouring={!!animation} vessel={vessel.id} receiverLayers={animation ? (animation.before[animation.pour.target].count ?? 0) / animation.before[animation.pour.target].capacity * 4 : 0} enabled={sound && active && !reduceMotion} />
   </LinearGradient>;
 }

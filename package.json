@@ -90,7 +90,10 @@
     "memory:verify": "node --experimental-strip-types scripts/memory-bank.ts verify",
     "memory:rate": "node --experimental-strip-types scripts/memory-rating.ts",
     "analytics:report": "node --experimental-strip-types scripts/analytics-report.ts",
-    "unlock:verify": "node --experimental-strip-types scripts/unlock-trial.ts"
+    "unlock:verify": "node --experimental-strip-types scripts/unlock-trial.ts",
+    "unlock:calibrate": "node --experimental-strip-types scripts/unlock-calibration.ts",
+    "unlock:baseline": "node --experimental-strip-types scripts/unlock-baseline.ts",
+    "unlock:rate": "node --experimental-strip-types scripts/unlock-rating.ts"
   },
   "private": true,
   "engines": {

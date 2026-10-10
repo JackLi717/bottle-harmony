@@ -1,0 +1,2978 @@
+[
+  {
+    "number": 1,
+    "puzzle": "classic-unlock-calibration-01",
+    "pair": "key-arrangement",
+    "source": {
+      "kind": "candidate",
+      "recipe": "key-shared-inventory-v1",
+      "seed": 101128,
+      "candidate": 5
+    },
+    "definitionSha256": "d023406438189d642da90c17b251804a295b1bf2e6f694198a8a54072749be4e",
+    "structureSha256": "a007930864f424d6aa6f85ae913e0f1a0ada2c338c36aeba3ee20d50b744c682",
+    "status": "complete",
+    "states": 6617,
+    "edges": 32565,
+    "deadEnds": 0,
+    "shortestMoves": 18,
+    "route": [
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b1"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b4"
+      },
+      {
+        "type": "transfer",
+        "source": "b2",
+        "target": "b0"
+      },
+      {
+        "type": "transfer",
+        "source": "b2",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b2",
+        "target": "b4"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b5",
+        "target": "b0"
+      },
+      {
+        "type": "transfer",
+        "source": "b5",
+        "target": "b4"
+      },
+      {
+        "type": "transfer",
+        "source": "b5",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b5"
+      },
+      {
+        "type": "transfer",
+        "source": "b6",
+        "target": "b5"
+      },
+      {
+        "type": "transfer",
+        "source": "b6",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b6",
+        "target": "b5"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b6"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b4"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b6"
+      }
+    ],
+    "triggers": [
+      {
+        "id": "key-a",
+        "mandatory": true,
+        "solvedWithoutMilestone": 0,
+        "minimumMovesToMilestone": 7,
+        "shortestCrossings": [
+          {
+            "before": 8,
+            "after": 10,
+            "completeColors": 0,
+            "remainingRuns": 14,
+            "emptyReceivers": 1
+          }
+        ],
+        "before": {
+          "observations": 8,
+          "emptyReceivers": {
+            "count": 8,
+            "min": 0,
+            "max": 2,
+            "median": 0,
+            "histogram": {
+              "0": 5,
+              "1": 2,
+              "2": 1
+            }
+          },
+          "minimumCompatibleSlots": {
+            "count": 8,
+            "min": 0,
+            "max": 8,
+            "median": 0,
+            "histogram": {
+              "0": 5,
+              "4": 2,
+              "8": 1
+            }
+          },
+          "colorRuns": {
+            "count": 8,
+            "min": 15,
+            "max": 20,
+            "median": 18,
+            "histogram": {
+              "15": 1,
+              "16": 1,
+              "17": 1,
+              "18": 1,
+              "19": 2,
+              "20": 2
+            }
+          }
+        },
+        "after": {
+          "observations": 77,
+          "emptyReceivers": {
+            "count": 77,
+            "min": 0,
+            "max": 2,
+            "median": 1,
+            "histogram": {
+              "0": 37,
+              "1": 36,
+              "2": 4
+            }
+          },
+          "minimumCompatibleSlots": {
+            "count": 77,
+            "min": 0,
+            "max": 8,
+            "median": 4,
+            "histogram": {
+              "0": 37,
+              "4": 36,
+              "8": 4
+            }
+          },
+          "colorRuns": {
+            "count": 77,
+            "min": 5,
+            "max": 14,
+            "median": 9,
+            "histogram": {
+              "5": 4,
+              "6": 8,
+              "7": 9,
+              "8": 11,
+              "9": 15,
+              "10": 9,
+              "11": 9,
+              "12": 6,
+              "13": 3,
+              "14": 3
+            }
+          }
+        }
+      }
+    ],
+    "trace": [
+      {
+        "step": 1,
+        "action": {
+          "type": "transfer",
+          "source": "b1",
+          "target": "b3"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 20
+      },
+      {
+        "step": 2,
+        "action": {
+          "type": "transfer",
+          "source": "b0",
+          "target": "b1"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 19
+      },
+      {
+        "step": 3,
+        "action": {
+          "type": "transfer",
+          "source": "b0",
+          "target": "b4"
+        },
+        "fired": [],
+        "emptyReceivers": 0,
+        "remainingRuns": 19
+      },
+      {
+        "step": 4,
+        "action": {
+          "type": "transfer",
+          "source": "b2",
+          "target": "b0"
+        },
+        "fired": [],
+        "emptyReceivers": 0,
+        "remainingRuns": 18
+      },
+      {
+        "step": 5,
+        "action": {
+          "type": "transfer",
+          "source": "b2",
+          "target": "b3"
+        },
+        "fired": [],
+        "emptyReceivers": 0,
+        "remainingRuns": 17
+      },
+      {
+        "step": 6,
+        "action": {
+          "type": "transfer",
+          "source": "b2",
+          "target": "b4"
+        },
+        "fired": [],
+        "emptyReceivers": 0,
+        "remainingRuns": 16
+      },
+      {
+        "step": 7,
+        "action": {
+          "type": "transfer",
+          "source": "b0",
+          "target": "b2"
+        },
+        "fired": [],
+        "emptyReceivers": 0,
+        "remainingRuns": 15
+      },
+      {
+        "step": 8,
+        "action": {
+          "type": "transfer",
+          "source": "b0",
+          "target": "b3"
+        },
+        "fired": [
+          "key-a"
+        ],
+        "emptyReceivers": 1,
+        "remainingRuns": 14
+      },
+      {
+        "step": 9,
+        "action": {
+          "type": "transfer",
+          "source": "b5",
+          "target": "b0"
+        },
+        "fired": [],
+        "emptyReceivers": 0,
+        "remainingRuns": 14
+      },
+      {
+        "step": 10,
+        "action": {
+          "type": "transfer",
+          "source": "b5",
+          "target": "b4"
+        },
+        "fired": [],
+        "emptyReceivers": 0,
+        "remainingRuns": 13
+      },
+      {
+        "step": 11,
+        "action": {
+          "type": "transfer",
+          "source": "b5",
+          "target": "b2"
+        },
+        "fired": [],
+        "emptyReceivers": 0,
+        "remainingRuns": 12
+      },
+      {
+        "step": 12,
+        "action": {
+          "type": "transfer",
+          "source": "b0",
+          "target": "b5"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 11
+      },
+      {
+        "step": 13,
+        "action": {
+          "type": "transfer",
+          "source": "b6",
+          "target": "b5"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 10
+      },
+      {
+        "step": 14,
+        "action": {
+          "type": "transfer",
+          "source": "b6",
+          "target": "b3"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 9
+      },
+      {
+        "step": 15,
+        "action": {
+          "type": "transfer",
+          "source": "b6",
+          "target": "b5"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 8
+      },
+      {
+        "step": 16,
+        "action": {
+          "type": "transfer",
+          "source": "b1",
+          "target": "b6"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 7
+      },
+      {
+        "step": 17,
+        "action": {
+          "type": "transfer",
+          "source": "b1",
+          "target": "b4"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 6
+      },
+      {
+        "step": 18,
+        "action": {
+          "type": "transfer",
+          "source": "b1",
+          "target": "b6"
+        },
+        "fired": [],
+        "emptyReceivers": 2,
+        "remainingRuns": 5
+      }
+    ],
+    "participatingLocked": [
+      "b5",
+      "b6"
+    ],
+    "allOpen": {
+      "status": "complete",
+      "shortestMoves": 17,
+      "deadEnds": 16
+    },
+    "limits": "Exact fixed-layout forward graph until completion. Before/after facts cover all globally shortest corridors; moves, space and runs are not difficulty grades. Alternative hidden worlds, visual quality and human breakthrough experience remain unvalidated."
+  },
+  {
+    "number": 2,
+    "puzzle": "classic-unlock-calibration-02",
+    "pair": "key-arrangement",
+    "source": {
+      "kind": "candidate",
+      "recipe": "key-shared-inventory-v1",
+      "seed": 101128,
+      "candidate": 5
+    },
+    "definitionSha256": "aa18ec753fbb0f6b6586d0749dd3063bf335a3b4301a1b2a6d3662f95a163c94",
+    "structureSha256": "e75a1f7730bf5f7d233ba481675f53bbc10aaa83b03c2f3f411ace8cb7532ed4",
+    "status": "complete",
+    "states": 97480,
+    "edges": 759659,
+    "deadEnds": 0,
+    "shortestMoves": 18,
+    "route": [
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b1"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b4"
+      },
+      {
+        "type": "transfer",
+        "source": "b2",
+        "target": "b0"
+      },
+      {
+        "type": "transfer",
+        "source": "b2",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b2",
+        "target": "b4"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b5",
+        "target": "b0"
+      },
+      {
+        "type": "transfer",
+        "source": "b5",
+        "target": "b4"
+      },
+      {
+        "type": "transfer",
+        "source": "b5",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b5"
+      },
+      {
+        "type": "transfer",
+        "source": "b6",
+        "target": "b5"
+      },
+      {
+        "type": "transfer",
+        "source": "b6",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b6",
+        "target": "b5"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b6"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b4"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b6"
+      }
+    ],
+    "triggers": [
+      {
+        "id": "key-a",
+        "mandatory": true,
+        "solvedWithoutMilestone": 0,
+        "minimumMovesToMilestone": 5,
+        "shortestCrossings": [
+          {
+            "before": 8,
+            "after": 10,
+            "completeColors": 0,
+            "remainingRuns": 14,
+            "emptyReceivers": 2
+          }
+        ],
+        "before": {
+          "observations": 8,
+          "emptyReceivers": {
+            "count": 8,
+            "min": 1,
+            "max": 3,
+            "median": 1,
+            "histogram": {
+              "1": 5,
+              "2": 2,
+              "3": 1
+            }
+          },
+          "minimumCompatibleSlots": {
+            "count": 8,
+            "min": 4,
+            "max": 12,
+            "median": 4,
+            "histogram": {
+              "4": 5,
+              "8": 2,
+              "12": 1
+            }
+          },
+          "colorRuns": {
+            "count": 8,
+            "min": 15,
+            "max": 20,
+            "median": 18,
+            "histogram": {
+              "15": 1,
+              "16": 1,
+              "17": 1,
+              "18": 1,
+              "19": 2,
+              "20": 2
+            }
+          }
+        },
+        "after": {
+          "observations": 139,
+          "emptyReceivers": {
+            "count": 139,
+            "min": 1,
+            "max": 3,
+            "median": 1,
+            "histogram": {
+              "1": 74,
+              "2": 59,
+              "3": 6
+            }
+          },
+          "minimumCompatibleSlots": {
+            "count": 139,
+            "min": 4,
+            "max": 12,
+            "median": 4,
+            "histogram": {
+              "4": 74,
+              "8": 59,
+              "12": 6
+            }
+          },
+          "colorRuns": {
+            "count": 139,
+            "min": 5,
+            "max": 14,
+            "median": 9,
+            "histogram": {
+              "5": 6,
+              "6": 15,
+              "7": 16,
+              "8": 21,
+              "9": 27,
+              "10": 16,
+              "11": 16,
+              "12": 11,
+              "13": 6,
+              "14": 5
+            }
+          }
+        }
+      }
+    ],
+    "trace": [
+      {
+        "step": 1,
+        "action": {
+          "type": "transfer",
+          "source": "b1",
+          "target": "b3"
+        },
+        "fired": [],
+        "emptyReceivers": 2,
+        "remainingRuns": 20
+      },
+      {
+        "step": 2,
+        "action": {
+          "type": "transfer",
+          "source": "b0",
+          "target": "b1"
+        },
+        "fired": [],
+        "emptyReceivers": 2,
+        "remainingRuns": 19
+      },
+      {
+        "step": 3,
+        "action": {
+          "type": "transfer",
+          "source": "b0",
+          "target": "b4"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 19
+      },
+      {
+        "step": 4,
+        "action": {
+          "type": "transfer",
+          "source": "b2",
+          "target": "b0"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 18
+      },
+      {
+        "step": 5,
+        "action": {
+          "type": "transfer",
+          "source": "b2",
+          "target": "b3"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 17
+      },
+      {
+        "step": 6,
+        "action": {
+          "type": "transfer",
+          "source": "b2",
+          "target": "b4"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 16
+      },
+      {
+        "step": 7,
+        "action": {
+          "type": "transfer",
+          "source": "b0",
+          "target": "b2"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 15
+      },
+      {
+        "step": 8,
+        "action": {
+          "type": "transfer",
+          "source": "b0",
+          "target": "b3"
+        },
+        "fired": [
+          "key-a"
+        ],
+        "emptyReceivers": 2,
+        "remainingRuns": 14
+      },
+      {
+        "step": 9,
+        "action": {
+          "type": "transfer",
+          "source": "b5",
+          "target": "b0"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 14
+      },
+      {
+        "step": 10,
+        "action": {
+          "type": "transfer",
+          "source": "b5",
+          "target": "b4"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 13
+      },
+      {
+        "step": 11,
+        "action": {
+          "type": "transfer",
+          "source": "b5",
+          "target": "b2"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 12
+      },
+      {
+        "step": 12,
+        "action": {
+          "type": "transfer",
+          "source": "b0",
+          "target": "b5"
+        },
+        "fired": [],
+        "emptyReceivers": 2,
+        "remainingRuns": 11
+      },
+      {
+        "step": 13,
+        "action": {
+          "type": "transfer",
+          "source": "b6",
+          "target": "b5"
+        },
+        "fired": [],
+        "emptyReceivers": 2,
+        "remainingRuns": 10
+      },
+      {
+        "step": 14,
+        "action": {
+          "type": "transfer",
+          "source": "b6",
+          "target": "b3"
+        },
+        "fired": [],
+        "emptyReceivers": 2,
+        "remainingRuns": 9
+      },
+      {
+        "step": 15,
+        "action": {
+          "type": "transfer",
+          "source": "b6",
+          "target": "b5"
+        },
+        "fired": [],
+        "emptyReceivers": 2,
+        "remainingRuns": 8
+      },
+      {
+        "step": 16,
+        "action": {
+          "type": "transfer",
+          "source": "b1",
+          "target": "b6"
+        },
+        "fired": [],
+        "emptyReceivers": 2,
+        "remainingRuns": 7
+      },
+      {
+        "step": 17,
+        "action": {
+          "type": "transfer",
+          "source": "b1",
+          "target": "b4"
+        },
+        "fired": [],
+        "emptyReceivers": 2,
+        "remainingRuns": 6
+      },
+      {
+        "step": 18,
+        "action": {
+          "type": "transfer",
+          "source": "b1",
+          "target": "b6"
+        },
+        "fired": [],
+        "emptyReceivers": 3,
+        "remainingRuns": 5
+      }
+    ],
+    "participatingLocked": [
+      "b5",
+      "b6"
+    ],
+    "allOpen": {
+      "status": "complete",
+      "shortestMoves": 17,
+      "deadEnds": 0
+    },
+    "limits": "Exact fixed-layout forward graph until completion. Before/after facts cover all globally shortest corridors; moves, space and runs are not difficulty grades. Alternative hidden worlds, visual quality and human breakthrough experience remain unvalidated."
+  },
+  {
+    "number": 3,
+    "puzzle": "classic-unlock-calibration-03",
+    "pair": "key-continuation",
+    "source": {
+      "kind": "candidate",
+      "recipe": "key-shared-inventory-v1",
+      "seed": 101128,
+      "candidate": 394
+    },
+    "definitionSha256": "b233d3e7519d1db192a7df6e98ad8845ee718dd57d7c7539518ee14af221b387",
+    "structureSha256": "45b20813789a187276ceba824a2bc0f375b93dc12820107b647847b4c69225f2",
+    "status": "complete",
+    "states": 4361,
+    "edges": 22904,
+    "deadEnds": 0,
+    "shortestMoves": 17,
+    "route": [
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b4"
+      },
+      {
+        "type": "transfer",
+        "source": "b2",
+        "target": "b4"
+      },
+      {
+        "type": "transfer",
+        "source": "b2",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b1"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b1"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b4"
+      },
+      {
+        "type": "transfer",
+        "source": "b5",
+        "target": "b0"
+      },
+      {
+        "type": "transfer",
+        "source": "b5",
+        "target": "b1"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b5"
+      },
+      {
+        "type": "transfer",
+        "source": "b6",
+        "target": "b5"
+      },
+      {
+        "type": "transfer",
+        "source": "b6",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b6",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b5",
+        "target": "b6"
+      },
+      {
+        "type": "transfer",
+        "source": "b4",
+        "target": "b5"
+      }
+    ],
+    "triggers": [
+      {
+        "id": "key-a",
+        "mandatory": true,
+        "solvedWithoutMilestone": 0,
+        "minimumMovesToMilestone": 7,
+        "shortestCrossings": [
+          {
+            "before": 9,
+            "after": 8,
+            "completeColors": 0,
+            "remainingRuns": 12,
+            "emptyReceivers": 1
+          }
+        ],
+        "before": {
+          "observations": 17,
+          "emptyReceivers": {
+            "count": 17,
+            "min": 0,
+            "max": 2,
+            "median": 0,
+            "histogram": {
+              "0": 10,
+              "1": 6,
+              "2": 1
+            }
+          },
+          "minimumCompatibleSlots": {
+            "count": 17,
+            "min": 0,
+            "max": 8,
+            "median": 0,
+            "histogram": {
+              "0": 10,
+              "4": 6,
+              "8": 1
+            }
+          },
+          "colorRuns": {
+            "count": 17,
+            "min": 13,
+            "max": 19,
+            "median": 18,
+            "histogram": {
+              "13": 1,
+              "14": 1,
+              "15": 1,
+              "16": 1,
+              "17": 3,
+              "18": 4,
+              "19": 6
+            }
+          }
+        },
+        "after": {
+          "observations": 54,
+          "emptyReceivers": {
+            "count": 54,
+            "min": 0,
+            "max": 2,
+            "median": 1,
+            "histogram": {
+              "0": 22,
+              "1": 28,
+              "2": 4
+            }
+          },
+          "minimumCompatibleSlots": {
+            "count": 54,
+            "min": 0,
+            "max": 8,
+            "median": 4,
+            "histogram": {
+              "0": 22,
+              "4": 28,
+              "8": 4
+            }
+          },
+          "colorRuns": {
+            "count": 54,
+            "min": 5,
+            "max": 12,
+            "median": 8,
+            "histogram": {
+              "5": 4,
+              "6": 8,
+              "7": 11,
+              "8": 9,
+              "9": 10,
+              "10": 6,
+              "11": 3,
+              "12": 3
+            }
+          }
+        }
+      }
+    ],
+    "trace": [
+      {
+        "step": 1,
+        "action": {
+          "type": "transfer",
+          "source": "b1",
+          "target": "b3"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 19
+      },
+      {
+        "step": 2,
+        "action": {
+          "type": "transfer",
+          "source": "b1",
+          "target": "b4"
+        },
+        "fired": [],
+        "emptyReceivers": 0,
+        "remainingRuns": 19
+      },
+      {
+        "step": 3,
+        "action": {
+          "type": "transfer",
+          "source": "b2",
+          "target": "b4"
+        },
+        "fired": [],
+        "emptyReceivers": 0,
+        "remainingRuns": 18
+      },
+      {
+        "step": 4,
+        "action": {
+          "type": "transfer",
+          "source": "b2",
+          "target": "b3"
+        },
+        "fired": [],
+        "emptyReceivers": 0,
+        "remainingRuns": 17
+      },
+      {
+        "step": 5,
+        "action": {
+          "type": "transfer",
+          "source": "b1",
+          "target": "b2"
+        },
+        "fired": [],
+        "emptyReceivers": 0,
+        "remainingRuns": 16
+      },
+      {
+        "step": 6,
+        "action": {
+          "type": "transfer",
+          "source": "b0",
+          "target": "b1"
+        },
+        "fired": [],
+        "emptyReceivers": 0,
+        "remainingRuns": 15
+      },
+      {
+        "step": 7,
+        "action": {
+          "type": "transfer",
+          "source": "b0",
+          "target": "b2"
+        },
+        "fired": [],
+        "emptyReceivers": 0,
+        "remainingRuns": 14
+      },
+      {
+        "step": 8,
+        "action": {
+          "type": "transfer",
+          "source": "b0",
+          "target": "b1"
+        },
+        "fired": [],
+        "emptyReceivers": 0,
+        "remainingRuns": 13
+      },
+      {
+        "step": 9,
+        "action": {
+          "type": "transfer",
+          "source": "b0",
+          "target": "b4"
+        },
+        "fired": [
+          "key-a"
+        ],
+        "emptyReceivers": 1,
+        "remainingRuns": 12
+      },
+      {
+        "step": 10,
+        "action": {
+          "type": "transfer",
+          "source": "b5",
+          "target": "b0"
+        },
+        "fired": [],
+        "emptyReceivers": 0,
+        "remainingRuns": 12
+      },
+      {
+        "step": 11,
+        "action": {
+          "type": "transfer",
+          "source": "b5",
+          "target": "b1"
+        },
+        "fired": [],
+        "emptyReceivers": 0,
+        "remainingRuns": 11
+      },
+      {
+        "step": 12,
+        "action": {
+          "type": "transfer",
+          "source": "b0",
+          "target": "b5"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 10
+      },
+      {
+        "step": 13,
+        "action": {
+          "type": "transfer",
+          "source": "b6",
+          "target": "b5"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 9
+      },
+      {
+        "step": 14,
+        "action": {
+          "type": "transfer",
+          "source": "b6",
+          "target": "b3"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 8
+      },
+      {
+        "step": 15,
+        "action": {
+          "type": "transfer",
+          "source": "b6",
+          "target": "b2"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 7
+      },
+      {
+        "step": 16,
+        "action": {
+          "type": "transfer",
+          "source": "b5",
+          "target": "b6"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 6
+      },
+      {
+        "step": 17,
+        "action": {
+          "type": "transfer",
+          "source": "b4",
+          "target": "b5"
+        },
+        "fired": [],
+        "emptyReceivers": 2,
+        "remainingRuns": 5
+      }
+    ],
+    "participatingLocked": [
+      "b5",
+      "b6"
+    ],
+    "allOpen": {
+      "status": "complete",
+      "shortestMoves": 16,
+      "deadEnds": 8
+    },
+    "limits": "Exact fixed-layout forward graph until completion. Before/after facts cover all globally shortest corridors; moves, space and runs are not difficulty grades. Alternative hidden worlds, visual quality and human breakthrough experience remain unvalidated."
+  },
+  {
+    "number": 4,
+    "puzzle": "classic-unlock-calibration-04",
+    "pair": "key-continuation",
+    "source": {
+      "kind": "candidate",
+      "recipe": "key-shared-inventory-v1",
+      "seed": 101128,
+      "candidate": 394
+    },
+    "definitionSha256": "35287cf82e4f7f5a4ea3f9d476b6ea072396e97d0f2a84d37af29eb7ebadb45b",
+    "structureSha256": "6b5699358a73e10c2331ea22d2945d5648bfabafbac32c365401ee2887504cc2",
+    "status": "complete",
+    "states": 72615,
+    "edges": 575269,
+    "deadEnds": 0,
+    "shortestMoves": 17,
+    "route": [
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b4"
+      },
+      {
+        "type": "transfer",
+        "source": "b2",
+        "target": "b4"
+      },
+      {
+        "type": "transfer",
+        "source": "b2",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b1"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b1"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b4"
+      },
+      {
+        "type": "transfer",
+        "source": "b5",
+        "target": "b0"
+      },
+      {
+        "type": "transfer",
+        "source": "b5",
+        "target": "b1"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b5"
+      },
+      {
+        "type": "transfer",
+        "source": "b6",
+        "target": "b5"
+      },
+      {
+        "type": "transfer",
+        "source": "b6",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b6",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b5",
+        "target": "b6"
+      },
+      {
+        "type": "transfer",
+        "source": "b4",
+        "target": "b5"
+      }
+    ],
+    "triggers": [
+      {
+        "id": "key-a",
+        "mandatory": true,
+        "solvedWithoutMilestone": 0,
+        "minimumMovesToMilestone": 4,
+        "shortestCrossings": [
+          {
+            "before": 9,
+            "after": 8,
+            "completeColors": 0,
+            "remainingRuns": 12,
+            "emptyReceivers": 2
+          }
+        ],
+        "before": {
+          "observations": 17,
+          "emptyReceivers": {
+            "count": 17,
+            "min": 1,
+            "max": 3,
+            "median": 1,
+            "histogram": {
+              "1": 10,
+              "2": 6,
+              "3": 1
+            }
+          },
+          "minimumCompatibleSlots": {
+            "count": 17,
+            "min": 4,
+            "max": 12,
+            "median": 4,
+            "histogram": {
+              "4": 10,
+              "8": 6,
+              "12": 1
+            }
+          },
+          "colorRuns": {
+            "count": 17,
+            "min": 13,
+            "max": 19,
+            "median": 18,
+            "histogram": {
+              "13": 1,
+              "14": 1,
+              "15": 1,
+              "16": 1,
+              "17": 3,
+              "18": 4,
+              "19": 6
+            }
+          }
+        },
+        "after": {
+          "observations": 96,
+          "emptyReceivers": {
+            "count": 96,
+            "min": 1,
+            "max": 3,
+            "median": 2,
+            "histogram": {
+              "1": 44,
+              "2": 46,
+              "3": 6
+            }
+          },
+          "minimumCompatibleSlots": {
+            "count": 96,
+            "min": 4,
+            "max": 12,
+            "median": 8,
+            "histogram": {
+              "4": 44,
+              "8": 46,
+              "12": 6
+            }
+          },
+          "colorRuns": {
+            "count": 96,
+            "min": 5,
+            "max": 12,
+            "median": 8,
+            "histogram": {
+              "5": 6,
+              "6": 15,
+              "7": 19,
+              "8": 16,
+              "9": 18,
+              "10": 11,
+              "11": 6,
+              "12": 5
+            }
+          }
+        }
+      }
+    ],
+    "trace": [
+      {
+        "step": 1,
+        "action": {
+          "type": "transfer",
+          "source": "b1",
+          "target": "b3"
+        },
+        "fired": [],
+        "emptyReceivers": 2,
+        "remainingRuns": 19
+      },
+      {
+        "step": 2,
+        "action": {
+          "type": "transfer",
+          "source": "b1",
+          "target": "b4"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 19
+      },
+      {
+        "step": 3,
+        "action": {
+          "type": "transfer",
+          "source": "b2",
+          "target": "b4"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 18
+      },
+      {
+        "step": 4,
+        "action": {
+          "type": "transfer",
+          "source": "b2",
+          "target": "b3"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 17
+      },
+      {
+        "step": 5,
+        "action": {
+          "type": "transfer",
+          "source": "b1",
+          "target": "b2"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 16
+      },
+      {
+        "step": 6,
+        "action": {
+          "type": "transfer",
+          "source": "b0",
+          "target": "b1"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 15
+      },
+      {
+        "step": 7,
+        "action": {
+          "type": "transfer",
+          "source": "b0",
+          "target": "b2"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 14
+      },
+      {
+        "step": 8,
+        "action": {
+          "type": "transfer",
+          "source": "b0",
+          "target": "b1"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 13
+      },
+      {
+        "step": 9,
+        "action": {
+          "type": "transfer",
+          "source": "b0",
+          "target": "b4"
+        },
+        "fired": [
+          "key-a"
+        ],
+        "emptyReceivers": 2,
+        "remainingRuns": 12
+      },
+      {
+        "step": 10,
+        "action": {
+          "type": "transfer",
+          "source": "b5",
+          "target": "b0"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 12
+      },
+      {
+        "step": 11,
+        "action": {
+          "type": "transfer",
+          "source": "b5",
+          "target": "b1"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 11
+      },
+      {
+        "step": 12,
+        "action": {
+          "type": "transfer",
+          "source": "b0",
+          "target": "b5"
+        },
+        "fired": [],
+        "emptyReceivers": 2,
+        "remainingRuns": 10
+      },
+      {
+        "step": 13,
+        "action": {
+          "type": "transfer",
+          "source": "b6",
+          "target": "b5"
+        },
+        "fired": [],
+        "emptyReceivers": 2,
+        "remainingRuns": 9
+      },
+      {
+        "step": 14,
+        "action": {
+          "type": "transfer",
+          "source": "b6",
+          "target": "b3"
+        },
+        "fired": [],
+        "emptyReceivers": 2,
+        "remainingRuns": 8
+      },
+      {
+        "step": 15,
+        "action": {
+          "type": "transfer",
+          "source": "b6",
+          "target": "b2"
+        },
+        "fired": [],
+        "emptyReceivers": 2,
+        "remainingRuns": 7
+      },
+      {
+        "step": 16,
+        "action": {
+          "type": "transfer",
+          "source": "b5",
+          "target": "b6"
+        },
+        "fired": [],
+        "emptyReceivers": 2,
+        "remainingRuns": 6
+      },
+      {
+        "step": 17,
+        "action": {
+          "type": "transfer",
+          "source": "b4",
+          "target": "b5"
+        },
+        "fired": [],
+        "emptyReceivers": 3,
+        "remainingRuns": 5
+      }
+    ],
+    "participatingLocked": [
+      "b5",
+      "b6"
+    ],
+    "allOpen": {
+      "status": "complete",
+      "shortestMoves": 16,
+      "deadEnds": 0
+    },
+    "limits": "Exact fixed-layout forward graph until completion. Before/after facts cover all globally shortest corridors; moves, space and runs are not difficulty grades. Alternative hidden worlds, visual quality and human breakthrough experience remain unvalidated."
+  },
+  {
+    "number": 5,
+    "puzzle": "classic-unlock-calibration-05",
+    "pair": "cover-arrangement",
+    "source": {
+      "kind": "candidate",
+      "recipe": "cover-shared-inventory-v1",
+      "seed": 101131,
+      "candidate": 126
+    },
+    "definitionSha256": "d2f5e736611c6ecd0a134d79dce110f163f58e08bc47f530bf3e97191e5d2881",
+    "structureSha256": "9c14a12a7382d23731a8df2d3a128f169849897ea9e6b4e2cbb20e9451415b74",
+    "status": "complete",
+    "states": 423,
+    "edges": 2102,
+    "deadEnds": 0,
+    "shortestMoves": 16,
+    "route": [
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b4"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b2",
+        "target": "b0"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b0"
+      },
+      {
+        "type": "transfer",
+        "source": "b2",
+        "target": "b1"
+      },
+      {
+        "type": "transfer",
+        "source": "b2",
+        "target": "b4"
+      },
+      {
+        "type": "transfer",
+        "source": "b2",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b5",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b5",
+        "target": "b1"
+      },
+      {
+        "type": "transfer",
+        "source": "b4",
+        "target": "b5"
+      },
+      {
+        "type": "transfer",
+        "source": "b6",
+        "target": "b0"
+      },
+      {
+        "type": "transfer",
+        "source": "b6",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b5",
+        "target": "b6"
+      }
+    ],
+    "triggers": [
+      {
+        "id": "cover-a",
+        "mandatory": true,
+        "solvedWithoutMilestone": 0,
+        "minimumMovesToMilestone": 8,
+        "shortestCrossings": [
+          {
+            "before": 8,
+            "after": 8,
+            "completeColors": 1,
+            "remainingRuns": 12,
+            "emptyReceivers": 0
+          },
+          {
+            "before": 9,
+            "after": 7,
+            "completeColors": 1,
+            "remainingRuns": 11,
+            "emptyReceivers": 0
+          },
+          {
+            "before": 10,
+            "after": 6,
+            "completeColors": 1,
+            "remainingRuns": 10,
+            "emptyReceivers": 1
+          },
+          {
+            "before": 10,
+            "after": 6,
+            "completeColors": 1,
+            "remainingRuns": 10,
+            "emptyReceivers": 1
+          }
+        ],
+        "before": {
+          "observations": 25,
+          "emptyReceivers": {
+            "count": 25,
+            "min": 0,
+            "max": 2,
+            "median": 0,
+            "histogram": {
+              "0": 18,
+              "1": 6,
+              "2": 1
+            }
+          },
+          "minimumCompatibleSlots": {
+            "count": 25,
+            "min": 0,
+            "max": 8,
+            "median": 0,
+            "histogram": {
+              "0": 18,
+              "4": 6,
+              "8": 1
+            }
+          },
+          "colorRuns": {
+            "count": 25,
+            "min": 11,
+            "max": 18,
+            "median": 16,
+            "histogram": {
+              "11": 1,
+              "12": 2,
+              "13": 3,
+              "14": 3,
+              "15": 3,
+              "16": 4,
+              "17": 4,
+              "18": 5
+            }
+          }
+        },
+        "after": {
+          "observations": 30,
+          "emptyReceivers": {
+            "count": 30,
+            "min": 0,
+            "max": 2,
+            "median": 0,
+            "histogram": {
+              "0": 15,
+              "1": 13,
+              "2": 2
+            }
+          },
+          "minimumCompatibleSlots": {
+            "count": 30,
+            "min": 0,
+            "max": 8,
+            "median": 0,
+            "histogram": {
+              "0": 15,
+              "4": 13,
+              "8": 2
+            }
+          },
+          "colorRuns": {
+            "count": 30,
+            "min": 5,
+            "max": 12,
+            "median": 8,
+            "histogram": {
+              "5": 2,
+              "6": 3,
+              "7": 5,
+              "8": 6,
+              "9": 4,
+              "10": 5,
+              "11": 4,
+              "12": 1
+            }
+          }
+        }
+      }
+    ],
+    "trace": [
+      {
+        "step": 1,
+        "action": {
+          "type": "transfer",
+          "source": "b0",
+          "target": "b3"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 18
+      },
+      {
+        "step": 2,
+        "action": {
+          "type": "transfer",
+          "source": "b0",
+          "target": "b4"
+        },
+        "fired": [],
+        "emptyReceivers": 0,
+        "remainingRuns": 18
+      },
+      {
+        "step": 3,
+        "action": {
+          "type": "transfer",
+          "source": "b0",
+          "target": "b3"
+        },
+        "fired": [],
+        "emptyReceivers": 0,
+        "remainingRuns": 17
+      },
+      {
+        "step": 4,
+        "action": {
+          "type": "transfer",
+          "source": "b2",
+          "target": "b0"
+        },
+        "fired": [],
+        "emptyReceivers": 0,
+        "remainingRuns": 16
+      },
+      {
+        "step": 5,
+        "action": {
+          "type": "transfer",
+          "source": "b1",
+          "target": "b2"
+        },
+        "fired": [],
+        "emptyReceivers": 0,
+        "remainingRuns": 15
+      },
+      {
+        "step": 6,
+        "action": {
+          "type": "transfer",
+          "source": "b1",
+          "target": "b3"
+        },
+        "fired": [],
+        "emptyReceivers": 0,
+        "remainingRuns": 14
+      },
+      {
+        "step": 7,
+        "action": {
+          "type": "transfer",
+          "source": "b1",
+          "target": "b0"
+        },
+        "fired": [],
+        "emptyReceivers": 0,
+        "remainingRuns": 13
+      },
+      {
+        "step": 8,
+        "action": {
+          "type": "transfer",
+          "source": "b2",
+          "target": "b1"
+        },
+        "fired": [],
+        "emptyReceivers": 0,
+        "remainingRuns": 12
+      },
+      {
+        "step": 9,
+        "action": {
+          "type": "transfer",
+          "source": "b2",
+          "target": "b4"
+        },
+        "fired": [],
+        "emptyReceivers": 0,
+        "remainingRuns": 11
+      },
+      {
+        "step": 10,
+        "action": {
+          "type": "transfer",
+          "source": "b2",
+          "target": "b3"
+        },
+        "fired": [
+          "cover-a"
+        ],
+        "emptyReceivers": 1,
+        "remainingRuns": 10
+      },
+      {
+        "step": 11,
+        "action": {
+          "type": "transfer",
+          "source": "b5",
+          "target": "b2"
+        },
+        "fired": [],
+        "emptyReceivers": 0,
+        "remainingRuns": 10
+      },
+      {
+        "step": 12,
+        "action": {
+          "type": "transfer",
+          "source": "b5",
+          "target": "b1"
+        },
+        "fired": [],
+        "emptyReceivers": 0,
+        "remainingRuns": 9
+      },
+      {
+        "step": 13,
+        "action": {
+          "type": "transfer",
+          "source": "b4",
+          "target": "b5"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 8
+      },
+      {
+        "step": 14,
+        "action": {
+          "type": "transfer",
+          "source": "b6",
+          "target": "b0"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 7
+      },
+      {
+        "step": 15,
+        "action": {
+          "type": "transfer",
+          "source": "b6",
+          "target": "b2"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 6
+      },
+      {
+        "step": 16,
+        "action": {
+          "type": "transfer",
+          "source": "b5",
+          "target": "b6"
+        },
+        "fired": [],
+        "emptyReceivers": 2,
+        "remainingRuns": 5
+      }
+    ],
+    "participatingLocked": [
+      "b5",
+      "b6"
+    ],
+    "allOpen": {
+      "status": "complete",
+      "shortestMoves": 15,
+      "deadEnds": 0
+    },
+    "limits": "Exact fixed-layout forward graph until completion. Before/after facts cover all globally shortest corridors; moves, space and runs are not difficulty grades. Alternative hidden worlds, visual quality and human breakthrough experience remain unvalidated."
+  },
+  {
+    "number": 6,
+    "puzzle": "classic-unlock-calibration-06",
+    "pair": "cover-arrangement",
+    "source": {
+      "kind": "candidate",
+      "recipe": "cover-shared-inventory-v1",
+      "seed": 101131,
+      "candidate": 126
+    },
+    "definitionSha256": "e6f9b8be4e6ace4dc11179a2b3fefe01a27853802389407e4d2813a91611ea74",
+    "structureSha256": "58f70a4c1d8c431dd5104ce8bb941b73e0ec6a6783d2c88839a74e452ddb5aa7",
+    "status": "complete",
+    "states": 2850,
+    "edges": 26006,
+    "deadEnds": 0,
+    "shortestMoves": 16,
+    "route": [
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b4"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b2",
+        "target": "b0"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b0"
+      },
+      {
+        "type": "transfer",
+        "source": "b2",
+        "target": "b1"
+      },
+      {
+        "type": "transfer",
+        "source": "b2",
+        "target": "b4"
+      },
+      {
+        "type": "transfer",
+        "source": "b2",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b5",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b5",
+        "target": "b1"
+      },
+      {
+        "type": "transfer",
+        "source": "b4",
+        "target": "b5"
+      },
+      {
+        "type": "transfer",
+        "source": "b6",
+        "target": "b0"
+      },
+      {
+        "type": "transfer",
+        "source": "b6",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b5",
+        "target": "b6"
+      }
+    ],
+    "triggers": [
+      {
+        "id": "cover-a",
+        "mandatory": true,
+        "solvedWithoutMilestone": 0,
+        "minimumMovesToMilestone": 8,
+        "shortestCrossings": [
+          {
+            "before": 8,
+            "after": 8,
+            "completeColors": 1,
+            "remainingRuns": 12,
+            "emptyReceivers": 1
+          },
+          {
+            "before": 9,
+            "after": 7,
+            "completeColors": 1,
+            "remainingRuns": 11,
+            "emptyReceivers": 1
+          },
+          {
+            "before": 10,
+            "after": 6,
+            "completeColors": 1,
+            "remainingRuns": 10,
+            "emptyReceivers": 2
+          },
+          {
+            "before": 10,
+            "after": 6,
+            "completeColors": 1,
+            "remainingRuns": 10,
+            "emptyReceivers": 2
+          }
+        ],
+        "before": {
+          "observations": 25,
+          "emptyReceivers": {
+            "count": 25,
+            "min": 1,
+            "max": 3,
+            "median": 1,
+            "histogram": {
+              "1": 18,
+              "2": 6,
+              "3": 1
+            }
+          },
+          "minimumCompatibleSlots": {
+            "count": 25,
+            "min": 4,
+            "max": 12,
+            "median": 4,
+            "histogram": {
+              "4": 18,
+              "8": 6,
+              "12": 1
+            }
+          },
+          "colorRuns": {
+            "count": 25,
+            "min": 11,
+            "max": 18,
+            "median": 16,
+            "histogram": {
+              "11": 1,
+              "12": 2,
+              "13": 3,
+              "14": 3,
+              "15": 3,
+              "16": 4,
+              "17": 4,
+              "18": 5
+            }
+          }
+        },
+        "after": {
+          "observations": 153,
+          "emptyReceivers": {
+            "count": 153,
+            "min": 0,
+            "max": 3,
+            "median": 1,
+            "histogram": {
+              "0": 34,
+              "1": 84,
+              "2": 33,
+              "3": 2
+            }
+          },
+          "minimumCompatibleSlots": {
+            "count": 153,
+            "min": 0,
+            "max": 12,
+            "median": 4,
+            "histogram": {
+              "0": 34,
+              "4": 84,
+              "8": 33,
+              "12": 2
+            }
+          },
+          "colorRuns": {
+            "count": 153,
+            "min": 5,
+            "max": 12,
+            "median": 9,
+            "histogram": {
+              "5": 2,
+              "6": 11,
+              "7": 25,
+              "8": 36,
+              "9": 37,
+              "10": 28,
+              "11": 12,
+              "12": 2
+            }
+          }
+        }
+      }
+    ],
+    "trace": [
+      {
+        "step": 1,
+        "action": {
+          "type": "transfer",
+          "source": "b0",
+          "target": "b3"
+        },
+        "fired": [],
+        "emptyReceivers": 2,
+        "remainingRuns": 18
+      },
+      {
+        "step": 2,
+        "action": {
+          "type": "transfer",
+          "source": "b0",
+          "target": "b4"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 18
+      },
+      {
+        "step": 3,
+        "action": {
+          "type": "transfer",
+          "source": "b0",
+          "target": "b3"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 17
+      },
+      {
+        "step": 4,
+        "action": {
+          "type": "transfer",
+          "source": "b2",
+          "target": "b0"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 16
+      },
+      {
+        "step": 5,
+        "action": {
+          "type": "transfer",
+          "source": "b1",
+          "target": "b2"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 15
+      },
+      {
+        "step": 6,
+        "action": {
+          "type": "transfer",
+          "source": "b1",
+          "target": "b3"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 14
+      },
+      {
+        "step": 7,
+        "action": {
+          "type": "transfer",
+          "source": "b1",
+          "target": "b0"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 13
+      },
+      {
+        "step": 8,
+        "action": {
+          "type": "transfer",
+          "source": "b2",
+          "target": "b1"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 12
+      },
+      {
+        "step": 9,
+        "action": {
+          "type": "transfer",
+          "source": "b2",
+          "target": "b4"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 11
+      },
+      {
+        "step": 10,
+        "action": {
+          "type": "transfer",
+          "source": "b2",
+          "target": "b3"
+        },
+        "fired": [
+          "cover-a"
+        ],
+        "emptyReceivers": 2,
+        "remainingRuns": 10
+      },
+      {
+        "step": 11,
+        "action": {
+          "type": "transfer",
+          "source": "b5",
+          "target": "b2"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 10
+      },
+      {
+        "step": 12,
+        "action": {
+          "type": "transfer",
+          "source": "b5",
+          "target": "b1"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 9
+      },
+      {
+        "step": 13,
+        "action": {
+          "type": "transfer",
+          "source": "b4",
+          "target": "b5"
+        },
+        "fired": [],
+        "emptyReceivers": 2,
+        "remainingRuns": 8
+      },
+      {
+        "step": 14,
+        "action": {
+          "type": "transfer",
+          "source": "b6",
+          "target": "b0"
+        },
+        "fired": [],
+        "emptyReceivers": 2,
+        "remainingRuns": 7
+      },
+      {
+        "step": 15,
+        "action": {
+          "type": "transfer",
+          "source": "b6",
+          "target": "b2"
+        },
+        "fired": [],
+        "emptyReceivers": 2,
+        "remainingRuns": 6
+      },
+      {
+        "step": 16,
+        "action": {
+          "type": "transfer",
+          "source": "b5",
+          "target": "b6"
+        },
+        "fired": [],
+        "emptyReceivers": 3,
+        "remainingRuns": 5
+      }
+    ],
+    "participatingLocked": [
+      "b5",
+      "b6"
+    ],
+    "allOpen": {
+      "status": "complete",
+      "shortestMoves": 15,
+      "deadEnds": 0
+    },
+    "limits": "Exact fixed-layout forward graph until completion. Before/after facts cover all globally shortest corridors; moves, space and runs are not difficulty grades. Alternative hidden worlds, visual quality and human breakthrough experience remain unvalidated."
+  },
+  {
+    "number": 7,
+    "puzzle": "classic-unlock-calibration-07",
+    "pair": "progressive",
+    "source": {
+      "kind": "classic",
+      "sample": "C06"
+    },
+    "definitionSha256": "172c26e99da3dcfa139f4f12c3e0a5dc93c0c5235f23219a8ada9f4a0a8d075f",
+    "structureSha256": "f7ae7f707f8fe75685b15b8fa4f081d73859380f4a06f8e30d0653150d2c1ecf",
+    "status": "complete",
+    "states": 938,
+    "edges": 3618,
+    "deadEnds": 0,
+    "shortestMoves": 14,
+    "route": [
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b4"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b5"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b5"
+      },
+      {
+        "type": "transfer",
+        "source": "b2",
+        "target": "b0"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b5"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b4"
+      },
+      {
+        "type": "transfer",
+        "source": "b3",
+        "target": "b0"
+      },
+      {
+        "type": "transfer",
+        "source": "b3",
+        "target": "b5"
+      },
+      {
+        "type": "transfer",
+        "source": "b2",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b2",
+        "target": "b4"
+      },
+      {
+        "type": "transfer",
+        "source": "b3",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b4"
+      }
+    ],
+    "triggers": [],
+    "trace": [
+      {
+        "step": 1,
+        "action": {
+          "type": "transfer",
+          "source": "b0",
+          "target": "b4"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 16
+      },
+      {
+        "step": 2,
+        "action": {
+          "type": "transfer",
+          "source": "b0",
+          "target": "b5"
+        },
+        "fired": [],
+        "emptyReceivers": 0,
+        "remainingRuns": 16
+      },
+      {
+        "step": 3,
+        "action": {
+          "type": "transfer",
+          "source": "b1",
+          "target": "b5"
+        },
+        "fired": [],
+        "emptyReceivers": 0,
+        "remainingRuns": 15
+      },
+      {
+        "step": 4,
+        "action": {
+          "type": "transfer",
+          "source": "b2",
+          "target": "b0"
+        },
+        "fired": [],
+        "emptyReceivers": 0,
+        "remainingRuns": 14
+      },
+      {
+        "step": 5,
+        "action": {
+          "type": "transfer",
+          "source": "b1",
+          "target": "b2"
+        },
+        "fired": [],
+        "emptyReceivers": 0,
+        "remainingRuns": 13
+      },
+      {
+        "step": 6,
+        "action": {
+          "type": "transfer",
+          "source": "b1",
+          "target": "b5"
+        },
+        "fired": [],
+        "emptyReceivers": 0,
+        "remainingRuns": 12
+      },
+      {
+        "step": 7,
+        "action": {
+          "type": "transfer",
+          "source": "b1",
+          "target": "b4"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 11
+      },
+      {
+        "step": 8,
+        "action": {
+          "type": "transfer",
+          "source": "b3",
+          "target": "b0"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 10
+      },
+      {
+        "step": 9,
+        "action": {
+          "type": "transfer",
+          "source": "b3",
+          "target": "b5"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 9
+      },
+      {
+        "step": 10,
+        "action": {
+          "type": "transfer",
+          "source": "b2",
+          "target": "b3"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 8
+      },
+      {
+        "step": 11,
+        "action": {
+          "type": "transfer",
+          "source": "b2",
+          "target": "b4"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 7
+      },
+      {
+        "step": 12,
+        "action": {
+          "type": "transfer",
+          "source": "b3",
+          "target": "b2"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 6
+      },
+      {
+        "step": 13,
+        "action": {
+          "type": "transfer",
+          "source": "b0",
+          "target": "b3"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 5
+      },
+      {
+        "step": 14,
+        "action": {
+          "type": "transfer",
+          "source": "b0",
+          "target": "b4"
+        },
+        "fired": [],
+        "emptyReceivers": 2,
+        "remainingRuns": 4
+      }
+    ],
+    "participatingLocked": [],
+    "allOpen": {
+      "status": "complete",
+      "shortestMoves": 14,
+      "deadEnds": 0
+    },
+    "limits": "Exact fixed-layout forward graph until completion. Before/after facts cover all globally shortest corridors; moves, space and runs are not difficulty grades. Alternative hidden worlds, visual quality and human breakthrough experience remain unvalidated."
+  },
+  {
+    "number": 8,
+    "puzzle": "classic-unlock-calibration-08",
+    "pair": "progressive",
+    "source": {
+      "kind": "classic",
+      "sample": "C06"
+    },
+    "definitionSha256": "1102ea3011e56b3525f22b592df5ade20b89e1bb3abb85fb33516c4eaaa29ca7",
+    "structureSha256": "c1d4fd964c471d0be28cfacd4ba275ff4d637ee80578e8b267353a19737c0019",
+    "status": "complete",
+    "states": 938,
+    "edges": 3618,
+    "deadEnds": 0,
+    "shortestMoves": 14,
+    "route": [
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b4"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b5"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b5"
+      },
+      {
+        "type": "transfer",
+        "source": "b2",
+        "target": "b0"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b5"
+      },
+      {
+        "type": "transfer",
+        "source": "b1",
+        "target": "b4"
+      },
+      {
+        "type": "transfer",
+        "source": "b3",
+        "target": "b0"
+      },
+      {
+        "type": "transfer",
+        "source": "b3",
+        "target": "b5"
+      },
+      {
+        "type": "transfer",
+        "source": "b2",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b2",
+        "target": "b4"
+      },
+      {
+        "type": "transfer",
+        "source": "b3",
+        "target": "b2"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b3"
+      },
+      {
+        "type": "transfer",
+        "source": "b0",
+        "target": "b4"
+      }
+    ],
+    "triggers": [],
+    "trace": [
+      {
+        "step": 1,
+        "action": {
+          "type": "transfer",
+          "source": "b0",
+          "target": "b4"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 16
+      },
+      {
+        "step": 2,
+        "action": {
+          "type": "transfer",
+          "source": "b0",
+          "target": "b5"
+        },
+        "fired": [],
+        "emptyReceivers": 0,
+        "remainingRuns": 16
+      },
+      {
+        "step": 3,
+        "action": {
+          "type": "transfer",
+          "source": "b1",
+          "target": "b5"
+        },
+        "fired": [],
+        "emptyReceivers": 0,
+        "remainingRuns": 15
+      },
+      {
+        "step": 4,
+        "action": {
+          "type": "transfer",
+          "source": "b2",
+          "target": "b0"
+        },
+        "fired": [],
+        "emptyReceivers": 0,
+        "remainingRuns": 14
+      },
+      {
+        "step": 5,
+        "action": {
+          "type": "transfer",
+          "source": "b1",
+          "target": "b2"
+        },
+        "fired": [],
+        "emptyReceivers": 0,
+        "remainingRuns": 13
+      },
+      {
+        "step": 6,
+        "action": {
+          "type": "transfer",
+          "source": "b1",
+          "target": "b5"
+        },
+        "fired": [],
+        "emptyReceivers": 0,
+        "remainingRuns": 12
+      },
+      {
+        "step": 7,
+        "action": {
+          "type": "transfer",
+          "source": "b1",
+          "target": "b4"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 11
+      },
+      {
+        "step": 8,
+        "action": {
+          "type": "transfer",
+          "source": "b3",
+          "target": "b0"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 10
+      },
+      {
+        "step": 9,
+        "action": {
+          "type": "transfer",
+          "source": "b3",
+          "target": "b5"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 9
+      },
+      {
+        "step": 10,
+        "action": {
+          "type": "transfer",
+          "source": "b2",
+          "target": "b3"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 8
+      },
+      {
+        "step": 11,
+        "action": {
+          "type": "transfer",
+          "source": "b2",
+          "target": "b4"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 7
+      },
+      {
+        "step": 12,
+        "action": {
+          "type": "transfer",
+          "source": "b3",
+          "target": "b2"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 6
+      },
+      {
+        "step": 13,
+        "action": {
+          "type": "transfer",
+          "source": "b0",
+          "target": "b3"
+        },
+        "fired": [],
+        "emptyReceivers": 1,
+        "remainingRuns": 5
+      },
+      {
+        "step": 14,
+        "action": {
+          "type": "transfer",
+          "source": "b0",
+          "target": "b4"
+        },
+        "fired": [],
+        "emptyReceivers": 2,
+        "remainingRuns": 4
+      }
+    ],
+    "participatingLocked": [],
+    "allOpen": {
+      "status": "complete",
+      "shortestMoves": 14,
+      "deadEnds": 0
+    },
+    "limits": "Exact fixed-layout forward graph until completion. Before/after facts cover all globally shortest corridors; moves, space and runs are not difficulty grades. Alternative hidden worlds, visual quality and human breakthrough experience remain unvalidated."
+  }
+]

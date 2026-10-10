@@ -51,6 +51,6 @@ export const UNLOCK_TRIAL = Object.freeze([
     { locked: [4,5,6], hidden: [[4,0],[4,2],[6,0],[6,1]], triggers: [cover('cover-a', A, [4,5]), key('key-b', 5, [6])] }),
 ]);
 
-export function nextUnlockTrialIndex(index: number, solved: boolean): number | null {
-  return solved && Number.isInteger(index) && index >= 0 && index + 1 < UNLOCK_TRIAL.length ? index + 1 : null;
+export function nextUnlockTrialIndex(index: number, solved: boolean, length = UNLOCK_TRIAL.length): number | null {
+  return solved && Number.isInteger(length) && length > 0 && Number.isInteger(index) && index >= 0 && index + 1 < length ? index + 1 : null;
 }

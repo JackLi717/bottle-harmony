@@ -6,7 +6,7 @@ import { UNLOCK_TRIAL, nextUnlockTrialIndex } from '../src/game/unlockTrial.ts';
 import { createEngineSession, moveEngineSession, resetEngineSession, undoEngineSession, saveEngineSession, restoreEngineSession,
   listEngineActions, compileSortingPuzzle, type EngineAction } from '../src/game/engine.ts';
 import { engineFixture } from '../src/game/engineExamples.ts';
-import { auditUnlockTrial, unlockTrialStructure } from '../scripts/lib/unlockTrialAudit.ts';
+import { assertUnlockTrialSolvable, auditUnlockTrial, unlockTrialStructure } from '../scripts/lib/unlockTrialAudit.ts';
 
 const evidence = JSON.parse(readFileSync(new URL('../assets/levels/unlock-trial-evidence.json',import.meta.url),'utf8')) as {
   definitionSha256: string; route: EngineAction[]; states: number; deadEnds: number; firedSets: string[]; simultaneous: string[];
@@ -87,12 +87,24 @@ test('continuous internal progression ends at twelve, requires completion and ha
   for (const i of [-1,12,NaN,0.5]) assert.equal(nextUnlockTrialIndex(i,true),null);
 });
 
-test('content audit reports unknown budgets and catches design dead ends, rather than accepting a single route', () => {
-  assert.equal(auditUnlockTrial(UNLOCK_TRIAL[0].puzzle,1).status,'unknown');
+test('solvability admission accepts one complete legal route despite wrong choices, and rejects unknown or unsolvable layouts', () => {
+  const unknown = auditUnlockTrial(UNLOCK_TRIAL[0].puzzle,1);
+  assert.equal(unknown.status,'unknown');
+  assert.throws(() => assertUnlockTrialSolvable(UNLOCK_TRIAL[0].puzzle,unknown),/Unknown solvability/);
   const bad = engineFixture('insufficient-stage-space', [['coral','jade','coral'],['jade','coral','jade'],[],['amber','coral','amber','azure'],['amber','jade'],['azure','amber','azure','azure']],
     { locked: [3,4,5], triggers: [{ id: 'a',when: { type: 'empty',container: 'b0' },unlock: ['b3','b4'] },{ id: 'b',when: { type: 'empty',container: 'b4' },unlock: ['b5'] }] });
   const report = auditUnlockTrial(bad);
-  assert.equal(report.status,'complete'); if (report.status === 'complete') { assert.ok(report.route.length); assert.ok(report.deadEnds > 0); }
+  assert.equal(report.status,'complete'); if (report.status === 'complete') {
+    assert.ok(report.route.length); assert.ok(report.deadEnds > 0);
+    assert.equal(report.informationCriterion,'fixed-layout-has-forward-dead-ends');
+    assert.doesNotThrow(() => assertUnlockTrialSolvable(bad,report));
+    assert.throws(() => assertUnlockTrialSolvable(bad,{...report,route:[]}),/Incomplete engine route/);
+  }
+  const impossible = engineFixture('no-receiving-space',[['coral','jade','coral','jade'],['jade','coral','jade','coral']]);
+  const exhausted = auditUnlockTrial(impossible);
+  assert.equal(exhausted.status,'complete');
+  if (exhausted.status === 'complete') assert.equal(exhausted.shortestMoves,null);
+  assert.throws(() => assertUnlockTrialSolvable(impossible,exhausted),/Unsolvable trial/);
 });
 
 test('exact trial structure ignores bottle positions, IDs and color names but retains disclosure and mappings', () => {

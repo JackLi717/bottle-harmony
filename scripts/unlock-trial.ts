@@ -2,7 +2,7 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { DatabaseSync } from 'node:sqlite';
 import { UNLOCK_TRIAL } from '../src/game/unlockTrial.ts';
-import { auditUnlockTrial, unlockTrialStructure } from './lib/unlockTrialAudit.ts';
+import { assertUnlockTrialSolvable, auditUnlockTrial, unlockTrialStructure } from './lib/unlockTrialAudit.ts';
 import { createEngineSession } from '../src/game/engine.ts';
 import { replayEngineRoute } from '../src/game/engineSearch.ts';
 
@@ -21,7 +21,8 @@ for (const [index, entry] of UNLOCK_TRIAL.entries()) {
   for (const color of puzzle.colors) if (puzzle.units.filter(u => u.color === color).length !== 4) throw new Error(`Inventory: ${puzzle.id}/${color}`);
   const evidence = auditUnlockTrial(puzzle);
   console.log(index + 1, evidence.status, evidence.states, evidence.status === 'complete' ? `${evidence.deadEnds} dead ends, ${evidence.shortestMoves} moves` : evidence.reason);
-  if (evidence.status !== 'complete' || evidence.deadEnds || evidence.shortestMoves === null) throw new Error(`Unaccepted trial: ${puzzle.id}`);
+  assertUnlockTrialSolvable(puzzle,evidence);
+  if (evidence.status !== 'complete') throw new Error(`Unknown trial: ${puzzle.id}`);
   const allOpen = auditUnlockTrial({ ...puzzle, locked: [], triggers: [] });
   if (allOpen.status !== 'complete' || allOpen.shortestMoves === null) throw new Error(`All-open comparison unknown: ${puzzle.id}`);
   const report = { number: index + 1, focus: entry.focus, definitionSha256: createHash('sha256').update(JSON.stringify(puzzle)).digest('hex'),

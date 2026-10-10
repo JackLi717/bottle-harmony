@@ -3,6 +3,16 @@ import { compileSortingPuzzle, evaluateEngineGoal, initialEngineState, listEngin
 import { replayEngineRoute } from '../../src/game/engineSearch.ts';
 import type { SortingPuzzle } from '../../src/game/engineModel.ts';
 
+/** Minimum solvability gate: one replayed completion suffices. Wrong choices may
+ * need undo/reset; dead-end counts and hidden-information fairness are separate. */
+export function assertUnlockTrialSolvable(puzzle: SortingPuzzle, evidence:
+  { status: 'complete'; shortestMoves: number | null; route: readonly EngineAction[] } | { status: 'unknown' }) {
+  if (evidence.status !== 'complete') throw new Error(`Unknown solvability: ${puzzle.id}`);
+  if (evidence.shortestMoves === null) throw new Error(`Unsolvable trial: ${puzzle.id}`);
+  const runtime = compileSortingPuzzle(puzzle);
+  replayEngineRoute(runtime,initialEngineState(runtime),evidence.route);
+}
+
 /** Exact canonical structure for these <=8-bottle handcrafted boards. IDs and colors are relabeled, never artwork. */
 export function unlockTrialStructure(puzzle: SortingPuzzle): string {
   if (puzzle.containers.length > 8) throw new Error('Handcrafted canonicalization budget');
@@ -92,5 +102,6 @@ export function auditUnlockTrial(puzzle: SortingPuzzle, maxStates = 250000) {
     participatingLocked: puzzle.locked.filter(id => participated.has(id)),
     // Legality never reads an unknown color: unknown top is exposed by settle,
     // and transferWithKnowledge stops before each original hidden boundary.
-    informationCriterion: 'all-reachable-public-legal-actions-preserve-completability' };
+    informationCriterion: nodes.length === winning.size ? 'all-reachable-public-legal-actions-preserve-completability'
+      : 'fixed-layout-has-forward-dead-ends' };
 }
