@@ -23,7 +23,8 @@ test('empty sources, full destinations, different colors and same bottle reject'
 });
 
 test('the demonstration is solvable and every step conserves both colors', () => {
-  const result = solveBoard(DEMO_BOARD);
+  // This checks route correctness; wall-clock budgets are tested separately.
+  const result = solveBoard(DEMO_BOARD, { maxMilliseconds: 5000 });
   assert.equal(result.status, 'solved');
   assert.ok(result.status === 'solved');
   const route = result.route;

@@ -181,7 +181,7 @@ Android 命令只连接独立 engine-acceptance Release，以受系统 DUMP 权�
 
 原生绘制诊断可在独立验收配置额外指定 `ENGINE_SVG_TRACE=true`，通过 `withSvgTrace` 给固定版本 SVG 的位图分配和子元素绘制添加 Perfetto 区段及视口尺寸，不改变分配和绘制算法。插件核对完整依赖源码哈希，可重复应用／撤回；公开配置拒绝开启，下一次未开启该选项的 Android Prebuild 自动还原原库。诊断计时包含追踪自身成本，不能当作正常帧验收。首次构建用完整 Prebuild，增量应用配置可显式使用 `npx expo prebuild --platform android --no-clean --no-install` 后执行同环境的 Gradle Release 构建，避免 SDK 默认重建原生目录。
 
-`ENGINE_SVG_PICTURE=true` 是独立验收包专用的原生绘制实验：用 Picture 记录既有 SVG 命令，组透明度改用整体 alpha 图层；软件 Canvas、mask／filter 和图片导出保留原位图路径。插件核对并可完整还原 SvgView／GroupView 源码，公开包拒绝开启。实验不改玻璃、美术几何、倒水时钟或规则；尚未通过广泛画面、原生回退和持续性能验收，不能视作正式渲染实现。
+`ENGINE_SVG_PICTURE=true` 是独立验收包专用的原生绘制实验：用 Picture 记录既有 SVG 命令，组透明度改用整体 alpha 图层；软件 Canvas、mask／filter 和图片导出保留原位图路径。插件核对并可完整还原 SvgView／GroupView 源码，公开包拒绝开启。另可单独使用 `ENGINE_SVG_RENDER_NODE=true` 试验 API 29+ 硬件命令录制，旧系统保留位图路径；两个录制选项互斥。实验不改玻璃、美术几何、倒水时钟或规则；均未通过性能线，未充分验证全部回退，不能视作正式渲染实现。
 
 本轮低端设备工程目标在测量前固定：成功会话转移 p95 ≤4 ms；恢复／搜索协作分片 p95 ≤8 ms，另列最长暂停；每次提示守住 250 ms 活跃预算并诚实报告未知；WAL／FULL 事务写入 p95 ≤50 ms，256 检查点恢复墙钟 ≤250 ms。画面另测持续倒水帧时间 p95 ≤33.3 ms／p99 ≤50 ms，挂载与切页单独列出；持续至少十分钟无崩溃、错误状态或存档丢失，记录内存、温度与电量。它们是本轮工作负载验收线，不是所有题目／设备的硬实时承诺；不达标项必须记录并区分新内核与已有渲染成本。
 

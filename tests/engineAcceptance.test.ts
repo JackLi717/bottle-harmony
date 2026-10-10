@@ -54,3 +54,15 @@ test('isolated picture recording and alpha layers restore the exact original nat
   assert.throws(() => plugin({ android: { package: 'com.bottleharmony.app' } }, { picture: true }), /isolated/);
   assert.throws(() => configurePictureGroup(originalGroup + '\n// upstream change', true), /Review/);
 });
+
+test('isolated RenderNode recording composes with trace and roundtrips to the original dependency', () => {
+  const plugin = require('../plugins/withSvgTrace.js'), configure = plugin.configureSvgTracing;
+  const source = readFileSync(new URL('../node_modules/react-native-svg/android/src/main/java/com/horcrux/svg/SvgView.java', import.meta.url), 'utf8');
+  const original = configure(source, false), recorded = configure(original, false, false, true);
+  assert.equal(configure(recorded, false, false, true), recorded);
+  assert.equal(configure(recorded, false), original);
+  assert.equal(configure(configure(recorded, true, false, true), false), original);
+  assert.equal(configure(recorded, false, true), configure(original, false, true));
+  assert.throws(() => configure(original, false, true, true), /Select one/);
+  assert.throws(() => plugin({ android: { package: 'com.bottleharmony.app' } }, { renderNode: true }), /isolated/);
+});

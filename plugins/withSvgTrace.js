@@ -3,6 +3,7 @@ const { createHash } = require('node:crypto');
 const fs = require('node:fs/promises');
 const path = require('node:path');
 const { stripPictureRoot, configurePictureRoot, configurePictureGroup } = require('./svgPictureExperiment');
+const { stripRenderNodeRoot, configureRenderNodeRoot } = require('./svgRenderNodeExperiment');
 
 // Optional local profiling only. Keep the published SVG implementation unchanged.
 const before = `    Bitmap bitmap = Bitmap.createBitmap((int) width, (int) height, Bitmap.Config.ARGB_8888);
@@ -31,24 +32,26 @@ const after = `    // BH_SVG_TRACE: diagnostic scopes only; no rendering or allo
       android.os.Trace.endSection();
     }`;
 
-function configureSvgTracing(source, enabled, picture = false) {
+function configureSvgTracing(source, enabled, picture = false, renderNode = false) {
+  if (picture && renderNode) throw new Error('Select one isolated SVG recording experiment');
+  source = stripRenderNodeRoot(source);
   source = stripPictureRoot(source);
   const original = source.includes('BH_SVG_TRACE') ? source.replace(after, before) : source;
   if (!original.includes(before) || original.includes('BH_SVG_TRACE')) throw new Error('Review SVG tracing instrumentation after dependency changes');
   // Exact dependency hash checked below; never apply to a changed library silently.
   if (createHash('sha256').update(original).digest('hex') !== ORIGINAL_HASH) throw new Error('Review react-native-svg 15.15.4 source before tracing');
-  return configurePictureRoot(enabled ? original.replace(before, after) : original, picture);
+  return configureRenderNodeRoot(configurePictureRoot(enabled ? original.replace(before, after) : original, picture), renderNode);
 }
 
 const ORIGINAL_HASH = '75a2bd5e60727f242433005e10bc0c7a07bf86e1e1cfddc5ce09af9004bfcede';
-module.exports = function withSvgTrace(config, { enabled = false, picture = false } = {}) {
-  if ((enabled || picture) && config.android?.package !== 'com.bottleharmony.engineacceptance') throw new Error('SVG tracing requires the isolated acceptance package');
+module.exports = function withSvgTrace(config, { enabled = false, picture = false, renderNode = false } = {}) {
+  if ((enabled || picture || renderNode) && config.android?.package !== 'com.bottleharmony.engineacceptance') throw new Error('SVG tracing requires the isolated acceptance package');
   return withDangerousMod(config, ['android', async mod => {
     const file = path.join(mod.modRequest.projectRoot, 'node_modules/react-native-svg/android/src/main/java/com/horcrux/svg/SvgView.java');
-    const source = await fs.readFile(file, 'utf8'), updated = configureSvgTracing(source, enabled, picture);
+    const source = await fs.readFile(file, 'utf8'), updated = configureSvgTracing(source, enabled, picture, renderNode);
     if (updated !== source) await fs.writeFile(file, updated);
     const groupFile = path.join(path.dirname(file), 'GroupView.java');
-    const groupSource = await fs.readFile(groupFile, 'utf8'), groupUpdated = configurePictureGroup(groupSource, picture);
+    const groupSource = await fs.readFile(groupFile, 'utf8'), groupUpdated = configurePictureGroup(groupSource, picture || renderNode);
     if (groupUpdated !== groupSource) await fs.writeFile(groupFile, groupUpdated);
     return mod;
   }]);
