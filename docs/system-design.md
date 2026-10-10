@@ -174,6 +174,8 @@ Android 命令只连接独立 engine-acceptance Release，以受系统 DUMP 权�
 
 `measure-engine-render.ts` 只读独立验收包的 `gfxinfo framestats`，每 700 ms 轮询原始缓冲，按窗口／原生时钟去重，绑定 APK 与进程；`mark` 使用设备 Uptime 分段，不用主机时钟猜测。统计 `FrameCompleted - IntendedVsync`，挂载与实际倒水分开，系统标记帧另列；未完成行保留在原始记录，不当成掉帧数量。界面操作经 Android Studio USB 镜像完成，镜像开销包含在结果中；该指标不是屏幕实际呈现间隔、音频延迟或功耗。采集时间不等于持续操作时间，闲置与构建等待不能算作十分钟游玩。
 
+原生绘制诊断可在独立验收配置额外指定 `ENGINE_SVG_TRACE=true`，通过 `withSvgTrace` 给固定版本 SVG 的位图分配和子元素绘制添加 Perfetto 区段及视口尺寸，不改变分配和绘制算法。插件核对完整依赖源码哈希，可重复应用／撤回；公开配置拒绝开启，下一次未开启该选项的 Android Prebuild 自动还原原库。诊断计时包含追踪自身成本，不能当作正常帧验收。首次构建用完整 Prebuild，增量应用配置可显式使用 `npx expo prebuild --platform android --no-clean --no-install` 后执行同环境的 Gradle Release 构建，避免 SDK 默认重建原生目录。
+
 本轮低端设备工程目标在测量前固定：成功会话转移 p95 ≤4 ms；恢复／搜索协作分片 p95 ≤8 ms，另列最长暂停；每次提示守住 250 ms 活跃预算并诚实报告未知；WAL／FULL 事务写入 p95 ≤50 ms，256 检查点恢复墙钟 ≤250 ms。画面另测持续倒水帧时间 p95 ≤33.3 ms／p99 ≤50 ms，挂载与切页单独列出；持续至少十分钟无崩溃、错误状态或存档丢失，记录内存、温度与电量。它们是本轮工作负载验收线，不是所有题目／设备的硬实时承诺；不达标项必须记录并区分新内核与已有渲染成本。
 
 桌面 Node 样本证明可执行性和回归成本，不作手机性能结论。Release 真机仍须测提示总耗时、最长切片、堆／原生内存、渲染帧时间、SQLite 写入／恢复和 10–15 分钟持续操作；先优化 TypeScript／Hermes，只有测量仍不满足预算才评估同契约 C++。量化结果、包身份和尚未连接的设备由[设备支持](device-support.md)统一维护。

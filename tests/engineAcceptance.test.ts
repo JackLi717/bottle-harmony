@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createRequire } from 'node:module';
+import { readFileSync } from 'node:fs';
 const require = createRequire(import.meta.url);
 const { acceptanceManifest } = require('../plugins/withEngineAcceptance.js');
 
@@ -18,4 +19,14 @@ test('headless device measurement is shell-protected, service-private, idempoten
 test('headless measurement cannot be configured against the public package', () => {
   const plugin = require('../plugins/withEngineAcceptance.js');
   assert.throws(() => plugin({ android: { package: 'com.bottleharmony.app' } }, { enabled: true }), /isolated application ID/);
+});
+
+test('optional SVG trace scopes are reversible, idempotent and forbidden for public packages', () => {
+  const plugin = require('../plugins/withSvgTrace.js'), configure = plugin.configureSvgTracing;
+  const installed = readFileSync(new URL('../node_modules/react-native-svg/android/src/main/java/com/horcrux/svg/SvgView.java', import.meta.url), 'utf8');
+  const original = configure(installed, false), traced = configure(original, true);
+  assert.ok(traced.includes('BH.SVG.allocate')); assert.ok(traced.includes('BH.SVG.children'));
+  assert.equal(configure(traced, true), traced); assert.equal(configure(traced, false), original);
+  assert.throws(() => configure(original + '\n// changed upstream', true), /Review/);
+  assert.throws(() => plugin({ android: { package: 'com.bottleharmony.app' } }, { enabled: true }), /isolated/);
 });
