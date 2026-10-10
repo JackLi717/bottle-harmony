@@ -1,4 +1,6 @@
-export const PLAYER_SCHEMA_VERSION = 1;
+import { SORTING_SCHEMA } from './sortingSchema.ts';
+
+export const PLAYER_SCHEMA_VERSION = 2;
 export const METRICS_VERSION = 'gameplay-v1';
 export const PLAYER_SCHEMA = `
 CREATE TABLE metadata(key TEXT PRIMARY KEY, value TEXT NOT NULL) STRICT;
@@ -31,5 +33,6 @@ CREATE TABLE daily_stats(day TEXT NOT NULL, timezone TEXT NOT NULL, metric TEXT 
  PRIMARY KEY(day,timezone,metric)) STRICT;
 CREATE TABLE hint_requests(id TEXT PRIMARY KEY, challenge_id TEXT, level_id TEXT NOT NULL, requested_at INTEGER NOT NULL,
  result TEXT, duration_ms REAL, executed INTEGER NOT NULL DEFAULT 0, resource TEXT NOT NULL) STRICT;
-PRAGMA user_version=1;
+${SORTING_SCHEMA}
+PRAGMA user_version=2;
 `;

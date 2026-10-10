@@ -1,4 +1,4 @@
-const offline = process.env.ANALYTICS_ENV === 'offline' || ['1', 'true'].includes(process.env.EXPO_TV);
+const offline = process.env.APP_VARIANT === 'engine-acceptance' || process.env.ANALYTICS_ENV === 'offline' || ['1', 'true'].includes(process.env.EXPO_TV);
 module.exports = {
   dependencies: offline ? {
     '@react-native-firebase/app': { platforms: { ios: null, android: null } },

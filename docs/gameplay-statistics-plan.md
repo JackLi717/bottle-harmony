@@ -107,6 +107,10 @@ D1／D7／D30：第 0 日激活队列中，目标日有有效游玩的安装数�
 
 明细采用最近 30 天和最多 5 万条预算，当前开放挑战／恢复所需数据受保护。共用保存队列按独立水位每跨越 100 修订执行检查，避免其他写入越过整百后长期不清理。首次事实、长期摘要和观察边界不随明细删除。删除行不保证数据库文件立即缩小；磁盘、索引、WAL／SHM 和清理成本仍需设备测量。
 
+玩家主 schema 当前为 2：从正式 schema 1 在单个事务中新增 `sorting_sessions` 与 `sorting_checkpoints`，提交版本 2；DDL／写入失败原子回滚并保留旧库。原 26 张表、现有进度／奖励／身份／偏好／统计与记忆初始化边界不变，指标版本也未变化。正式 0.1.6 捕获库副本与未升级仓库按同一启动条件对照，原表内容一致；证据见[设备验收](device-support.md)。这属于已发布玩家库的增量升级，不是清库或开发存档导入。
+
+新排序会话表记录 slot、稳定 puzzle_id、完整定义 binding、attempt、revision、history_start／depth；检查点以 `(slot,step)` 唯一保存单位排列、开放组、触发和知识／已见容器。step=-1 为当前状态，历史只追加本步前状态，并裁剪已撤销／超预算部分；正常一步写两个检查点。每帧最多 131072 ASCII JSON 字符，历史最多 4096 步且 8 MiB，恢复先检查总量再分片校验保留路线。新表仅服务扩展定义的存储适配，当前内部五题不写库；当前经典／副关／记忆继续原表，不双写，不新增玩家模式或钱包。未来正式题接入时与经典同一事务提交首次完成／奖励／统计，不能让内部验收自己授奖。
+
 ## 五 Google 事件契约与交付
 
 统一白名单在 `src/analytics/contracts.ts`，27 种业务事件；最多 25 参数，字段名最多 40 字符、字符串最多 100 字符、数字必须有限。每条带随机单事件 `event_id`、业务时间 `event_at`、应用／指标／构建环境版本。题目事件另带模式、稳定题目 ID、内容／规则、完整性、首次体验及必要生产标签。
@@ -146,7 +150,7 @@ D1／D7／D30：第 0 日激活队列中，目标日有有效游玩的安装数�
 
 GA4 账号为 411231811（现有 Default Account for Firebase）。借鉴 Sudoku 的独立环境做法，未复用其项目、应用流、配置文件或业务代码。
 
-`app.config.js` 默认开发指向 Test，`APP_VARIANT=store` 指向 Production；`npm run android:store`／`android:store-apk` 显式固定 `ANALYTICS_ENV=production`，商店构建误配 Test 会报错。Alpha 闭测与未来正式发行共用同一个 Production 属性，不按商店轨道分流；Test 仅用于开发／自动验收，避免人工测试污染玩家趋势。静态包检查新增 `--analytics`，明确允许并要求网络权限；不带该参数继续核验此前离线产物，广告／定位等权限仍禁止。`ANALYTICS_ENV=offline` 关闭原生 Firebase 插件和自动链接，TV 始终离线，Web 使用空发送器。配置文件位于 `config/firebase/{production,test}/`，只含官方客户端配置，不是管理凭据。可用 `python3 scripts/firebase-config.py` 在现有授权 CLI 会话下重新下载；不把 OAuth token 写入仓库。iOS 使用官方 `disableSPM` 插件选项配合 static frameworks，避免新版 Firebase 的 SPM／静态链接冲突。
+`app.config.js` 默认开发指向 Test，`APP_VARIANT=store` 指向 Production；`npm run android:store`／`android:store-apk` 显式固定 `ANALYTICS_ENV=production`，商店构建误配 Test 会报错。Alpha 闭测与未来正式发行共用同一个 Production 属性，不按商店轨道分流；Test 仅用于开发／自动验收，避免人工测试污染玩家趋势。静态包检查新增 `--analytics`，明确允许并要求网络权限；不带该参数继续核验此前离线产物，广告／定位等权限仍禁止。`ANALYTICS_ENV=offline` 关闭原生 Firebase 插件和自动链接，TV 始终离线，Web 使用空发送器。`APP_VARIANT=engine-acceptance` 强制离线并使用独立包名；不覆盖 Play 应用。离线 extra 明确编码为字符串 offline，运行时仅允许 production／test 进入发送链路，拒绝缺失或错误类型，避免原生 null 序列化成对象阻塞 SQLite 写入队列。配置文件位于 `config/firebase/{production,test}/`，只含官方客户端配置，不是管理凭据。可用 `python3 scripts/firebase-config.py` 在现有授权 CLI 会话下重新下载；不把 OAuth token 写入仓库。iOS 使用官方 `disableSPM` 插件选项配合 static frameworks，避免新版 Firebase 的 SPM／静态链接冲突。
 
 每个属性保存两份探索报告，共十三页，配置契约见 `src/analytics/reportDefinitions.ts`：
 

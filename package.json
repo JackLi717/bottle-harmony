@@ -40,6 +40,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "test": "node --experimental-strip-types --test --test-concurrency=1 tests/*.test.ts",
+    "benchmark:engine": "node --expose-gc --experimental-strip-types scripts/benchmark-engine.ts",
     "benchmark:solver": "node --expose-gc --experimental-strip-types scripts/benchmark-solver.ts",
     "benchmark:production": "node --expose-gc --experimental-strip-types scripts/benchmark-production.ts",
     "levels:generate": "node --experimental-strip-types scripts/levels.ts generate",

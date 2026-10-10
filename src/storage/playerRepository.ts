@@ -8,6 +8,7 @@ import { PLAYER_SCHEMA, PLAYER_SCHEMA_VERSION, METRICS_VERSION } from './playerS
 import { StatisticsRecorder, sessionScope, type GameplayAction } from './statistics.ts';
 import { createProductionPlan } from '../game/productionPlan.ts';
 import { ProductMetrics } from './productMetrics.ts';
+import { SORTING_SCHEMA } from './sortingSchema.ts';
 
 const metricPlan = createProductionPlan();
 type ProgressRow = { catalog: string; current: number; completed: number; side_completed: number; tutorial: number; symbols: number; credits: number; free_hint_used: number };
@@ -62,6 +63,10 @@ export class PlayerRepository {
         await PlayerRepository.putProgress(db, initial, main.id);
         await saveSession(db, 'main', initial.main, null);
       });
+    } else if (version === 1) {
+      // Additive, atomic upgrade of the shipped baseline; never rebuild player tables.
+      if ((await db.getFirstAsync<{ quick_check: string }>('PRAGMA quick_check'))?.quick_check !== 'ok') throw new Error('Player database integrity failed');
+      await transaction(db, async () => { await db.execAsync(`${SORTING_SCHEMA} PRAGMA user_version=2;`); });
     } else if (version !== PLAYER_SCHEMA_VERSION) throw new Error('Unsupported player database schema');
     if ((await db.getFirstAsync<{ quick_check: string }>('PRAGMA quick_check'))?.quick_check !== 'ok') throw new Error('Player database integrity failed');
     const metadata = new Map((await db.getAllAsync<{ key: string; value: string }>('SELECT * FROM metadata')).map(row => [row.key, row.value]));

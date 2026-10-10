@@ -3,11 +3,12 @@ import { Platform } from 'react-native';
 import type { PlayerRepository } from '../storage/playerRepository';
 import { AnalyticsDelivery } from './delivery';
 import { gateway } from './gateway';
+import { analyticsEnvironment } from './environment';
 
 let delivery: AnalyticsDelivery | null = null;
-export function analyticsAvailable() { return !Platform.isTV && Platform.OS !== 'web' && !!Constants.expoConfig?.extra?.analyticsEnvironment; }
+export function analyticsAvailable() { return !Platform.isTV && Platform.OS !== 'web' && analyticsEnvironment(Constants.expoConfig?.extra?.analyticsEnvironment) !== 'offline'; }
 export async function initializeAnalytics(player: PlayerRepository) {
-  const environment = analyticsAvailable() ? Constants.expoConfig!.extra!.analyticsEnvironment : 'offline';
+  const environment = analyticsAvailable() ? analyticsEnvironment(Constants.expoConfig?.extra?.analyticsEnvironment) : 'offline';
   delivery = new AnalyticsDelivery(player, gateway, environment);
   await delivery.initialize();
 }

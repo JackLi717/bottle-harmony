@@ -26,6 +26,7 @@ import { createSolver, type SolveResult, type SolverTask } from '../game/solver'
 import { HomeScreen } from './HomeScreen';
 import { MemoryScreen } from './MemoryScreen';
 import { MixingScreen } from './MixingScreen';
+import { EnginePreview } from './EnginePreview';
 import { GameHeader } from './GameHeader';
 import { GameFooter } from './GameFooter';
 import { Celebration } from './Celebration';
@@ -65,7 +66,7 @@ export function DemoScreen() {
   const SIDE_AFTER = SOLID_SIDES.entries.map(item => item.afterMainline);
   const { sound, ready: soundReady, saved: soundSaved, toggleSound } = useSoundPreference();
   const { vessel, ready: vesselReady, saved: vesselSaved, chooseVessel } = useVesselPreference();
-  const [page, setPage] = useState<'home' | 'game' | 'opening-memory' | 'memory' | 'mixing'>('home');
+  const [page, setPage] = useState<'home' | 'game' | 'opening-memory' | 'memory' | 'mixing' | 'engine'>('home');
   // Keep the existing home visible until the native memory board has its measured layout.
   const memoryOpening = page === 'opening-memory';
   const memoryPrepared = useCallback(() => setPage(current => current === 'opening-memory' ? 'memory' : current), [setPage]);
@@ -477,6 +478,8 @@ export function DemoScreen() {
 
   if (!ready || !soundReady || !vesselReady) return <LinearGradient colors={['#11171E', '#070B12']} style={[styles.screen, { alignItems: 'center', justifyContent: 'center' }]}><StatusBar style="light" /><UiText style={styles.loading}>{t('loading')}</UiText></LinearGradient>;
 
+  if (page === 'engine' && INTERNAL_TOOLS) return <EnginePreview vessel={vessel} symbols={play.symbols} sound={sound} reduceMotion={reduceMotion} onBack={goHome} />;
+
   if (page === 'mixing' && INTERNAL_TOOLS) return <MixingScreen vessel={vessel} symbols={play.symbols} sound={sound} reduceMotion={reduceMotion} onBack={goHome} />;
 
   return (
@@ -548,7 +551,7 @@ export function DemoScreen() {
       </View>}
       {page !== 'memory' && <>
       {debugReport && <DifficultyDebug visible={difficultyVisible} report={debugReport} human={debugHuman} sample={sample} label={label} onClose={() => setDifficultyVisible(false)} />}
-      {menuVisible && <MainlineMenu visible initialSection={menuSection} showLevels={page === 'game'} play={play} saveStatus={t(saveStatus)} onClose={() => setMenuVisible(false)} onResume={resumeCurrent} onSelect={chooseNumber} onSelectSide={chooseSide} onPreview={previewMainline} onSidePreview={previewSide} onSamples={() => { setMenuVisible(false); setPickerVisible(true); }} onMixingTrial={() => { setMenuVisible(false); setInternalSession(null); setPage('mixing'); }} symbols={play.symbols} onSymbols={() => setPlay(Object.freeze({ ...play, symbols: !play.symbols }), { type: 'preference', preference: 'symbols', value: String(!play.symbols) })} sound={sound} soundSaved={soundSaved} onSound={toggleSound} onCelebrationPreview={previewCelebration} onPrivacy={() => { setMenuVisible(false); setPrivacyVisible(true); }} onDebug={INTERNAL_TOOLS && !sideEntry ? openDifficulty : undefined} />}
+      {menuVisible && <MainlineMenu visible initialSection={menuSection} showLevels={page === 'game'} play={play} saveStatus={t(saveStatus)} onClose={() => setMenuVisible(false)} onResume={resumeCurrent} onSelect={chooseNumber} onSelectSide={chooseSide} onPreview={previewMainline} onSidePreview={previewSide} onSamples={() => { setMenuVisible(false); setPickerVisible(true); }} onEnginePreview={() => { setMenuVisible(false); setInternalSession(null); setPage('engine'); }} onMixingTrial={() => { setMenuVisible(false); setInternalSession(null); setPage('mixing'); }} symbols={play.symbols} onSymbols={() => setPlay(Object.freeze({ ...play, symbols: !play.symbols }), { type: 'preference', preference: 'symbols', value: String(!play.symbols) })} sound={sound} soundSaved={soundSaved} onSound={toggleSound} onCelebrationPreview={previewCelebration} onPrivacy={() => { setMenuVisible(false); setPrivacyVisible(true); }} onDebug={INTERNAL_TOOLS && !sideEntry ? openDifficulty : undefined} />}
       <GameNotice notice={notice} onClose={() => setNotice(null)} />
       <PrivacyPolicy visible={privacyVisible} onClose={() => { setPrivacyVisible(false); openMenu('settings'); }} />
       <Tutorial visible={page === 'game' && ready && !internalSession && !play.tutorialDone} vessel={vessel} sound={sound} symbols={play.symbols} reduceMotion={reduceMotion} onStart={() => setPlay(Object.freeze({ ...play, tutorialDone: true }))} />

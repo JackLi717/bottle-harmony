@@ -66,7 +66,7 @@ export function pouringAngle(layers: number, geometry: VesselGeometry = DEFAULT_
   'worklet';
   let lo = 0;
   let hi = 160;
-  const area = clamp(layers, 0, 4) * geometry.layerArea;
+  const area = clamp(layers, 0, geometry.logicalCapacity ?? 4) * geometry.layerArea;
   for (let i = 0; i < 15; i++) {
     const mid = (lo + hi) / 2;
     const lip = rotateBottlePoint(outletPoint(1, geometry), mid);

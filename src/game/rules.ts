@@ -1,3 +1,5 @@
+import { sortedContainers, transferAmount } from './transfer.ts';
+
 export const CAPACITY = 4;
 /** Logical identity only; the visual theme resolves this ID separately. */
 export type ColorId = string;
@@ -15,11 +17,8 @@ export function getPour(board: Board, source: number, target: number, capacity =
   const from = board[source];
   const to = board[target];
   if (!from || !to || !from.length || from.length > capacity || to.length >= capacity) return null;
-  const color = from[from.length - 1];
-  if (to.length && to[to.length - 1] !== color) return null;
-  let run = 0;
-  for (let i = from.length - 1; i >= 0 && from[i] === color; i--) run++;
-  return { source, target, color, amount: Math.min(run, capacity - to.length) };
+  const amount = transferAmount(from, to, value => value, { capacity });
+  return amount ? { source, target, color: from[from.length - 1], amount } : null;
 }
 
 export function applyPour(board: Board, pour: Pour, capacity = CAPACITY): Board {
@@ -35,9 +34,7 @@ export function applyPour(board: Board, pour: Pour, capacity = CAPACITY): Board 
 }
 
 export function isSolved(board: Board, capacity = CAPACITY): boolean {
-  return Number.isInteger(capacity) && capacity > 0 && board.some(bottle => bottle.length > 0) && board.every(bottle => !bottle.length || (
-    bottle.length === capacity && bottle.every(color => color === bottle[0])
-  ));
+  return Number.isInteger(capacity) && capacity > 0 && sortedContainers(board, () => capacity, value => value);
 }
 
 export function getLegalPours(board: Board, capacity = CAPACITY): Pour[] {

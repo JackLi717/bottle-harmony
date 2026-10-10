@@ -58,7 +58,7 @@ function symbolInBand(lower: readonly Point[], upper: readonly Point[], degrees:
  * With symbols off, only the already merged color surfaces need geometry work. */
 export function liquidFrame(colors: readonly ColorId[], visibleLayers: number, degrees: number, vessel: VesselGeometry, symbols: boolean): LiquidLayerFrame[] {
   'worklet';
-  const count = Math.max(0, Math.min(4, visibleLayers));
+  const count = Math.max(0, Math.min(vessel.logicalCapacity ?? 4, visibleLayers));
   let lower: Point[] = [];
   return colors.map((color, layer) => {
     const surface = colors[layer + 1] !== color;

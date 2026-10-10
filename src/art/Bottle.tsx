@@ -155,7 +155,7 @@ export const Bottle = memo(function Bottle({ index, colors, selected, hinted = f
     const transferred = pour ? transferredFraction(progress.value) * pour.amount : 0;
     return colors.length + (isSource ? -transferred : isTarget ? transferred - (pour?.amount ?? 0) : 0);
   });
-  const complete = useDerivedValue(() => completionVisible(completed, count.value));
+  const complete = useDerivedValue(() => completionVisible(completed, count.value, vessel.logicalCapacity ?? 4));
   // Unknown portions never merge visually or expose their real color/symbol through animation.
   const presentationColors = colors.map((c, i) => hiddenLayers[i] ? `unknown-${i}` : c);
   const liquid = useDerivedValue(() => liquidFrame(presentationColors, count.value, angle.value, vessel, symbols || hiddenLayers.some(Boolean)));

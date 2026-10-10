@@ -46,7 +46,7 @@ export function liquidPolygon(layers: number, degrees: number, geometry: VesselG
   'worklet';
   if (layers <= 0.0001) return [];
   const points = rotatedInterior(degrees, geometry);
-  const desiredArea = Math.max(0, Math.min(4, layers)) * geometry.layerArea;
+  const desiredArea = Math.max(0, Math.min(geometry.logicalCapacity ?? 4, layers)) * geometry.layerArea;
   let lo = -100;
   let hi = 280;
   for (let step = 0; step < 18; step++) {

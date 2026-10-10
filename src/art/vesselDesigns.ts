@@ -3,12 +3,19 @@ import type { CompletionEffect } from './bottleCompletion.ts';
 
 export type VesselId = 'classic' | 'moon' | 'royal' | 'aurora' | 'alchemy' | 'prism' | 'tube' | 'beaker' | 'highball' | 'flute' | 'tulip' | 'martini' | 'coupe' | 'chalice' | 'flask';
 export type VesselGeometry = {
+  readonly logicalCapacity?: number;
   readonly interior: readonly Point[];
   readonly layerArea: number;
   readonly mouth: { readonly y: number; readonly outer: number; readonly inner: number; readonly outlet: number };
   readonly fillY: number;
   readonly bottomY: number;
 };
+/** Capacity changes discrete portion volume, never the approved four-portion design. */
+export function vesselAtCapacity(vessel: VesselDesign, capacity: number): VesselDesign {
+  if (!Number.isInteger(capacity) || capacity < 1 || capacity > 16) throw new Error('Unsupported vessel capacity');
+  if (capacity === (vessel.logicalCapacity ?? 4)) return vessel;
+  return Object.freeze({ ...vessel, logicalCapacity: capacity, layerArea: vessel.layerArea * (vessel.logicalCapacity ?? 4) / capacity });
+}
 type Detail = { path: string; width?: number; opacity?: number; gold?: boolean; glass?: boolean };
 export type VesselDesign = VesselGeometry & {
   readonly id: VesselId;
