@@ -1,4 +1,4 @@
-import type { AndroidFrame } from './androidFrameStats.ts';
+import { presentedFrameIntervals, type AndroidFrame } from './androidFrameStats.ts';
 
 export type RenderMarker = { label: string; uptimeMilliseconds: number; runId?: string; moves?: number; cases?: number; outcome?: string };
 /** Android RN 0.86 uses steady_clock for performance.now(), the same awake monotonic clock as gfxinfo. */
@@ -38,4 +38,41 @@ export function partitionRenderFrames(frames: readonly AndroidFrame[], markers: 
     const group = groups.get(key) ?? { phase, mirroring, frames: [] }; group.frames.push(frame); groups.set(key, group);
   }
   return [...groups.values()];
+}
+
+/** Pair only adjacent action boundaries. Each interval belongs to one pour, window and mirror segment. */
+export function renderPresentationSegments(frames: readonly AndroidFrame[], markers: readonly RenderMarker[], start: number, end: number) {
+  if (![start, end].every(Number.isFinite) || start < 0 || end < start) throw new Error('Invalid native clock bounds');
+  const ordered = [...markers].sort((a, b) => a.uptimeMilliseconds - b.uptimeMilliseconds);
+  const actions = ordered.filter(m => !m.label.startsWith('mirror:'));
+  const mirrors = ordered.filter(m => m.label === 'mirror:on' || m.label === 'mirror:off');
+  const segments: { phase: string; runId?: string; mirroring: string; start: number; end: number;
+    presentedFrames: number; missingPresent: number; flaggedFrames: number; intervals: number[] }[] = [];
+  const excluded: { phase: string; start: number; reason: string }[] = [];
+  for (let i = 0; i < actions.length; i++) {
+    const pour = actions[i];
+    if (!pour.label.startsWith('pour:')) continue;
+    const settle = actions[i + 1];
+    if (!settle?.label.startsWith('settle:') || settle.runId !== pour.runId || settle.uptimeMilliseconds <= pour.uptimeMilliseconds) {
+      excluded.push({ phase: pour.label, start: pour.uptimeMilliseconds, reason: 'No adjacent matching settle' }); continue;
+    }
+    if (pour.uptimeMilliseconds < start || settle.uptimeMilliseconds > end) {
+      excluded.push({ phase: pour.label, start: pour.uptimeMilliseconds, reason: 'Operation outside collection clock bounds' }); continue;
+    }
+    const cuts = [pour.uptimeMilliseconds, ...mirrors.filter(m => m.uptimeMilliseconds > pour.uptimeMilliseconds
+      && m.uptimeMilliseconds < settle.uptimeMilliseconds).map(m => m.uptimeMilliseconds), settle.uptimeMilliseconds];
+    for (let j = 0; j < cuts.length - 1; j++) {
+      const a = cuts[j], b = cuts[j + 1];
+      const own = frames.filter(frame => {
+        const time = Number(frame.displayPresent ?? frame.intendedVsync) / 1e6;
+        return time >= a && time < b;
+      });
+      const valid = own.filter(frame => frame.flags === 0);
+      const presented = new Set(valid.filter(frame => frame.displayPresent).map(frame => `${frame.window}#${frame.displayPresent}`));
+      segments.push({ phase: pour.label, runId: pour.runId, mirroring: mirrors.filter(m => m.uptimeMilliseconds <= a).at(-1)?.label.slice(7) ?? 'unknown',
+        start: a, end: b, presentedFrames: presented.size, missingPresent: valid.filter(frame => !frame.displayPresent).length,
+        flaggedFrames: own.length - valid.length, intervals: presentedFrameIntervals(valid) });
+    }
+  }
+  return { segments, excluded };
 }

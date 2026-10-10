@@ -2,8 +2,8 @@ import { execFileSync, spawn } from 'node:child_process';
 import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
-import { androidFrameKey, parseAndroidFrames, type AndroidFrame } from './lib/androidFrameStats.ts';
-import { parseRenderEvent, partitionRenderFrames } from './lib/androidRenderMarkers.ts';
+import { parseAndroidFrames, retainAndroidFrame, type AndroidFrame } from './lib/androidFrameStats.ts';
+import { parseRenderEvent, partitionRenderFrames, renderPresentationSegments } from './lib/androidRenderMarkers.ts';
 import { measurement } from '../src/game/engineBenchmark.ts';
 
 const [command, serial, argument, label] = process.argv.slice(2);
@@ -73,7 +73,7 @@ if (command !== 'start') {
       final = sample;
       save(`frames/${String(observations).padStart(5, '0')}.txt`, final);
       const parsed = parseAndroidFrames(final); invalidObservations += parsed.invalidObservations;
-      for (const frame of parsed.frames) if (BigInt(frame.intendedVsync) >= BigInt(since)) unique.set(androidFrameKey(frame), frame);
+      for (const frame of parsed.frames) if (BigInt(frame.intendedVsync) >= BigInt(since)) retainAndroidFrame(unique, frame);
       observations++;
       if (Date.now() >= nextResourceSample) {
         save(`memory-${observations}.txt`, run('shell', 'dumpsys', 'meminfo', application));
@@ -90,7 +90,7 @@ if (command !== 'start') {
   }
   catch (error) { collectionError ||= String(error); }
   const terminalFrames = parseAndroidFrames(final); invalidObservations += terminalFrames.invalidObservations;
-  for (const frame of terminalFrames.frames) if (BigInt(frame.intendedVsync) >= BigInt(since)) unique.set(androidFrameKey(frame), frame);
+  for (const frame of terminalFrames.frames) if (BigInt(frame.intendedVsync) >= BigInt(since)) retainAndroidFrame(unique, frame);
   save('render-log-status.json', JSON.stringify({ renderEvents, logError, collectionError, exitCode: log.exitCode, signalCode: log.signalCode }));
   save('final.txt', final);
   const markers = readFileSync(join(folder, 'markers.jsonl'), 'utf8').trim().split('\n').filter(Boolean)
@@ -99,9 +99,16 @@ if (command !== 'start') {
   const finalUptime = parseAndroidFrames(final).uptimeMilliseconds;
   if (finalUptime === null) throw new Error('Missing final native uptime');
   const frames = [...unique.values()], groups = partitionRenderFrames(frames, [...markers, ...automatic], initialUptime, finalUptime);
-  const report = { format: 'engine-android-render-v2', runId, pid, wallMilliseconds: Date.now() - start, observations,
+  const presentation = renderPresentationSegments(frames, [...markers, ...automatic], initialUptime, finalUptime);
+  const report = { format: 'engine-android-render-v3', runId, pid, wallMilliseconds: Date.now() - start, observations,
     renderEvents, autoTerminal, attachedRunId, renderLogError: logError, collectionError,
-    note: 'Actual package frames; mirror:on/off markers identify USB mirroring intervals, otherwise unknown. FrameCompleted minus IntendedVsync in milliseconds. Flags=0 measured separately; flagged frames and raw rows retained. Recent native buffers are polled and deduplicated. Not display-present intervals, audio latency, power or peak-memory measurements.',
+    note: 'phases.valid/allFlags measure pipeline latency (FrameCompleted minus IntendedVsync), not FPS. presentation measures adjacent DisplayPresentTime within each complete pour/settle operation, native window and mirror segment; missing values are unavailable, never replaced by completion times. Flags=0 measured separately. Raw rows retained. Collection/mirroring overhead is not removed. Not audio latency, power or peak-memory measurements.',
+    presentation: { excluded: presentation.excluded, segments: presentation.segments.map(({ intervals, ...segment }) => ({ ...segment, intervals: intervals.length ? measurement(intervals) : null })),
+      groups: ['on', 'off', 'unknown'].map(mirroring => {
+        const segments = presentation.segments.filter(segment => segment.mirroring === mirroring), intervals = segments.flatMap(segment => segment.intervals);
+        return { mirroring, presentedFrames: segments.reduce((sum, segment) => sum + segment.presentedFrames, 0),
+          missingPresent: segments.reduce((sum, segment) => sum + segment.missingPresent, 0), intervals: intervals.length ? measurement(intervals) : null };
+      }) },
     invalidObservations, capturedFrames: frames.length, phases: groups.map(({ phase, mirroring, frames: values }) => ({ phase, mirroring,
       valid: measurement(values.filter(frame => frame.flags === 0).map(frame => frame.milliseconds)),
       allFlags: measurement(values.map(frame => frame.milliseconds)), flaggedFrames: values.filter(frame => frame.flags !== 0).length })) };

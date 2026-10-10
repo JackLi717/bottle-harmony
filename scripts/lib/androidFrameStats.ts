@@ -20,7 +20,7 @@ export function parseAndroidFrames(text: string): { frames: AndroidFrame[]; inva
     const elapsed = BigInt(completed) - BigInt(intendedVsync);
     if (elapsed <= 0n || elapsed > 60000000000n) { invalidObservations++; continue; }
     const present = value('DisplayPresentTime');
-    const displayPresent = /^\d+$/.test(present ?? '') && BigInt(present) >= BigInt(intendedVsync)
+    const displayPresent = /^\d+$/.test(present ?? '') && BigInt(present) > 0n && BigInt(present) >= BigInt(intendedVsync)
       && BigInt(present) - BigInt(intendedVsync) <= 60000000000n ? present : undefined;
     frames.push({ window, flags: Number(flags), intendedVsync, completed, timelineId: value('FrameTimelineVsyncId') ?? '', milliseconds: Number(elapsed) / 1e6, displayPresent });
   }
@@ -28,6 +28,12 @@ export function parseAndroidFrames(text: string): { frames: AndroidFrame[]; inva
   return { frames, invalidObservations, uptimeMilliseconds: uptime ? Number(uptime[1]) : null, since: since?.[1] ?? null };
 }
 export const androidFrameKey = (frame: AndroidFrame) => `${frame.window}#${frame.intendedVsync}#${frame.timelineId}`;
+
+/** A later buffer read can temporarily omit a previously valid present timestamp. */
+export function retainAndroidFrame(frames: Map<string, AndroidFrame>, frame: AndroidFrame) {
+  const key = androidFrameKey(frame), previous = frames.get(key);
+  frames.set(key, !frame.displayPresent && previous?.displayPresent ? { ...frame, displayPresent: previous.displayPresent } : frame);
+}
 
 /** Call on one continuous operation window; never bridge idle gaps or windows. */
 export function presentedFrameIntervals(frames: readonly AndroidFrame[]): number[] {
