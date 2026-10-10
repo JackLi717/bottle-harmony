@@ -9,12 +9,13 @@ import type { MessageKey } from '../i18n/messages';
 import { Bottle } from '../art/Bottle';
 import { PourStream } from '../art/PourStream';
 import { LIQUIDS, LIQUID_SYMBOLS } from '../art/palette';
-import { vesselAtCapacity, type VesselDesign } from '../art/vesselDesigns';
+import { VESSELS, vesselAtCapacity, type VesselDesign } from '../art/vesselDesigns';
 import { createPourPlan, POUR_DURATION_MS, type PourPlan } from '../art/pourGeometry';
 import { isBottleComplete } from '../art/bottleCompletion';
 import { createEngineSession, moveEngineSession, resetEngineSession, undoEngineSession, visibleEngineState, type EngineAction, type EngineSession, type VisibleEngineContainer } from '../game/engine';
 import { createEngineHintTask, type EngineHintTask } from '../game/engineSearch';
 import { ENGINE_EXAMPLES } from '../game/engineExamples';
+import { ENGINE_RENDER_ROUTES, engineRenderCase, type EngineRenderRun } from '../game/engineRenderWorkload';
 import { scheduleCooperativeWork, yieldToHost } from '../runtime/cooperativeWork';
 import { benchmarkEngine } from '../game/engineBenchmark';
 import { benchmarkEngineStorage } from '../storage/engineStorageBenchmark';
@@ -33,7 +34,7 @@ type Animation = { before: readonly VisibleEngineContainer[]; pour: Pour; plan: 
 type Props = { vessel: VesselDesign; symbols: boolean; sound: boolean; reduceMotion: boolean; onBack: () => void };
 
 /** Internal classic-board acceptance. Never persists, unlocks or credits player progress. */
-export function EnginePreview({ vessel, symbols: showSymbols, sound, reduceMotion, onBack }: Props) {
+export function EnginePreview({ vessel: preferredVessel, symbols: showSymbols, sound, reduceMotion, onBack }: Props) {
   const { t, language } = useI18n(), zh = language.startsWith('zh'), insets = useSafeAreaInsets(), dimensions = useWindowDimensions();
   const [index, setIndex] = useState(0), [session, setSession] = useState(() => createEngineSession(ENGINE_EXAMPLES[0], 'preview-0'));
   const current = useRef(session);
@@ -41,6 +42,14 @@ export function EnginePreview({ vessel, symbols: showSymbols, sound, reduceMotio
   const [searching, setSearching] = useState(false), [active, setActive] = useState(AppState.currentState === 'active');
   const [benchmarking, setBenchmarking] = useState(false);
   const benchmarkToken = useRef({ value: 0 });
+  const [renderVessel, setRenderVessel] = useState<VesselDesign | null>(null), [renderRunning, setRenderRunning] = useState(false);
+  const renderRun = useRef<EngineRenderRun | null>(null), renderTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const renderAdvance = useRef<() => void>(() => {});
+  const vessel = renderVessel ?? preferredVessel;
+  const renderMarker = useCallback((label: string, outcome?: string) => {
+    const run = renderRun.current;
+    if (run) console.info('ENGINE_RENDER', JSON.stringify({ runId: run.id, label, uptimeMilliseconds: performance.now(), runtime: Platform.OS, moves: run.moves, cases: run.cases, outcome }));
+  }, []);
   const [stage, setStage] = useState({ width: dimensions.width, height: 400 });
   const busy = useRef(false), progress = useSharedValue(1), search = useRef<EngineHintTask | null>(null), cancelWork = useRef<(() => void) | null>(null);
   const { runtime } = session, puzzle = runtime.puzzle, layout = useMemo(() => boardLayout(puzzle.containers.length), [puzzle.containers.length]);
@@ -48,17 +57,20 @@ export function EnginePreview({ vessel, symbols: showSymbols, sound, reduceMotio
   const designs = useMemo(() => puzzle.containers.map(c => vesselAtCapacity(vessel, c.capacity)), [puzzle, vessel]);
   const visible = visibleEngineState(runtime, session.state, session.known, session.seen);
   const cancel = useCallback(() => {
+    renderMarker('cancel:render');
+    renderRun.current = null; setRenderRunning(false); setRenderVessel(null);
+    if (renderTimer.current) clearTimeout(renderTimer.current); renderTimer.current = null;
     benchmarkToken.current.value++; setBenchmarking(false);
     cancelAnimation(progress); progress.set(1); busy.current = false; setAnimation(null); setSelected(null);
     search.current?.cancel(); search.current = null; setSearching(false);
     if (cancelWork.current) cancelWork.current(); cancelWork.current = null;
-  }, [progress]);
+  }, [progress, renderMarker]);
   const back = useCallback(() => { cancel(); onBack(); }, [cancel, onBack]);
   useEffect(() => {
     const cancellation = benchmarkToken.current;
     const background = AppState.addEventListener('change', state => { setActive(state === 'active'); if (state !== 'active') cancel(); });
     const resize = Dimensions.addEventListener('change', cancel), hardware = BackHandler.addEventListener('hardwareBackPress', () => { back(); return true; });
-    return () => { cancellation.value++; background.remove(); resize.remove(); hardware.remove(); cancelAnimation(progress); search.current?.cancel(); if (cancelWork.current) cancelWork.current(); };
+    return () => { renderRun.current = null; if (renderTimer.current) clearTimeout(renderTimer.current); cancellation.value++; background.remove(); resize.remove(); hardware.remove(); cancelAnimation(progress); search.current?.cancel(); if (cancelWork.current) cancelWork.current(); };
   }, [back, cancel, progress]);
   useEffect(() => {
     if (!reduceMotion) return;
@@ -66,7 +78,14 @@ export function EnginePreview({ vessel, symbols: showSymbols, sound, reduceMotio
     const timeout = setTimeout(cancel, 0);
     return () => clearTimeout(timeout);
   }, [reduceMotion, cancel, progress]);
-  const finish = useCallback(() => { busy.current = false; setAnimation(null); setSelected(null); }, []);
+  const finish = useCallback(() => {
+    busy.current = false; setAnimation(null); setSelected(null);
+    const run = renderRun.current;
+    if (run) {
+      console.info('ENGINE_RENDER', JSON.stringify({ runId: run.id, label: 'settle:render', uptimeMilliseconds: performance.now(), runtime: Platform.OS, moves: run.moves, cases: run.cases }));
+      renderTimer.current = setTimeout(() => renderAdvance.current(), 100);
+    }
+  }, []);
   useLayoutEffect(() => {
     if (!animation) return;
     progress.set(withTiming(1, { duration: POUR_DURATION_MS, easing: Easing.linear }, done => { if (done) scheduleOnRN(finish); }));
@@ -97,7 +116,7 @@ export function EnginePreview({ vessel, symbols: showSymbols, sound, reduceMotio
       : zh ? `装满四份${colorName(trigger.when.color)}` : `Fill four ${colorName(trigger.when.color)} portions`).join(' / ');
   }
   function chooseBottle(i: number) {
-    if (busy.current || searching) return;
+    if (busy.current || searching || renderRun.current) return;
     if (visible[i].locked) { setNotice(condition(visible[i].id)); return; }
     if (session.status === 'solved') return;
     if (selected === i) { setSelected(null); return; }
@@ -106,7 +125,7 @@ export function EnginePreview({ vessel, symbols: showSymbols, sound, reduceMotio
     if (!execute(action)) setNotice(zh ? '这里暂时倒不进去。' : 'This transfer is unavailable.');
   }
   function hint() {
-    if (busy.current || searching || session.status === 'solved') return;
+    if (busy.current || searching || renderRun.current || session.status === 'solved') return;
     const task = createEngineHintTask(current.current); search.current = task; setSearching(true);
     const step = () => {
       if (search.current !== task) return;
@@ -131,6 +150,48 @@ export function EnginePreview({ vessel, symbols: showSymbols, sound, reduceMotio
     } catch (error) { if (token === benchmarkToken.current.value) setNotice(String(error)); }
     finally { if (token === benchmarkToken.current.value) setBenchmarking(false); }
   }
+  function prepareRenderCase() {
+    const run = renderRun.current;
+    if (!run) return;
+    const entry = engineRenderCase(run.caseIndex, VESSELS.length);
+    if (!entry) {
+      renderMarker('complete:render', 'passed');
+      renderRun.current = null; setRenderRunning(false); setRenderVessel(null);
+      setNotice(`Render workload passed: ${run.cases} cases / ${run.moves} pours. Frame acceptance is measured separately.`);
+      return;
+    }
+    renderMarker(`mount:${ENGINE_EXAMPLES[entry.exampleIndex].id}:${VESSELS[entry.styleIndex].id}`);
+    setIndex(entry.exampleIndex); setRenderVessel(VESSELS[entry.styleIndex]);
+    commit(createEngineSession(ENGINE_EXAMPLES[entry.exampleIndex], `${run.id}-${run.caseIndex}`));
+    run.moveIndex = 0;
+    renderTimer.current = setTimeout(() => renderAdvance.current(), 500);
+  }
+  useLayoutEffect(() => { renderAdvance.current = () => {
+    const run = renderRun.current;
+    if (!run) return;
+    try {
+      const entry = engineRenderCase(run.caseIndex, VESSELS.length)!;
+      const route = ENGINE_RENDER_ROUTES[entry.exampleIndex];
+      if (run.moveIndex === route.length) {
+        if (current.current.status !== 'solved') throw new Error('Render route did not complete its goal');
+        run.cases++; run.caseIndex++;
+        renderMarker('settle:render');
+        renderTimer.current = setTimeout(prepareRenderCase, 800);
+        return;
+      }
+      renderMarker(`pour:${ENGINE_EXAMPLES[entry.exampleIndex].id}:${VESSELS[entry.styleIndex].id}`);
+      if (!execute(route[run.moveIndex])) throw new Error('Render route rejected a validated action');
+      run.moveIndex++; run.moves++;
+    } catch (error) {
+      renderMarker('failed:render', String(error)); cancel(); setNotice(String(error));
+    }
+  }; });
+  function renderBenchmark() {
+    if (renderRun.current) { cancel(); return; }
+    if (reduceMotion || !active || scale <= 0) { setNotice('Rendering measurement requires active full-motion presentation.'); return; }
+    cancel(); renderRun.current = { id: `render_auto_${Date.now()}`, caseIndex: 0, moveIndex: 0, moves: 0, cases: 0 };
+    setRenderRunning(true); renderMarker('start:render'); prepareRenderCase();
+  }
   function goalText(goal: SortingGoal): string {
     if (goal.type === 'sort') return zh ? '整理全部液体' : 'Sort all liquid';
     if (goal.type === 'all') return goal.goals.map(goalText).join(' · ');
@@ -146,6 +207,7 @@ export function EnginePreview({ vessel, symbols: showSymbols, sound, reduceMotio
     <ScrollView horizontal style={styles.tabs} contentContainerStyle={styles.tabContent}>{names.map((name, i) => <Pressable key={name} accessibilityRole="button" accessibilityState={{ selected: i === index }} onPress={() => selectExample(i)} style={[styles.tab, i === index && styles.activeTab]}><UiText style={styles.text}>{name}</UiText></Pressable>)}</ScrollView>
     <UiText style={styles.goal}>{goalText(puzzle.goal)}</UiText>
     <Pressable accessibilityRole="button" disabled={benchmarking || !!animation || searching} onPress={benchmark} style={{ minHeight: 28, justifyContent: 'center' }}><UiText style={styles.capacity}>{benchmarking ? (zh ? '性能测量中…' : 'Measuring…') : (zh ? '测量引擎 CPU' : 'Measure engine CPU')}</UiText></Pressable>
+    <Pressable accessibilityRole="button" disabled={benchmarking || searching} onPress={renderBenchmark} style={{ minHeight: 28, justifyContent: 'center' }}><UiText style={styles.capacity}>{renderRunning ? (zh ? '停止持续渲染测量' : 'Stop sustained rendering') : (zh ? '持续渲染验收 · 15 款 / 5 题' : 'Sustained rendering · 15 styles / 5 cases')}</UiText></Pressable>
     <View testID="engine-stage" style={styles.stage} onLayout={event => setStage(event.nativeEvent.layout)}>
       {scale > 0 && <View style={{ width: layout.width * scale, height: layout.height * scale, overflow: 'visible' }}>
         {shown.map((container, i) => {

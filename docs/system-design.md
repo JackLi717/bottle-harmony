@@ -160,6 +160,7 @@ node --experimental-strip-types scripts/benchmark-engine-android.ts <adb-serial>
 node --experimental-strip-types scripts/benchmark-engine-android.ts <adb-serial> --diagnose
 node --experimental-strip-types scripts/measure-engine-render.ts start <adb-serial> 900
 node --experimental-strip-types scripts/measure-engine-render.ts mark <adb-serial> <render_run_id> pour:classic
+node --experimental-strip-types scripts/measure-engine-render.ts mark <adb-serial> <render_run_id> mirror:off
 node --experimental-strip-types scripts/measure-engine-render.ts stop <adb-serial> <render_run_id>
 node --experimental-strip-types scripts/benchmark-engine-storage.ts <schema-one-player.sqlite>
 npm run benchmark:solver
@@ -172,9 +173,13 @@ Android 命令只连接独立 engine-acceptance Release，以受系统 DUMP 权�
 
 `--diagnose` 额外读取可选 Hermes GC 累计计数，保留超过 8 ms 或 GC 计数变化的分片以及读取自身成本；不强制 GC。诊断读数会分配内存并影响运行，不能替代正常验收或证明某次暂停的唯一原因。没有计数返回 null，不能当成零次 GC。
 
-`measure-engine-render.ts` 只读独立验收包的 `gfxinfo framestats`，每 700 ms 轮询原始缓冲，按窗口／原生时钟去重，绑定 APK 与进程；`mark` 使用设备 Uptime 分段，不用主机时钟猜测。统计 `FrameCompleted - IntendedVsync`，挂载与实际倒水分开，系统标记帧另列；未完成行保留在原始记录，不当成掉帧数量。界面操作经 Android Studio USB 镜像完成，镜像开销包含在结果中；该指标不是屏幕实际呈现间隔、音频延迟或功耗。采集时间不等于持续操作时间，闲置与构建等待不能算作十分钟游玩。
+`measure-engine-render.ts` 只读独立验收包的 `gfxinfo framestats`，每 700 ms 轮询原始缓冲，按窗口／原生时钟去重，绑定 APK 与进程；`mark` 使用设备 Uptime 分段，不用主机时钟猜测。统计 `FrameCompleted - IntendedVsync`，挂载与实际倒水分开，系统标记帧另列；未完成行保留在原始记录，不当成掉帧数量。镜像开启／关闭用独立的 `mirror:on`／`mirror:off` 标记，不随倒水阶段丢失；没有标记的时段为 unknown。该指标不是屏幕实际呈现间隔、音频延迟或功耗。采集时间不等于持续操作时间，闲置与构建等待不能算作十分钟游玩。
+
+内部验收页的“持续渲染验收”由界面启动，自动执行十五款容器各五条固定完整路线，共 75 组／360 次倒水，使用原会话提交和动画时钟。每次挂载／倒水／结束输出有界 ENGINE_RENDER 事件；Android RN 0.86 的 performance.now 原生单调时钟必须落在 gfxinfo Uptime 窗口内，否则拒绝归类。采集器只读当前独立进程日志，遇完成／失败／取消停止；后台、离开、缩放及手动停止取消任务，不写玩家库。独立测量 Activity 使用局部 keep-screen-on，关闭电脑镜像后仍可持续测量，不修改手机系统设置；公开配置撤回该标志。路线及几何自动回归只证明工作负载可执行，实际手机完成记录和帧门槛另验。
 
 原生绘制诊断可在独立验收配置额外指定 `ENGINE_SVG_TRACE=true`，通过 `withSvgTrace` 给固定版本 SVG 的位图分配和子元素绘制添加 Perfetto 区段及视口尺寸，不改变分配和绘制算法。插件核对完整依赖源码哈希，可重复应用／撤回；公开配置拒绝开启，下一次未开启该选项的 Android Prebuild 自动还原原库。诊断计时包含追踪自身成本，不能当作正常帧验收。首次构建用完整 Prebuild，增量应用配置可显式使用 `npx expo prebuild --platform android --no-clean --no-install` 后执行同环境的 Gradle Release 构建，避免 SDK 默认重建原生目录。
+
+`ENGINE_SVG_PICTURE=true` 是独立验收包专用的原生绘制实验：用 Picture 记录既有 SVG 命令，组透明度改用整体 alpha 图层；软件 Canvas、mask／filter 和图片导出保留原位图路径。插件核对并可完整还原 SvgView／GroupView 源码，公开包拒绝开启。实验不改玻璃、美术几何、倒水时钟或规则；尚未通过广泛画面、原生回退和持续性能验收，不能视作正式渲染实现。
 
 本轮低端设备工程目标在测量前固定：成功会话转移 p95 ≤4 ms；恢复／搜索协作分片 p95 ≤8 ms，另列最长暂停；每次提示守住 250 ms 活跃预算并诚实报告未知；WAL／FULL 事务写入 p95 ≤50 ms，256 检查点恢复墙钟 ≤250 ms。画面另测持续倒水帧时间 p95 ≤33.3 ms／p99 ≤50 ms，挂载与切页单独列出；持续至少十分钟无崩溃、错误状态或存档丢失，记录内存、温度与电量。它们是本轮工作负载验收线，不是所有题目／设备的硬实时承诺；不达标项必须记录并区分新内核与已有渲染成本。
 

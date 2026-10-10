@@ -20,6 +20,15 @@ test('headless measurement cannot be configured against the public package', () 
   const plugin = require('../plugins/withEngineAcceptance.js');
   assert.throws(() => plugin({ android: { package: 'com.bottleharmony.app' } }, { enabled: true }), /isolated application ID/);
 });
+test('measurement keep-awake is Activity-local, idempotent and removed by public configuration', () => {
+  const { acceptanceActivity } = require('../plugins/withEngineAcceptance.js');
+  const original = 'override fun onCreate() {\n    super.onCreate(null)\n  }';
+  const enabled = acceptanceActivity(original, true);
+  assert.equal(acceptanceActivity(enabled, true), enabled);
+  assert.equal(acceptanceActivity(enabled, false), original);
+  assert.equal(acceptanceActivity('unrelated public Activity', false), 'unrelated public Activity');
+  assert.throws(() => acceptanceActivity('new Activity template', true), /Review/);
+});
 
 test('optional SVG trace scopes are reversible, idempotent and forbidden for public packages', () => {
   const plugin = require('../plugins/withSvgTrace.js'), configure = plugin.configureSvgTracing;
@@ -29,4 +38,19 @@ test('optional SVG trace scopes are reversible, idempotent and forbidden for pub
   assert.equal(configure(traced, true), traced); assert.equal(configure(traced, false), original);
   assert.throws(() => configure(original + '\n// changed upstream', true), /Review/);
   assert.throws(() => plugin({ android: { package: 'com.bottleharmony.app' } }, { enabled: true }), /isolated/);
+});
+
+test('isolated picture recording and alpha layers restore the exact original native library', () => {
+  const plugin = require('../plugins/withSvgTrace.js'), configure = plugin.configureSvgTracing;
+  const { configurePictureGroup } = require('../plugins/svgPictureExperiment.js');
+  const root = readFileSync(new URL('../node_modules/react-native-svg/android/src/main/java/com/horcrux/svg/SvgView.java', import.meta.url), 'utf8');
+  const group = readFileSync(new URL('../node_modules/react-native-svg/android/src/main/java/com/horcrux/svg/GroupView.java', import.meta.url), 'utf8');
+  const original = configure(root, false), originalGroup = configurePictureGroup(group, false);
+  const picture = configure(original, false, true), both = configure(original, true, true);
+  assert.equal(configure(picture, false, true), picture);
+  assert.equal(configure(both, false), original);
+  assert.equal(configure(picture, true), configure(original, true));
+  assert.equal(configurePictureGroup(configurePictureGroup(originalGroup, true), false), originalGroup);
+  assert.throws(() => plugin({ android: { package: 'com.bottleharmony.app' } }, { picture: true }), /isolated/);
+  assert.throws(() => configurePictureGroup(originalGroup + '\n// upstream change', true), /Review/);
 });

@@ -1,7 +1,14 @@
-const { AndroidConfig, withAndroidManifest, withDangerousMod } = require('expo/config-plugins');
+const { AndroidConfig, withAndroidManifest, withDangerousMod, withMainActivity } = require('expo/config-plugins');
 const fs = require('node:fs/promises');
 const path = require('node:path');
 const packageName = 'com.bottleharmony.engineacceptance';
+function acceptanceActivity(source, enabled) {
+  const line = '\n    // Keep only the isolated measurement Activity awake; no system setting changes.\n    window.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)';
+  const original = source.replace(line, '');
+  if (!enabled) return original;
+  if (!original.includes('super.onCreate(null)')) throw new Error('Review acceptance Activity keep-awake integration');
+  return original.replace('super.onCreate(null)', 'super.onCreate(null)' + line);
+}
 
 function acceptanceManifest(manifest, enabled) {
   const application = AndroidConfig.Manifest.getMainApplicationOrThrow(manifest);
@@ -18,6 +25,10 @@ function acceptanceManifest(manifest, enabled) {
 module.exports = function withEngineAcceptance(config, { enabled = false } = {}) {
   if (enabled && config.android?.package !== packageName) throw new Error('Headless engine acceptance requires the isolated application ID');
   config = withAndroidManifest(config, mod => { mod.modResults = acceptanceManifest(mod.modResults, enabled); return mod; });
+  config = withMainActivity(config, mod => {
+    mod.modResults.contents = acceptanceActivity(mod.modResults.contents, enabled);
+    return mod;
+  });
   if (!enabled) return config;
   return withDangerousMod(config, ['android', async mod => {
     const folder = path.join(mod.modRequest.platformProjectRoot, 'app/src/main/java', ...packageName.split('.'));
@@ -57,3 +68,4 @@ public final class EngineBenchmarkReceiver extends BroadcastReceiver {
   }]);
 };
 module.exports.acceptanceManifest = acceptanceManifest;
+module.exports.acceptanceActivity = acceptanceActivity;
