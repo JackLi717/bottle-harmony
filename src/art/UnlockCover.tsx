@@ -16,7 +16,7 @@ function matrixProps(matrix: number[]): { transform?: string; matrix?: number[];
   return IS_WEB ? { transform: 'matrix(' + matrix.join(' ') + ')' } : { matrix };
 }
 
-/** Three key heads remain legible at phone size; target badges use the identical silhouette. */
+/** Three key heads remain legible at phone size; lock keyways use the identical silhouette. */
 export function KeyGlyph({ shape, hole = false }: { shape: number; hole?: boolean }) {
   const identity = keyIdentity(shape);
   const head = shape % 3 === 0 ? 'M-5 -3 A5 5 0 1 0 5 -3 A5 5 0 1 0 -5 -3'
@@ -34,19 +34,39 @@ export function KeyGlyph({ shape, hole = false }: { shape: number; hole?: boolea
   </G>;
 }
 
-export function ConditionBadge({ trigger, shape, symbols, id, radius = 10, fabric = false }: { trigger: SortingTrigger; shape: number; symbols: boolean; id: string; radius?: number; fabric?: boolean }) {
-  const color = trigger.when.type === 'color-full' ? trigger.when.color : null;
-  const identity = keyIdentity(shape);
+function ClothBadge({ trigger, symbols, radius = 11 }: { trigger: SortingTrigger; symbols: boolean; radius?: number }) {
+  if (trigger.when.type !== 'color-full') return null;
+  const color = trigger.when.color;
   return <G transform={'scale(' + radius / 10 + ')'}>
     <Ellipse cy={1} rx={10.5} ry={11.1} fill="#080D13" opacity={.65} />
-    <Circle r={10} fill={color ? fabric ? '#344B61' : LIQUIDS[color]?.dark ?? '#315A58' : identity.fill} stroke={color ? '#C1D0DC' : identity.edge} strokeWidth={.75} />
-    {fabric && <Circle r={8.7} fill="none" stroke="#E0D3B7" strokeWidth={.55} strokeDasharray="1.3 1.5" />}
-    {color ? <>
-      <Circle cy={-1.5} r={5.5} fill={LIQUIDS[color]?.main ?? '#328B80'} stroke="#EFFAF2" strokeWidth={.7} />
-      {symbols && <SvgText y={1} fontSize={8} textAnchor="middle" fill="#F7FFF8">{LIQUID_SYMBOLS[color]}</SvgText>}
-      {[-5.1,-1.7,1.7,5.1].map(x => <Circle key={x} cx={x} cy={6.8} r={1.05} fill="#FAF7E6" />)}
-    </> : <G transform="translate(0 1) scale(.8)"><KeyGlyph shape={shape} hole /></G>}
+    <Circle r={10} fill="#344B61" stroke="#C1D0DC" strokeWidth={.75} />
+    <Circle r={8.7} fill="none" stroke="#E0D3B7" strokeWidth={.55} strokeDasharray="1.3 1.5" />
+    <Circle cy={-1.5} r={5.5} fill={LIQUIDS[color]?.main ?? '#328B80'} stroke="#EFFAF2" strokeWidth={.7} />
+    {symbols && <SvgText y={1} fontSize={8} textAnchor="middle" fill="#F7FFF8">{LIQUID_SYMBOLS[color]}</SvgText>}
+    {[-5.1,-1.7,1.7,5.1].map(x => <Circle key={x} cx={x} cy={6.8} r={1.05} fill="#FAF7E6" />)}
     <Path d="M-7 -6 Q0 -11 7 -6" fill="none" stroke="#FFFFFF" strokeOpacity={.28} strokeWidth={.6} />
+  </G>;
+}
+
+/** The lock itself carries the condition; rigid shells never add a badge. */
+function ConditionLock({ trigger, shape, symbols, id }: { trigger: SortingTrigger; shape: number; symbols: boolean; id: string }) {
+  const color = trigger.when.type === 'color-full' ? trigger.when.color : null;
+  const metal = keyIdentity(color ? 1 : shape), gradient = id + '-lock-' + shape;
+  return <G>
+    <Defs><LinearGradient id={gradient} x1="0" y1="0" x2="1" y2=".2">
+      <Stop stopColor={metal.edge} /><Stop offset=".25" stopColor={metal.fill} /><Stop offset=".5" stopColor={metal.light} /><Stop offset="1" stopColor={metal.edge} />
+    </LinearGradient></Defs>
+    <Rect x={-2.8} y={-19} width={5.6} height={15} rx={1.2} fill={metal.dark} stroke={metal.edge} strokeWidth={.6} />
+    <Path d="M-5 -4 V-10 A5 5 0 0 1 5 -10 V-4" fill="none" stroke={metal.dark} strokeWidth={3.5} />
+    <Path d="M-5 -4 V-10 A5 5 0 0 1 5 -10 V-4" fill="none" stroke={'url(#' + gradient + ')'} strokeWidth={2.2} />
+    <Rect x={-9.5} y={-4.5} width={19} height={18} rx={2.7} fill="#080D13" opacity={.55} />
+    <Rect x={-9} y={-5} width={18} height={17} rx={2.4} fill={'url(#' + gradient + ')'} stroke={metal.dark} strokeWidth={.8} />
+    <Path d="M-7 -3 H7" stroke={metal.light} strokeWidth={.65} />
+    {color ? <>
+      <Rect x={-6} y={-1.5} width={12} height={8} rx={1.2} fill={LIQUIDS[color]?.main ?? '#328B80'} stroke={metal.edge} strokeWidth={.6} />
+      {symbols && <SvgText y={5} fontSize={8} textAnchor="middle" fill="#F7FFF8">{LIQUID_SYMBOLS[color]}</SvgText>}
+      {[-4.5,-1.5,1.5,4.5].map(x => <Circle key={x} cx={x} cy={9} r={.85} fill={metal.dark} />)}
+    </> : <G transform="translate(0 3) scale(.7)"><KeyGlyph shape={shape} hole /></G>}
   </G>;
 }
 
@@ -159,18 +179,15 @@ export const UnlockCover = memo(function UnlockCover({ group, family: requestedF
   });
   const edges = centers.map((c, i) => ({ left: i ? (centers[i - 1] + c) / 2 : 0, right: i === centers.length - 1 ? width : (c + centers[i + 1]) / 2 }));
   const wood = family === 'wood' || family === 'roller';
-  const relockIdentity = group.conditions[0]?.when.type === 'empty' ? keyIdentity(triggerIndices[0]) : null;
   return <View pointerEvents="none" style={{ position: 'absolute', left: group.x * scale, top: group.y * scale, width: width * scale, height: height * scale, zIndex: 2 }}>
     <Svg width="100%" height="100%" viewBox={'0 0 ' + width + ' ' + height}>
       <MaterialDefinitions id={id} width={width} height={height} />
       {state === 'relocked' ? <G>
         <Ellipse cx={width / 2} cy={height - 3.5} rx={width / 2 - 2} ry={3.2} fill={wood ? 'url(#' + id + '-wood)' : 'url(#' + id + '-rail)'} stroke={wood ? '#9D7359' : '#8497A3'} strokeWidth={.75} />
-        {family === 'cloth' ? group.conditions.slice(0, 1).map((trigger, i) => <G key={trigger.id} transform={'translate(' + (width - 10) + ' ' + (height - 16) + ')'}>
-          <ConditionBadge trigger={trigger} shape={triggerIndices[i]} id={id} symbols={symbols} radius={7} fabric />
-        </G>) : <>
-          <Rect x={width - 10} y={height - 26} width={5.5} height={25} rx={1} fill={relockIdentity?.fill ?? 'url(#' + id + '-gold)'} stroke={relockIdentity?.edge ?? '#E5C595'} strokeWidth={.7} />
-          <Circle cx={width - 6.8} cy={height - 18} r={3.8} fill={relockIdentity?.fill ?? 'url(#' + id + '-gold)'} stroke={relockIdentity?.edge ?? '#F5DCB0'} strokeWidth={.7} />
-        </>}
+        {group.conditions.slice(0, 2).map((trigger, i) => <G key={trigger.id} transform={'translate(' + (width - 10 - i * 17) + ' ' + (height - 16) + ')'}>
+          {family === 'cloth' ? <ClothBadge trigger={trigger} symbols={symbols} radius={7} />
+            : <G transform="scale(.7)"><ConditionLock trigger={trigger} shape={triggerIndices[i]} id={id} symbols={symbols} /></G>}
+        </G>)}
         {family === 'louver' && <Path d={'M3 ' + (height - 3) + ' V10 M' + (width - 3) + ' ' + (height - 3) + ' V10'} fill="none" stroke="#8297A4" strokeWidth={1.2} />}
       </G> : <AnimatedG animatedProps={shell} clipPath={'url(#' + id + '-slot)'}>
         {family === 'cloth' ? <Cloth id={id} width={width} height={height} state={state} progress={progress} neckWidth={neckWidth} /> : <>
@@ -187,11 +204,11 @@ export const UnlockCover = memo(function UnlockCover({ group, family: requestedF
           <Rect x={1} y={height - 8} width={width - 2} height={7} rx={2} fill={'url(#' + id + (wood ? '-wood)' : '-metal)')} stroke={wood ? '#A77A5C' : '#8C9FAB'} strokeWidth={.6} />
         </>}
         <AnimatedG animatedProps={latch}><AnimatedG animatedProps={clothBadge}>
-          {group.conditions.slice(0, 2).map((trigger, i, list) => <G key={trigger.id} transform={'translate(' + (width / 2 + (i - (list.length - 1) / 2) * 23) + ' ' + (family === 'cloth' ? 76 : 31) + ')'}>
-            <ConditionBadge trigger={trigger} shape={triggerIndices[i]} id={id} symbols={symbols} radius={family === 'cloth' ? 11 : 9} fabric={family === 'cloth'} />
-            {family !== 'cloth' && trigger.when.type === 'color-full' && <Rect x={-2.3} y={13} width={4.6} height={11} rx={2} fill={'url(#' + id + '-gold)'} stroke="#F4D6A3" strokeWidth={.65} />}
+          {group.conditions.slice(0, 2).map((trigger, i, list) => <G key={trigger.id} transform={'translate(' + (width / 2 + (i - (list.length - 1) / 2) * 23) + ' ' + (family === 'cloth' ? 76 : 82) + ')'}>
+            {family === 'cloth' ? <ClothBadge trigger={trigger} symbols={symbols} />
+              : <ConditionLock trigger={trigger} shape={triggerIndices[i]} id={id} symbols={symbols} />}
           </G>)}
-          {group.conditions.length > 2 && <SvgText x={width / 2} y={53} textAnchor="middle" fontSize={9} fill="#F0DAB6">+{group.conditions.length - 2}</SvgText>}
+          {group.conditions.length > 2 && <SvgText x={width / 2} y={106} textAnchor="middle" fontSize={9} fill="#F0DAB6">+{group.conditions.length - 2}</SvgText>}
         </AnimatedG></AnimatedG>
       </AnimatedG>}
     </Svg>
