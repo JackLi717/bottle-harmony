@@ -1,4 +1,5 @@
 import { createEngineRestoreTask, ENGINE_HISTORY_BYTE_LIMIT, type EngineCheckpoint, type EngineSession } from '../game/engine.ts';
+import { yieldToHost } from '../runtime/cooperativeWork.ts';
 import type { SortingPuzzle } from '../game/engineModel.ts';
 import type { WriteDatabase } from './sql.ts';
 
@@ -43,11 +44,11 @@ export async function loadSortingSession(db: WriteDatabase, slot: string, puzzle
     const frame: unknown = JSON.parse(row.frame);
     if (!frame || typeof frame !== 'object' || Array.isArray(frame) || Object.keys(frame).some(key => !['state', 'known', 'seen'].includes(key))) throw new Error('Invalid sorting checkpoint fields');
     frames.push(frame as EngineCheckpoint);
-    if (performance.now() - slice >= 4) { await new Promise<void>(resolve => setTimeout(resolve, 0)); slice = performance.now(); }
+    if (performance.now() - slice >= 4) { await yieldToHost(); slice = performance.now(); }
   }
   const task = createEngineRestoreTask(puzzle, { format: 'engine-session-v1', binding: header.binding, attempt: header.attempt,
     revision: header.revision, offset: header.history_start, history: frames.slice(1), state: frames[0].state, known: frames[0].known, seen: frames[0].seen });
   let restored;
-  do { restored = task.step(64, 4); if (!restored) await new Promise<void>(resolve => setTimeout(resolve, 0)); } while (!restored);
+  do { restored = task.step(64, 4); if (!restored) await yieldToHost(); } while (!restored);
   return restored;
 }

@@ -26,6 +26,6 @@ module.exports = ({ config: base }) => {
     },
     plugins: [...base.plugins,
       ...(environment ? [['@react-native-firebase/app', { ios: { disableSPM: true } }], ['@react-native-firebase/analytics', { ios: { withoutAdIdSupport: true } }], ['expo-build-properties', { ios: { useFrameworks: 'static' } }]] : []),
-      ['./plugins/withAndroidRelease', { store }], ['./plugins/withTabletOrientation', { tv }], ['@react-native-tvos/config-tv', { isTV: tv, androidTVRequired: true, androidTVBanner: './assets/android-tv-banner.png' }]],
+      ['./plugins/withAndroidRelease', { store }], ['./plugins/withEngineAcceptance', { enabled: acceptance }], ['./plugins/withTabletOrientation', { tv }], ['@react-native-tvos/config-tv', { isTV: tv, androidTVRequired: true, androidTVBanner: './assets/android-tv-banner.png' }]],
   };
 };

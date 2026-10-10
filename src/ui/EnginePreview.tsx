@@ -15,6 +15,7 @@ import { isBottleComplete } from '../art/bottleCompletion';
 import { createEngineSession, moveEngineSession, resetEngineSession, undoEngineSession, visibleEngineState, type EngineAction, type EngineSession, type VisibleEngineContainer } from '../game/engine';
 import { createEngineHintTask, type EngineHintTask } from '../game/engineSearch';
 import { ENGINE_EXAMPLES } from '../game/engineExamples';
+import { scheduleCooperativeWork, yieldToHost } from '../runtime/cooperativeWork';
 import { benchmarkEngine } from '../game/engineBenchmark';
 import { benchmarkEngineStorage } from '../storage/engineStorageBenchmark';
 import type { SortingGoal } from '../game/engineModel';
@@ -41,7 +42,7 @@ export function EnginePreview({ vessel, symbols: showSymbols, sound, reduceMotio
   const [benchmarking, setBenchmarking] = useState(false);
   const benchmarkToken = useRef({ value: 0 });
   const [stage, setStage] = useState({ width: dimensions.width, height: 400 });
-  const busy = useRef(false), progress = useSharedValue(1), search = useRef<EngineHintTask | null>(null), timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const busy = useRef(false), progress = useSharedValue(1), search = useRef<EngineHintTask | null>(null), cancelWork = useRef<(() => void) | null>(null);
   const { runtime } = session, puzzle = runtime.puzzle, layout = useMemo(() => boardLayout(puzzle.containers.length), [puzzle.containers.length]);
   const scale = Math.max(0, Math.min(stage.width / layout.width, stage.height / layout.height));
   const designs = useMemo(() => puzzle.containers.map(c => vesselAtCapacity(vessel, c.capacity)), [puzzle, vessel]);
@@ -50,14 +51,14 @@ export function EnginePreview({ vessel, symbols: showSymbols, sound, reduceMotio
     benchmarkToken.current.value++; setBenchmarking(false);
     cancelAnimation(progress); progress.set(1); busy.current = false; setAnimation(null); setSelected(null);
     search.current?.cancel(); search.current = null; setSearching(false);
-    if (timer.current) clearTimeout(timer.current); timer.current = null;
+    if (cancelWork.current) cancelWork.current(); cancelWork.current = null;
   }, [progress]);
   const back = useCallback(() => { cancel(); onBack(); }, [cancel, onBack]);
   useEffect(() => {
     const cancellation = benchmarkToken.current;
     const background = AppState.addEventListener('change', state => { setActive(state === 'active'); if (state !== 'active') cancel(); });
     const resize = Dimensions.addEventListener('change', cancel), hardware = BackHandler.addEventListener('hardwareBackPress', () => { back(); return true; });
-    return () => { cancellation.value++; background.remove(); resize.remove(); hardware.remove(); cancelAnimation(progress); search.current?.cancel(); if (timer.current) clearTimeout(timer.current); };
+    return () => { cancellation.value++; background.remove(); resize.remove(); hardware.remove(); cancelAnimation(progress); search.current?.cancel(); if (cancelWork.current) cancelWork.current(); };
   }, [back, cancel, progress]);
   useEffect(() => {
     if (!reduceMotion) return;
@@ -110,19 +111,19 @@ export function EnginePreview({ vessel, symbols: showSymbols, sound, reduceMotio
     const step = () => {
       if (search.current !== task) return;
       const result = task.step();
-      if (!result) { timer.current = setTimeout(step, 0); return; }
-      search.current = null; timer.current = null; setSearching(false);
+      if (!result) { cancelWork.current = scheduleCooperativeWork(step); return; }
+      search.current = null; cancelWork.current = null; setSearching(false);
       if (result.status === 'hint' && result.attempt === current.current.attempt && result.binding === current.current.runtime.binding && result.revision === current.current.revision) execute(result.action, result.revision);
       else setNotice(result.status === 'unsolvable' ? zh ? '已完整验证：这个局面无法完成。' : 'A complete search proved this position unsolvable.'
         : zh ? '当前预算或已知信息不足，尚未确定安全提示。' : 'A safe hint is not yet proven within the current information and budget.');
     };
-    timer.current = setTimeout(step, 0);
+    cancelWork.current = scheduleCooperativeWork(step);
   }
   function selectExample(next: number) { cancel(); setIndex(next); commit(createEngineSession(ENGINE_EXAMPLES[next], `preview-${next}`)); }
   async function benchmark() {
     cancel(); const token = ++benchmarkToken.current.value; setBenchmarking(true);
     try {
-      const report = await benchmarkEngine(() => new Promise<void>(resolve => setTimeout(resolve, 0)), () => token !== benchmarkToken.current.value);
+      const report = await benchmarkEngine(yieldToHost, () => token !== benchmarkToken.current.value);
       const storage = await benchmarkEngineStorage(() => token !== benchmarkToken.current.value);
       if (token !== benchmarkToken.current.value) return;
       console.info('ENGINE_BENCHMARK', JSON.stringify({ runtime: Platform.OS, hermes: !!(globalThis as { HermesInternal?: unknown }).HermesInternal, ...report, storage }));

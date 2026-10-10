@@ -236,6 +236,7 @@ export function createEngineRestoreTask(input: unknown, saved: SavedEngineSessio
     const checkpoints: readonly EngineCheckpoint[] = [...saved.history, { state: saved.state, known: saved.known, seen: saved.seen }];
     const history: EngineCheckpoint[] = [];
     let bytes = 0;
+    const initial = initialEngineState(runtime);
     for (let i = 0; i < checkpoints.length; i++) {
       const checkpoint = checkpoints[i];
       if (!checkpoint || Object.keys(checkpoint).some(key => !['state', 'known', 'seen'].includes(key)) || !Array.isArray(checkpoint.seen)
@@ -250,20 +251,20 @@ export function createEngineRestoreTask(input: unknown, saved: SavedEngineSessio
         history.push(Object.freeze({ state: state(checkpoint.state.contents, checkpoint.state.open, checkpoint.state.fired),
           known: canonicalKnown(runtime, new Set(checkpoint.known)), seen: frozen(checkpoint.seen) }));
       }
-      yield;
-    }
-    const first = checkpoints[0], initial = initialEngineState(runtime);
-    if (!saved.offset && JSON.stringify(first.state) !== JSON.stringify(initial.state)) throw new Error('Invalid initial checkpoint');
-    for (let i = 1; i < checkpoints.length; i++) {
-      const previous = checkpoints[i - 1], next = checkpoints[i];
-      if (previous.known.some(unit => !next.known.includes(unit)) || previous.seen.some(id => !next.seen.includes(id))) throw new Error('Knowledge regressed');
-      // Exactly two stacks change. Infer the single candidate instead of replaying every pair.
-      const changed = previous.state.contents.flatMap((units, n) => JSON.stringify(units) === JSON.stringify(next.state.contents[n]) ? [] : [n]);
-      const source = changed.find(n => previous.state.contents[n].length > next.state.contents[n].length);
-      const target = changed.find(n => previous.state.contents[n].length < next.state.contents[n].length);
-      if (changed.length !== 2 || source === undefined || target === undefined || evaluateEngineGoal(runtime, previous.state)) throw new Error('Invalid engine history transition');
-      const result = transitionEngine(runtime, previous.state, previous.known, { type: 'transfer', source: runtime.puzzle.containers[source].id, target: runtime.puzzle.containers[target].id });
-      if (!result.accepted || JSON.stringify(result.state) !== JSON.stringify(next.state) || result.known.some(unit => !next.known.includes(unit))) throw new Error('Invalid engine history transition');
+      if (i === 0) {
+        if (!saved.offset && JSON.stringify(checkpoint.state) !== JSON.stringify(initial.state)) throw new Error('Invalid initial checkpoint');
+      } else {
+        const previous = checkpoints[i - 1], next = checkpoint;
+        if (previous.known.some(unit => !next.known.includes(unit)) || previous.seen.some(id => !next.seen.includes(id))) throw new Error('Knowledge regressed');
+        // Validate and replay each checkpoint together so yielding counts real checkpoints.
+        // Exactly two stacks change. Infer the single candidate instead of replaying every pair.
+        const changed = previous.state.contents.flatMap((units, n) => JSON.stringify(units) === JSON.stringify(next.state.contents[n]) ? [] : [n]);
+        const source = changed.find(n => previous.state.contents[n].length > next.state.contents[n].length);
+        const target = changed.find(n => previous.state.contents[n].length < next.state.contents[n].length);
+        if (changed.length !== 2 || source === undefined || target === undefined || evaluateEngineGoal(runtime, previous.state)) throw new Error('Invalid engine history transition');
+        const result = transitionEngine(runtime, previous.state, previous.known, { type: 'transfer', source: runtime.puzzle.containers[source].id, target: runtime.puzzle.containers[target].id });
+        if (!result.accepted || JSON.stringify(result.state) !== JSON.stringify(next.state) || result.known.some(unit => !next.known.includes(unit))) throw new Error('Invalid engine history transition');
+      }
       yield;
     }
     return session(runtime, saved.attempt, saved.revision, state(saved.state.contents, saved.state.open, saved.state.fired), canonicalKnown(runtime, new Set(saved.known)), history, saved.offset, saved.seen, bytes);
