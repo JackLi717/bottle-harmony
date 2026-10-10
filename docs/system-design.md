@@ -148,7 +148,7 @@ flowchart TD
 | 2．容器／转移／目标 | 已实现独立容量／权限、固定表现、收集／层序／合取 | 5／6／12 份、只接收／只倒出、显式颜色限制、容量和库存、错误输入及局部余料断言通过 |
 | 3．求解／回放／保存 | 已实现通用 BFS、保守一步提示、完整绑定及增量恢复 | 小状态穷举、预算与取消、确定种子动作、4096 步及字节裁剪、错误存档拒绝、写入／DDL 中断回滚通过；正式 0.1.6 库副本升级对照原 26 表一致 |
 | 4．钥匙／盖布／显色 | 已实现确定性机关与知识，五个内部验收场景 | 同步触发、锁定禁倒、显色边界、撤销保留知识、重来初始状态及恢复通过；五条完整路线只作技术证明，不作正式题质量结论 |
-| 5．表现与设备 | 已接内部页面及变容量几何，十五款旧四份几何不变 | Web 小屏交互、取消与目标验证；Android 内部 Release 构建／运行证据见设备文档。低端 Android 的 CPU／原生储存已有多轮样本及长暂停记录；渲染／持续操作尚未通过，不宣称全部验收完成 |
+| 5．表现与设备 | 已接内部页面及变容量几何，十五款旧四份几何不变 | Web 小屏及低端 Android 五个内部场景的规则、目标和取消已验证；CPU／原生存储汇总达标但保留长暂停。实际倒水渲染已测且未通过，持续性能尚未通过；具体包、数值和边界由设备文档维护 |
 
 现有自动回归覆盖经典、记忆、内部调色、教学、提示、钱包、统计及 SQLite。无新增机制的生产题库与顺序未改，内容库 SHA-256 保持基线。新增目标与机关属于引擎能力，正式题量、首次引入位置、机制组合、教学和内容难度必须另定；不据此添加第 1001 关、付费门槛或球动画。
 
@@ -157,6 +157,10 @@ flowchart TD
 ```sh
 npm run benchmark:engine
 node --experimental-strip-types scripts/benchmark-engine-android.ts <adb-serial>
+node --experimental-strip-types scripts/benchmark-engine-android.ts <adb-serial> --diagnose
+node --experimental-strip-types scripts/measure-engine-render.ts start <adb-serial> 900
+node --experimental-strip-types scripts/measure-engine-render.ts mark <adb-serial> <render_run_id> pour:classic
+node --experimental-strip-types scripts/measure-engine-render.ts stop <adb-serial> <render_run_id>
 node --experimental-strip-types scripts/benchmark-engine-storage.ts <schema-one-player.sqlite>
 npm run benchmark:solver
 npm run benchmark:production
@@ -165,6 +169,10 @@ npm run benchmark:production
 `benchmark:engine` 在 Node 和内部页面的“测量引擎 CPU”使用同一个工作负载：4200 次转移／撤销、4096 检查点分片恢复及五类题的多次求解／完整回放。工具输出到忽略的 builds/engine-upgrade/；SQLite 工具另外验证旧库副本和每步仅写当前＋一个历史检查点。内部页面以 ENGINE_BENCHMARK 输出详细日志，取消或离开终止任务。原生页面另用一次性验收库执行 256 次 WAL／FULL 事务与恢复；Web 明确报告原生存储不可测。二者都不测原生渲染或耗电。
 
 Android 命令只连接独立 engine-acceptance Release，以受系统 DUMP 权限保护的验收接收器运行相同 CPU、五类提示及 6／8／10／12 瓶经典搜索工作负载，收集分片／活跃时间、一次性 SQLite 事务与恢复、进程内存和电池温度到忽略的 builds/。它不操作界面、不读写原 Play 应用或其玩家库；公开配置移除该接收器／服务，公开 JS 不注册验收任务。重复测量保留超预算与 unknown，不将最有利的一轮作为全部通过证据。原始搜索分片、固定工作负载汇总及每次搜索的短样本分位数同时保存，单独列最长暂停；短样本不能保证稳定的尾部分布。
+
+`--diagnose` 额外读取可选 Hermes GC 累计计数，保留超过 8 ms 或 GC 计数变化的分片以及读取自身成本；不强制 GC。诊断读数会分配内存并影响运行，不能替代正常验收或证明某次暂停的唯一原因。没有计数返回 null，不能当成零次 GC。
+
+`measure-engine-render.ts` 只读独立验收包的 `gfxinfo framestats`，每 700 ms 轮询原始缓冲，按窗口／原生时钟去重，绑定 APK 与进程；`mark` 使用设备 Uptime 分段，不用主机时钟猜测。统计 `FrameCompleted - IntendedVsync`，挂载与实际倒水分开，系统标记帧另列；未完成行保留在原始记录，不当成掉帧数量。界面操作经 Android Studio USB 镜像完成，镜像开销包含在结果中；该指标不是屏幕实际呈现间隔、音频延迟或功耗。采集时间不等于持续操作时间，闲置与构建等待不能算作十分钟游玩。
 
 本轮低端设备工程目标在测量前固定：成功会话转移 p95 ≤4 ms；恢复／搜索协作分片 p95 ≤8 ms，另列最长暂停；每次提示守住 250 ms 活跃预算并诚实报告未知；WAL／FULL 事务写入 p95 ≤50 ms，256 检查点恢复墙钟 ≤250 ms。画面另测持续倒水帧时间 p95 ≤33.3 ms／p99 ≤50 ms，挂载与切页单独列出；持续至少十分钟无崩溃、错误状态或存档丢失，记录内存、温度与电量。它们是本轮工作负载验收线，不是所有题目／设备的硬实时承诺；不达标项必须记录并区分新内核与已有渲染成本。
 

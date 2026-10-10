@@ -14,13 +14,16 @@ export async function runDeviceEngineBenchmark(runId: string) {
   const yieldControl = yieldToHost;
   try {
     console.info(`ENGINE_DEVICE_START ${runId} ${AppState.currentState}`);
-    const engine = await benchmarkEngine(yieldControl, () => cancelled);
+    const diagnostics = runId.startsWith('diagnostic_')
+      ? (await import('./engineBenchmarkDiagnostics')).createEngineBenchmarkDiagnostics((globalThis as { HermesInternal?: unknown }).HermesInternal) : null;
+    const engine = await benchmarkEngine(yieldControl, () => cancelled, diagnostics?.observer);
     const hints = await benchmarkEngineHints(yieldControl, () => cancelled);
     const classic = await benchmarkClassicSolver(yieldControl, () => cancelled);
     const storage = await benchmarkEngineStorage(() => cancelled);
     if (cancelled) throw new Error('App left foreground during measurement');
     const encoded = JSON.stringify({ date: new Date().toISOString(), runtime: Platform.OS,
-      hermes: !!(globalThis as { HermesInternal?: unknown }).HermesInternal, appState: AppState.currentState, ...engine, hints, classic, storage });
+      hermes: !!(globalThis as { HermesInternal?: unknown }).HermesInternal, appState: AppState.currentState, ...engine, hints, classic, storage,
+      diagnostics: diagnostics?.report() ?? null });
     // Android log entries have a small byte ceiling. All report fields are ASCII.
     const count = Math.ceil(encoded.length / 2800);
     for (let i = 0; i < count; i++) console.info(`ENGINE_DEVICE_CHUNK ${runId} ${i}/${count} ${encoded.slice(i * 2800, (i + 1) * 2800)}`);

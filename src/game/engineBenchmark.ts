@@ -4,6 +4,7 @@ import { createEngineHintTask, createEngineProofSearch, replayEngineRoute } from
 import { createSolver, replaySolution } from './solver.ts';
 
 const now = () => performance.now();
+export type EngineBenchmarkObserver = { beforeSlice(): void; afterSlice(label: string, startMilliseconds: number, endMilliseconds: number): void };
 export function measurement(values: readonly number[]) {
   const sorted = [...values].sort((a, b) => a - b);
   const percentile = (p: number) => sorted[Math.min(sorted.length - 1, Math.ceil(sorted.length * p) - 1)] ?? 0;
@@ -58,7 +59,7 @@ export async function benchmarkClassicSolver(yieldControl: () => Promise<void>, 
   return reports;
 }
 /** Same workload on Node and Hermes. Wall timings include GC; budgets are cooperative. */
-export async function benchmarkEngine(yieldControl: () => Promise<void>, cancelled: () => boolean = () => false) {
+export async function benchmarkEngine(yieldControl: () => Promise<void>, cancelled: () => boolean = () => false, observer?: EngineBenchmarkObserver) {
   const check = () => { if (cancelled()) throw new Error('Benchmark cancelled'); };
   const puzzle = engineFixture('benchmark-history', [['coral'], [], ['jade', 'jade', 'jade', 'jade']], {
     goal: { type: 'collect', container: 'b1', color: 'jade', count: 4, exact: true, exclusive: true },
@@ -76,7 +77,11 @@ export async function benchmarkEngine(yieldControl: () => Promise<void>, cancell
   }
   const saved = saveEngineSession(current), restore = createEngineRestoreTask(puzzle, saved), restoreSlices: number[] = [];
   let restored; const restoreBegin = now();
-  do { check(); const begin = now(); restored = restore.step(64, 4); restoreSlices.push(now() - begin); if (!restored) await yieldControl(); } while (!restored);
+  do {
+    check(); observer?.beforeSlice(); const begin = now(); restored = restore.step(64, 4); const end = now();
+    restoreSlices.push(end - begin); observer?.afterSlice('restore', begin, end);
+    if (!restored) await yieldControl();
+  } while (!restored);
   const restoreWall = now() - restoreBegin;
   if (JSON.stringify(saveEngineSession(restored)) !== JSON.stringify(saved)) throw new Error('Benchmark restore mismatch');
   const searches = [], proofSliceMilliseconds: number[] = [];
@@ -86,7 +91,11 @@ export async function benchmarkEngine(yieldControl: () => Promise<void>, cancell
       check(); const session = createEngineSession(example, 'benchmark-search');
       const task = createEngineProofSearch(session.runtime, session, { maxMilliseconds: 250 });
       const sliceTimes: number[] = [], begin = now(); let outcome;
-      do { check(); const slice = now(); outcome = task.step(32, 4); sliceTimes.push(now() - slice); if (!outcome) await yieldControl(); } while (!outcome);
+      do {
+        check(); observer?.beforeSlice(); const slice = now(); outcome = task.step(32, 4); const end = now();
+        sliceTimes.push(end - slice); observer?.afterSlice(`${example.id}:${repeat}`, slice, end);
+        if (!outcome) await yieldControl();
+      } while (!outcome);
       const wallMilliseconds = now() - begin;
       if (outcome.status === 'solved') replayEngineRoute(session.runtime, session, outcome.route);
       if (repeat) {

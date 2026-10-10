@@ -4,9 +4,10 @@ import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
 
 const serial = process.argv[2];
-if (!serial || !/^[a-zA-Z0-9_.:-]+$/.test(serial)) throw new Error('Usage: node --experimental-strip-types scripts/benchmark-engine-android.ts <adb-serial>');
+const diagnose = process.argv[3] === '--diagnose';
+if (!serial || !/^[a-zA-Z0-9_.:-]+$/.test(serial) || (process.argv[3] && !diagnose) || process.argv.length > 4) throw new Error('Usage: node --experimental-strip-types scripts/benchmark-engine-android.ts <adb-serial> [--diagnose]');
 const adb = process.env.ADB ?? join(homedir(), 'Library/Android/sdk/platform-tools/adb');
-const application = 'com.bottleharmony.engineacceptance', runId = `engine_${Date.now()}`;
+const application = 'com.bottleharmony.engineacceptance', runId = `${diagnose ? 'diagnostic' : 'engine'}_${Date.now()}`;
 const output = resolve('builds/engine-upgrade', runId); mkdirSync(output, { recursive: true });
 const run = (...args: string[]) => execFileSync(adb, ['-s', serial, ...args], { encoding: 'utf8', timeout: 20000, maxBuffer: 16 * 1024 * 1024 });
 const save = (name: string, value: string) => writeFileSync(join(output, name), value);
