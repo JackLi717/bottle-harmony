@@ -1,0 +1,55 @@
+{
+  "format": "bottle-harmony-art-reference-v1",
+  "approvedDate": "2026-10-10",
+  "purpose": "Canonical original-resolution local references. Retain unchanged; derivative runtime assets must reference these designs and be reviewed against them.",
+  "generator": "built-in image_gen",
+  "totalBytes": 8185204,
+  "files": [
+    {
+      "path": "static-baseline-v1.png",
+      "description": "静态基准：钥匙、布盖、逐层显色、已见重锁",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 1648221,
+      "sha256": "e00998bf58d2a5d9fb833f37313e209919785ae99d257e8a6fedbca5c6edf237",
+      "status": "user-approved implementation reference; runtime assets pending"
+    },
+    {
+      "path": "cover-families-v1.png",
+      "description": "单瓶：布盖、木匣、百叶护笼",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1693024,
+      "sha256": "c23bc4559997d26a23edb105124528766460f581a4993bf7ad7af2572c2f71e5",
+      "status": "user-approved implementation reference; runtime assets pending"
+    },
+    {
+      "path": "grouped/wood-linked-v1.png",
+      "description": "双瓶／三瓶联格薄木匣",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 1662754,
+      "sha256": "d85def1a8a54afc3a83302d7fc892dbd3154b597801d6b15818bfa87c9d7bb1e",
+      "status": "user-approved implementation reference; runtime assets pending"
+    },
+    {
+      "path": "grouped/wood-roller-v1.png",
+      "description": "双瓶／三瓶卷帘木盒",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 1599498,
+      "sha256": "67c825480202e8aec5cfa19f26b9c7b2bb9695d3c683a5c9a7af8a118a43c1ca",
+      "status": "user-approved implementation reference; runtime assets pending"
+    },
+    {
+      "path": "grouped/metal-louver-v1.png",
+      "description": "双瓶／三瓶联体百叶护栏",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 1581707,
+      "sha256": "92b2a276ddf11740d86894943f72e1d309c0d176ba94f1bba5b71ed2799e1dbe",
+      "status": "user-approved implementation reference; runtime assets pending"
+    }
+  ],
+  "scope": "All five sheets retained and approved as implementation references. Implementation order, exact motion and acceptance plan are recommendations pending user decision."
+}

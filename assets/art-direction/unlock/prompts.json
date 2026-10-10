@@ -1,5 +1,5 @@
 {
-  "status": "User-approved visual direction for first implementation; not runtime art or geometric/performance acceptance",
+  "status": "User-approved implementation references, retained locally at original resolution; runtime artwork, animation and device acceptance not yet implemented.",
   "tool": "built-in image_gen",
   "approvedBaseline": "static-baseline-v1.png",
   "visualDraft": "cover-families-v1.png",
@@ -15,5 +15,5 @@
     "Three single-bottle families approved as first-version visual baseline; exact geometry, board adaptation and device acceptance remain implementation work."
   ],
   "baselineSource": "Previously generated and user-approved static appearance proposal; retained here from builds/unlock-appearance/static-proposal-v1.png",
-  "groupVariants": "Three grouped families have visual references in grouped/: linked wood cases, roller-shutter wood boxes and metal louver frames. Each includes two/three bottles and closed/opening poses. Grouped implementation selection remains pending. Shared cloth over multiple bottles remains excluded."
+  "groupVariants": "All three grouped reference families are user-approved for retention and implementation reference. Execution order and animation/acceptance plan await decision. Shared cloth over multiple bottles remains excluded."
 }

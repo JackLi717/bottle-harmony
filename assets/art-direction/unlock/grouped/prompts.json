@@ -1,6 +1,6 @@
 {
   "tool": "built-in image_gen",
-  "status": "Three grouped visual proposals generated at user request; pending selection, not runtime assets or accepted device implementation.",
+  "status": "User-approved implementation references, retained locally at original resolution; runtime artwork, animation and device acceptance not yet implemented.",
   "reference": "../cover-families-v1.png",
   "layout": "Each sheet: two/three bottles by closed/opening pose. Key-based group condition illustrated; appearance may also represent the existing color-full condition.",
   "outputs": [
