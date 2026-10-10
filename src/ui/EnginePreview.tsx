@@ -15,6 +15,7 @@ import { isBottleComplete } from '../art/bottleCompletion';
 import { createEngineSession, moveEngineSession, resetEngineSession, undoEngineSession, visibleEngineState, type EngineAction, type EngineSession, type VisibleEngineContainer } from '../game/engine';
 import { createEngineHintTask, type EngineHintTask } from '../game/engineSearch';
 import { ENGINE_EXAMPLES } from '../game/engineExamples';
+import { POUR_HANDOFF_CASES } from '../game/pourHandoffCases';
 import { ENGINE_RENDER_ROUTES, engineRenderCase, type EngineRenderRun } from '../game/engineRenderWorkload';
 import { scheduleCooperativeWork, yieldToHost } from '../runtime/cooperativeWork';
 import { benchmarkEngine } from '../game/engineBenchmark';
@@ -41,6 +42,10 @@ export function EnginePreview({ vessel: preferredVessel, symbols: showSymbols, s
   const [selected, setSelected] = useState<number | null>(null), [animation, setAnimation] = useState<Animation | null>(null), [notice, setNotice] = useState('');
   const [searching, setSearching] = useState(false), [active, setActive] = useState(AppState.currentState === 'active');
   const [benchmarking, setBenchmarking] = useState(false);
+  const [handoffCase, setHandoffCase] = useState<number | null>(null);
+  const [handoffRunning, setHandoffRunning] = useState(false);
+  const handoffRun = useRef(-1), handoffAdvance = useRef<() => void>(() => {});
+  const handoffPour = useRef<() => boolean>(() => false);
   const benchmarkToken = useRef({ value: 0 });
   const [renderVessel, setRenderVessel] = useState<VesselDesign | null>(null), [renderRunning, setRenderRunning] = useState(false);
   const renderRun = useRef<EngineRenderRun | null>(null), renderTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -57,6 +62,7 @@ export function EnginePreview({ vessel: preferredVessel, symbols: showSymbols, s
   const designs = useMemo(() => puzzle.containers.map(c => vesselAtCapacity(vessel, c.capacity)), [puzzle, vessel]);
   const visible = visibleEngineState(runtime, session.state, session.known, session.seen);
   const cancel = useCallback(() => {
+    handoffRun.current = -1; setHandoffRunning(false);
     renderMarker('cancel:render');
     renderRun.current = null; setRenderRunning(false); setRenderVessel(null);
     if (renderTimer.current) clearTimeout(renderTimer.current); renderTimer.current = null;
@@ -80,6 +86,12 @@ export function EnginePreview({ vessel: preferredVessel, symbols: showSymbols, s
   }, [reduceMotion, cancel, progress]);
   const finish = useCallback(() => {
     busy.current = false; setAnimation(null); setSelected(null);
+    if (handoffRun.current >= 0) {
+      console.info('ENGINE_HANDOFF', JSON.stringify({ phase: 'settle', case: handoffRun.current, uptimeMilliseconds: performance.now() }));
+      handoffRun.current++;
+      renderTimer.current = setTimeout(() => handoffAdvance.current(), 800);
+      return;
+    }
     const run = renderRun.current;
     if (run) {
       console.info('ENGINE_RENDER', JSON.stringify({ runId: run.id, label: 'settle:render', uptimeMilliseconds: performance.now(), runtime: Platform.OS, moves: run.moves, cases: run.cases }));
@@ -116,7 +128,7 @@ export function EnginePreview({ vessel: preferredVessel, symbols: showSymbols, s
       : zh ? `装满四份${colorName(trigger.when.color)}` : `Fill four ${colorName(trigger.when.color)} portions`).join(' / ');
   }
   function chooseBottle(i: number) {
-    if (busy.current || searching || renderRun.current) return;
+    if (busy.current || searching || renderRun.current || handoffRun.current >= 0) return;
     if (visible[i].locked) { setNotice(condition(visible[i].id)); return; }
     if (session.status === 'solved') return;
     if (selected === i) { setSelected(null); return; }
@@ -138,7 +150,38 @@ export function EnginePreview({ vessel: preferredVessel, symbols: showSymbols, s
     };
     cancelWork.current = scheduleCooperativeWork(step);
   }
-  function selectExample(next: number) { cancel(); setIndex(next); commit(createEngineSession(ENGINE_EXAMPLES[next], `preview-${next}`)); }
+  function selectExample(next: number) { cancel(); setHandoffCase(null); setIndex(next); commit(createEngineSession(ENGINE_EXAMPLES[next], `preview-${next}`)); }
+  function nextHandoffCase() {
+    cancel();
+    const next = handoffCase === null ? 0 : (handoffCase + 1) % POUR_HANDOFF_CASES.length;
+    setHandoffCase(next); commit(createEngineSession(POUR_HANDOFF_CASES[next].puzzle, `handoff-${next}`));
+  }
+  function playHandoffCases() {
+    if (handoffRun.current >= 0) { cancel(); return; }
+    cancel(); handoffRun.current = 0; setHandoffRunning(true);
+    // A bounded lead-in lets the native recorder open before the first action.
+    renderTimer.current = setTimeout(() => handoffAdvance.current(), 8000);
+  }
+  useLayoutEffect(() => {
+    handoffPour.current = () => execute({ type: 'transfer', source: 'b0', target: 'b1' });
+    handoffAdvance.current = () => {
+      const next = handoffRun.current;
+      if (next < 0) return;
+      if (next === POUR_HANDOFF_CASES.length) {
+        handoffRun.current = -1; setHandoffRunning(false);
+        setNotice('Handoff checks complete: 8 cases / 8 pours. Visual review required.');
+        console.info('ENGINE_HANDOFF', JSON.stringify({ phase: 'complete', cases: next, uptimeMilliseconds: performance.now() }));
+        return;
+      }
+      setHandoffCase(next); commit(createEngineSession(POUR_HANDOFF_CASES[next].puzzle, `handoff-${next}`)); setSelected(0);
+      renderTimer.current = setTimeout(() => {
+        console.info('ENGINE_HANDOFF', JSON.stringify({ phase: 'pour', case: next, uptimeMilliseconds: performance.now() }));
+        // The first fixture changes five slots to four. Use the committed layout,
+        // not the previous fixture's positions captured before React mounted it.
+        if (!handoffPour.current()) { cancel(); setNotice('Handoff route rejected'); }
+      }, 600);
+    };
+  });
   async function benchmark() {
     cancel(); const token = ++benchmarkToken.current.value; setBenchmarking(true);
     try {
@@ -161,6 +204,7 @@ export function EnginePreview({ vessel: preferredVessel, symbols: showSymbols, s
       return;
     }
     renderMarker(`mount:${ENGINE_EXAMPLES[entry.exampleIndex].id}:${VESSELS[entry.styleIndex].id}`);
+    setHandoffCase(null);
     setIndex(entry.exampleIndex); setRenderVessel(VESSELS[entry.styleIndex]);
     commit(createEngineSession(ENGINE_EXAMPLES[entry.exampleIndex], `${run.id}-${run.caseIndex}`));
     run.moveIndex = 0;
@@ -208,6 +252,10 @@ export function EnginePreview({ vessel: preferredVessel, symbols: showSymbols, s
     <UiText style={styles.goal}>{goalText(puzzle.goal)}</UiText>
     <Pressable accessibilityRole="button" disabled={benchmarking || !!animation || searching} onPress={benchmark} style={{ minHeight: 28, justifyContent: 'center' }}><UiText style={styles.capacity}>{benchmarking ? (zh ? '性能测量中…' : 'Measuring…') : (zh ? '测量引擎 CPU' : 'Measure engine CPU')}</UiText></Pressable>
     <Pressable accessibilityRole="button" disabled={benchmarking || searching} onPress={renderBenchmark} style={{ minHeight: 28, justifyContent: 'center' }}><UiText style={styles.capacity}>{renderRunning ? (zh ? '停止持续渲染测量' : 'Stop sustained rendering') : (zh ? '持续渲染验收 · 15 款 / 5 题' : 'Sustained rendering · 15 styles / 5 cases')}</UiText></Pressable>
+    <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 12 }}>
+      <Pressable accessibilityRole="button" disabled={benchmarking || searching || renderRunning || !!animation || handoffRunning} onPress={nextHandoffCase} style={{ minHeight: 28, justifyContent: 'center' }}><UiText style={styles.capacity}>{zh ? '闪烁检查' : 'Flicker check'} · {handoffCase === null ? '8 cases' : `${handoffCase + 1}/8 · ${POUR_HANDOFF_CASES[handoffCase].label}`}</UiText></Pressable>
+      <Pressable accessibilityRole="button" disabled={benchmarking || searching || renderRunning} onPress={playHandoffCases} style={{ minHeight: 28, justifyContent: 'center' }}><UiText style={styles.capacity}>{handoffRunning ? 'Stop' : '▶ 8'}</UiText></Pressable>
+    </View>
     <View testID="engine-stage" style={styles.stage} onLayout={event => setStage(event.nativeEvent.layout)}>
       {scale > 0 && <View style={{ width: layout.width * scale, height: layout.height * scale, overflow: 'visible' }}>
         {shown.map((container, i) => {

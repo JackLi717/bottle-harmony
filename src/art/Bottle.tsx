@@ -4,7 +4,7 @@ import Animated, { cancelAnimation, Easing, useAnimatedProps, useAnimatedReactio
 import Svg, { ClipPath, Defs, Ellipse, G, LinearGradient, Path, RadialGradient, Stop, Text as SvgText } from 'react-native-svg';
 import type { ColorId, Pour } from '../game/rules';
 import { liquidPath, liquidSurface } from './liquidGeometry';
-import { liquidFrame, type LiquidLayerFrame } from './liquidPresentation';
+import { liquidFrame, liquidRuns, type LiquidLayerFrame } from './liquidPresentation';
 import { LIQUIDS, LIQUID_SYMBOLS } from './palette';
 import { DEFAULT_VESSEL, vesselCompletionEffect, type VesselDesign } from './vesselDesigns';
 import type { Point } from './liquidGeometry';
@@ -243,12 +243,8 @@ export const Bottle = memo(function Bottle({ index, colors, selected, hinted = f
         </AnimatedG>}
         <AnimatedPath d={vessel.shell} fill={`url(#${id}-glass)`} animatedProps={shell} />
         <G clipPath={`url(#${id}-inside)`}>
-          {presentationColors.map((color, layer) => {
-            let firstLayer = layer;
-            while (firstLayer > 0 && presentationColors[firstLayer - 1] === color) firstLayer--;
-            return { color, layer, firstLayer };
-          }).filter(({ color, layer }) => presentationColors[layer + 1] !== color).reverse().map(({ color, layer, firstLayer }) => (
-            <LiquidLayer key={layer} color={color} hidden={!!hiddenLayers[layer]} layer={layer} firstLayer={firstLayer} count={count} liquid={liquid} id={id} />
+          {liquidRuns(presentationColors).reverse().map(({ color, firstLayer }) => (
+            <LiquidLayer key={firstLayer} color={color} hidden={!!hiddenLayers[firstLayer]} layer={firstLayer} firstLayer={firstLayer} count={count} liquid={liquid} id={id} />
           ))}
           {frozenBottom && colors.length > 0 && <G>
             <Path d={liquidPath(1, 0, vessel)} fill="#C6F3FF" fillOpacity={0.35} stroke="#E8FCFF" strokeOpacity={0.8} strokeWidth={1.2} />

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import type { ColorId } from '../src/game/rules.ts';
 import { completionSymbolOpacity, completionVisible, COMPLETION_DURATION, SYMBOL_FADE_DURATION } from '../src/art/bottleCompletion.ts';
-import { liquidFrame } from '../src/art/liquidPresentation.ts';
+import { liquidFrame, liquidRuns } from '../src/art/liquidPresentation.ts';
 import { liquidPath, liquidPolygon, type Point } from '../src/art/liquidGeometry.ts';
 import { createPourPlan, FLOW_END, FLOW_START, rotateBottlePoint, sourcePose, transferredFraction } from '../src/art/pourGeometry.ts';
 import { VESSELS } from '../src/art/vesselDesigns.ts';
@@ -23,11 +23,36 @@ test('shared liquid frames preserve existing paths and merged same-color renderi
     for (const angle of [-120, -55, 0, 55, 120]) for (const count of [0, .2, 1, 2.5, 4]) {
       for (const symbols of [false, true]) {
         const frame = liquidFrame(colors, count, angle, vessel, symbols);
-        frame.forEach((layer, i) => assert.equal(layer.path, colors[i + 1] === colors[i] ? '' : liquidPath(Math.min(i + 1, count), angle, vessel)));
+        const runs = liquidRuns(colors);
+        frame.forEach((layer, i) => {
+          const run = runs.find(r => r.firstLayer === i);
+          assert.equal(layer.path, run ? liquidPath(Math.min(run.lastLayer + 1, count), angle, vessel) : '');
+        });
         if (!symbols) assert.ok(frame.every(layer => layer.symbol.opacity === 0));
       }
     }
   }
+});
+
+test('visible same-color runs retain their native slot and nonempty path across pour handoffs', () => {
+  for (const vessel of VESSELS) for (const remaining of [1, 2, 3]) {
+    // Receiver: React adds the transferred portion before the UI frame updates.
+    // Source: React removes it after flow. Both must keep the visible run node.
+    for (const prefix of [[], ['coral'] as ColorId[]]) {
+      if (prefix.length + remaining >= 4) continue;
+      const short: ColorId[] = [...prefix, ...Array<ColorId>(remaining).fill('jade')];
+      const long: ColorId[] = [...short, 'jade'];
+      const shortRun = liquidRuns(short).at(-1)!, longRun = liquidRuns(long).at(-1)!;
+      assert.equal(shortRun.firstLayer, longRun.firstLayer);
+      const before = liquidFrame(short, short.length, 0, vessel, false);
+      const after = liquidFrame(long, short.length, 0, vessel, false);
+      assert.notEqual(before[longRun.firstLayer].path, '');
+      assert.equal(before[longRun.firstLayer].path, after[shortRun.firstLayer].path);
+    }
+  }
+  const masked = ['unknown-0', 'unknown-1', 'jade', 'jade'];
+  assert.deepEqual(liquidRuns(masked).map(r => [r.firstLayer, r.lastLayer]), [[0, 0], [1, 1], [2, 3]]);
+  assert.deepEqual(liquidRuns([]), []); // Poured-empty source has no retained liquid.
 });
 
 test('symbol bounds remain in their own liquid portion through both tilts of all fifteen cavities', () => {

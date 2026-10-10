@@ -5,6 +5,18 @@ import type { VesselGeometry } from './vesselDesigns.ts';
 export type LiquidSymbolPose = { x: number; y: number; size: number; opacity: number; rotation: number };
 export type LiquidLayerFrame = { path: string; symbol: LiquidSymbolPose };
 
+/** A color run keeps its bottom slot when receiving or losing top portions. */
+export function liquidRuns(colors: readonly ColorId[]) {
+  'worklet';
+  const runs: { color: ColorId; firstLayer: number; lastLayer: number }[] = [];
+  colors.forEach((color, layer) => {
+    const previous = runs[runs.length - 1];
+    if (previous?.color === color) previous.lastLayer = layer;
+    else runs.push({ color, firstLayer: layer, lastLayer: layer });
+  });
+  return runs;
+}
+
 function pathOf(points: readonly Point[]) {
   'worklet';
   return points.length ? points.map((p, index) => `${index ? 'L' : 'M'}${p.x},${p.y}`).join(' ') + ' Z' : '';
@@ -60,7 +72,7 @@ export function liquidFrame(colors: readonly ColorId[], visibleLayers: number, d
   'worklet';
   const count = Math.max(0, Math.min(vessel.logicalCapacity ?? 4, visibleLayers));
   let lower: Point[] = [];
-  return colors.map((color, layer) => {
+  const frame = colors.map((color, layer) => {
     const surface = colors[layer + 1] !== color;
     const upper = symbols || surface
       ? count <= layer && symbols ? lower : liquidPolygon(Math.min(layer + 1, count), degrees, vessel)
@@ -70,4 +82,13 @@ export function liquidFrame(colors: readonly ColorId[], visibleLayers: number, d
     lower = upper;
     return { path: surface ? pathOf(upper) : '', symbol };
   });
+  // React can commit before the derived UI value catches up. Anchoring both the
+  // native node and its path to the run's bottom avoids remounting a visible
+  // run with an empty old-frame path when its top index changes.
+  for (const { firstLayer, lastLayer } of liquidRuns(colors)) {
+    if (firstLayer === lastLayer) continue;
+    frame[firstLayer].path = frame[lastLayer].path;
+    frame[lastLayer].path = '';
+  }
+  return frame;
 }
