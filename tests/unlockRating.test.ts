@@ -6,7 +6,7 @@ import { replayEngineRoute } from '../src/game/engineSearch.ts';
 import { UNLOCK_TRIAL } from '../src/game/unlockTrial.ts';
 import { buildRatingGraph } from '../scripts/lib/unlockRatingGraph.ts';
 import { extractUnlockRating, ratingComparisonSet, publicRatingFacts, ratingSpace, type RatingInput } from '../scripts/lib/unlockRatingEvidence.ts';
-import { operationGrade, reviewTemplate, scoreUnlockRating, RATING_CHECKLISTS, type RatingMetric } from '../scripts/lib/unlockRatingScores.ts';
+import { operationGrade, scoreUnlockRating } from '../scripts/lib/unlockRatingScores.ts';
 
 const design: RatingInput['design'] = { role: 'teaching', family: 'test', purpose: { event: 'sort', description: 'Sort all liquid.' } };
 const small = engineFixture('rating-small', [['coral', 'jade', 'coral', 'jade'], ['jade', 'coral', 'jade', 'coral'], [], []]);
@@ -28,40 +28,47 @@ test('D6 has exactly the approved bands and Q/D never redistribute missing weigh
   assert.equal(scores.metrics.D5.grade, null); // No implicit zero/default grade even on a visible board.
 });
 
-test('manual scoring binds exact evidence, validates checklists and separates provenance', () => {
-  const review = reviewTemplate(small.id, report);
-  for (const [key, item] of Object.entries(review.metrics)) {
-    item!.grade = key.startsWith('Q') ? 5 : 2;
-    item!.reviewer = 'fixture-reviewer'; item!.reason = 'Synthetic aggregation test, not a real puzzle rating.';
-    item!.checklist = RATING_CHECKLISTS[key as Exclude<RatingMetric, 'D6'>].map(() => true);
-    item!.externalEvidence = key === 'Q3' ? ['test-only-ui-reference'] : [];
-  }
-  const scores = scoreUnlockRating(small.id, report, review);
-  assert.equal(scores.Q.score, 100); assert.equal(scores.D.score, 38 + scores.metrics.D6.grade!);
-  assert.equal(scores.metrics.D1.source, 'manual');
-  assert.throws(() => scoreUnlockRating(small.id, report, { ...review, evidenceSha256: 'stale' }));
-  assert.throws(() => scoreUnlockRating(small.id, report, { ...review, puzzle: 'another' }));
-  const bad = structuredClone(review); bad.metrics.Q3!.externalEvidence = [];
-  assert.throws(() => scoreUnlockRating(small.id, report, bad));
-  const incomplete = structuredClone(review); incomplete.metrics.D1!.checklist[0] = false;
-  assert.throws(() => scoreUnlockRating(small.id, report, incomplete));
-  const overridden = { ...review, metrics: { ...review.metrics, D6: review.metrics.D1 } };
-  assert.throws(() => scoreUnlockRating(small.id, report, overridden));
-  const grade = structuredClone(review); grade.metrics.Q1!.grade = 6;
-  assert.throws(() => scoreUnlockRating(small.id, report, grade));
-  assert.throws(() => scoreUnlockRating(small.id, report, { ...review, extra: true }));
+test('scores accept only automatic mappings and reject manual inputs or stale methods', () => {
+  const scores = scoreUnlockRating(small.id, report);
+  assert.equal(scores.solvability, 'solved');
+  assert.deepEqual(scores.Q.unimplemented, ['Q1','Q2','Q3','Q4','Q5']);
+  assert.deepEqual(scores.D.unimplemented, ['D1','D2','D3','D4','D5']);
+  assert.ok(Object.values(scores.metrics).every(m => m.source === 'automatic'));
+  assert.throws(() => Reflect.apply(scoreUnlockRating, undefined, [small.id, report, { metrics: { Q1: { grade: 5 } } }]), /Manual score input/);
+  assert.throws(() => scoreUnlockRating('another', report), /puzzle mismatch/);
+  assert.throws(() => scoreUnlockRating(small.id, { ...report, method: 'classic-quality-evidence-v1' } as unknown as typeof report), /method mismatch/);
+});
+
+test('completed original evidence does not complete a budget-limited ablation', () => {
+  const entry = { puzzle: UNLOCK_TRIAL[2].puzzle, design };
+  const partial = complete(extractUnlockRating(entry, ratingComparisonSet([entry]), 195));
+  assert.equal(partial.evidence.ablations.allOpen.status, 'unknown');
+  const scores = scoreUnlockRating(entry.puzzle.id, partial);
+  assert.equal(scores.metrics.Q2.status, 'unknown');
+  assert.deepEqual(scores.Q.unknown, ['Q2']);
+  assert.equal(scores.metrics.D6.status, 'scored');
+  assert.equal(scores.Q.score, null); assert.equal(scores.D.score, null);
 });
 
 test('bounded searches are unknown, complete exhaustion is unsolvable, unsupported rules reject', () => {
   assert.throws(() => ratingComparisonSet([input,input]));
   assert.throws(() => extractUnlockRating({ ...input, design: { ...design, role: 'challenge' } },comparison));
+  assert.throws(() => extractUnlockRating({ ...input, puzzle: { ...small, revision: small.revision + '-changed' } }, comparison), /does not bind/);
   const unknown = extractUnlockRating(input, comparison, 1);
   assert.equal(unknown.status, 'unknown'); assert.equal(scoreUnlockRating(small.id, unknown).metrics.D6.grade, null);
+  assert.equal(scoreUnlockRating(small.id, unknown).metrics.Q1.status, 'unknown');
   assert.equal(buildRatingGraph(small, 100, 1).status, 'unknown');
   for (const n of [0, -1, NaN, 1.5]) assert.throws(() => buildRatingGraph(small, n));
   const stuck = { ...small, containers: small.containers.slice(0,2), goal: { type: 'sort' as const, containers: ['b0','b1'] } };
   const graph = buildRatingGraph(stuck); assert.equal(graph.status, 'complete');
   if (graph.status === 'complete') { assert.equal(graph.shortestMoves, null); assert.ok(graph.deadEnds > 0); }
+  const stuckInput = { puzzle: stuck, design };
+  const stuckReport = complete(extractUnlockRating(stuckInput, ratingComparisonSet([stuckInput])));
+  const stuckScores = scoreUnlockRating(stuck.id, stuckReport);
+  assert.equal(stuckScores.solvability, 'unsolvable');
+  assert.equal(stuckScores.Q.score, null); assert.equal(stuckScores.D.score, null);
+  assert.equal(stuckScores.Q.blocked.length, 5); assert.equal(stuckScores.D.blocked.length, 6);
+  assert.ok(Object.values(stuckScores.metrics).every(m => m.status === 'blocked' && m.grade === null));
   assert.throws(() => buildRatingGraph({ ...small, amount: 'one' }));
   assert.throws(() => buildRatingGraph({ ...small, goal: { type: 'collect', container: 'b0', color: 'coral', count: 4, exact: true, exclusive: true } }));
 });
@@ -168,12 +175,6 @@ test('mechanical detours change exact route intervals without manufacturing thin
   const scores = scoreUnlockRating(puzzle.id,r);
   assert.equal(scores.metrics.D6.grade,0);
   for (const metric of ['Q1','Q2','Q4','D1','D2','D5'] as const) assert.equal(scores.metrics[metric].grade,null);
-  const review = reviewTemplate(puzzle.id,r);
-  for (const [key,item] of Object.entries(review.metrics)) {
-    if (!key.startsWith('Q')) continue;
-    item!.grade = 4; item!.reviewer = 'synthetic'; item!.reason = 'Aggregation-only fixture';
-    item!.checklist = item!.checklist.map(()=>true); item!.externalEvidence = ['test-only'];
-  }
-  const partial = scoreUnlockRating(puzzle.id,r,review);
-  assert.equal(partial.Q.score,80); assert.equal(partial.D.score,null);
+  assert.equal(scores.metrics.Q1.status, 'unimplemented');
+  assert.equal(scores.Q.score, null); assert.equal(scores.D.score, null);
 });

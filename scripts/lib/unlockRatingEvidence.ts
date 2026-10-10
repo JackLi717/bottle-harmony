@@ -4,7 +4,7 @@ import type { SortingPuzzle } from '../../src/game/engineModel.ts';
 import { buildRatingGraph, completeColors, type RatingGraph } from './unlockRatingGraph.ts';
 import { unlockTrialStructure } from './unlockTrialAudit.ts';
 
-export const UNLOCK_RATING_METHOD = 'classic-quality-evidence-v1';
+export const UNLOCK_RATING_METHOD = 'classic-quality-evidence-v2';
 export const sha256 = (value: unknown) => createHash('sha256').update(JSON.stringify(value)).digest('hex');
 export type RatingDesign = { role: 'teaching' | 'recovery' | 'challenge'; family: string;
   purpose: { event: 'sort' | 'key' | 'cover' | 'reveal' | 'order' | 'chain' | 'simultaneous'; description: string } };
@@ -176,7 +176,7 @@ function corridor(graph: RatingGraph, extra: number) {
     preparationToNextEvent: distribution(observed.flatMap(f => Number.isFinite(preparations[f.i]) ? [preparations[f.i]] : [])),
     rhythm: routeRhythm(graph, extra, widths), examples,
     consequenceEquivalence: 'Same exact remaining cost, fired set, empty receivers, free slots, sorted compatible capacities and known-color counts. A descriptive projection, not proof of equal strategic value.',
-    lookahead: { status: 'pending', reason: 'Public-cue similarity and distinguishing-horizon criterion need confirmed examples; preparation distance is not D1.' } };
+    lookahead: { status: 'unimplemented', reason: 'Public-cue similarity and distinguishing-horizon criterion need confirmed examples; preparation distance is not D1.' } };
 }
 
 function dependencies(graph: RatingGraph) {
@@ -236,7 +236,7 @@ function openTargets(puzzle: SortingPuzzle, targets: readonly string[]): Sorting
 }
 export function ratingComparisonSet(inputs: readonly RatingInput[]) {
   if (!inputs.length || new Set(inputs.map(i => i.puzzle.id)).size !== inputs.length) throw new Error('Comparison set must have unique puzzle IDs');
-  const structures = inputs.map(({ puzzle, design }) => { validateDesign(design); return { id: puzzle.id, family: design.family, designSha256: sha256(design),
+  const structures = inputs.map(({ puzzle, design }) => { validateDesign(design); return { id: puzzle.id, family: design.family, designSha256: sha256(design), definitionSha256: sha256(puzzle),
     structure: sha256(unlockTrialStructure(puzzle)),
     base: sha256(unlockTrialStructure({ ...puzzle, locked: [], hidden: [], triggers: [] })),
     features: { colors: puzzle.colors.length, bottles: puzzle.containers.length, keys: puzzle.triggers.filter(t => t.when.type === 'empty').length,
@@ -246,9 +246,10 @@ export function ratingComparisonSet(inputs: readonly RatingInput[]) {
 export function extractUnlockRating(input: RatingInput, comparison: ReturnType<typeof ratingComparisonSet>, maxStates = 250000, maxEdges = 4000000) {
   validateDesign(input.design);
   const { puzzle, design } = input;
-  const graph = buildRatingGraph(puzzle, maxStates, maxEdges);
   const own = comparison.structures.find(c => c.id === puzzle.id);
-  if (!own || own.designSha256 !== sha256(design) || own.structure !== sha256(unlockTrialStructure(puzzle))) throw new Error('Comparison set does not bind this puzzle');
+  if (!own || own.designSha256 !== sha256(design) || own.definitionSha256 !== sha256(puzzle)
+    || own.structure !== sha256(unlockTrialStructure(puzzle))) throw new Error('Comparison set does not bind this puzzle');
+  const graph = buildRatingGraph(puzzle, maxStates, maxEdges);
   const nearest = comparison.structures.filter(c => c.id !== puzzle.id).map(c => ({ id: c.id, family: c.family,
     exactDuplicate: c.structure === own.structure, sameBase: c.base === own.base,
     differences: Object.keys(own.features).filter(k => own.features[k as keyof typeof own.features] !== c.features[k as keyof typeof c.features]),
@@ -277,9 +278,9 @@ export function extractUnlockRating(input: RatingInput, comparison: ReturnType<t
       individual: puzzle.triggers.map(t => ({ trigger: t.id, openedTargets: t.unlock, result: ablate(openTargets(puzzle, t.unlock)) })) },
     information: { source: 'public visible state and public four-of-each inventory only', trace: timeline,
       fairness: puzzle.hidden.length || puzzle.locked.length ? 'unknown-alternative-worlds-not-enumerated' : 'fully-visible',
-      reasoningGrade: 'pending-human-review; reveal counts and full-truth costs do not establish inference demand' },
+      reasoningGrade: 'unimplemented-automatic-mapping; reveal counts and full-truth costs do not establish inference demand' },
     expression: { ruleChecks: { strictDefinition: true, fourOfEach: true, wholeBoardGoal: true, automaticEvents: true },
-      presentation: 'pending: verify readable conditions, linked targets, known/unknown distinction, reveal feedback and seen-relocked rendering with UI evidence' },
+      presentation: 'unimplemented automatic presentation checks: readable conditions, linked targets, known/unknown distinction, reveal feedback and seen-relocked rendering require presentation evidence' },
     novelty: { comparisonSha256: comparison.sha256, family: design.family, nearest,
       distanceMeaning: 'L1 distance of colors/bottles/keys/covers/hidden counts; descriptive only. Exact duplicates use full canonical structure. Neither distance nor family label gives Q5.' } };
   return { ...binding, status: 'complete' as const, evidence, evidenceSha256: sha256({ binding, evidence }), limits: RATING_LIMITS };

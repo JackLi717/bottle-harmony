@@ -1,10 +1,10 @@
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync } from 'node:fs';
 import { relative, resolve, sep } from 'node:path';
 import { UNLOCK_BASELINE } from '../src/game/unlockBaseline.ts';
 import { UNLOCK_CALIBRATION } from '../src/game/unlockCalibration.ts';
 import { UNLOCK_TRIAL } from '../src/game/unlockTrial.ts';
 import { extractUnlockRating, ratingComparisonSet, UNLOCK_RATING_METHOD, RATING_LIMITS, type RatingDesign, type RatingInput } from './lib/unlockRatingEvidence.ts';
-import { reviewTemplate, scoreUnlockRating } from './lib/unlockRatingScores.ts';
+import { scoreUnlockRating } from './lib/unlockRatingScores.ts';
 
 // Roles are editorial declarations, never selected by the evaluator to maximize Q.
 const designs: RatingDesign[] = [
@@ -29,7 +29,7 @@ function option(name: string, fallback?: string) {
   if (!value || value.startsWith('--') || args.lastIndexOf(name) !== index) throw new Error(`Expected one value for ${name}`);
   return value;
 }
-for (let i = 0; i < args.length; i += 2) if (!['--out', '--reviews', '--max-states', '--max-edges', '--set'].includes(args[i]) || !args[i + 1]) throw new Error(`Unknown or incomplete option: ${args[i]}`);
+for (let i = 0; i < args.length; i += 2) if (!['--out', '--max-states', '--max-edges', '--set'].includes(args[i]) || !args[i + 1]) throw new Error(`Unknown or incomplete option: ${args[i]}`);
 const set = option('--set', 'trial');
 if (set !== 'trial' && set !== 'calibration' && set !== 'baseline') throw new Error('Expected --set trial, calibration or baseline');
 const directory = resolve(option('--out', set === 'trial' ? 'builds/unlock-rating' : `builds/unlock-${set}-rating`)!);
@@ -43,33 +43,23 @@ const inputs: RatingInput[] = set === 'trial' ? UNLOCK_TRIAL.map((entry, i) => (
     purpose: { event: entry.puzzle.triggers.some(t => t.when.type === 'empty') ? 'key' : entry.puzzle.triggers.length ? 'cover' : entry.puzzle.hidden.length ? 'reveal' : 'sort',
       description: 'Calibration intent only: compare preparation, post-milestone sorting and compatible space with its paired board; human challenge is unconfirmed.' } } }));
 const comparison = ratingComparisonSet(inputs);
-const reviewPath = option('--reviews');
-const rawReviews: unknown = reviewPath ? JSON.parse(readFileSync(reviewPath, 'utf8')) : [];
-if (!Array.isArray(rawReviews)) throw new Error('Reviews must be an array');
-const reviews = new Map<string, unknown>();
-for (const review of rawReviews) {
-  if (!review || typeof review !== 'object' || typeof review.puzzle !== 'string' || reviews.has(review.puzzle) || !inputs.some(i => i.puzzle.id === review.puzzle)) throw new Error('Unknown or duplicate review puzzle');
-  reviews.set(review.puzzle, review);
-}
-// Never overwrite the file supplied as human evidence.
-const outputNames = ['report.md', 'summary.json', 'review-template.json', ...inputs.map(i => `${i.puzzle.id}.json`)];
-if (reviewPath && outputNames.some(name => resolve(reviewPath) === resolve(directory, name))) throw new Error('Use a separate reviews file, not a generated output path');
 mkdirSync(directory, { recursive: true });
-const summary = [], templates = [];
+const summary = [];
 for (const [i, input] of inputs.entries()) {
   console.log(`Evaluating ${i + 1}/${inputs.length}: ${input.puzzle.id}`);
   const report = extractUnlockRating(input, comparison, maxStates, maxEdges);
-  const scores = scoreUnlockRating(input.puzzle.id, report, reviews.get(input.puzzle.id));
+  const scores = scoreUnlockRating(input.puzzle.id, report);
   writeFileSync(resolve(directory, `${input.puzzle.id}.json`), JSON.stringify({ ...report, scores }, null, 2) + '\n');
-  templates.push(reviewTemplate(input.puzzle.id, report));
   summary.push({ number: i + 1, puzzle: input.puzzle.id, role: input.design.role, family: input.design.family,
-    status: report.status, evidenceSha256: report.evidenceSha256,
+    status: report.status, solvability: scores.solvability, evidenceSha256: report.evidenceSha256,
     shortestMoves: report.status === 'complete' && report.evidence.graph.status === 'complete' ? report.evidence.graph.shortestMoves : null,
     shortestStates: report.evidence?.shortest.states ?? null, plusTwoStates: report.evidence?.plusTwo.states ?? null,
-    D6: scores.metrics.D6.grade, Q: scores.Q, D: scores.D });
+    D6: scores.metrics.D6.grade, D6Status: scores.metrics.D6.status, Q: scores.Q, D: scores.D });
 }
 writeFileSync(resolve(directory, 'summary.json'), JSON.stringify({ method: UNLOCK_RATING_METHOD, comparisonSha256: comparison.sha256, limits: RATING_LIMITS, summary }, null, 2) + '\n');
-writeFileSync(resolve(directory, 'review-template.json'), JSON.stringify(templates, null, 2) + '\n');
-const table = summary.map(r => `| ${r.number} | ${r.role} | ${r.family} | ${r.shortestMoves ?? 'unknown'} | ${r.shortestStates ?? 'unknown'} / ${r.plusTwoStates ?? 'unknown'} | ${r.D6 ?? 'pending'} | ${r.Q.score ?? 'pending'} | ${r.D.score ?? 'pending'} |`).join('\n');
-writeFileSync(resolve(directory, 'report.md'), `# Classic quality and difficulty evidence\n\nMethod: ${UNLOCK_RATING_METHOD}\n\n${RATING_LIMITS}\n\n| Trial | Role | Family | Shortest pours | N / N+2 states | D6 grade | Q | D |\n| --- | --- | --- | ---: | ---: | ---: | ---: | ---: |\n${table}\n\nD6 is automatic. All other grades require a named reviewer, completed metric checklist, reason and bound evidence references. Q3 additionally requires UI evidence paths. Copy review-template.json to a separate file, complete reviews and rerun with --reviews. Missing grades stay pending; no weights are redistributed.\n\nPer-puzzle JSON includes complete-graph counts, route replay, all-shortest and plus-two distributions, bounded examples with all alternatives, public information trace, structural/dynamic trigger dependencies, individual/all-open/fully-visible ablations and duplicate/base comparisons. Descriptive consequence classes and count distances are not automatic quality grades. Public-world fairness, cue similarity and distinguishing foresight remain unproved.\n`);
+function axisStatus(axis: ReturnType<typeof scoreUnlockRating>['Q']) {
+  return axis.score ?? (axis.blocked.length ? 'blocked' : axis.unknown.length ? 'unknown' : 'unimplemented');
+}
+const table = summary.map(r => `| ${r.number} | ${r.role} | ${r.family} | ${r.shortestMoves ?? r.solvability} | ${r.shortestStates ?? 'unknown'} / ${r.plusTwoStates ?? 'unknown'} | ${r.D6 ?? r.D6Status} | ${axisStatus(r.Q)} | ${axisStatus(r.D)} |`).join('\n');
+writeFileSync(resolve(directory, 'report.md'), `# Classic quality and difficulty evidence\n\nMethod: ${UNLOCK_RATING_METHOD}\n\n${RATING_LIMITS}\n\n| Trial | Role | Family | Shortest pours | N / N+2 states | D6 grade | Q | D |\n| --- | --- | --- | ---: | ---: | ---: | ---: | ---: |\n${table}\n\nScores accept automatic algorithms only; no manual grade input or override is supported. D6 is implemented. Other automatic grade mappings remain unimplemented. Proven unsolvable originals block all grades; incomplete required searches remain unknown. Any missing metric blocks its Q or D total; no defaults or weight redistribution are used. See summary.json for separate unimplemented, unknown and blocked metric lists.\n\nPer-puzzle JSON includes complete-graph counts, route replay, all-shortest and plus-two distributions, bounded examples with all alternatives, public information trace, structural/dynamic trigger dependencies, individual/all-open/fully-visible ablations and duplicate/base comparisons. Descriptive consequence classes and count distances are not automatic quality grades. Public-world fairness, cue similarity and distinguishing foresight remain unproved.\n`);
 console.log(`Wrote ${directory}/report.md`);
