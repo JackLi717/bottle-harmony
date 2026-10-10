@@ -12,7 +12,7 @@
       "height": 1024,
       "bytes": 1648221,
       "sha256": "e00998bf58d2a5d9fb833f37313e209919785ae99d257e8a6fedbca5c6edf237",
-      "status": "user-approved implementation reference; runtime assets pending"
+      "status": "user-approved reference; editable SVG runtime implementation in internal EnginePreview; device acceptance recorded separately"
     },
     {
       "path": "cover-families-v1.png",
@@ -21,7 +21,7 @@
       "height": 1254,
       "bytes": 1693024,
       "sha256": "c23bc4559997d26a23edb105124528766460f581a4993bf7ad7af2572c2f71e5",
-      "status": "user-approved implementation reference; runtime assets pending"
+      "status": "user-approved reference; editable SVG runtime implementation in internal EnginePreview; device acceptance recorded separately"
     },
     {
       "path": "grouped/wood-linked-v1.png",
@@ -30,7 +30,7 @@
       "height": 1024,
       "bytes": 1662754,
       "sha256": "d85def1a8a54afc3a83302d7fc892dbd3154b597801d6b15818bfa87c9d7bb1e",
-      "status": "user-approved implementation reference; runtime assets pending"
+      "status": "user-approved reference; editable SVG runtime implementation in internal EnginePreview; device acceptance recorded separately"
     },
     {
       "path": "grouped/wood-roller-v1.png",
@@ -39,7 +39,7 @@
       "height": 1024,
       "bytes": 1599498,
       "sha256": "67c825480202e8aec5cfa19f26b9c7b2bb9695d3c683a5c9a7af8a118a43c1ca",
-      "status": "user-approved implementation reference; runtime assets pending"
+      "status": "user-approved reference; editable SVG runtime implementation in internal EnginePreview; device acceptance recorded separately"
     },
     {
       "path": "grouped/metal-louver-v1.png",
@@ -48,8 +48,8 @@
       "height": 1024,
       "bytes": 1581707,
       "sha256": "92b2a276ddf11740d86894943f72e1d309c0d176ba94f1bba5b71ed2799e1dbe",
-      "status": "user-approved implementation reference; runtime assets pending"
+      "status": "user-approved reference; editable SVG runtime implementation in internal EnginePreview; device acceptance recorded separately"
     }
   ],
-  "scope": "All five sheets retained and approved as implementation references. Implementation order, exact motion and acceptance plan are recommendations pending user decision."
+  "scope": "All five originals retained unchanged. User authorized implementation of all approved families and grouped variants. Runtime sources: src/art/UnlockCover.tsx, src/art/ProgressiveReveal.tsx, src/art/unlockPresentation.ts. Formal puzzle content and release remain separate."
 }

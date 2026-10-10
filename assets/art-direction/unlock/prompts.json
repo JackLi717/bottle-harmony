@@ -1,5 +1,5 @@
 {
-  "status": "User-approved implementation references, retained locally at original resolution; runtime artwork, animation and device acceptance not yet implemented.",
+  "status": "User-approved original references retained unchanged; editable SVG artwork and animation implemented in internal EnginePreview. See docs/color-unlock-plan.md and docs/device-support.md for scope and acceptance.",
   "tool": "built-in image_gen",
   "approvedBaseline": "static-baseline-v1.png",
   "visualDraft": "cover-families-v1.png",

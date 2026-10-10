@@ -98,10 +98,10 @@ export const VESSELS: readonly VesselDesign[] = [
     ], details: [],
   }),
   design({
-    id: 'moon', mouthY: 21, outer: 12, inner: 8, fillY: 78, cork: true,
-    shell: 'M39 21 H61 V51 C61 65 74 70 74 83 V154 Q74 168 63 168 H37 Q26 168 26 154 V83 C26 70 39 65 39 51 Z',
-    points: [[42,24],[58,24],[58,52],[61,63],[70,77],[71,84],[71,154],[68,160],[61,163],[39,163],[32,160],[29,154],[29,84],[30,77],[39,63],[42,52]],
-    highlights: [{ path: 'M43 30 V52 Q43 63 37 69 M34 82 Q32 92 32 101 V149 Q32 157 39 158', width: 1.8, opacity: .36 }, { path: 'M67 99 V146', opacity: .19 }],
+    id: 'moon', mouthY: 25, outer: 12, inner: 8, fillY: 78, cork: true,
+    shell: 'M39 25 H61 V51 C61 65 74 70 74 83 V154 Q74 168 63 168 H37 Q26 168 26 154 V83 C26 70 39 65 39 51 Z',
+    points: [[42,28],[58,28],[58,52],[61,63],[70,77],[71,84],[71,154],[68,160],[61,163],[39,163],[32,160],[29,154],[29,84],[30,77],[39,63],[42,52]],
+    highlights: [{ path: 'M43 34 V52 Q43 63 37 69 M34 82 Q32 92 32 101 V149 Q32 157 39 158', width: 1.8, opacity: .36 }, { path: 'M67 99 V146', opacity: .19 }],
     details: [{ path: 'M42 64 Q48 71 56 64 Q50 74 42 64', opacity: .3 }],
   }),
   design({
@@ -155,10 +155,10 @@ export const VESSELS: readonly VesselDesign[] = [
     details: [{ path: 'M25 148 L35 155 L29 164 L41 168 L45 155 H55 L59 168 L71 164 L65 155 L75 148 M35 155 L41 168 L50 160 L59 168 L65 155 M29 164 L50 160 L71 164', opacity: .58 }],
   }),
   design({
-    id: 'flute', mouthY: 22, outer: 22, inner: 18, fillY: 37,
-    shell: 'M28 22 H72 L69 84 C68 102 60 117 53 121 H47 C40 117 32 102 31 84 Z',
-    points: [[32,25],[68,25],[65,83],[63,94],[59,105],[54,115],[50,118],[46,115],[41,105],[37,94],[35,83]],
-    highlights: [{ path: 'M36 34 L39 83 Q41 105 48 111', width: 1.8, opacity: .38 }, { path: 'M63 38 L60 84', opacity: .18 }],
+    id: 'flute', mouthY: 26, outer: 22, inner: 18, fillY: 37,
+    shell: 'M28 26 H72 L69 84 C68 102 60 117 53 121 H47 C40 117 32 102 31 84 Z',
+    points: [[32,29],[68,29],[65,83],[63,94],[59,105],[54,115],[50,118],[46,115],[41,105],[37,94],[35,83]],
+    highlights: [{ path: 'M36 38 L39 83 Q41 105 48 111', width: 1.8, opacity: .38 }, { path: 'M63 42 L60 84', opacity: .18 }],
     details: stem(121),
   }),
   design({

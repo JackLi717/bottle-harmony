@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, type ReactNode } from 'react';
 import { Platform } from 'react-native';
 import Animated, { cancelAnimation, Easing, useAnimatedProps, useAnimatedReaction, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming, type SharedValue } from 'react-native-reanimated';
 import Svg, { ClipPath, Defs, Ellipse, G, LinearGradient, Path, RadialGradient, Stop, Text as SvgText } from 'react-native-svg';
@@ -15,6 +15,7 @@ import { PourRipples } from './PourRipples';
 import { corkContact, pourFocus, receiverResponse } from './pourPresentation';
 import { MemoryReveal } from './MemoryReveal';
 import { MEMORY_UNKNOWN_FILL, memoryLayerGeometry, memoryMarkPaint } from './memoryPresentation';
+import { ProgressiveReveal } from './ProgressiveReveal';
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 const AnimatedEllipse = Animated.createAnimatedComponent(Ellipse);
@@ -29,14 +30,15 @@ type LiquidLayerProps = {
   liquid: SharedValue<LiquidLayerFrame[]>;
   id: string;
   hidden?: boolean;
+  unknownFill?: string;
 };
 
-function LiquidLayer({ color, layer, firstLayer, count, liquid, id, hidden = false }: LiquidLayerProps) {
+function LiquidLayer({ color, layer, firstLayer, count, liquid, id, hidden = false, unknownFill = MEMORY_UNKNOWN_FILL }: LiquidLayerProps) {
   const props = useAnimatedProps(() => ({
     d: liquid.value[layer]?.path ?? '',
     opacity: count.value > firstLayer ? 1 : 0,
   }));
-  return <AnimatedPath animatedProps={props} fill={hidden ? MEMORY_UNKNOWN_FILL : `url(#${id}-${color})`} stroke="#FFFFFF" strokeOpacity={0.075} strokeWidth={0.5} />;
+  return <AnimatedPath animatedProps={props} fill={hidden ? unknownFill : `url(#${id}-${color})`} stroke="#FFFFFF" strokeOpacity={0.075} strokeWidth={0.5} />;
 }
 
 function LiquidSymbol({ color, layer, liquid, opacity, symbols }: { color: ColorId; layer: number; liquid: SharedValue<LiquidLayerFrame[]>; opacity: SharedValue<number>; symbols: typeof LIQUID_SYMBOLS }) {
@@ -133,10 +135,14 @@ export type BottleProps = {
   markedLayers?: readonly boolean[];
   revealingLayers?: readonly boolean[];
   revealProgress?: SharedValue<number>;
+  progressiveLayers?: readonly boolean[];
+  separateLayers?: boolean;
+  unknownFill?: string;
+  baseDecoration?: ReactNode;
 };
 
 /** Glass art remains static; liquid paths and transforms update on the UI thread. */
-export const Bottle = memo(function Bottle({ index, colors, selected, hinted = false, completed, prepareCompletion = false, width, scale, plan, pour, progress, position, symbols = false, completionEffect = 'gold', completionScene = 'preview', completionReplay = 0, completionAnimations = true, vessel = DEFAULT_VESSEL, frozenBottom = false, hiddenLayers = [], markedLayers = [], revealingLayers = [], revealProgress, hiddenPour = false, palette = LIQUIDS, symbolMap = LIQUID_SYMBOLS }: BottleProps) {
+export const Bottle = memo(function Bottle({ index, colors, selected, hinted = false, completed, prepareCompletion = false, width, scale, plan, pour, progress, position, symbols = false, completionEffect = 'gold', completionScene = 'preview', completionReplay = 0, completionAnimations = true, vessel = DEFAULT_VESSEL, frozenBottom = false, hiddenLayers = [], markedLayers = [], revealingLayers = [], revealProgress, progressiveLayers = [], separateLayers = false, unknownFill = MEMORY_UNKNOWN_FILL, baseDecoration, hiddenPour = false, palette = LIQUIDS, symbolMap = LIQUID_SYMBOLS }: BottleProps) {
   const isSource = pour?.source === index;
   const isTarget = pour?.target === index;
   const id = `bottle-${index}-${vessel.id}`;
@@ -157,8 +163,8 @@ export const Bottle = memo(function Bottle({ index, colors, selected, hinted = f
   });
   const complete = useDerivedValue(() => completionVisible(completed, count.value, vessel.logicalCapacity ?? 4));
   // Unknown portions never merge visually or expose their real color/symbol through animation.
-  const presentationColors = colors.map((c, i) => hiddenLayers[i] ? `unknown-${i}` : c);
-  const liquid = useDerivedValue(() => liquidFrame(presentationColors, count.value, angle.value, vessel, symbols || hiddenLayers.some(Boolean)));
+  const presentationColors = colors.map((c, i) => separateLayers || hiddenLayers[i] || progressiveLayers[i] ? `unknown-${i}` : c);
+  const liquid = useDerivedValue(() => liquidFrame(presentationColors, count.value, angle.value, vessel, symbols || hiddenLayers.some(Boolean) || progressiveLayers.some(Boolean)));
   const completionTimeline = useSharedValue(1);
   useAnimatedReaction(() => ({ complete: complete.value, scene, effect, replay: completionReplay, enabled: completionAnimations, prepared: prepareCompletion }), (current, previous) => {
     if (shouldCelebrateCompletion(current, previous)) {
@@ -243,8 +249,8 @@ export const Bottle = memo(function Bottle({ index, colors, selected, hinted = f
         </AnimatedG>}
         <AnimatedPath d={vessel.shell} fill={`url(#${id}-glass)`} animatedProps={shell} />
         <G clipPath={`url(#${id}-inside)`}>
-          {liquidRuns(presentationColors).reverse().map(({ color, firstLayer }) => (
-            <LiquidLayer key={firstLayer} color={color} hidden={!!hiddenLayers[firstLayer]} layer={firstLayer} firstLayer={firstLayer} count={count} liquid={liquid} id={id} />
+          {liquidRuns(presentationColors).reverse().map(({ firstLayer }) => (
+            <LiquidLayer key={firstLayer} color={colors[firstLayer]} hidden={!!hiddenLayers[firstLayer]} unknownFill={unknownFill} layer={firstLayer} firstLayer={firstLayer} count={count} liquid={liquid} id={id} />
           ))}
           {frozenBottom && colors.length > 0 && <G>
             <Path d={liquidPath(1, 0, vessel)} fill="#C6F3FF" fillOpacity={0.35} stroke="#E8FCFF" strokeOpacity={0.8} strokeWidth={1.2} />
@@ -263,6 +269,7 @@ export const Bottle = memo(function Bottle({ index, colors, selected, hinted = f
             </G>;
           })}
           {revealProgress && revealingLayers.some(Boolean) && <MemoryReveal layers={revealingLayers} vessel={vessel} pourProgress={progress} visibleLayers={count} progress={revealProgress} />}
+          {progressiveLayers.some(Boolean) && <ProgressiveReveal layers={progressiveLayers} liquid={liquid} progress={progress} />}
           <AnimatedEllipse cx={50} rx={24.5} ry={3.5} fill="#FFFFFF" animatedProps={surface} />
           {isTarget && <>
             <AnimatedPath animatedProps={innerStream} fill="none" stroke={flowColor.main} strokeWidth={3.3} strokeLinecap="round" />
@@ -303,6 +310,7 @@ export const Bottle = memo(function Bottle({ index, colors, selected, hinted = f
           <AnimatedPath d={`M${50 - mouth.inner * .6},${mouth.y - 10} Q${50 - mouth.inner * .35},${mouth.y - 12} 50,${mouth.y - 10}`} fill="none" stroke="#FFF4D8" strokeWidth={1} strokeLinecap="round" animatedProps={contact} />
         </AnimatedG>}
         {isSource && <AnimatedPath animatedProps={spout} fill="none" stroke={flowColor.main} strokeWidth={3.5} strokeLinecap="round" />}
+        {baseDecoration}
       </Svg>
     </Animated.View>
   );

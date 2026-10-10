@@ -183,6 +183,17 @@ C 使用引擎升级前 fbdba45 的原始 Bottle 及其绘制依赖、getPour／
 
 复现独立构建：`APP_VARIANT=engine-acceptance ANALYTICS_ENV=offline EXPO_PUBLIC_INTERNAL_TOOLS=true npm run android:apk`。安装该包后运行 `node --experimental-strip-types scripts/benchmark-engine-android.ts <adb-serial>` 采集正常 CPU／提示／原生 SQLite；显式加 --diagnose 才读取诊断计数。渲染采集和分段命令见[架构性能验证](system-design.md#性能验证)，界面操作与命令行工作负载分别记录。
 
+## 机关美术实施与验收（10 月 10 日）
+
+用户已授权实现全部五张原图对应的共用标记、单瓶布盖、单／双／三瓶联格木匣、百叶及卷帘，并在审阅实际效果后指出第 2／10 款玻璃偏高、第 8／12／13 款匣子漏光。当前源码已微调 moon／flute 瓶口各 4 个绘图单位，底部不变；门板与边框重叠且未见锁瓶不绘玻璃高光。正式题库、规则、1900 ms 时钟及玩家库没有因本轮美术接入而改变。
+
+- 当前修正版 292／292 项全量自动回归、TypeScript、ESLint 通过；另有 25 项几何／表现专项通过，涵盖十五款几何、移动口部连接、钥匙／颜色一二三瓶、显色边界、知识及重来。
+- Web 手机宽度 390×844 实际核对四家族，木匣第 8／12／13 款关闭不再透出玻璃轮廓；第 2／10 款高度、打开、已见重锁、逐层显色、撤销保留知识及重来恢复遮盖均检查。固定八动作自动样板在浏览器完成并停止；不算 Android 帧率证据。
+- Android arm64 独立非 debuggable Release／Hermes 构建与覆盖安装成功；只更新 com.bottleharmony.engineacceptance。APK SHA-256 为 5a558bf061cf1b182126e363ba3e2e4b68f8461e85c33d438fe0a3f0aed68886，Hermes JS SHA-256 为 5c8bb3855f9deccd8b31c1dbecfc91e8e650910e3337fd41f09bd128aea34df5。iOS bundle 导出通过，未构建安装本轮 iPhone 原生包。
+- 正式 Play 应用安装后仍为 0.1.4（8）、lastUpdateTime 2026-10-09 20:10:07、来源 com.android.vending；没有覆盖、卸载、清理或读取其私有数据库。五张概念原图大小／哈希全部一致。原图来源记录继续保留。
+
+真机镜像恢复可见后，工具点击没有生效，尚未执行本轮原占位／新美术各八动作短对照，也未完成本轮原生取消及十五款动态外观验收。因此不能称新增美术的真机性能或上线验收已通过；此前 p95／p99 未达标结论不变。计划仍限定最多 16 次、同一包／进程／十二瓶／镜像策略，不录屏、不在倒水中轮询，只在 settle 后读取一次帧缓冲；完成或覆盖不完整／进程变化／取消即停，不自动重跑。原生短录屏另行进行，不混入计时。全部日志、实际截图、产物身份与有界采集脚本留在忽略的 builds/unlock-effects/，不归档到 docs/。
+
 ## 待验与安装边界
 
 1. 手机 Play 原地升级须使用同一 Play 签名交付；任何安装前核对版本、签名与产物哈希，不卸载或清理玩家数据。
