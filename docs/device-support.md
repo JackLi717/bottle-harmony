@@ -91,6 +91,10 @@ Production 上传证书／R8 候选 APK 在独立模拟器运行，真实 16384 
 
 Android 独立验收构建使用 APP_VARIANT=engine-acceptance，包名 com.bottleharmony.engineacceptance，强制离线、内部工具开启、Release／Hermes，不依赖 Metro；不上传商店。本轮最终 APK SHA-256 为 7f67d615dba44760197b169f50221dc7cd335023e1176930767c7c54d47a2df3，Hermes JS SHA-256 为 4d43143eb5502fa38caa7709ab6b8985974644189b26f2f6867f510be6a021d1；T517D 安装成功，Activity 冷启动 976 ms，进程存活且捕获日志未观察到本应用致命异常。该计时不是可操作首帧或持续性能证据。原 Play 包复核仍为 0.1.4（8），未覆盖。原生 CPU 工作负载与桌面共用；存储测量另外创建并清理一次性验收数据库，WAL／synchronous=FULL，256 次事务和完整读回，不使用玩家库。
 
+启动期 gfxinfo 仅有 8 帧，4 帧被系统标为 jank，p95／p99 为 400 ms；进程启动样本 PSS 约 169 MiB、RSS 约 268 MiB。样本包含挂载，不能作为持续倒水的帧分位数，也未达到画面流畅验收；必须继续测量具体操作和内存走势。
+
+复现独立构建：`APP_VARIANT=engine-acceptance ANALYTICS_ENV=offline npm run android:apk`。
+
 精确产物、签名、测量原始数据及截图保留在忽略的 builds/engine-upgrade/。已连接 T517D，记录到约 3.66 GiB 可见 RAM、MT6769V/CB、Android 15；连接时正在充电，电池温度 30°C。本次不能从电量变化推算耗电。真实手机的提示、渲染、存储与持续操作须以该设备实际结果判定；Android Studio 首次 USB 镜像确认仍待用户答复，尚未操作验收界面，不以构建成功或模拟器冷启代替。
 
 ## 待验与安装边界
