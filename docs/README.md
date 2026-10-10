@@ -10,7 +10,7 @@
 | [游玩流程](play-flow.md) | 经典主线、副关、重玩、帮助、恢复、设置与教学 |
 | [颜色记忆](memory-mode-plan.md) | 当前黑色规则、百题、离线评级与尚待校准边界 |
 | [调色内部试验](mixing-mode.md) | 已接入内部构建的六题、配方、成果和保存；公开编排尚未确定 |
-| [系统架构](system-design.md) | 当前模块、数据流、核心接口、求解与持久化边界 |
+| [系统架构](system-design.md) | 当前模块、数据流、接口与保存；未实现的容器／转移／目标契约、原子动作与知识边界、求解／存储改造及分阶段验收 |
 | [制作配方](production-plan.md) | 当前经典千关结构、节奏与验收约束 |
 | [生成与验证](generation.md) | 内容来源、验证流程及制作命令 |
 | [难度模型](difficulty-calibration.md) | 已实现的经典代理、规划证据和真人校准要求 |
@@ -26,7 +26,7 @@
 | 文档 | 状态与范围 |
 | --- | --- |
 | [经典关卡扩展](color-unlock-plan.md) | 未实现：经典排序渐进引入钥匙、盖布与逐层显色；已确认规则、底层扩展设计、验证与待定编排 |
-| [商业规则与创意](gameplay-ideas.md) | 已确认待实现的产品规则与待评审候选分开；保留 1–157 稳定编号 |
+| [商业规则与创意](gameplay-ideas.md) | 已确认待实现的产品规则与待评审候选分开；保留 1–158 稳定编号 |
 
 素材与商店说明分别在[音频](../assets/audio/README.md)、[品牌](../assets/brand/README.md)、[Google Play](../store/google-play/README.md)及[商店截图](../store/google-play/screenshots/README.md)。
 
