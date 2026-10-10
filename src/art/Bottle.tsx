@@ -31,14 +31,21 @@ type LiquidLayerProps = {
   id: string;
   hidden?: boolean;
   unknownFill?: string;
+  restingPath?: string;
 };
 
-function LiquidLayer({ color, layer, firstLayer, count, liquid, id, hidden = false, unknownFill = MEMORY_UNKNOWN_FILL }: LiquidLayerProps) {
+function LiquidLayer({ color, layer, firstLayer, count, liquid, id, hidden = false, unknownFill = MEMORY_UNKNOWN_FILL, restingPath }: LiquidLayerProps) {
   const props = useAnimatedProps(() => ({
     d: liquid.value[layer]?.path ?? '',
     opacity: count.value > firstLayer ? 1 : 0,
   }));
-  return <AnimatedPath animatedProps={props} fill={hidden ? unknownFill : `url(#${id}-${color})`} stroke="#FFFFFF" strokeOpacity={0.075} strokeWidth={0.5} />;
+  const fill = hidden ? unknownFill : `url(#${id}-${color})`;
+  // Newly disclosed native SVG layers can retain an animated path after its
+  // owner is cancelled. An idle progressive board draws committed geometry
+  // directly; the glass and the active pour keep their existing native nodes.
+  return restingPath !== undefined
+    ? <Path d={restingPath} fill={fill} stroke="#FFFFFF" strokeOpacity={0.075} strokeWidth={0.5} />
+    : <AnimatedPath animatedProps={props} fill={fill} stroke="#FFFFFF" strokeOpacity={0.075} strokeWidth={0.5} />;
 }
 
 function LiquidSymbol({ color, layer, liquid, opacity, symbols }: { color: ColorId; layer: number; liquid: SharedValue<LiquidLayerFrame[]>; opacity: SharedValue<number>; symbols: typeof LIQUID_SYMBOLS }) {
@@ -165,6 +172,8 @@ export const Bottle = memo(function Bottle({ index, colors, selected, hinted = f
   // Unknown portions never merge visually or expose their real color/symbol through animation.
   const presentationColors = colors.map((c, i) => separateLayers || hiddenLayers[i] || progressiveLayers[i] ? `unknown-${i}` : c);
   const liquid = useDerivedValue(() => liquidFrame(presentationColors, count.value, angle.value, vessel, symbols || hiddenLayers.some(Boolean) || progressiveLayers.some(Boolean)));
+  const restingLiquid = separateLayers && !isSource && !isTarget
+    ? liquidFrame(presentationColors, colors.length, 0, vessel, false) : null;
   const completionTimeline = useSharedValue(1);
   useAnimatedReaction(() => ({ complete: complete.value, scene, effect, replay: completionReplay, enabled: completionAnimations, prepared: prepareCompletion }), (current, previous) => {
     if (shouldCelebrateCompletion(current, previous)) {
@@ -250,7 +259,7 @@ export const Bottle = memo(function Bottle({ index, colors, selected, hinted = f
         <AnimatedPath d={vessel.shell} fill={`url(#${id}-glass)`} animatedProps={shell} />
         <G clipPath={`url(#${id}-inside)`}>
           {liquidRuns(presentationColors).reverse().map(({ firstLayer }) => (
-            <LiquidLayer key={firstLayer} color={colors[firstLayer]} hidden={!!hiddenLayers[firstLayer]} unknownFill={unknownFill} layer={firstLayer} firstLayer={firstLayer} count={count} liquid={liquid} id={id} />
+            <LiquidLayer key={firstLayer} color={colors[firstLayer]} hidden={!!hiddenLayers[firstLayer]} unknownFill={unknownFill} layer={firstLayer} firstLayer={firstLayer} count={count} liquid={liquid} id={id} restingPath={restingLiquid?.[firstLayer].path} />
           ))}
           {frozenBottom && colors.length > 0 && <G>
             <Path d={liquidPath(1, 0, vessel)} fill="#C6F3FF" fillOpacity={0.35} stroke="#E8FCFF" strokeOpacity={0.8} strokeWidth={1.2} />

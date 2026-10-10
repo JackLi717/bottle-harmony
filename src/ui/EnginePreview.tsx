@@ -45,6 +45,8 @@ export function EnginePreview({ vessel: preferredVessel, symbols: showSymbols, s
   const [index, setIndex] = useState(0), [session, setSession] = useState(() => createEngineSession(ENGINE_EXAMPLES[0], 'preview-0'));
   const current = useRef(session);
   const [selected, setSelected] = useState<number | null>(null), [animation, setAnimation] = useState<Animation | null>(null), [notice, setNotice] = useState('');
+  const [bottleEpochs, setBottleEpochs] = useState<Readonly<Record<string, number>>>({});
+  const animatedBottles = useRef<readonly string[]>([]);
   const [searching, setSearching] = useState(false), [active, setActive] = useState(AppState.currentState === 'active');
   const [benchmarking, setBenchmarking] = useState(false);
   const [family, setFamily] = useState<CoverFamily>('wood'), [artCount, setArtCount] = useState<1 | 2 | 3 | null>(null);
@@ -72,6 +74,16 @@ export function EnginePreview({ vessel: preferredVessel, symbols: showSymbols, s
   const designs = useMemo(() => puzzle.containers.map(c => vesselAtCapacity(vessel, c.capacity)), [puzzle, vessel]);
   const visible = visibleEngineState(runtime, session.state, session.known, session.seen);
   const cancel = useCallback(() => {
+    // Android can retain the last native animated placement after backgrounding.
+    // Recreate only the interrupted pair from committed state, never all bottles
+    // or the ordinary start/finish path. This is presentation identity, not a save.
+    const interrupted = animatedBottles.current;
+    if (interrupted.length) setBottleEpochs(previous => {
+      const next = { ...previous };
+      for (const id of interrupted) next[id] = (next[id] ?? 0) + 1;
+      return next;
+    });
+    animatedBottles.current = [];
     if (artRun.current) console.info('UNLOCK_RENDER', JSON.stringify({ ...artRun.current, label: 'cancel', uptimeMilliseconds: performance.now() }));
     artRun.current = null; setArtChecking(false);
     handoffRun.current = -1; setHandoffRunning(false);
@@ -97,6 +109,7 @@ export function EnginePreview({ vessel: preferredVessel, symbols: showSymbols, s
     return () => clearTimeout(timeout);
   }, [reduceMotion, cancel, progress]);
   const finish = useCallback(() => {
+    animatedBottles.current = [];
     busy.current = false; setAnimation(null); setSelected(null);
     if (artRun.current) {
       console.info('UNLOCK_RENDER', JSON.stringify({ ...artRun.current, label: 'settle', uptimeMilliseconds: performance.now() }));
@@ -134,6 +147,7 @@ export function EnginePreview({ vessel: preferredVessel, symbols: showSymbols, s
     // Commit the complete logic before creating any presentation task.
     commit(result.session); setSelected(null);
     if (reduceMotion || before.runtime.puzzle.containers[source].fixed) return true;
+    animatedBottles.current = [action.source, action.target];
     busy.current = true; progress.set(0);
     setAnimation({ before: frame, unitsBefore: before.state.contents, firedBefore: before.state.fired, pour, plan: createPourPlan(layout.positions[source], layout.positions[target], frame[source].colors.length, pour.amount,
       -70, 12, layout.width, layout.height, designs[source], designs[target]) });
@@ -348,7 +362,7 @@ export function EnginePreview({ vessel: preferredVessel, symbols: showSymbols, s
           const position = layout.positions[i], colors = container.colors.map(c => c ?? 'unknown'), hidden = container.colors.map(c => c === null);
           const keys = puzzle.triggers.filter(trigger => trigger.when.type === 'empty' && trigger.when.container === container.id
             && (!session.state.fired.includes(trigger.id) || animation && !animation.firedBefore.includes(trigger.id)));
-          return <View key={container.id} pointerEvents="none" style={StyleSheet.absoluteFill}>
+          return <View key={container.id + ':' + (bottleEpochs[container.id] ?? 0)} pointerEvents="none" style={StyleSheet.absoluteFill}>
             <UnlockBottleVisibility concealed={artEnabled && visible[i].locked && visible[i].count === null} delayed={!!animation && animation.before[i].count === null && !visible[i].locked} progress={progress}>
             <Bottle index={i} vessel={designs[i]} colors={colors} hiddenLayers={hidden} palette={palette} symbolMap={symbols} selected={selected === i}
               completed={!hidden.some(Boolean) && isBottleComplete(colors, container.capacity)} position={position} width={100 * scale} scale={scale}
