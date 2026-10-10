@@ -7,7 +7,7 @@ import { parseRenderEvent, partitionRenderFrames } from './lib/androidRenderMark
 import { measurement } from '../src/game/engineBenchmark.ts';
 
 const [command, serial, argument, label] = process.argv.slice(2);
-if (!['start', 'mark', 'stop'].includes(command) || !/^[a-zA-Z0-9_.:-]+$/.test(serial ?? '')) throw new Error('Usage: measure-engine-render.ts start <serial> <seconds:1-900> | mark <serial> <render_run_id> <phase> | stop <serial> <render_run_id>');
+if (!['start', 'mark', 'stop'].includes(command) || !/^[a-zA-Z0-9_.:-]+$/.test(serial ?? '')) throw new Error('Usage: measure-engine-render.ts start <serial> <seconds:1-1800> [render_auto_id] | mark <serial> <render_run_id> <phase> | stop <serial> <render_run_id>');
 const adb = process.env.ADB ?? join(homedir(), 'Library/Android/sdk/platform-tools/adb'), application = 'com.bottleharmony.engineacceptance';
 const run = (...args: string[]) => execFileSync(adb, ['-s', serial, ...args], { encoding: 'utf8', timeout: 20000, maxBuffer: 16 * 1024 * 1024 });
 if (command !== 'start') {
@@ -25,7 +25,9 @@ if (command !== 'start') {
   }
 } else {
   const seconds = Number(argument);
-  if (!Number.isInteger(seconds) || seconds < 1 || seconds > 900) throw new Error('Invalid measurement duration');
+  if (!Number.isInteger(seconds) || seconds < 1 || seconds > 1800) throw new Error('Invalid measurement duration');
+  const attachedRunId = label;
+  if (attachedRunId && !/^render_auto_\d+$/.test(attachedRunId)) throw new Error('Invalid attached workload identity');
   const runId = `render_${Date.now()}`, folder = resolve('builds/engine-upgrade', runId); mkdirSync(join(folder, 'frames'), { recursive: true });
   const save = (name: string, text: string) => writeFileSync(join(folder, name), text);
   const pid = run('shell', 'pidof', application).trim();
@@ -33,8 +35,8 @@ if (command !== 'start') {
   const apk = run('shell', 'pm', 'path', application).trim().replace(/^package:/, '');
   if (!/^\/data\/app\/[a-zA-Z0-9_~=+./-]+\/base\.apk$/.test(apk)) throw new Error('Unexpected acceptance APK path');
   save('apk-sha256.txt', run('shell', 'sha256sum', apk));
-  save('identity.json', JSON.stringify({ serial, pid, application, runId, startHostMilliseconds: Date.now() }, null, 2));
-  save('reset.txt', run('shell', 'dumpsys', 'gfxinfo', application, 'reset'));
+  save('identity.json', JSON.stringify({ serial, pid, application, runId, attachedRunId, startHostMilliseconds: Date.now() }, null, 2));
+  save('reset.txt', attachedRunId ? 'Attached read-only; existing native buffer preserved.\n' : run('shell', 'dumpsys', 'gfxinfo', application, 'reset'));
   const initial = run('shell', 'dumpsys', 'gfxinfo', application, 'framestats'), since = parseAndroidFrames(initial).since;
   if (!since) throw new Error('Missing graphics reset boundary');
   save('initial.txt', initial); save('markers.jsonl', '');
@@ -42,7 +44,7 @@ if (command !== 'start') {
   const initialUptime = parseAndroidFrames(initial).uptimeMilliseconds;
   if (initialUptime === null) throw new Error('Missing initial native uptime');
   const log = spawn(adb, ['-s', serial, 'logcat', '-T', '1', '--pid=' + pid, '-s', 'ReactNativeJS:I', '-v', 'raw'], { stdio: ['ignore', 'pipe', 'pipe'] });
-  const liveRuns = new Set<string>(); let logBuffer = '', logError = '', renderEvents = 0, autoTerminal: string | null = null;
+  const liveRuns = new Set<string>(attachedRunId ? [attachedRunId] : []); let logBuffer = '', logError = '', renderEvents = 0, autoTerminal: string | null = null;
   save('render-events.jsonl', '');
   log.on('error', error => { logError = String(error); });
   log.on('exit', (code, signal) => { if (signal !== 'SIGTERM' && !logError) logError = `Render log ended unexpectedly (${code ?? signal})`; });
@@ -98,7 +100,7 @@ if (command !== 'start') {
   if (finalUptime === null) throw new Error('Missing final native uptime');
   const frames = [...unique.values()], groups = partitionRenderFrames(frames, [...markers, ...automatic], initialUptime, finalUptime);
   const report = { format: 'engine-android-render-v2', runId, pid, wallMilliseconds: Date.now() - start, observations,
-    renderEvents, autoTerminal, renderLogError: logError, collectionError,
+    renderEvents, autoTerminal, attachedRunId, renderLogError: logError, collectionError,
     note: 'Actual package frames; mirror:on/off markers identify USB mirroring intervals, otherwise unknown. FrameCompleted minus IntendedVsync in milliseconds. Flags=0 measured separately; flagged frames and raw rows retained. Recent native buffers are polled and deduplicated. Not display-present intervals, audio latency, power or peak-memory measurements.',
     invalidObservations, capturedFrames: frames.length, phases: groups.map(({ phase, mirroring, frames: values }) => ({ phase, mirroring,
       valid: measurement(values.filter(frame => frame.flags === 0).map(frame => frame.milliseconds)),

@@ -158,7 +158,7 @@ flowchart TD
 npm run benchmark:engine
 node --experimental-strip-types scripts/benchmark-engine-android.ts <adb-serial>
 node --experimental-strip-types scripts/benchmark-engine-android.ts <adb-serial> --diagnose
-node --experimental-strip-types scripts/measure-engine-render.ts start <adb-serial> 900
+node --experimental-strip-types scripts/measure-engine-render.ts start <adb-serial> 1800
 node --experimental-strip-types scripts/measure-engine-render.ts mark <adb-serial> <render_run_id> pour:classic
 node --experimental-strip-types scripts/measure-engine-render.ts mark <adb-serial> <render_run_id> mirror:off
 node --experimental-strip-types scripts/measure-engine-render.ts stop <adb-serial> <render_run_id>
@@ -176,6 +176,8 @@ Android 命令只连接独立 engine-acceptance Release，以受系统 DUMP 权�
 `measure-engine-render.ts` 只读独立验收包的 `gfxinfo framestats`，每 700 ms 轮询原始缓冲，按窗口／原生时钟去重，绑定 APK 与进程；`mark` 使用设备 Uptime 分段，不用主机时钟猜测。统计 `FrameCompleted - IntendedVsync`，挂载与实际倒水分开，系统标记帧另列；未完成行保留在原始记录，不当成掉帧数量。镜像开启／关闭用独立的 `mirror:on`／`mirror:off` 标记，不随倒水阶段丢失；没有标记的时段为 unknown。该指标不是屏幕实际呈现间隔、音频延迟或功耗。采集时间不等于持续操作时间，闲置与构建等待不能算作十分钟游玩。
 
 内部验收页的“持续渲染验收”由界面启动，自动执行十五款容器各五条固定完整路线，共 75 组／360 次倒水，使用原会话提交和动画时钟。每次挂载／倒水／结束输出有界 ENGINE_RENDER 事件；Android RN 0.86 的 performance.now 原生单调时钟必须落在 gfxinfo Uptime 窗口内，否则拒绝归类。采集器只读当前独立进程日志，遇完成／失败／取消停止；后台、离开、缩放及手动停止取消任务，不写玩家库。独立测量 Activity 使用局部 keep-screen-on，关闭电脑镜像后仍可持续测量，不修改手机系统设置；公开配置撤回该标志。路线及几何自动回归只证明工作负载可执行，实际手机完成记录和帧门槛另验。
+
+采集上限为 1800 秒。需要接续同一运行时，`start <serial> <seconds> <render_auto_id>` 只读附加到明确的工作负载 ID，不重置 native buffer；证据必须保留各段包／进程、重叠时钟及去重后的帧，不能把不同进程或题目拼接为连续运行。断连、日志退出、取消及未完成均记录，不能算通过。关闭 IDE 可能同时重启 ADB／取消当前表现，不能只据镜像窗口消失宣称取得无镜像的完整测试。
 
 原生绘制诊断可在独立验收配置额外指定 `ENGINE_SVG_TRACE=true`，通过 `withSvgTrace` 给固定版本 SVG 的位图分配和子元素绘制添加 Perfetto 区段及视口尺寸，不改变分配和绘制算法。插件核对完整依赖源码哈希，可重复应用／撤回；公开配置拒绝开启，下一次未开启该选项的 Android Prebuild 自动还原原库。诊断计时包含追踪自身成本，不能当作正常帧验收。首次构建用完整 Prebuild，增量应用配置可显式使用 `npx expo prebuild --platform android --no-clean --no-install` 后执行同环境的 Gradle Release 构建，避免 SDK 默认重建原生目录。
 
