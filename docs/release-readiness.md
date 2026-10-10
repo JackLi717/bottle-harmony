@@ -1,38 +1,36 @@
 # 当前发布与测试状态
 
-更新日期：2026 年 10 月 10 日（墨尔本）。**Google Play 封闭测试已于今天正式开始，测试人员已招募足够，最新 0.1.5（Android versionCode 9）已发布到 Alpha 封闭测试轨道。** 当前状态依据用户本次明确确认；未提供精确人数，本次没有重新查询 Console。本文是发布状态、产物与声明的唯一记录；[基线](current-baseline.md)描述源码，[设备支持](device-support.md)描述实际运行证据。
+更新日期：2026 年 10 月 10 日（墨尔本）。**Google Play 封闭测试已于今天正式开始，测试人员已招募足够；0.1.5（9）已向选定测试者开放，0.1.6（10）已提交 Alpha 封闭测试审核。** 起算日与招募情况来自用户确认，未提供精确人数；版本状态来自本次实际 Console 观察。本文是发布状态、产物与声明的唯一记录；[基线](current-baseline.md)描述源码，[设备支持](device-support.md)描述实际运行证据。
 
-## 当前闭测发布
+## 当前闭测更新
 
-10 月 10 日 03:39 已点击 Send changes for review，Console 显示 Changes in review、3 changes sent for review：Alpha 更新、目标 13+、Data safety。版本名为 0.1.5 (9) - gameplay analytics，英中说明已保存，Alpha 100% rollout，既有测试群与 178 个国家／地区保持不变。这是发布前的送审观察，截图 builds/release-0.1.5/changes-in-review.png 仅保留为历史证据；当前已按用户确认更新为闭测发布，不能继续把 Changes in review 作为当前状态。
+10 月 10 日 11:08 左右已发送 0.1.6（Android versionCode 10）更新，Console 显示 **Changes in review**，唯一变更为 Alpha 的 `0.1.6 (10) - first-run tutorials`，Start full rollout。观察时自动快速检查仍在运行，完成后进入审核；不能据此认定已获批或测试者已收到新版。Managed publishing off，沿用既有测试群、178 个国家／地区和 100% Alpha rollout。证据 `builds/release-0.1.6/changes-in-review.png`。
 
-该版包含手机／平板默认开启的 Firebase／GA4 使用分析，保留经典千关、50 副关、黑色记忆百题、独立手指教学、21 语种和十五款容器。公开内部工具与调色入口关闭；推荐、Premium、付费门槛和内购未实施。
+本次保留经典／记忆各自的 SQLite 教学确认，并新增真实 hook＋SQLite 回归。用户遇到的重复教学来自旧私有教学体验包强制重播的初始化，修复后从已保存确认恢复。公开构建保留经典千关、50 副关、黑色记忆百题、21 语种、十五款容器与现行分析设置；内部工具和调色入口关闭，推荐、Premium、付费门槛和内购未实施。
 
-上一版 0.1.4（8）在创建本次版本前已观察为 Available to selected testers，Released on 9 Oct 22:00，证据 previous-alpha-available.png；该记录仅证明前版可用；本轮测试正式开始以用户 10 月 10 日确认为准。0.1.3（7）的可用证据保留在 builds/release-0.1.4/，不再重复维护逐版送审过程。
+送审前实际观察 0.1.5（9）为 Available to selected testers，Released on 10 Oct 04:03；证据 `builds/release-0.1.6/previous-alpha-available.png`。它仍是本次已确认可用的闭测版本；新更新审核不等于公开生产发行。
 
 ## 最终已上传产物
 
 | 位置 | SHA-256 |
 | --- | --- |
-| builds/play/bottle-harmony-0.1.5-9.aab | 2cef29a0839628889508f0cbab6499d998325234fe824e2f1b4c8b82d18a71ec |
-| builds/play/bottle-harmony-0.1.5-9.apk | 55e20719f6ae63f6fd40aea97abb479f826ee631d1c80031d976978c2b6c9d6e |
-| builds/play/bottle-harmony-0.1.5-9-mapping.txt | df59ee23e2f328968405351bc50168f543755f307ebc11b8a9b195654c6fcbcc |
+| builds/play/bottle-harmony-0.1.6-10.aab | 85b8a3ae4c75dc92ca3b06f1e0059a388621cc1c3c7cd037dbf0376fc437b6a7 |
+| builds/play/bottle-harmony-0.1.6-10.apk | 404504d12544eb6f727b465e1e824d39da2fb5e2eaddf07605b59fbefd119f82 |
+| builds/play/bottle-harmony-0.1.6-10-mapping.txt | df59ee23e2f328968405351bc50168f543755f307ebc11b8a9b195654c6fcbcc |
 
-基于 main 的 85da849 加构建时工作区增量生成，150 个源码／配置文件指纹在构建期间一致，不用旧提交 SHA 代表全部源码。构建、包检查、指纹、映射和 Console 证据在 builds/release-0.1.5/。历史批次必要证据仍在各 builds/release-0.1.x/；本次不改产物、不重新构建或上传。
+构建源码基于 main 的 cbb3178，144 个运行源码／配置文件指纹在构建期间一致。后续 aff0ac1 只修正回归测试输入类型，未改变运行包。构建、包检查、指纹、映射、升级读回和 Console 证据均在 `builds/release-0.1.6/`；必要前版证据留在对应忽略目录。
 
-npm run android:store 使用原上传证书、APP_VARIANT=store、内部工具关闭、Production 分析环境、双 ABI Release 与 R8。清单不可调试，最低 API 24、目标 API 36，系统备份关闭，包内 proguard.map 与保存的 mapping 哈希一致。映射只能解释对应产物的堆栈。
+`npm run android:store` 使用原上传证书、APP_VARIANT=store、内部工具关闭、Production 分析环境、双 ABI Release 与 R8；APK 由实际上传 AAB 派生。清单不可调试，最低 API 24、目标 API 36，系统备份关闭，包内 proguard.map 与保存的 mapping 哈希一致。Console 已附加 ReTrace 映射与原生符号。
 
-最终 AAB／派生 APK 签名、版本、Production 配置、网络权限、广告及敏感权限排除、16 KB LOAD／ZIP 对齐检查通过。包内 Production Android 客户端为 1:947509375072:android:ff971b2ee151ed379b9305。静态分析收集和广告相关默认值为 false，启动按 SQLite 偏好配置。无广告 ID、定位、麦克风、摄像头、联系人、存储或悬浮窗权限；网络能力供在线分析使用。旧离线包的“无网络／无采集”声明不适用于该版。
+最终 AAB／派生 APK 的签名、版本、Production 配置、网络权限、广告及敏感权限排除、16 KB LOAD／ZIP 对齐检查通过。Production Android 客户端为 1:947509375072:android:ff971b2ee151ed379b9305。静态分析收集和广告相关默认值为 false，启动按 SQLite 偏好配置。无广告 ID、定位、麦克风、摄像头、联系人、存储或悬浮窗权限；网络能力供在线分析使用。
 
-20 个 ARM64 原生库保留 13 项 RELRO 末端取整警告，填充区无可写分配节，strictRelroChecklistPassed=false；未改预编译 ELF 或弱化 RELRO。构建还保留上游 play-services-auth-21.5.0 的 R8 stack-map 警告。成功构建不表示这些工具链问题已消除。
+20 个 ARM64 原生库保留 13 项 RELRO 末端取整警告，填充区无可写分配节，strictRelroChecklistPassed=false；未改预编译 ELF 或弱化 RELRO。构建还保留上游 play-services-auth-21.5.0 的 R8 stack-map 警告，成功构建不表示这些工具链问题已消除。
 
 ## 验证覆盖
 
-该发布批次全量 240 项自动回归、TypeScript 与 ESLint 通过。Test Android Release 在独立 API 36／16 KB 模拟器的启动事件已获 Google HTTP 204，GA4 DebugView 实际显示收件；SQLite 读回通过。Test 收件不能当作 Production 玩家数据。
+本批次全量 **241 项自动回归、TypeScript 与 ESLint 通过**，包括经典／记忆教学确认、重新挂载与 SQLite 冷恢复。独立 API 34 模拟器使用原上传签名 0.1.5（9）和本次精确 AAB 派生 0.1.6（10）APK，完成覆盖升级与二次冷启：八张关键表、教学确认、棋盘与撤销、钱包、偏好、安装身份和已有统计均保留，完整性与外键读回通过。测试存档由真实仓库接口离线生成，非真实玩家数据；原有关闭分析偏好保持。
 
-同版、同上传证书的 Production 候选在关闭 16 KB 兼容回退且阻断应用网络的独立模拟器完成启动与 SQLite 读回，SDK 本地接受事件。其 APK 哈希为 cb1c48db41b6492d940bb13b8f24021f9f1a64de5cc0c2e497906c85e93b25c8；最终包另补隐私文字与 13+ 范围，不能把候选运行冒充最终哈希包的逐场景验收。精确运行范围见[设备支持](device-support.md)。
-
-此前实际 0.1.4（8）AAB 派生包的经典教学、原局面保护、确认偏好与冷启恢复，以及同源码记忆完整教学证据仍有效于各自所测产物；不自动延伸到 0.1.5 所有原生路径。本地工程验收尚无 0.1.5 最终包另装真实手机的记录；商店闭测发布不替代持续性能、完整事件、声音与低端设备验收。本次没有重新运行远端 Expo Doctor、React Native Directory 或 npm 审计。
+本次原生验收限于启动与存储恢复，未操作真实手机或逐场景画面，不是 16 KB 原生运行或 Production 云端收件验收。0.1.5 Test 的 Google HTTP 204／DebugView、Production 候选的 16 KB 启动及更早教学画面证据仍只属于各自所测产物，不能延伸为本次全部路径已通过。私有 iPhone 修复包已构建验签，但设备断连导致安装未完成；未把旧包视为已更新。具体范围与持续性能、声音和低端设备待验项见[设备支持](device-support.md)。本次没有重新运行远端 Expo Doctor、React Native Directory 或 npm 审计。
 
 ## 身份、素材与声明
 
@@ -40,7 +38,7 @@ npm run android:store 使用原上传证书、APP_VARIANT=store、内部工具�
 - 目标受众已改为 **13 岁及以上**，Console 保存 13–15、16–17、18+；没有年龄验证。旧 6+ 方向不再作为当前测试招募或声明依据。
 - Data safety 已保存大致位置、应用交互、诊断、设备或其他标识四类：采集并向 Google 共享、非临时、必需、仅分析，传输加密、无账号、不声明远程删除。未使用未核实的服务提供商例外，也未独立审计 GA 账号共享设置。具体采集契约由[统计专题](gameplay-statistics-plan.md)维护。
 - IARC 已按 Champagne Flute／Faceted Martini 的偶发酒精名称披露，无饮酒玩法。现有结果为美国 Everyone（Alcohol reference）、欧洲 PEGI 3、澳大利亚 General、巴西／德国 All ages、韩国 15+、台湾 Parental guidance 15、沙特 12、其余及俄罗斯 3+。地区分级与目标受众分别遵守。
-- [英文隐私政策](https://readytradie.com/bottle-harmony/privacy.html)与应用内政策已同步默认分析、Google 处理、SDK 标识、队列、13+ 和卸载边界。10 月 10 日已部署既有 Cloudflare Pages 项目 platon-games-site，部署地址 https://7075a566.platon-games-site.pages.dev；两政策域名 200 且与源码一致，共享站点原有文件保持完整。证据 website-deployment.json。
+- [英文隐私政策](https://readytradie.com/bottle-harmony/privacy.html)与应用内政策已同步默认分析、Google 处理、SDK 标识、队列、13+ 和卸载边界。10 月 10 日已部署既有 Cloudflare Pages 项目 platon-games-site，部署地址 https://7075a566.platon-games-site.pages.dev；两政策域名 200 且与源码一致，共享站点原有文件保持完整。证据 builds/release-0.1.5/website-deployment.json。
 - 十四张真实平台原图、哈希与场景重拍信息在 builds/release-0.1.1/screenshots/。按用户要求只留本地、未进 Git 或新上传；现行商店沿用此前批准的四张手机截图。准备场景不冒充自然通关。
 - 上传密钥和密码只在 Git 忽略的 builds/signing/，须由用户安全备份，不提交或上传为素材。不同签名覆盖失败不得通过卸载玩家应用解决。
 

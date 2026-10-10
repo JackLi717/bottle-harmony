@@ -53,8 +53,8 @@ npx expo-doctor
 
 ```sh
 npm run android:store
-npm run android:apks -- builds/play/bottle-harmony-0.1.5-9.aab
-npm run android:inspect -- builds/play/bottle-harmony-0.1.5-9.aab --analytics --report builds/play/artifact-report.json
+npm run android:apks -- builds/play/bottle-harmony-0.1.6-10.aab
+npm run android:inspect -- builds/play/bottle-harmony-0.1.6-10.aab --analytics --report builds/play/artifact-report.json
 ```
 
 构建依赖、签名、产物与声明以[发布记录](docs/release-readiness.md)及[商店材料](store/google-play/README.md)为准。密钥与密码只在忽略目录安全保存，不提交仓库；不同签名覆盖失败时不得卸载玩家应用。跨平台命令见[设备支持](docs/device-support.md)。

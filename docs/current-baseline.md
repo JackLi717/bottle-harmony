@@ -1,8 +1,8 @@
 # 当前实现基线
 
-更新日期：2026 年 10 月 10 日。本文只汇总当前源码及资产，具体规则各有唯一责任文档。应用版本来自 package.json／app.json：**0.1.5，Android 手机／平板 versionCode 9**。应用品牌 Bottle Harmony，Google Play 标题 Water Sort - No Ads，包名 com.bottleharmony.app，开发者 Platon Games。
+更新日期：2026 年 10 月 10 日。本文只汇总当前源码及资产，具体规则各有唯一责任文档。应用版本来自 package.json／app.json：**0.1.6，Android 手机／平板 versionCode 10**。应用品牌 Bottle Harmony，Google Play 标题 Water Sort - No Ads，包名 com.bottleharmony.app，开发者 Platon Games。
 
-**Google Play 封闭测试已于 2026 年 10 月 10 日（墨尔本）正式开始。** 用户确认测试人员已招募足够，最新 0.1.5（9）已发布到封闭测试轨道。当前状态依据本次用户确认，具体产物与历史 Console 证据由[发布记录](release-readiness.md)维护；本次未重新查询 Console。
+**Google Play 封闭测试已于 2026 年 10 月 10 日（墨尔本）正式开始。** 用户确认测试人员已招募足够；本次 Console 核实 0.1.5（9）已向选定测试者开放，0.1.6（10）已提交 Alpha 审核，观察时快速检查仍在运行。具体产物与证据由[发布记录](release-readiness.md)维护；送审不等于审核通过或公开生产发行。
 
 ## 已实现：公开构建
 
