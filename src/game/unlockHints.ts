@@ -3,8 +3,9 @@ import type { EngineHintResult } from './engineSearch.ts';
 
 export type SingleKeyHintTable = { readonly binding: string; readonly states: Readonly<Record<string, readonly [number, number]>>;
   readonly exits: Readonly<Record<string, readonly string[]>> };
-export type SingleKeyHintResult = Exclude<EngineHintResult, { status: 'hint' }>
-  | Omit<Extract<EngineHintResult, { status: 'hint' }>, 'worlds'>;
+export type SingleKeyHintResult = Exclude<EngineHintResult, { status: 'hint' } | { status: 'unknown' }>
+  | Omit<Extract<EngineHintResult, { status: 'hint' }>, 'worlds'>
+  | { readonly status: 'recover'; readonly reason: 'concealed-branch' };
 
 /** Only interchangeable classic bottles merge. Before opening, key and lock roles
  * stay distinct; after opening they cannot affect any future move. Knowledge does
@@ -29,8 +30,10 @@ export function singleKeyHintKey(runtime: EngineRuntime) {
   };
 }
 
-/** Distances were exhaustively computed offline. Re-select the action on the live
- * frame, since equivalent bottles and equal-color unit IDs may have permuted. */
+/** True distances cover every reachable state. Public distances use fully proved
+ * opening boundaries. A truly solvable state with no public continuation needs
+ * free recovery; unresolved searches cannot enter this result. Re-select the live
+ * action, since equivalent bottles and equal-color unit IDs may have permuted. */
 export function singleKeyTableHint(current: EngineSession, table: SingleKeyHintTable): SingleKeyHintResult {
   if (table.binding !== current.runtime.binding) throw new Error('Hint table puzzle mismatch');
   if (evaluateEngineGoal(current.runtime, current.state)) return { status: 'complete' };
@@ -39,7 +42,7 @@ export function singleKeyTableHint(current: EngineSession, table: SingleKeyHintT
   if (distance[0] < 0) return { status: 'unsolvable' };
   const concealed = current.runtime.puzzle.containers.some((c, i) => !current.state.open[i] && !current.seen.includes(c.id));
   const column = concealed ? 1 : 0;
-  if (distance[column] < 0) return { status: 'unknown', reason: 'information' };
+  if (distance[column] < 0) return { status: 'recover', reason: 'concealed-branch' };
   for (const action of listEngineActions(current.runtime, current.state, current.known)) {
     const next = transitionEngine(current.runtime, current.state, current.known, action);
     if (!next.accepted) throw new Error('Hint action rejected');

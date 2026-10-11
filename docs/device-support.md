@@ -271,8 +271,8 @@ iPhone 12 Pro Max／iOS 17.4.1 已安装独立 0.1.6／build 1 包，签名校�
 
 ### 后段挑战二十题：内部 Web 与手机安装
 
-10 月 11 日结构变化版二十题已全量离线独立复验；生成配方、档位、多样性和完整离线提示策略归[经典扩展](color-unlock-plan.md#后段挑战内部二十题)。提示修复的 42 项相关回归、TypeScript／ESLint 与内部 Web 导出通过，覆盖全部可到达状态、偏离路线、开锁后撤销保留知识和重来。浏览器实际从第一题开局连续提示，完成取钥、开匣与整题；另验证选错死路后提示免费撤销一步、撤销恢复正常提示。提示证明、截图和日志在忽略的 `builds/unlock-hints/`。当前倒水瓶外层已提升至木匣上方；15 项表现回归、TypeScript／ESLint 与两端构建通过，浏览器检查跨排倒水越过木匣、回位与重来恢复层级。截图和日志在 `builds/unlock-pour-layer/`；本机体验为 localhost:8106，Web 导出在 `builds/unlock-pour-layer-web/`。
+10 月 12 日当前整盘底题版二十题已全量离线独立复验；生成配方、档位、内外颜色关联和完整离线提示策略归[经典扩展](color-unlock-plan.md#后段挑战内部二十题)。44 项相关回归、TypeScript／ESLint、内部 Web 导出与两端 Release 构建通过。浏览器实际完成第一题取钥、开匣、撤销后继续提示及整题通关，连续进入第二题，验证三瓶匣开锁、后续提示及重来恢复初始锁定。沿用已修复的倒水瓶与木匣层级。本机体验为 localhost:8107，Web 导出在忽略的 `builds/unlock-post-key-v3-web/`。
 
-当前离线 Release／Hermes 独立体验包 `Harmony Engine`（`com.bottleharmony.engineacceptance`）已原位更新 TCL T517D 与 iPhone 12 Pro Max，包含完整提示表和倒水遮挡修复。两端均为 0.1.6，Android code 10／iOS build 1；Android 安装成功、实际 APK 哈希与产物一致、启动命令成功；iOS 签名、安装、版本读回和实际启动命令均成功。本次未操作手机棋盘，不将命令成功或浏览器画面描述为真机游玩或性能验收。两端正式应用安装元数据保持原样，未卸载或清理玩家库，正式 SQLite 内容和原二十题布局哈希均未变。
+独立离线 Release／Hermes 体验包 `Harmony Engine`（`com.bottleharmony.engineacceptance`）两端仍为 0.1.6，Android code 10／iOS build 1。新版已原位安装到 iPhone 12 Pro Max，签名与安装信息读回通过；自动启动被设备锁屏阻止，尚未验收手机棋盘。iPhone 正式应用安装元数据与更新前完全一致。TCL T517D 本次未连接，未安装本轮新版；其设备仍保留上一轮体验包，新 APK 已在本机备妥。未卸载应用或清理玩家库，正式 SQLite、原百题及正式内容未改变。构建、安装命令和浏览器检查均不构成真人难度校准或真机性能验收。
 
-入口为首页设置 → 开发工具 →「后段挑战体验 · 二十题」。当前产物、签名、安装／启动和读回证据在忽略的 `builds/unlock-pour-layer/device/`；尚无这批题的真人档位校准或完整手机性能验收。
+入口为首页设置 → 开发工具 →「后段挑战体验 · 二十题」。当前 APK、签名、iPhone 安装／读回、锁屏启动失败日志及浏览器截图在忽略的 `builds/unlock-post-key-v3-device/`；完整来源与统一验收记录在 `builds/unlock-post-key-20-v3-whole-board/`。

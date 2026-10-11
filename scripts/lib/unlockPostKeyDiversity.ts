@@ -39,6 +39,5 @@ export function auditPostKeyDiversity(records: readonly PostKeyRecord[]) {
   return { method: POST_KEY_DIVERSITY_METHOD, status: reasons.length ? 'fail' : 'pass', reasons,
     roots: new Set(records.map(r => postKeyCoreKey(r.source.origin))).size,
     lowerRows: new Set(records.map(lowerRowStructure)).size,
-    fillProfiles: new Set(records.map(r => `${r.source.origin.coreColors}/${r.source.origin.partition}`)).size,
-    linked: records.filter(r => r.source.origin.linked).length };
+    fillProfiles: new Set(records.map(r => reconstructPostKeyClassic(r.source.origin).bottles.map(b => b.layers.length).sort().join(','))).size };
 }

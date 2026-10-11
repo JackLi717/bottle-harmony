@@ -23,6 +23,8 @@ test('hint safety accepts a possible world that completes before opening; stage 
   const hint = proveSingleKeyDisclosure(puzzle, route, PUBLIC_DISCLOSURE_BUDGET, true);
   assert.equal(hint.status, 'pass'); assert.equal(hint.worlds.length, 5);
   assert.deepEqual(proveSingleKeyDisclosure(puzzle, route), strict);
+  const reused = proveSingleKeyDisclosure(puzzle, route, { ...PUBLIC_DISCLOSURE_BUDGET, reuseContinuations: true }, true);
+  assert.equal(reused.status, hint.status); assert.deepEqual(reused.worlds.map(w => [w.contents,w.status]), hint.worlds.map(w => [w.contents,w.status]));
 });
 
 test('all twenty trials can be completed by repeated public-safe hints, including undo and reset', () => {
@@ -45,7 +47,7 @@ test('all twenty trials can be completed by repeated public-safe hints, includin
 });
 
 test('complete tables cover every reachable state, including deviations, dead ends and remembered locks', () => {
-  let states = 0, information = 0, deadEnds = 0;
+  let states = 0, recoveryBranches = 0, deadEnds = 0;
   for (const trial of trials) {
     const graph = buildRatingGraph(trial.puzzle); assert.ok(graph.status === 'complete');
     const fresh = createEngineSession(trial.puzzle, 'all-states'), key = singleKeyHintKey(fresh.runtime);
@@ -61,13 +63,16 @@ test('complete tables cover every reachable state, including deviations, dead en
         const column = current.state.open.every(Boolean) ? 0 : 1;
         assert.equal(trial.hints!.states[key(next.session.state)][column], row[column] - 1);
       } else if (result.status === 'unsolvable') { deadEnds++; assert.equal(row[0], -1); }
-      else if (result.status === 'unknown') { information++; assert.ok(row[0] > 0); assert.equal(row[1], -1); assert.equal(result.reason, 'information'); }
+      else if (result.status === 'recover') { recoveryBranches++; assert.ok(row[0] > 0); assert.equal(row[1], -1); assert.equal(result.reason, 'concealed-branch'); }
       else assert.equal(row[0], 0);
       // Undo can remember the entire locked inventory. Then true-layout proof is sufficient.
       if (row[0] > 0) assert.equal(singleKeyTableHint({ ...current, known: trial.puzzle.units.map(u => u.id), seen: trial.puzzle.containers.map(c => c.id) }, trial.hints!).status, 'hint');
     }
-    const bad = graph.nodes.findIndex(n => trial.hints!.states[key(n.frame.state)][1] < 0);
-    if (bad >= 0) {
+    const badStates = new Set([
+      graph.nodes.findIndex(n => trial.hints!.states[key(n.frame.state)][0] < 0),
+      graph.nodes.findIndex(n => { const row = trial.hints!.states[key(n.frame.state)]; return row[0] > 0 && row[1] < 0; }),
+    ]);
+    for (const bad of badStates) if (bad >= 0) {
       const chain = [bad];
       for (let i = bad; graph.nodes[i].parent >= 0;) { i = graph.nodes[i].parent; chain.push(i); }
       let played = fresh;
@@ -83,7 +88,7 @@ test('complete tables cover every reachable state, including deviations, dead en
       assert.equal(singleKeyTableHint(played, trial.hints!).status, 'hint');
     }
   }
-  assert.ok(states > 10000); assert.ok(deadEnds > 0); assert.equal(information, 0, 'Every solvable concealed state in this batch has a safe hint');
+  assert.ok(states > 10000); assert.ok(deadEnds > 0); assert.ok(recoveryBranches > 0, 'Wrong concealed branches receive proved free recovery instead of an unknown hint');
 });
 
 test('hint tables reject another bank, changed puzzle, malformed distances and omitted entries', () => {

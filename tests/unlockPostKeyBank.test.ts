@@ -3,6 +3,7 @@ import test from 'node:test';
 import { readFileSync } from 'node:fs';
 import { generatedPostKeyTrials, generatedUnlockTrials } from '../src/game/unlockGenerated.ts';
 import { postKeyRoot, postKeyOrigin, reconstructPostKeyClassic, postKeyOverlays, POST_KEY_RECIPE, type PostKeyOrigin } from '../scripts/lib/unlockPostKeyGeneration.ts';
+import { inspectPostKeyIntegration, inspectUnlockedIntegration } from '../scripts/lib/unlockPostKeyIntegration.ts';
 import { lowerRowStructure, POST_KEY_DIVERSITY_METHOD } from '../scripts/lib/unlockPostKeyDiversity.ts';
 import { sha256 } from '../scripts/lib/unlockRatingEvidence.ts';
 import { structureKey } from '../src/game/generation.ts';
@@ -32,6 +33,7 @@ test('twenty post-key trials bind reconstructed distinct sources, stage floor, r
     assert.equal(row.rank, Math.max(row.beforeRank, row.afterRank)); assert.ok(Number.isFinite(row.classicScore));
     const base = reconstructPostKeyClassic(row.origin), key = structureKey(base);
     assert.ok([9, 10].includes(base.bottles.length)); assert.ok(hasCleanStart(base));
+    assert.equal(inspectPostKeyIntegration(base.bottles.map(b => b.layers), row.overlay.locked).status, 'pass');
     assert.equal(row.classicStructureKey, key); assert.ok(!bases.has(key)); bases.add(key);
     const overlay = postKeyOverlays(row.origin).find(o => o.key === row.overlay.key && JSON.stringify(o.locked) === JSON.stringify(row.overlay.locked));
     assert.ok(overlay); assert.deepEqual(overlay.order, row.overlay.order); assert.deepEqual(overlay.puzzle, trials[i].puzzle);
@@ -42,8 +44,7 @@ test('twenty post-key trials bind reconstructed distinct sources, stage floor, r
   }
   const rows = bank.entries.map((row: Entry) => lowerRowStructure({ source: { origin: row.origin, overlay: row.overlay } }));
   assert.equal(new Set(rows).size, 20); assert.equal(bank.diversity.lowerRows, 20);
-  assert.equal(new Set(bank.entries.map((e: Entry) => `${e.origin.coreColors}/${e.origin.partition}`)).size, bank.diversity.fillProfiles);
-  assert.equal(bank.entries.filter((e: Entry) => e.origin.linked).length, bank.diversity.linked);
+  assert.equal(new Set(bank.entries.map((e: Entry) => reconstructPostKeyClassic(e.origin).bottles.map(b => b.layers.length).sort().join(','))).size, bank.diversity.fillProfiles);
   assert.deepEqual(widths.slice(2), [10, 10]); assert.ok([...roots.values()].every(n => n <= POST_KEY_RECIPE.diversity.maxPerRoot));
 });
 
@@ -54,6 +55,7 @@ test('post-key routes finish through isolated sessions, including undo/reset and
     for (const action of row.route) {
       const before = session, moved = moveEngineSession(session, action); assert.ok(moved); session = moved.session;
       if (!before.state.fired.length && session.state.fired.length) {
+        assert.equal(inspectUnlockedIntegration(trials[i].puzzle, session).status, 'pass');
         const colors = new Map(trials[i].puzzle.units.map(u => [u.id, u.color]));
         const key = structureKey(parseLevel({ format: 'bottle-harmony', version: 1, rules: 'water-sort', id: 'after-key', capacity: 4, colors: trials[i].puzzle.colors,
           bottles: trials[i].puzzle.containers.map((c, j) => ({ id: c.id, layers: session.state.contents[j].map(id => colors.get(id)!) })) }));
@@ -76,6 +78,8 @@ test('post-key loader rejects a lowered floor, unknown acceptance and wrong quot
   const diversity = change(); diversity.diversity.roots = 6; assert.throws(() => generatedPostKeyTrials(diversity));
   const lowStage = change(); lowStage.entries[0].afterRank = 2; assert.throws(() => generatedPostKeyTrials(lowStage));
   const quota = change(); quota.entries[1] = { ...quota.entries[0], number: 2, puzzle: { ...quota.entries[0].puzzle, id: 'different-id' } }; assert.throws(() => generatedPostKeyTrials(quota));
+  const separated = change(); separated.entries[0].integration.connected = false; assert.throws(() => generatedPostKeyTrials(separated));
+  const old = change(); old.method = 'classic-key-postchallenge-v2'; assert.throws(() => generatedPostKeyTrials(old));
   assert.throws(() => generatedUnlockTrials(bank));
   assert.throws(() => generatedPostKeyTrials(JSON.parse(readFileSync(new URL('../assets/levels/unlock-internal-100.json', import.meta.url), 'utf8'))));
 });

@@ -9,27 +9,28 @@ import { unlockTrialStructure } from '../scripts/lib/unlockTrialAudit.ts';
 import { postKeyOrigin, reconstructPostKeyClassic, postKeyOverlays, postKeyWorldCount, postKeyStageInTarget, POST_KEY_RECIPE } from '../scripts/lib/unlockPostKeyGeneration.ts';
 import { auditUnlockVisualTemplates } from '../scripts/lib/unlockVisualTemplates.ts';
 
-test('larger classic-core recipe preserves inventory, separate source reconstruction and fixed box geometry', () => {
+test('whole-board sources reconstruct before overlays and preserve inventory and fixed box geometry', () => {
   assert.deepEqual(POST_KEY_RECIPE.target, { min: 4, max: 6 }); assert.equal(POST_KEY_RECIPE.afterMin, 3);
-  const generators = new Set<string>(), profiles = new Set<number>(), links = new Set<boolean>(), lowerRows = new Set<string>();
-  for (const template of [2, 3] as const) for (let i = 0; i < 192; i++) {
+  const sizes = new Set<number>(), profiles = new Set<number>(), runs = new Set<number>(), lowerRows = new Set<string>();
+  let overlayCount = 0;
+  for (const template of [2, 3] as const) for (let i = 0; i < 54; i++) {
     const origin = postKeyOrigin(template, i), source = reconstructPostKeyClassic(origin);
     assert.deepEqual(source, reconstructPostKeyClassic(origin));
     assert.equal(source.bottles.length, source.colors.length + 2); assert.ok([9, 10].includes(source.bottles.length));
-    assert.ok(source.bottles.filter(b => !b.layers.length).length <= 2);
+    assert.equal(source.bottles.reduce((n, b) => n + 4 - b.layers.length, 0), 8);
     for (const c of source.colors) assert.equal(source.bottles.flatMap(b => b.layers).filter(v => v === c).length, 4);
-    generators.add(origin.generator); profiles.add(origin.partition); links.add(origin.linked); lowerRows.add(JSON.stringify(source.bottles.slice(-4).map(b => b.layers)));
-    const overlays = postKeyOverlays(origin); assert.equal(overlays.length, origin.coreColors);
-    for (const overlay of overlays) {
+    sizes.add(origin.colors); profiles.add(origin.fillProfile); runs.add(origin.runProfile); lowerRows.add(JSON.stringify(source.bottles.slice(-4).map(b => b.layers)));
+    for (const overlay of postKeyOverlays(origin)) {
+      overlayCount++;
       assert.equal(overlay.puzzle.locked.length, template);
       assert.equal(auditUnlockVisualTemplates(overlay.puzzle).status, 'pass');
+      // A lock overlay may only permute whole source bottles, never add/exchange liquid.
       assert.deepEqual(overlay.order.map(b => source.bottles[b].layers), overlay.puzzle.containers.map(c => c.units.map(id => overlay.puzzle.units.find(u => u.id === id)!.color)));
       assert.equal(overlay.worlds, postKeyWorldCount(source.bottles.map(b => b.layers), overlay.locked));
-      assert.ok(overlay.order.slice(0, 5).some(i => i < 5)); assert.ok(overlay.order.slice(5).some(i => i < 5));
     }
   }
-  assert.equal(generators.size, 2); assert.equal(profiles.size, 4); assert.equal(links.size, 2); assert.ok(lowerRows.size > 40);
-  assert.throws(() => postKeyOrigin(2, -1)); assert.throws(() => reconstructPostKeyClassic({ ...postKeyOrigin(3, 1), partition: -1 }));
+  assert.ok(overlayCount > 0); assert.equal(sizes.size, 2); assert.equal(profiles.size, 3); assert.equal(runs.size, 3); assert.ok(lowerRows.size > 40);
+  assert.throws(() => postKeyOrigin(2, -1)); assert.throws(() => reconstructPostKeyClassic({ ...postKeyOrigin(3, 1), fillProfile: -1 }));
 });
 
 test('public budget precheck counts concealed lengths as well as orders', () => {
@@ -56,11 +57,11 @@ test('larger graph collapses spent key roles only after opening and keeps physic
 });
 
 test('larger structural dedup keeps keys and locks while ignoring color and bottle names', () => {
-  const origin = postKeyOrigin(3, 1), puzzle = postKeyOverlays(origin)[0].puzzle;
+  const puzzle = engineFixture('dedup-key', [['a','b'], ['b','a'], ['a','b'], ['b','a'], [], [], [], [], []], { locked: [2,3], triggers: [{ id: 'key-a', when: { type: 'empty', container: 'b0' }, unlock: ['b2','b3'] }] });
   const renamed = { ...puzzle, id: 'renamed', colors: [...puzzle.colors].reverse().map(c => `renamed-${c}`),
     units: puzzle.units.map(u => ({ ...u, color: `renamed-${u.color}` })), containers: [...puzzle.containers].reverse() };
   assert.equal(unlockTrialStructure(renamed), unlockTrialStructure(puzzle));
-  const changed = { ...puzzle, triggers: [{ ...puzzle.triggers[0], when: { type: 'empty' as const, container: 'b1' } }] };
+  const changed = { ...puzzle, triggers: [{ ...puzzle.triggers[0], when: { type: 'empty' as const, container: 'b4' } }] };
   assert.notEqual(unlockTrialStructure(changed), unlockTrialStructure(puzzle));
 });
 
@@ -101,7 +102,7 @@ test('larger quotient preserves every ordered-state continuation and stage progr
 });
 
 test('larger ordinary comparison retains exact classic structural deduplication', () => {
-  const puzzle = postKeyOverlays(postKeyOrigin(3, 1))[0].puzzle;
+  const puzzle = engineFixture('dedup-ordinary', [['a','b'], ['b','a'], ['a','b'], ['b','a'], [], [], [], [], []], { locked: [2,3], triggers: [{ id: 'key-a', when: { type: 'empty', container: 'b0' }, unlock: ['b2','b3'] }] });
   const ordinary = { ...puzzle, triggers: [], locked: [] };
   assert.equal(unlockTrialStructure(ordinary), unlockTrialStructure({ ...ordinary, containers: [...ordinary.containers].reverse() }));
   assert.notEqual(unlockTrialStructure(ordinary), unlockTrialStructure(puzzle));

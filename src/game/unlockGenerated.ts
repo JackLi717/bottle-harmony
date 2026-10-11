@@ -25,13 +25,16 @@ function loadGeneratedTrials(input: unknown, postKey: boolean): readonly UnlockT
   const fail = (): never => { throw new Error('Invalid internal single-key bank'); };
   if (!input || typeof input !== 'object') return fail();
   const bank = input as Record<string, unknown>;
-  if (bank.format !== 'bottle-harmony-internal-key-bank' || bank.version !== 1 || bank.method !== (postKey ? 'classic-key-postchallenge-v2' : 'classic-key-batch-v1')
+  if (bank.format !== 'bottle-harmony-internal-key-bank' || bank.version !== 1 || bank.method !== (postKey ? 'classic-key-postchallenge-v3' : 'classic-key-batch-v1')
     || !Array.isArray(bank.entries) || bank.entries.length !== count || !/^[a-f0-9]{64}$/.test(String(bank.evidenceSha256))) return fail();
   const recipe = bank.recipe as { count?: number; afterMin?: number; target?: { min?: number; max?: number };
+    integration?: { method?: string; minSharedColors?: number; minLinksPerOccupiedLockedBottle?: number; connectedRemainingColors?: boolean };
     diversity?: { maxPerRoot?: number; uniqueLowerRows?: boolean; uniqueAfterStates?: boolean } } | null;
   if (recipe?.count !== count || recipe.target?.min !== 4 || recipe.target.max !== 6 || (postKey && recipe.afterMin !== 3)) return fail();
   if (postKey) {
     const diversity = bank.diversity as { method?: string; status?: string; roots?: number; lowerRows?: number } | null;
+    if (recipe.integration?.method !== 'post-key-whole-board-v1' || recipe.integration.minSharedColors !== 3
+      || recipe.integration.minLinksPerOccupiedLockedBottle !== 2 || recipe.integration.connectedRemainingColors !== true) return fail();
     if (recipe.diversity?.maxPerRoot !== 1 || recipe.diversity.uniqueLowerRows !== true || recipe.diversity.uniqueAfterStates !== true
       || diversity?.method !== 'post-key-structure-diversity-v1' || diversity.status !== 'pass' || diversity.roots !== 20 || diversity.lowerRows !== 20) return fail();
   }
@@ -39,6 +42,7 @@ function loadGeneratedTrials(input: unknown, postKey: boolean): readonly UnlockT
   const trials = bank.entries.map((entry: unknown, i) => {
     if (!entry || typeof entry !== 'object') return fail();
     const row = entry as { number?: number; puzzle?: unknown; rank?: number; beforeRank?: number; afterRank?: number;
+      integration?: { status?: string; sharedColors?: unknown[]; linksPerBottle?: number[]; connected?: boolean };
       origin?: { template?: number }; acceptance?: { status?: string; label?: string; evidenceSha256?: string } };
     const puzzle = parseSortingPuzzle(row.puzzle), width = puzzle.locked.length, trigger = puzzle.triggers[0];
     if (row.number !== i + 1 || !row.rank || row.rank < 4 || row.rank > 6 || !Number.isSafeInteger(row.rank)
@@ -47,6 +51,9 @@ function loadGeneratedTrials(input: unknown, postKey: boolean): readonly UnlockT
       || row.acceptance?.status !== 'pass' || row.acceptance.label !== '通过' || !/^[a-f0-9]{64}$/.test(String(row.acceptance.evidenceSha256))
       || !(postKey ? [2, 3] : [1, 2, 3]).includes(width) || row.origin?.template !== width || puzzle.hidden.length || puzzle.triggers.length !== 1
       || trigger.when.type !== 'empty' || trigger.unlock.length !== width || puzzle.locked.some(id => !trigger.unlock.includes(id)) || ids.has(puzzle.id)) return fail();
+    if (postKey && (row.integration?.status !== 'pass' || !Array.isArray(row.integration.sharedColors) || row.integration.sharedColors.length < 3
+      || !Array.isArray(row.integration.linksPerBottle) || row.integration.linksPerBottle.length !== width
+      || row.integration.linksPerBottle.some((n, j) => !Number.isSafeInteger(n) || n < (puzzle.containers.find(c => c.id === puzzle.locked[j])!.units.length ? 2 : 0)) || row.integration.connected !== true)) return fail();
     ids.add(puzzle.id); widths.add(width); counts[width]++;
     const names = ['', '单瓶匣', '双瓶匣', '三瓶匣'];
     return Object.freeze({ puzzle, focus: `${postKey ? 'post-key' : 'generated'}-box-${width}`, title: [names[width], `${width}-bottle box`] as const,

@@ -196,7 +196,7 @@ export function EnginePreview({ vessel: preferredVessel, symbols: showSymbols, s
         const steps = singleKeyHintRecoverySteps(current.current, table);
         const reason = result.status === 'unsolvable'
           ? zh ? '当前局面已验证无解。' : 'This position is proven unsolvable.'
-          : zh ? '当前分支无法保证不猜隐藏内容。' : 'This branch has no hint safe across all concealed possibilities.';
+          : zh ? '请回到已有安全提示的局面继续。' : 'Return to a position with a certified safe hint.';
         setNotice(reason + (steps !== null
           ? zh ? `请免费撤销 ${steps} 步，再点提示。` : ` Undo ${steps} step(s) for free, then tap Hint.`
           : zh ? '请免费重来，再点提示。' : ' Reset for free, then tap Hint.'));

@@ -8,7 +8,7 @@ import type { SortingPuzzle } from '../src/game/engineModel.ts';
 import { UNLOCK_STAGE_CALIBRATION } from '../src/game/unlockStageCalibration.ts';
 import { extractUnlockRating, ratingComparisonSet, sha256, type RatingInput } from '../scripts/lib/unlockRatingEvidence.ts';
 import { acceptSingleKey, validateDifficultyTarget } from '../scripts/lib/unlockSingleKeyAcceptance.ts';
-import { proveSingleKeyDisclosure, PUBLIC_DISCLOSURE_BUDGET, validateDisclosureBudget } from '../scripts/lib/unlockPublicDisclosure.ts';
+import { proveSingleKeyDisclosure, publicWorldContinuation, PUBLIC_DISCLOSURE_BUDGET, validateDisclosureBudget } from '../scripts/lib/unlockPublicDisclosure.ts';
 import { buildRatingGraph } from '../scripts/lib/unlockRatingGraph.ts';
 
 const target = { min: 1, max: 7 };
@@ -28,14 +28,14 @@ function replayWorlds(puzzle: SortingPuzzle, proof: ReturnType<typeof proveSingl
   const colors = new Map(puzzle.units.map(u => [u.id, u.color]));
   const pools = new Map(puzzle.colors.map(color => [color, unknown.filter(u => colors.get(u) === color).sort()]));
   for (const world of proof.worlds) {
-    assert.equal(world.status, 'pass'); assert.ok(world.continuation);
+    assert.equal(world.status, 'pass'); assert.ok(world.continuation || world.transfers);
     const used = new Map<string, number>();
     const containers = puzzle.containers.map(c => {
       const i = proof.locked.indexOf(c.id); if (i < 0) return c;
       return { ...c, units: world.contents[i].map(color => { const n = used.get(color) ?? 0; used.set(color, n + 1); return pools.get(color)![n]; }) };
     });
     const runtime = compileSortingPuzzle({ ...puzzle, containers });
-    replayEngineRoute(runtime, initialEngineState(runtime), [...proof.prefix, ...world.continuation]);
+    replayEngineRoute(runtime, initialEngineState(runtime), [...proof.prefix, ...publicWorldContinuation(puzzle, world)]);
   }
 }
 
@@ -115,6 +115,14 @@ test('group disclosures include all concealed counts and stable IDs, with indepe
   assert.equal(result.status, 'pass'); assert.equal(result.publicInformation?.worlds.length, 5);
   assert.deepEqual(result.publicInformation!.worlds.map(w => w.contents.map(c => c.length)), [[0, 4], [1, 3], [2, 2], [3, 1], [4, 0]]);
   replayWorlds(group, result.publicInformation!);
+  const reused = acceptSingleKey(group, rate(group), { target, disclosureBudget: { ...PUBLIC_DISCLOSURE_BUDGET, reuseContinuations: true } });
+  assert.equal(reused.status, result.status); assert.deepEqual(reused.publicInformation!.worlds.map(w => w.contents), result.publicInformation!.worlds.map(w => w.contents));
+  assert.ok(reused.publicInformation!.states < result.publicInformation!.states); replayWorlds(group, reused.publicInformation!);
+  assert.deepEqual(acceptSingleKey(group, rate(group), { target }), result, 'Default certificate remains unchanged');
+  const compact = acceptSingleKey(group, rate(group), { target, disclosureBudget: { ...PUBLIC_DISCLOSURE_BUDGET, reuseContinuations: true, compactContinuations: true } });
+  assert.equal(compact.status, result.status); replayWorlds(group, compact.publicInformation!);
+  assert.ok(compact.publicInformation!.worlds.every(w => Array.isArray(w.transfers)));
+  assert.deepEqual(compact.publicInformation!.worlds.map(w => w.contents), result.publicInformation!.worlds.map(w => w.contents));
   const triple = engineFixture('accept-triple', [['coral'], ['coral', 'coral', 'coral'], [], [], ['jade'], ['jade'], ['jade', 'jade'], []], {
     locked: [4, 5, 6], triggers: [{ id: 'triple-key', when: { type: 'empty', container: 'b0' }, unlock: ['b4', 'b5', 'b6'] }],
   });
@@ -150,4 +158,18 @@ test('acceptance evidence binds target, budget, definition and unchanged rating 
   assert.notEqual(first.evidenceSha256, acceptSingleKey(balanced, balancedReport, { target, disclosureBudget: { ...PUBLIC_DISCLOSURE_BUDGET, maxWorlds: 2 } }).evidenceSha256);
   assert.throws(() => acceptSingleKey({ ...balanced, id: 'changed' }, balancedReport, { target }), /definition differs/);
   assert.throws(() => acceptSingleKey(balanced, { ...balancedReport, evidenceSha256: 'tampered' }, { target }), /hash differs/);
+});
+
+
+test('equivalent opened boards have the same public continuation verdict after different public prefixes', () => {
+  const puzzle = engineFixture('public-boundary-equivalence', [['coral'], ['coral','coral','coral'], ['jade','jade'], ['jade','jade'], [], [], [], [], []], {
+    locked: [2,3], triggers: [{ id: 'key-a', when: { type: 'empty', container: 'b0' }, unlock: ['b2','b3'] }],
+  });
+  const action = (source: number, target: number) => ({ type: 'transfer' as const, source: `b${source}`, target: `b${target}` });
+  const a = [action(0,1), action(2,3)], b = [action(1,4), action(0,4), action(2,3)];
+  const budget = { ...PUBLIC_DISCLOSURE_BUDGET, reuseContinuations: true };
+  const first = proveSingleKeyDisclosure(puzzle, a, budget, true), second = proveSingleKeyDisclosure(puzzle, b, budget, true);
+  assert.equal(first.status, 'pass'); assert.equal(second.status, 'pass');
+  assert.deepEqual(first.worlds.map(w => [w.contents,w.status]), second.worlds.map(w => [w.contents,w.status]));
+  replayWorlds(puzzle, first); replayWorlds(puzzle, second);
 });
