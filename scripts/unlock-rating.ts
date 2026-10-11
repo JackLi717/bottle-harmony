@@ -5,6 +5,7 @@ import { UNLOCK_CALIBRATION } from '../src/game/unlockCalibration.ts';
 import { UNLOCK_TRIAL } from '../src/game/unlockTrial.ts';
 import { extractUnlockRating, pairedRatingComparisons, ratingComparisonSet, UNLOCK_RATING_METHOD, RATING_LIMITS, type RatingDesign, type RatingInput } from './lib/unlockRatingEvidence.ts';
 import { STAGE_DIFFICULTY_METHOD } from './lib/unlockStageDifficulty.ts';
+import { unlockClassicReferences } from './lib/unlockClassicReference.ts';
 
 // Roles describe fixture intent; they are not quality or difficulty verdicts.
 const designs: RatingDesign[] = [
@@ -49,7 +50,10 @@ const summary = [];
 const reports = [];
 for (const [i, input] of inputs.entries()) {
   console.log(`Evaluating ${i + 1}/${inputs.length}: ${input.puzzle.id}`);
-  const report = extractUnlockRating(input, comparison, maxStates, maxEdges, maxStageWork);
+  const rating = extractUnlockRating(input, comparison, maxStates, maxEdges, maxStageWork);
+  const classicReferences = unlockClassicReferences(input.puzzle,
+    rating.status === 'complete' ? rating.evidence.stageDifficulty : null, rating.evidenceSha256);
+  const report = { ...rating, classicReferences };
   reports.push(report);
   writeFileSync(resolve(directory, `${input.puzzle.id}.json`), JSON.stringify(report, null, 2) + '\n');
   const evidence = report.status === 'complete' ? report.evidence : null;
@@ -63,8 +67,13 @@ for (const [i, input] of inputs.entries()) {
     classicBase: evidence?.ablations.classicBase.status === 'complete'
       ? { status: 'complete', shortestMoves: evidence.ablations.classicBase.shortestMoves,
         difficultyRank: evidence.ablations.classicBase.stageDifficulty.rank,
-        difficultyStatus: evidence.ablations.classicBase.stageDifficulty.status }
-      : { status: 'unknown', shortestMoves: null, difficultyRank: null, difficultyStatus: 'unknown' },
+        difficultyStatus: evidence.ablations.classicBase.stageDifficulty.status,
+        score: classicReferences.base.human?.score?.total ?? null, scoreStatus: classicReferences.base.status }
+      : { status: 'unknown', shortestMoves: null, difficultyRank: null, difficultyStatus: 'unknown',
+        score: classicReferences.base.human?.score?.total ?? null, scoreStatus: classicReferences.base.status },
+    classicReferences: { model: classicReferences.model, evidenceSha256: classicReferences.evidenceSha256,
+      stages: classicReferences.stages.map(s => ({ phase: s.phase, goal: s.goal, frameSha256: s.frameSha256,
+        status: s.reference.status, score: s.reference.human?.score?.total ?? null, reason: s.reference.reason })) },
     milestones: evidence?.decisions.status === 'complete' ? evidence.decisions.shortest.milestones.map(m => ({
       trigger: m.trigger, mandatory: m.mandatory, minimumSuccessfulPreparation: m.minimumSuccessfulPreparation,
       beforePours: m.before.route.pours, afterPours: m.after.route.pours,
@@ -79,7 +88,9 @@ const evaluation = { difficultyMethod: STAGE_DIFFICULTY_METHOD, qualityStatus: '
 writeFileSync(resolve(directory, 'summary.json'), JSON.stringify({ method: UNLOCK_RATING_METHOD,
   comparisonSha256: comparison.sha256, limits: RATING_LIMITS, evaluation, summary, pairs }, null, 2) + '\n');
 const interval = (r: { min: number | null; max: number | null }) => r.min === null || r.max === null ? 'unknown' : `${r.min}–${r.max}`;
-const table = summary.map(r => `| ${r.number} | ${r.solvability} | ${r.difficulty.rank ?? r.difficulty.status} | ${r.difficulty.beforeRank ?? '—'} / ${r.difficulty.afterRank ?? '—'} | ${r.classicBase.difficultyRank ?? r.classicBase.difficultyStatus} |`).join('\n');
+const table = summary.map(r => `| ${r.number} | ${r.solvability} | ${r.difficulty.rank ?? r.difficulty.status} | ${r.difficulty.beforeRank ?? '—'} / ${r.difficulty.afterRank ?? '—'} | ${r.classicBase.difficultyRank ?? r.classicBase.difficultyStatus} | ${r.classicBase.score ?? r.classicBase.scoreStatus} |`).join('\n');
+const classicTable = summary.flatMap(r => r.classicReferences.stages.map(s =>
+  `| ${r.number} | ${s.phase} | ${s.goal} | ${s.score ?? s.status} | ${s.reason ?? '—'} |`)).join('\n');
 const stageTable = summary.flatMap(r => r.milestones.map(m =>
   `| ${r.number} | ${m.trigger} | ${m.mandatory} | ${m.minimumSuccessfulPreparation ?? 'unreachable'} | ${interval(m.beforePours)} | ${interval(m.afterPours)} |`)).join('\n');
 writeFileSync(resolve(directory, 'report.md'), `# Unlock puzzle diagnostics
@@ -88,9 +99,17 @@ Method: ${UNLOCK_RATING_METHOD}
 
 ${evaluation.reason}
 
-| Trial | Solvability | Whole planning rank | Before / after rank, same witness | Classic-base rank |
-| --- | --- | ---: | ---: | ---: |
+| Trial | Solvability | Whole planning rank | Before / after rank, same witness | Classic-base rank | Original classic-base score / 100 |
+| --- | --- | ---: | ---: | ---: | ---: |
 ${table}
+
+## Original classic reference scores
+
+These independent human-decision-v1 scores retain their original planning-depth-v1 calculation and components, without converting the new 1–7 ranks. The base is a whole-sort counterfactual with mechanisms removed. After-key scores use the actual selected paired unlocked frame; they neither choose the witness nor determine the new difficulty. Acquiring a key has a different goal and receives no fabricated classic percentage. Detailed companion evidence binds model versions, budgets, definitions, exact frames and the stage evidence hash. Completed tasks unsupported by the original model also retain a reason rather than an invented zero.
+
+| Trial | Stage | Actual goal | Classic score / 100 | Reason if unavailable |
+| --- | --- | --- | ---: | --- |
+${classicTable}
 
 ## Stage workload
 
