@@ -76,7 +76,7 @@ test('every one/two/three-bottle sample opens atomically with either condition; 
     assert.ok(initial.runtime.puzzle.colors.every(color => LIQUIDS[color]), 'All sample colors must have renderer materials');
     const before = visible(initial), layout = boardLayout(12);
     const closed = coverGroups(initial.runtime.puzzle, before, null, layout.positions, family);
-    assert.equal(closed.length, family === 'cloth' ? count : 1);
+    assert.equal(closed.length, family === 'cloth' && condition === 'color' ? count : 1);
     assert.ok(closed.every(g => g.state === 'closed'));
     const result = moveEngineSession(initial, { type: 'transfer', source: 'b0', target: 'b1' })!;
     assert.ok(result); assert.equal(result.events.filter(e => e.type === 'unlock').length, 1);
@@ -120,7 +120,7 @@ test('all 4–12 bottle covers remain within screen slots for every vessel and d
       for (const g of groups) {
         assert.ok(g.x >= 0 && g.x + g.width <= layout.width + .000001);
         assert.ok(g.height + g.y < layout.positions[g.indices[0]].y + 180);
-        assert.ok(g.indices.length <= (family === 'cloth' ? 1 : 3));
+        assert.ok(g.indices.length <= 3);
         assert.ok(g.indices.every(i => layout.positions[i].y === layout.positions[g.indices[0]].y));
       }
       assert.deepEqual(coverGroups(p, v.map(c => c.count === null ? {...c, colors: [null,null,null]} : c), null, layout.positions, family), groups);

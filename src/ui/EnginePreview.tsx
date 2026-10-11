@@ -11,7 +11,7 @@ import { ContainerRestraint } from '../art/ContainerRestraint';
 import { containerRestraintState } from '../art/containerRestraintState';
 import { PourStream } from '../art/PourStream';
 import { BottleKey, LegacyCover, UnlockBottleVisibility, UnlockCover } from '../art/UnlockCover';
-import { CLASSIC_UNKNOWN_FILL, COVER_FAMILIES, coverGroups, pourPresentation, type CoverFamily } from '../art/unlockPresentation';
+import { CLASSIC_UNKNOWN_FILL, COVER_FAMILIES, defaultCoverFamily, coverGroups, pourPresentation, type CoverFamily } from '../art/unlockPresentation';
 import { LIQUIDS, LIQUID_SYMBOLS } from '../art/palette';
 import { VESSELS, vesselAtCapacity, type VesselDesign } from '../art/vesselDesigns';
 import { createPourPlan, POUR_DURATION_MS, type PourPlan } from '../art/pourGeometry';
@@ -52,7 +52,7 @@ export function EnginePreview({ vessel: preferredVessel, symbols: showSymbols, s
   const animatedBottles = useRef<readonly string[]>([]);
   const [searching, setSearching] = useState(false), [active, setActive] = useState(AppState.currentState === 'active');
   const [benchmarking, setBenchmarking] = useState(false);
-  const [family, setFamily] = useState<CoverFamily>('wood'), [artCount, setArtCount] = useState<1 | 2 | 3 | null>(null);
+  const [family, setFamily] = useState<CoverFamily>(() => defaultCoverFamily(session.runtime.puzzle)), [artCount, setArtCount] = useState<1 | 2 | 3 | null>(null);
   const [artVessel, setArtVessel] = useState<VesselDesign | null>(null), [measurements, setMeasurements] = useState(false);
   const [artEnabled, setArtEnabled] = useState(true), [artChecking, setArtChecking] = useState(false);
   const artRun = useRef<{ id: string; caseIndex: number; variant: string } | null>(null), artAdvance = useRef<() => void>(() => {});
@@ -201,7 +201,7 @@ export function EnginePreview({ vessel: preferredVessel, symbols: showSymbols, s
   function selectExample(next: number) { cancel(); setHandoffCase(null); setArtCount(null); setIndex(next); if (next === 0 && family === 'cloth') setFamily('wood'); commit(createEngineSession(ENGINE_EXAMPLES[next], `preview-${next}`)); }
   function selectTrial(next: number) {
     if (!Number.isInteger(next) || next < 0 || next >= trialLevels.length) return;
-    cancel(); setIndex(next); setFamily(trialLevels[next].puzzle.triggers.some(t => t.when.type === 'empty') ? 'wood' : 'cloth');
+    cancel(); setIndex(next); setFamily(defaultCoverFamily(trialLevels[next].puzzle));
     commit(createEngineSession(trialLevels[next].puzzle, `trial-${next}`));
   }
   function selectArt(count: 1 | 2 | 3) {

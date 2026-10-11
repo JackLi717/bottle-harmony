@@ -7,6 +7,7 @@ import { STAGE_CALIBRATION_METHOD, STAGE_CALIBRATION_SOURCES, UNLOCK_STAGE_CALIB
 import { auditBaselineDisclosure } from './unlockBaselineAudit.ts';
 import { sha256, type UnlockRatingReport } from './unlockRatingEvidence.ts';
 import type { unlockClassicReferences } from './unlockClassicReference.ts';
+import { auditUnlockVisualTemplates } from './unlockVisualTemplates.ts';
 
 export type StageCalibrationReport = UnlockRatingReport & { classicReferences: ReturnType<typeof unlockClassicReferences> };
 type Check = { name: string; status: 'pass' | 'fail' | 'unknown'; puzzles: string[]; reason?: string };
@@ -28,6 +29,7 @@ export function auditStageCalibration(reports: readonly StageCalibrationReport[]
   const ordered = UNLOCK_STAGE_CALIBRATION.map(entry => {
     const report = reports.find(r => r.puzzleId === entry.puzzle.id); assert.ok(report, 'Missing calibration report');
     assert.equal(report.definitionSha256, sha256(entry.puzzle), 'Calibration definition binding differs');
+    assert.deepEqual(report.presentation, auditUnlockVisualTemplates(entry.puzzle), 'Visual template evidence differs from shared presentation');
     const { evidenceSha256, classicReferences } = report;
     if (report.status === 'complete') {
       const { status: _status, evidenceSha256: _hash, limits: _limits, classicReferences: _references, evidence, ...binding } = report;
@@ -69,6 +71,8 @@ export function auditStageCalibration(reports: readonly StageCalibrationReport[]
     add(`replayed-completion-${i + 1}`, [r], () => r.status === 'complete' && r.evidence.admission.solvability === 'solved');
     if (entry.variant === 'key') add(`supported-workload-rhythm-${entry.pair}`, [r],
       () => r.status === 'complete' && r.evidence.stageRhythm.status === 'pass');
+    if (entry.variant === 'key') checks.push({ name: `fixed-visual-template-${entry.pair}`,
+      status: r.presentation.status === 'pass' ? 'pass' : 'fail', puzzles: [r.puzzleId] });
     if (r.status !== 'complete' || r.evidence.stageDifficulty.status !== 'rated') continue;
     const stage = r.evidence.stageDifficulty, runtime = compileSortingPuzzle(entry.puzzle);
     replayEngineRoute(runtime, initialEngineState(runtime), stage.witness.route);

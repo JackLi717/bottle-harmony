@@ -7,6 +7,7 @@ import { analyzeRatingDecisions, compareRatingDecisions } from './unlockDecision
 import { unlockTrialStructure } from './unlockTrialAudit.ts';
 import { analyzeStageDifficulty } from './unlockStageDifficulty.ts';
 import { analyzeStageRhythm } from './unlockStageRhythm.ts';
+import { auditUnlockVisualTemplates } from './unlockVisualTemplates.ts';
 export { distribution, publicRatingFacts, ratingSpace } from './unlockRatingFacts.ts';
 
 export const UNLOCK_RATING_METHOD = 'unlock-diagnostics-v2';
@@ -228,7 +229,7 @@ export function extractUnlockRating(input: RatingInput, comparison: ReturnType<t
     featureDistance: Object.keys(own.features).reduce((n, k) => n + Math.abs(own.features[k as keyof typeof own.features] - c.features[k as keyof typeof c.features]), 0) }))
     .sort((a, b) => Number(b.exactDuplicate) - Number(a.exactDuplicate) || Number(b.sameBase) - Number(a.sameBase) || a.featureDistance - b.featureDistance || a.id.localeCompare(b.id));
   const binding = { puzzleId: puzzle.id, method: UNLOCK_RATING_METHOD, rules: puzzle.rules, definitionSha256: sha256(puzzle), structureSha256: own.structure, classicStructureSha256: own.base,
-    design, comparisonSha256: comparison.sha256, budget: { maxStates, maxEdges, maxStageWork } };
+    design, comparisonSha256: comparison.sha256, budget: { maxStates, maxEdges, maxStageWork }, presentation: auditUnlockVisualTemplates(puzzle) };
   if (graph.status === 'unknown') return { ...binding, status: 'unknown' as const, graph, evidence: null, evidenceSha256: sha256({ binding, graph }), limits: RATING_LIMITS };
   const decisions = analyzeRatingDecisions(graph);
   const stageDifficulty = analyzeStageDifficulty(graph, maxStageWork);
@@ -261,8 +262,7 @@ export function extractUnlockRating(input: RatingInput, comparison: ReturnType<t
       individual: ablations.individual.map(a => ({ trigger: a.trigger, comparison: compare(a.result) })) },
     information: { source: 'public visible state and public four-of-each inventory only', trace: timeline,
       fairness: puzzle.hidden.length || puzzle.locked.length ? 'unknown-alternative-worlds-not-enumerated' : 'fully-visible' },
-    expression: { ruleChecks: { strictDefinition: true, fourOfEach: true, wholeBoardGoal: true, automaticEvents: true },
-      presentation: 'unimplemented automatic presentation checks: readable conditions, linked targets, known/unknown distinction, reveal feedback and seen-relocked rendering require presentation evidence' },
+    expression: { ruleChecks: { strictDefinition: true, fourOfEach: true, wholeBoardGoal: true, automaticEvents: true } },
     novelty: { comparisonSha256: comparison.sha256, family: design.family, nearest,
       distanceMeaning: 'L1 distance of colors/bottles/keys/covers/hidden counts; descriptive only. Exact duplicates use full canonical structure. Neither distance nor family label establishes quality.' } };
   return { ...binding, status: 'complete' as const, evidence, evidenceSha256: sha256({ binding, evidence }), limits: RATING_LIMITS };

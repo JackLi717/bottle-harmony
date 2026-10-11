@@ -7,6 +7,11 @@ import { containerRestraintState } from './containerRestraintState.ts';
 
 export const COVER_FAMILIES = ['wood', 'louver', 'cloth', 'roller'] as const;
 export type CoverFamily = typeof COVER_FAMILIES[number];
+// Same automatic preset as internal trials; mixed key/color boards use boxes.
+export function defaultCoverFamily(puzzle: Pick<SortingPuzzle, 'triggers'>): CoverFamily {
+  return puzzle.triggers.some(t => t.when.type === 'empty') ? 'wood' : 'cloth';
+}
+export const COVER_TEMPLATE_GEOMETRY = Object.freeze({ insetX: 18, insetY: 16, width: 64, height: 158, maxBoxBottles: 3, maxPitch: 134 });
 export type CoverState = 'closed' | 'opening' | 'relocked';
 const KEY_FINISHES = [
   { fill: '#83B6A2', edge: '#3E6B5A', light: '#D8EBDD', dark: '#29483E' },
@@ -37,15 +42,16 @@ export function coverGroups(puzzle: SortingPuzzle, visible: readonly VisibleEngi
       : before?.[i].locked ? 'opening' : null;
     if (!state) return;
     const conditions = puzzle.triggers.filter(trigger => trigger.unlock.includes(container.id));
-    const previous = groups.at(-1), position = positions[i];
+    const previous = groups.at(-1), position = positions[i], geometry = COVER_TEMPLATE_GEOMETRY;
     const sameCondition = previous && previous.conditions.map(c => c.id).join('|') === conditions.map(c => c.id).join('|');
-    const canJoin = previous && family !== 'cloth' && state !== 'relocked' && sameCondition && previous.state === state
-      && previous.indices.length < 3 && previous.indices.at(-1) === i - 1 && previous.y === position.y + 16
-      && position.x - positions[i - 1].x <= 134;
+    const canJoin = previous && coverFamilyForConditions(family, conditions) !== 'cloth' && state !== 'relocked' && sameCondition && previous.state === state
+      && previous.indices.length < geometry.maxBoxBottles && previous.indices.at(-1) === i - 1 && previous.y === position.y + geometry.insetY
+      && position.x - positions[i - 1].x <= geometry.maxPitch;
     if (canJoin) {
       const indices = [...previous.indices, i], centers = [...previous.centers, position.x + 50 - previous.x];
-      groups[groups.length - 1] = { ...previous, id: indices.join('-'), indices, centers, width: position.x + 82 - previous.x };
-    } else groups.push({ id: String(i), indices: [i], state, conditions, x: position.x + 18, y: position.y + 16, width: 64, height: 158, centers: [32] });
+      groups[groups.length - 1] = { ...previous, id: indices.join('-'), indices, centers, width: position.x + geometry.insetX + geometry.width - previous.x };
+    } else groups.push({ id: String(i), indices: [i], state, conditions, x: position.x + geometry.insetX, y: position.y + geometry.insetY,
+      width: geometry.width, height: geometry.height, centers: [geometry.width / 2] });
   });
   return groups;
 }

@@ -7,6 +7,7 @@ import { UNLOCK_STAGE_CALIBRATION } from '../src/game/unlockStageCalibration.ts'
 import { extractUnlockRating, pairedRatingComparisons, ratingComparisonSet, sha256, UNLOCK_RATING_METHOD, RATING_LIMITS, type RatingDesign, type RatingInput } from './lib/unlockRatingEvidence.ts';
 import { STAGE_DIFFICULTY_METHOD } from './lib/unlockStageDifficulty.ts';
 import { STAGE_RHYTHM_METHOD, STAGE_RHYTHM_POLICY } from './lib/unlockStageRhythm.ts';
+import { VISUAL_TEMPLATE_METHOD } from './lib/unlockVisualTemplates.ts';
 import { unlockClassicReferences } from './lib/unlockClassicReference.ts';
 import { auditStageCalibration } from './lib/unlockStageCalibrationAudit.ts';
 
@@ -66,6 +67,9 @@ for (const [i, input] of inputs.entries()) {
   const difficulty = evidence?.stageDifficulty;
   summary.push({ number: i + 1, puzzle: input.puzzle.id,
     solvability: evidence?.admission.solvability ?? 'unknown', evidenceSha256: report.evidenceSha256,
+    presentation: { method: report.presentation.method, status: report.presentation.status,
+      templates: [...new Set(report.presentation.groups.map(g => g.template))], issues: report.presentation.issues,
+      evidenceSha256: report.presentation.evidenceSha256 },
     difficulty: { method: STAGE_DIFFICULTY_METHOD, status: difficulty?.status ?? 'unknown', rank: difficulty?.rank ?? null,
       beforeRank: difficulty?.beforeRank ?? null, afterRank: difficulty?.afterRank ?? null,
       reason: difficulty?.reason ?? (report.status === 'unknown' ? `graph-${report.graph.reason}` : null) },
@@ -92,8 +96,8 @@ const pairs = pairedRatingComparisons(reports).map(pair => ({
   original: pair.original, reference: pair.reference, status: pair.status,
   originalEvidenceSha256: pair.originalEvidenceSha256, referenceEvidenceSha256: pair.referenceEvidenceSha256,
 }));
-const evaluation = { difficultyMethod: STAGE_DIFFICULTY_METHOD, rhythmMethod: STAGE_RHYTHM_METHOD, qualityStatus: 'unimplemented',
-  reason: 'Difficulty is the lowest certified planning rank, using the same policy ladder for both stages and ordinary controls. It is not a 0–100 human score. Single-key workload rhythm uses only color-run merges on that same witness. Visual-template checks and final quality acceptance remain unimplemented.' };
+const evaluation = { difficultyMethod: STAGE_DIFFICULTY_METHOD, rhythmMethod: STAGE_RHYTHM_METHOD, presentationMethod: VISUAL_TEMPLATE_METHOD, qualityStatus: 'unimplemented',
+  reason: 'Difficulty uses certified planning ranks; rhythm uses only same-witness color-run merges. Fixed visual templates have binary conformance checks, independent of solver budgets. No weighted quality score. Final content acceptance still requires difficulty targets and public-information validation; template conformance alone is not final quality.' };
 const calibration = set === 'stage' ? auditStageCalibration(reports, JSON.parse(readFileSync('assets/levels/mainline-catalog.json', 'utf8')).records) : null;
 if (calibration) {
   writeFileSync(resolve(directory, 'calibration.json'), JSON.stringify(calibration, null, 2) + '\n');
@@ -109,6 +113,7 @@ const classicTable = summary.flatMap(r => r.classicReferences.stages.map(s =>
 const stageTable = summary.flatMap(r => r.milestones.map(m =>
   `| ${r.number} | ${m.trigger} | ${m.mandatory} | ${m.minimumSuccessfulPreparation ?? 'unreachable'} | ${interval(m.beforePours)} | ${interval(m.afterPours)} |`)).join('\n');
 const rhythmTable = summary.map(r => `| ${r.number} | ${r.rhythm.before ?? '—'} | ${r.rhythm.after ?? '—'} | ${r.rhythm.structure ?? '—'} | ${r.rhythm.status} | ${r.rhythm.reason ?? '—'} |`).join('\n');
+const presentationTable = summary.map(r => `| ${r.number} | ${r.presentation.templates.join(', ') || '—'} | ${r.presentation.status} | ${r.presentation.issues.map(i => i.code).join(', ') || '—'} |`).join('\n');
 writeFileSync(resolve(directory, 'report.md'), `# Unlock puzzle diagnostics
 
 Method: ${UNLOCK_RATING_METHOD}
@@ -139,6 +144,14 @@ A before share of ${STAGE_RHYTHM_POLICY.balancedBeforePercent.min}%–${STAGE_RH
 | --- | ---: | ---: | --- | --- | --- |
 ${rhythmTable}
 
+## Fixed visual templates
+
+Method: ${VISUAL_TEMPLATE_METHOD}. The shared trial preset uses cloth for color-only boards and wood boxes when keys are present (including mixed key/color boards). Boxes require one/two/three consecutive same-row slots. Checks bind the actual shared two-row layout and cover projection, fixed dimensions, condition mapping, static bounds and opening/seen-relock geometry. They do not inspect hidden inventory, measure aesthetics or change planning ranks. Pouring art may cross a horizontal screen edge. No cover means not-applicable; unsupported layouts or a mismatch never pass. Renderer/device appearance and public-information fairness require their own evidence.
+
+| Trial | Templates | Result | Mismatch reason |
+| --- | --- | --- | --- |
+${presentationTable}
+
 ## Shortest-route pour counts (diagnostic only)
 
 All shortest complete walks; before includes the triggering pour. These workload ranges are independent of the selected difficulty witness. Minimum successful preparation and range endpoints may belong to different walks; do not splice them into a single playthrough.
@@ -149,7 +162,7 @@ ${stageTable}
 
 The key task ends at the first firing. Each retained unlocked state is evaluated anew for whole-board sorting; the whole rank is the minimum paired maximum among certified policies. Policies use preparation limits of 2/4/6/6/8/10/12 pours and lookahead of 0/1/2/3/4/6/8 progress segments. Before the key, progress means fewer key-bottle portions, then fewer open-board color runs; after the key it means fewer whole-board color runs. No exact solution distance selects a policy frontier. All tied shortest retained segments must succeed. Lower policies are checked before a higher rank; work limits or exhausting this ladder without certification return unknown, never a high fallback grade. The per-puzzle witness replays both stages together and retains the actual unlocked frame. Ordinary controls run the same sorting policies.
 
-This version supports ordinary visible boards and one mandatory bottom key, with no progressive hidden layers or additional triggers. Unsupported combinations receive no rank. Quality will use difficulty targets, workload rhythm and approved visual templates, with no manual per-puzzle grades.
+Stage difficulty supports ordinary visible boards and one mandatory bottom key, with no progressive hidden layers or additional triggers. Unsupported combinations receive no rank. Visual-template checks independently support 4–12 bottles and color cloth covers or one/two/three-bottle boxes. A passing template cannot fill an unknown difficulty or fairness result. Final quality will combine required gates without manual per-puzzle grades.
 
 Admission requires at least one replayed legal complete solution. Unknown search results remain unknown; unsolvable puzzles are rejected. Unlocking every group is not an extra completion goal. ${RATING_LIMITS}
 
