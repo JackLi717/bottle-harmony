@@ -397,7 +397,10 @@ export function EnginePreview({ vessel: preferredVessel, symbols: showSymbols, s
           const position = layout.positions[i], colors = container.colors.map(c => c ?? 'unknown'), hidden = container.colors.map(c => c === null);
           const keys = puzzle.triggers.filter(trigger => trigger.when.type === 'empty' && trigger.when.container === container.id
             && (!session.state.fired.includes(trigger.id) || animation && !animation.firedBefore.includes(trigger.id)));
-          return <View key={container.id + ':' + (bottleEpochs[container.id] ?? 0)} pointerEvents="none" style={StyleSheet.absoluteFill}>
+          // Raise the sibling of the covers: Bottle's own zIndex cannot escape
+          // this parent. Keep the same mounted glass throughout the pour.
+          return <View key={container.id + ':' + (bottleEpochs[container.id] ?? 0)} pointerEvents="none"
+            style={[StyleSheet.absoluteFill, { zIndex: animation?.pour.source === i ? 10 : 0 }]}>
             <UnlockBottleVisibility concealed={artEnabled && visible[i].locked && visible[i].count === null} delayed={!!animation && animation.before[i].count === null && !visible[i].locked} progress={progress}>
             <Bottle index={i} vessel={designs[i]} colors={colors} hiddenLayers={hidden} palette={palette} symbolMap={symbols} selected={selected === i}
               completed={!hidden.some(Boolean) && isBottleComplete(colors, container.capacity)} position={position} width={100 * scale} scale={scale}
