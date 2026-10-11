@@ -2,6 +2,8 @@ import { compileSortingPuzzle, evaluateEngineGoal, initialEngineState, listEngin
   type EngineAction, type EngineFrame } from '../../src/game/engine.ts';
 import { replayEngineRoute } from '../../src/game/engineSearch.ts';
 import type { SortingPuzzle } from '../../src/game/engineModel.ts';
+import { parseLevel } from '../../src/game/model.ts';
+import { structureKey } from '../../src/game/generation.ts';
 
 /** Minimum solvability gate: one replayed completion suffices. Wrong choices may
  * need undo/reset; dead-end counts and hidden-information fairness are separate. */
@@ -13,13 +15,33 @@ export function assertUnlockTrialSolvable(puzzle: SortingPuzzle, evidence:
   replayEngineRoute(runtime,initialEngineState(runtime),evidence.route);
 }
 
-/** Exact canonical structure for these <=8-bottle handcrafted boards. IDs and colors are relabeled, never artwork. */
+/** Exact canonical structure. Larger internal single-key boards fix invariant
+ * role-group order before enumerating each group's permutations. */
 export function unlockTrialStructure(puzzle: SortingPuzzle): string {
-  if (puzzle.containers.length > 8) throw new Error('Handcrafted canonicalization budget');
+  if (puzzle.containers.length > 10) throw new Error('Handcrafted canonicalization budget');
+  const larger = puzzle.containers.length > 8;
+  if (larger && !puzzle.triggers.length && !puzzle.locked.length && !puzzle.hidden.length && puzzle.goal.type === 'sort'
+    && puzzle.goal.containers.length === puzzle.containers.length && puzzle.amount === 'run'
+    && puzzle.containers.every(c => c.capacity === 4 && c.canSource && c.canReceive && c.receive === 'same'
+      && !c.fixed && !c.protectedBottom && c.acceptColors === null)) {
+    const colors = new Map(puzzle.units.map(u => [u.id, u.color]));
+    return `ordinary:${structureKey(parseLevel({ format: 'bottle-harmony', version: 1, rules: 'water-sort',
+      id: puzzle.id, capacity: 4, colors: puzzle.colors, bottles: puzzle.containers.map(c => ({ id: c.id, layers: c.units.map(u => colors.get(u)!) })) }))}`;
+  }
+  if (larger && (puzzle.goal.type !== 'sort' || puzzle.goal.containers.length !== puzzle.containers.length
+    || puzzle.hidden.length || puzzle.triggers.length !== 1 || puzzle.triggers[0].when.type !== 'empty'
+    || puzzle.containers.some(c => c.acceptColors !== null))) throw new Error('Larger canonicalization requires one empty-key and no extra disclosure or color filters');
+  const keyBottle = larger && puzzle.triggers[0].when.type === 'empty' ? puzzle.triggers[0].when.container : null;
+  const roles = puzzle.containers.map(c => JSON.stringify([c.capacity,c.canSource,c.canReceive,c.receive,c.fixed,c.protectedBottom,
+    puzzle.locked.includes(c.id),c.id === keyBottle,larger && puzzle.triggers[0].unlock.includes(c.id)]));
+  const roleOrder = [...new Set(roles)].sort();
   const colors = new Map(puzzle.units.map(u => [u.id,u.color])), hidden = new Set(puzzle.hidden);
   let best: string | null = null;
   function visit(order: number[], remaining: number[]) {
-    if (remaining.length) { for (const i of remaining) visit([...order,i],remaining.filter(n => n !== i)); return; }
+    if (remaining.length) {
+      const nextRole = larger ? roleOrder.find(role => remaining.some(i => roles[i] === role)) : null;
+      for (const i of remaining) if (!larger || roles[i] === nextRole) visit([...order,i],remaining.filter(n => n !== i)); return;
+    }
     const names = new Map<string,number>(), color = (c: string) => { if (!names.has(c)) names.set(c,names.size); return names.get(c)!; };
     const ids = new Map(order.map((i,n) => [puzzle.containers[i].id,n]));
     const containers = order.map(i => {

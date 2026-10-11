@@ -346,10 +346,10 @@ export function EnginePreview({ vessel: preferredVessel, symbols: showSymbols, s
   const covers = coverGroups(puzzle, visible, animation?.before ?? null, layout.positions, family);
   const names = zh ? ['底部钥匙', '颜色盖布', '逐层显色', '十二份收集', '彩虹层序'] : ['Bottom key', 'Color cover', 'Progressive reveal', 'Twelve portions', 'Ordered colors'];
   return <LinearGradient colors={['#11171E', '#090E16', '#070B12']} style={[styles.screen,
-    trial && trialLevels.length > 20 && Platform.OS === 'web' && { flexGrow: 0, flexShrink: 0, flexBasis: 'auto', height: Math.max(dimensions.height, 520) },
+    trial && trialLevels.length >= 20 && Platform.OS === 'web' && { flexGrow: 0, flexShrink: 0, flexBasis: 'auto', height: Math.max(dimensions.height, 520) },
     { paddingTop: Math.max(10, insets.top), paddingBottom: Math.max(12, insets.bottom) }]}>
     <GameHeader label={`${trial ? zh ? '内部体验' : 'Internal trial' : zh ? '引擎验收' : 'Engine acceptance'} · ${index + 1}/${trial ? trialLevels.length : 5}`} compact disabled={false} onBack={back} />
-    {trial && trialLevels.length > 20 ? <View style={styles.trialNavigation}>
+    {trial && trialLevels.length >= 20 ? <View style={styles.trialNavigation}>
       <Pressable accessibilityRole="button" accessibilityLabel={zh ? '上一道体验题' : 'Previous trial'} disabled={index === 0} onPress={() => selectTrial(index - 1)} style={styles.artTab}><UiText style={styles.text}>←</UiText></Pressable>
       <TextInput accessibilityLabel={zh ? '跳转体验题号' : 'Trial number'} placeholder={`${index + 1} / ${trialLevels.length}`} placeholderTextColor="#AABDBD" value={jump} onChangeText={setJump} keyboardType="number-pad" returnKeyType="go" maxLength={3} style={styles.jump}
         onSubmitEditing={() => { if (/^[0-9]+$/.test(jump)) selectTrial(Number(jump) - 1); }} />

@@ -98,7 +98,9 @@
     "unlock:templates": "node --experimental-strip-types scripts/unlock-templates.ts",
     "unlock:generate": "node --experimental-strip-types scripts/unlock-generate.ts generate",
     "unlock:generated:verify": "node --experimental-strip-types scripts/unlock-generate.ts verify",
-    "unlock:lock-width": "node --experimental-strip-types scripts/unlock-lock-width.ts"
+    "unlock:lock-width": "node --experimental-strip-types scripts/unlock-lock-width.ts",
+    "unlock:post-key": "node --experimental-strip-types scripts/unlock-post-key.ts generate",
+    "unlock:post-key:verify": "node --experimental-strip-types scripts/unlock-post-key.ts verify"
   },
   "private": true,
   "engines": {

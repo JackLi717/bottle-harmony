@@ -53,9 +53,9 @@ export function acceptSingleKey(puzzle: SortingPuzzle, report: UnlockRatingRepor
       limits: 'Offline single-key content acceptance against an explicit batch difficulty target; not player calibration, release approval or all-action safety. Original classic scores are references only. No empty-bottle threshold or weighted quality score.' };
   };
   const trigger = puzzle.triggers[0];
-  if (puzzle.containers.length < 4 || puzzle.containers.length > 8 || puzzle.hidden.length || puzzle.triggers.length !== 1
+  if (puzzle.containers.length < 4 || puzzle.containers.length > 10 || puzzle.hidden.length || puzzle.triggers.length !== 1
     || trigger.when.type !== 'empty' || !puzzle.locked.length || puzzle.locked.some(id => !trigger.unlock.includes(id))) {
-    add('scope', 'unknown', 'outside-single-key-scope', '不在当前单钥匙验收范围：需四至八瓶、一把钥匙一次打开全部锁瓶，无额外遮色或机关。'); return finish();
+    add('scope', 'unknown', 'outside-single-key-scope', '不在当前单钥匙验收范围：需四至十瓶、一把钥匙一次打开全部锁瓶，无额外遮色或机关。'); return finish();
   }
   add('scope', 'pass', 'single-key-scope', '属于当前单钥匙验收范围。');
   const evidence = report.status === 'complete' ? report.evidence : null;

@@ -5,16 +5,17 @@ import type { SortingPuzzle } from '../../src/game/engineModel.ts';
 
 export function assertRatingScope(puzzle: SortingPuzzle) {
   compileSortingPuzzle(puzzle); // Strict shared decoder before any offline assumptions.
-  if (puzzle.containers.length > 8 || puzzle.amount !== 'run' || puzzle.goal.type !== 'sort'
+  if (puzzle.containers.length > 10 || puzzle.amount !== 'run' || puzzle.goal.type !== 'sort'
     || puzzle.goal.containers.length !== puzzle.containers.length
     || puzzle.containers.some(c => c.capacity !== 4 || !c.canSource || !c.canReceive || c.receive !== 'same'
       || c.protectedBottom || c.acceptColors !== null)
     || puzzle.colors.some(c => puzzle.units.filter(u => u.color === c).length !== 4)) {
-    throw new Error('Rating supports only <=8-container classic four-portion whole-board trials');
+    throw new Error('Rating supports only <=10-container classic four-portion whole-board trials');
   }
 }
 
-/** Only equal static roles are interchangeable. Knowledge is encoded per liquid occurrence.
+/** Equivalent rule roles are interchangeable; spent single-key roles may merge after opening.
+ * Knowledge is encoded per liquid occurrence.
  * Stable unit IDs do not affect forward moves once color and disclosure behavior agree.
  * Undo histories are deliberately outside this graph. */
 export function ratingStateKey(runtime: EngineRuntime) {
@@ -24,12 +25,22 @@ export function ratingStateKey(runtime: EngineRuntime) {
     puzzle.triggers.filter(t => t.when.type === 'empty' && t.when.container === c.id).map(t => t.id).sort(),
     puzzle.triggers.filter(t => t.unlock.includes(c.id)).map(t => t.id).sort()]));
   const groups = [...new Set(roles)].map(role => roles.flatMap((r, i) => r === role ? [i] : []));
+  // In the larger internal scope, after the sole key has fired and every unit
+  // is public, its historical key/lock roles cannot affect any future move or
+  // goal. Quotient those now equivalent bottles exactly, retaining all physical
+  // permissions. Keep the <=8 evidence ordering unchanged for frozen reports.
+  const openedRoles = puzzle.containers.map(c => JSON.stringify([c.capacity, c.canSource, c.canReceive, c.receive,
+    c.fixed, c.protectedBottom, c.acceptColors]));
+  const openedGroups = [...new Set(openedRoles)].map(role => openedRoles.flatMap((r, i) => r === role ? [i] : []));
+  const canCollapse = puzzle.containers.length > 8 && !puzzle.hidden.length && puzzle.triggers.length === 1
+    && puzzle.triggers[0].when.type === 'empty' && puzzle.locked.every(id => puzzle.triggers[0].unlock.includes(id));
   const codes = new Map(puzzle.units.map(u => [u.id, puzzle.colors.indexOf(u.color) * 3]));
   return (frame: EngineFrame) => {
     const known = new Set(frame.known);
     const stacks = frame.state.contents.map((units, i) => Number(frame.state.open[i]) + units.map(u =>
       String.fromCharCode(65 + codes.get(u)! + (known.has(u) ? 1 : runtime.hidden.has(u) ? 2 : 0))).join(''));
-    return groups.map(indices => indices.map(i => stacks[i]).sort().join('|')).join('/')
+    const activeGroups = canCollapse && frame.state.fired.includes(puzzle.triggers[0].id) && frame.state.open.every(Boolean) ? openedGroups : groups;
+    return activeGroups.map(indices => indices.map(i => stacks[i]).sort().join('|')).join('/')
       + '#' + [...frame.state.fired].sort().join(',');
   };
 }
