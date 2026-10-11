@@ -97,7 +97,8 @@
     "unlock:stage": "node --experimental-strip-types scripts/unlock-rating.ts --set stage",
     "unlock:templates": "node --experimental-strip-types scripts/unlock-templates.ts",
     "unlock:generate": "node --experimental-strip-types scripts/unlock-generate.ts generate",
-    "unlock:generated:verify": "node --experimental-strip-types scripts/unlock-generate.ts verify"
+    "unlock:generated:verify": "node --experimental-strip-types scripts/unlock-generate.ts verify",
+    "unlock:lock-width": "node --experimental-strip-types scripts/unlock-lock-width.ts"
   },
   "private": true,
   "engines": {
