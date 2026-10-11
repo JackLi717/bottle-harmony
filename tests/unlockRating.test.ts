@@ -36,7 +36,7 @@ test('scores accept only automatic mappings and reject manual inputs or stale me
   assert.ok(Object.values(scores.metrics).every(m => m.source === 'automatic'));
   assert.throws(() => Reflect.apply(scoreUnlockRating, undefined, [small.id, report, { metrics: { Q1: { grade: 5 } } }]), /Manual score input/);
   assert.throws(() => scoreUnlockRating('another', report), /puzzle mismatch/);
-  assert.throws(() => scoreUnlockRating(small.id, { ...report, method: 'classic-quality-evidence-v1' } as unknown as typeof report), /method mismatch/);
+  assert.throws(() => scoreUnlockRating(small.id, { ...report, method: 'classic-quality-evidence-v2' } as unknown as typeof report), /method mismatch/);
 });
 
 test('completed original evidence does not complete a budget-limited ablation', () => {
@@ -45,6 +45,7 @@ test('completed original evidence does not complete a budget-limited ablation', 
   assert.equal(partial.evidence.ablations.allOpen.status, 'unknown');
   const scores = scoreUnlockRating(entry.puzzle.id, partial);
   assert.equal(scores.metrics.Q2.status, 'unknown');
+  assert.equal(partial.evidence.decisionComparisons.classicBase.status, 'unknown');
   assert.deepEqual(scores.Q.unknown, ['Q2']);
   assert.equal(scores.metrics.D6.status, 'scored');
   assert.equal(scores.Q.score, null); assert.equal(scores.D.score, null);
@@ -117,6 +118,14 @@ test('renaming/reordering/color permutation retains evidence distributions and e
     assert.deepEqual(a.evidence.plusTwo[field],b.evidence.plusTwo[field]);
   }
   assert.equal(a.evidence.novelty.nearest[0].exactDuplicate,true);
+  if (a.evidence.decisions.status !== 'complete' || b.evidence.decisions.status !== 'complete') throw new Error('Expected decision evidence');
+  for (const corridor of ['shortest','plusTwo'] as const) {
+    assert.deepEqual(a.evidence.decisions[corridor].summary, b.evidence.decisions[corridor].summary);
+    assert.deepEqual(a.evidence.decisions[corridor].route, b.evidence.decisions[corridor].route);
+    assert.deepEqual(a.evidence.decisions[corridor].curve, b.evidence.decisions[corridor].curve);
+  }
+  assert.deepEqual(a.evidence.decisionComparisons.classicBase,
+    { ...b.evidence.decisionComparisons.classicBase, definitionSha256: a.evidence.decisionComparisons.classicBase.definitionSha256 });
   assert.equal(scoreUnlockRating(puzzle.id,a).metrics.Q5.grade,null);
   assert.deepEqual(extractUnlockRating(entries[0],set),a);
 });

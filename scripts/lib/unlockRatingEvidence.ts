@@ -1,10 +1,13 @@
 import { createHash } from 'node:crypto';
-import { listEngineActions, transitionEngine, visibleEngineState, type EngineFrame, type EngineRuntime } from '../../src/game/engine.ts';
+import { listEngineActions, transitionEngine, visibleEngineState } from '../../src/game/engine.ts';
 import type { SortingPuzzle } from '../../src/game/engineModel.ts';
 import { buildRatingGraph, completeColors, type RatingGraph } from './unlockRatingGraph.ts';
+import { distribution, publicRatingFacts, ratingSpace } from './unlockRatingFacts.ts';
+import { analyzeRatingDecisions, compareRatingDecisions } from './unlockDecisionAnalysis.ts';
 import { unlockTrialStructure } from './unlockTrialAudit.ts';
+export { distribution, publicRatingFacts, ratingSpace } from './unlockRatingFacts.ts';
 
-export const UNLOCK_RATING_METHOD = 'classic-quality-evidence-v2';
+export const UNLOCK_RATING_METHOD = 'classic-quality-evidence-v3';
 export const sha256 = (value: unknown) => createHash('sha256').update(JSON.stringify(value)).digest('hex');
 export type RatingDesign = { role: 'teaching' | 'recovery' | 'challenge'; family: string;
   purpose: { event: 'sort' | 'key' | 'cover' | 'reveal' | 'order' | 'chain' | 'simultaneous'; description: string } };
@@ -13,42 +16,6 @@ export const RATING_LIMITS = 'Fixed-layout forward play until whole-board comple
 export function validateDesign(design: RatingDesign) {
   if (!design || !['teaching', 'recovery', 'challenge'].includes(design.role) || !design.family?.trim()
     || !design.purpose?.description?.trim() || !['sort', 'key', 'cover', 'reveal', 'order', 'chain', 'simultaneous'].includes(design.purpose.event)) throw new Error('Explicit design role, family and checkable purpose required');
-}
-
-/** Only public colors/counts and the public four-of-each inventory are used here.
- * An unopened bottle's amount or its private unit IDs never enters this object. */
-export function publicRatingFacts(runtime: EngineRuntime, frame: EngineFrame) {
-  const visible = visibleEngineState(runtime, frame.state, frame.known);
-  // The secret palette is not a public clue. Use only seen colors and colors
-  // explicitly printed on public cover conditions. Unopened counts stay unknown.
-  const publicColors = [...new Set([...visible.flatMap(c => c.colors.filter((color): color is string => color !== null)),
-    ...runtime.puzzle.triggers.flatMap(t => t.when.type === 'color-full' ? [t.when.color] : [])])].sort();
-  const remaining = publicColors.map(color => ({ color, count: 4 - visible.reduce((n, c) => n + c.colors.filter(x => x === color).length, 0) }));
-  const unknownPositions = visible.flatMap(c => c.colors.flatMap((color, depth) => color === null ? [{ container: c.id, depth }] : []));
-  const possible = remaining.filter(c => c.count > 0).map(c => c.color);
-  return { visible, inventory: remaining, unknownPositions, unopened: visible.filter(c => c.count === null).map(c => c.id),
-    forcedColor: visible.every(c => c.count !== null) && possible.length === 1
-      && remaining.reduce((n, c) => n + c.count, 0) === unknownPositions.length ? possible[0] : null,
-    inferenceLimit: 'Only singleton remaining-inventory deductions; no inferred plan or D5 grade.' };
-}
-
-/** True receiving space: open, receiving-enabled, matching visible top, excluding the source itself. */
-export function ratingSpace(runtime: EngineRuntime, frame: EngineFrame) {
-  const visible = visibleEngineState(runtime, frame.state, frame.known);
-  const receivers = visible.filter(c => c.canReceive && c.count !== null);
-  const sources = visible.filter(c => c.canSource && c.count && c.colors.at(-1) !== null);
-  return { openCapacity: receivers.reduce((n, c) => n + c.capacity, 0),
-    freeSlots: receivers.reduce((n, c) => n + c.capacity - c.count!, 0), emptyReceivers: receivers.filter(c => c.count === 0).length,
-    compatible: sources.map(source => ({ source: source.id, color: source.colors.at(-1)!,
-      slots: receivers.filter(c => c.id !== source.id && (!c.count || c.colors.at(-1) === source.colors.at(-1)))
-        .reduce((n, c) => n + c.capacity - c.count!, 0) })) };
-}
-export function distribution(values: number[]) {
-  const sorted = [...values].sort((a, b) => a - b);
-  const histogram: Record<string, number> = {};
-  for (const value of sorted) histogram[value] = (histogram[value] ?? 0) + 1;
-  return { count: sorted.length, min: sorted[0] ?? null, max: sorted.at(-1) ?? null,
-    median: sorted.length ? sorted[Math.floor((sorted.length - 1) / 2)] : null, histogram };
 }
 
 function outcomes(graph: RatingGraph, index: number) {
@@ -75,7 +42,7 @@ function outcomes(graph: RatingGraph, index: number) {
 
 function graphSummary(graph: ReturnType<typeof buildRatingGraph>) {
   if (graph.status === 'unknown') return graph;
-  return completeGraphSummary(graph);
+  return { ...completeGraphSummary(graph), decisions: analyzeRatingDecisions(graph) };
 }
 function completeGraphSummary(graph: RatingGraph) {
   return { status: graph.status, states: graph.nodes.length, edges: graph.edges, deadEnds: graph.deadEnds,
@@ -176,7 +143,7 @@ function corridor(graph: RatingGraph, extra: number) {
     preparationToNextEvent: distribution(observed.flatMap(f => Number.isFinite(preparations[f.i]) ? [preparations[f.i]] : [])),
     rhythm: routeRhythm(graph, extra, widths), examples,
     consequenceEquivalence: 'Same exact remaining cost, fired set, empty receivers, free slots, sorted compatible capacities and known-color counts. A descriptive projection, not proof of equal strategic value.',
-    lookahead: { status: 'unimplemented', reason: 'Public-cue similarity and distinguishing-horizon criterion need confirmed examples; preparation distance is not D1.' } };
+    lookahead: { status: 'separate-policy-measurement', evidenceRef: 'decisions', reason: 'Fixed public-progress policy horizons are measured separately; public-cue similarity and human D1 grade mapping remain unimplemented. Preparation distance is not D1.' } };
 }
 
 function dependencies(graph: RatingGraph) {
@@ -255,10 +222,12 @@ export function extractUnlockRating(input: RatingInput, comparison: ReturnType<t
     differences: Object.keys(own.features).filter(k => own.features[k as keyof typeof own.features] !== c.features[k as keyof typeof c.features]),
     featureDistance: Object.keys(own.features).reduce((n, k) => n + Math.abs(own.features[k as keyof typeof own.features] - c.features[k as keyof typeof c.features]), 0) }))
     .sort((a, b) => Number(b.exactDuplicate) - Number(a.exactDuplicate) || Number(b.sameBase) - Number(a.sameBase) || a.featureDistance - b.featureDistance || a.id.localeCompare(b.id));
-  const binding = { puzzleId: puzzle.id, method: UNLOCK_RATING_METHOD, rules: puzzle.rules, definitionSha256: sha256(puzzle), structureSha256: own.structure,
+  const binding = { puzzleId: puzzle.id, method: UNLOCK_RATING_METHOD, rules: puzzle.rules, definitionSha256: sha256(puzzle), structureSha256: own.structure, classicStructureSha256: own.base,
     design, comparisonSha256: comparison.sha256, budget: { maxStates, maxEdges } };
   if (graph.status === 'unknown') return { ...binding, status: 'unknown' as const, graph, evidence: null, evidenceSha256: sha256({ binding, graph }), limits: RATING_LIMITS };
-  const ablationCache = new Map([[sha256(puzzle), graphSummary(graph)]]);
+  const decisions = analyzeRatingDecisions(graph);
+  const originalSummary = { ...completeGraphSummary(graph), decisions };
+  const ablationCache = new Map<string, ReturnType<typeof graphSummary>>([[sha256(puzzle), originalSummary]]);
   const ablate = (candidate: SortingPuzzle) => {
     const hash = sha256(candidate);
     let summary = ablationCache.get(hash);
@@ -266,6 +235,13 @@ export function extractUnlockRating(input: RatingInput, comparison: ReturnType<t
     return { definitionSha256: hash, ...summary };
   };
   const timeline = trace(graph);
+  const ablations = { allOpen: ablate({ ...puzzle, locked: [], triggers: [] }),
+    fullyVisible: ablate({ ...puzzle, hidden: [] }),
+    classicBase: ablate({ ...puzzle, locked: [], hidden: [], triggers: [] }),
+    individual: puzzle.triggers.map(t => ({ trigger: t.id, openedTargets: t.unlock, result: ablate(openTargets(puzzle, t.unlock)) })) };
+  const compare = (reference: ReturnType<typeof ablate>) => ({ definitionSha256: reference.definitionSha256,
+    ...(reference.status === 'unknown' ? { status: 'unknown' as const, reason: reference.reason }
+      : compareRatingDecisions(decisions, reference.decisions)) });
   const evidence = { declaredPurpose: purposeEvidence(graph, design), admission: { solvability: graph.shortestMoves === null ? 'unsolvable' : 'solved', fixedLayoutAllActionsSafe: graph.deadEnds === 0,
     publicInformationFairness: puzzle.hidden.length || puzzle.locked.length ? 'unknown' : 'fully-visible', productionEligible: false }, graph: completeGraphSummary(graph), shortest: corridor(graph, 0), plusTwo: corridor(graph, 2),
     mechanisms: { ...dependencies(graph), referenceResourceUse: puzzle.locked.map(container => {
@@ -273,9 +249,9 @@ export function extractUnlockRating(input: RatingInput, comparison: ReturnType<t
       const used = timeline.find(row => opened && row.step > opened.step && (row.action.source === container || row.action.target === container));
       return { container, openedAt: opened?.step ?? null, firstUsedAt: used?.step ?? null, scope: 'One replayed shortest route; participation is not mechanism value.' };
     }) },
-    ablations: { allOpen: ablate({ ...puzzle, locked: [], triggers: [] }),
-      fullyVisible: ablate({ ...puzzle, hidden: [] }),
-      individual: puzzle.triggers.map(t => ({ trigger: t.id, openedTargets: t.unlock, result: ablate(openTargets(puzzle, t.unlock)) })) },
+    decisions, ablations,
+    decisionComparisons: { classicBase: compare(ablations.classicBase), allOpen: compare(ablations.allOpen), fullyVisible: compare(ablations.fullyVisible),
+      individual: ablations.individual.map(a => ({ trigger: a.trigger, comparison: compare(a.result) })) },
     information: { source: 'public visible state and public four-of-each inventory only', trace: timeline,
       fairness: puzzle.hidden.length || puzzle.locked.length ? 'unknown-alternative-worlds-not-enumerated' : 'fully-visible',
       reasoningGrade: 'unimplemented-automatic-mapping; reveal counts and full-truth costs do not establish inference demand' },
@@ -286,3 +262,16 @@ export function extractUnlockRating(input: RatingInput, comparison: ReturnType<t
   return { ...binding, status: 'complete' as const, evidence, evidenceSha256: sha256({ binding, evidence }), limits: RATING_LIMITS };
 }
 export type UnlockRatingReport = ReturnType<typeof extractUnlockRating>;
+
+/** Match actual classic controls by canonical base structure, never by editorial
+ * family names or an inherited classic score. Each side keeps its own evidence. */
+export function pairedRatingComparisons(reports: readonly UnlockRatingReport[]) {
+  return reports.flatMap(original => reports.filter(reference => reference.puzzleId !== original.puzzleId
+    && reference.structureSha256 === reference.classicStructureSha256
+    && original.classicStructureSha256 === reference.structureSha256).map(reference => ({
+      original: original.puzzleId, reference: reference.puzzleId,
+      originalEvidenceSha256: original.evidenceSha256, referenceEvidenceSha256: reference.evidenceSha256,
+      ...(original.status === 'unknown' || reference.status === 'unknown' ? { status: 'unknown' as const, reason: 'Required graph search is unknown.' }
+        : compareRatingDecisions(original.evidence.decisions, reference.evidence.decisions)),
+    })));
+}

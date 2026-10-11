@@ -2,8 +2,8 @@ import { UNLOCK_RATING_METHOD, type UnlockRatingReport } from './unlockRatingEvi
 export const RATING_WEIGHTS = { Q1: 25, Q2: 25, Q3: 20, Q4: 20, Q5: 10, D1: 25, D2: 25, D3: 15, D4: 15, D5: 15, D6: 5 } as const;
 export type RatingMetric = keyof typeof RATING_WEIGHTS;
 export const METRIC_EVIDENCE: Record<RatingMetric, readonly string[]> = {
-  Q1: ['shortest', 'plusTwo'], Q2: ['mechanisms', 'ablations'], Q3: ['expression', 'information'], Q4: ['shortest', 'plusTwo'], Q5: ['novelty'],
-  D1: ['shortest', 'plusTwo'], D2: ['shortest', 'plusTwo'], D3: ['shortest', 'plusTwo'], D4: ['mechanisms', 'shortest'], D5: ['information', 'ablations'], D6: ['graph'],
+  Q1: ['shortest', 'plusTwo', 'decisions'], Q2: ['mechanisms', 'ablations', 'decisionComparisons'], Q3: ['expression', 'information'], Q4: ['shortest', 'plusTwo', 'decisions'], Q5: ['novelty'],
+  D1: ['shortest', 'plusTwo', 'decisions'], D2: ['shortest', 'plusTwo', 'decisions'], D3: ['shortest', 'plusTwo', 'decisions'], D4: ['mechanisms', 'shortest', 'decisions'], D5: ['information', 'ablations'], D6: ['graph'],
 };
 export function operationGrade(moves: number) {
   if (!Number.isSafeInteger(moves) || moves < 0) throw new Error('Invalid shortest pour count');
@@ -15,9 +15,9 @@ export function ratingMetricReadiness(report: UnlockRatingReport, metric: Rating
   if (report.status === 'unknown') return { status: 'unknown', reason: 'Original puzzle search is unknown.' };
   if (report.evidence.graph.shortestMoves === null) return { status: 'blocked', reason: 'Original puzzle is proven unsolvable; no Q/D score is admissible.' };
   const ablations = report.evidence.ablations;
-  const required = metric === 'Q2' ? [ablations.allOpen,...ablations.individual.map(a => a.result)]
+  const required = metric === 'Q2' ? [ablations.classicBase, ablations.allOpen,...ablations.individual.map(a => a.result)]
     : metric === 'D5' ? [ablations.fullyVisible] : [];
-  if (required.some(a => a.status === 'unknown')) return { status: 'unknown', reason: `${metric} requires a completed ${metric === 'Q2' ? 'all-open and individual-mechanism' : 'fully-visible'} comparison; required search is unknown.` };
+  if (required.some(a => a.status === 'unknown')) return { status: 'unknown', reason: `${metric} requires a completed ${metric === 'Q2' ? 'classic-base, all-open and individual-mechanism' : 'fully-visible'} comparison; required search is unknown.` };
   return { status: 'ready', reason: 'Required computational evidence is complete; the automatic grade mapping is checked separately.' };
 }
 
