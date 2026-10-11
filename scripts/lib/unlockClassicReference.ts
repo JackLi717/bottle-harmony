@@ -26,11 +26,11 @@ const unavailable = (status: Reference['status'], reason: string): Reference => 
  * new stage rank into the old human model, or change the old model's goal. */
 export function classicFrameReference(runtime: EngineRuntime, frame: { state: EngineState; known: readonly string[] }, budget: Budget = CLASSIC_REFERENCE_BUDGET): Reference {
   const p = runtime.puzzle;
-  if (p.amount !== 'run' || p.goal.type !== 'sort' || p.goal.containers.length !== p.containers.length
+  if (p.colors.length < 2 || p.amount !== 'run' || p.goal.type !== 'sort' || p.goal.containers.length !== p.containers.length
     || p.containers.some(c => c.capacity !== 4 || !c.canSource || !c.canReceive || c.receive !== 'same' || c.protectedBottom || c.acceptColors)
     || p.colors.some(color => p.units.filter(u => u.color === color).length !== 4)
     || frame.state.open.some(open => !open) || p.units.some(u => !frame.known.includes(u.id))) {
-    return unavailable('not-applicable', 'Classic scoring requires ordinary four-portion, fully visible whole-board sorting with every bottle available.');
+    return unavailable('not-applicable', 'Classic scoring requires at least two colors, ordinary four-portion, fully visible whole-board sorting with every bottle available.');
   }
   const level = parseLevel({ format: 'bottle-harmony', version: 1, rules: 'water-sort', id: p.id, capacity: 4,
     colors: p.colors, bottles: p.containers.map((c, i) => ({ id: c.id, layers: frame.state.contents[i].map(u => runtime.unitColors.get(u)!) })) });

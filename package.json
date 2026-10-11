@@ -93,7 +93,8 @@
     "unlock:verify": "node --experimental-strip-types scripts/unlock-trial.ts",
     "unlock:calibrate": "node --experimental-strip-types scripts/unlock-calibration.ts",
     "unlock:baseline": "node --experimental-strip-types scripts/unlock-baseline.ts",
-    "unlock:rate": "node --experimental-strip-types scripts/unlock-rating.ts"
+    "unlock:rate": "node --experimental-strip-types scripts/unlock-rating.ts",
+    "unlock:stage": "node --experimental-strip-types scripts/unlock-rating.ts --set stage"
   },
   "private": true,
   "engines": {

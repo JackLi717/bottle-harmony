@@ -1,11 +1,13 @@
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { relative, resolve, sep } from 'node:path';
 import { UNLOCK_BASELINE } from '../src/game/unlockBaseline.ts';
 import { UNLOCK_CALIBRATION } from '../src/game/unlockCalibration.ts';
 import { UNLOCK_TRIAL } from '../src/game/unlockTrial.ts';
-import { extractUnlockRating, pairedRatingComparisons, ratingComparisonSet, UNLOCK_RATING_METHOD, RATING_LIMITS, type RatingDesign, type RatingInput } from './lib/unlockRatingEvidence.ts';
+import { UNLOCK_STAGE_CALIBRATION } from '../src/game/unlockStageCalibration.ts';
+import { extractUnlockRating, pairedRatingComparisons, ratingComparisonSet, sha256, UNLOCK_RATING_METHOD, RATING_LIMITS, type RatingDesign, type RatingInput } from './lib/unlockRatingEvidence.ts';
 import { STAGE_DIFFICULTY_METHOD } from './lib/unlockStageDifficulty.ts';
 import { unlockClassicReferences } from './lib/unlockClassicReference.ts';
+import { auditStageCalibration } from './lib/unlockStageCalibrationAudit.ts';
 
 // Roles describe fixture intent; they are not quality or difficulty verdicts.
 const designs: RatingDesign[] = [
@@ -32,13 +34,16 @@ function option(name: string, fallback?: string) {
 }
 for (let i = 0; i < args.length; i += 2) if (!['--out', '--max-states', '--max-edges', '--max-stage-work', '--set'].includes(args[i]) || !args[i + 1]) throw new Error(`Unknown or incomplete option: ${args[i]}`);
 const set = option('--set', 'trial');
-if (set !== 'trial' && set !== 'calibration' && set !== 'baseline') throw new Error('Expected --set trial, calibration or baseline');
+if (set !== 'trial' && set !== 'calibration' && set !== 'baseline' && set !== 'stage') throw new Error('Expected --set trial, calibration, baseline or stage');
 const directory = resolve(option('--out', set === 'trial' ? 'builds/unlock-rating' : `builds/unlock-${set}-rating`)!);
 const withinBuilds = relative(resolve('builds'), directory);
 if (!withinBuilds || withinBuilds === '..' || withinBuilds.startsWith(`..${sep}`) || resolve(directory) === resolve('builds')) throw new Error('Output must be a subdirectory of ignored builds/');
 const maxStates = Number(option('--max-states', '250000')), maxEdges = Number(option('--max-edges', '4000000'));
 const maxStageWork = Number(option('--max-stage-work', '2000000'));
 const inputs: RatingInput[] = set === 'trial' ? UNLOCK_TRIAL.map((entry, i) => ({ puzzle: entry.puzzle, design: designs[i] }))
+  : set === 'stage' ? UNLOCK_STAGE_CALIBRATION.map(entry => ({ puzzle: entry.puzzle,
+    design: { role: entry.variant === 'mechanical' ? 'teaching' : 'challenge', family: entry.focus,
+      purpose: { event: entry.variant === 'key' ? 'key' : 'sort', description: 'Compare source-score bands using the same stage policies; split-only controls distinguish merge work from planning. Source bands never assign overlay ranks.' } } }))
   : set === 'baseline' ? UNLOCK_BASELINE.map(entry => ({ puzzle:entry.puzzle, design:{role:'challenge',family:entry.focus,
     purpose:{event:entry.variant === 'key' ? 'key' : 'sort',description:'Compare a rated classic base near 50 with its midpoint-key overlay. The overlay does not inherit the classic difficulty score.'}} }))
   : UNLOCK_CALIBRATION.map(entry => ({ puzzle: entry.puzzle, design: { role: entry.extraEmpty ? 'recovery' : 'challenge', family: entry.pair,
@@ -85,8 +90,14 @@ const pairs = pairedRatingComparisons(reports).map(pair => ({
 }));
 const evaluation = { difficultyMethod: STAGE_DIFFICULTY_METHOD, qualityStatus: 'unimplemented',
   reason: 'Difficulty is the lowest certified planning rank, using the same policy ladder for both stages and ordinary controls. It is not a 0–100 human score. Workload rhythm and visual-template quality acceptance remain unimplemented.' };
+const calibration = set === 'stage' ? auditStageCalibration(reports, JSON.parse(readFileSync('assets/levels/mainline-catalog.json', 'utf8')).records) : null;
+if (calibration) {
+  writeFileSync(resolve(directory, 'calibration.json'), JSON.stringify(calibration, null, 2) + '\n');
+  if (calibration.status !== 'pass') process.exitCode = 1;
+}
 writeFileSync(resolve(directory, 'summary.json'), JSON.stringify({ method: UNLOCK_RATING_METHOD,
-  comparisonSha256: comparison.sha256, limits: RATING_LIMITS, evaluation, summary, pairs }, null, 2) + '\n');
+  comparisonSha256: comparison.sha256, limits: RATING_LIMITS, evaluation, summary, pairs,
+  ...(calibration ? { calibration: { status: calibration.status, evidenceSha256: sha256(calibration), sources: calibration.sources, checks: calibration.checks } } : {}) }, null, 2) + '\n');
 const interval = (r: { min: number | null; max: number | null }) => r.min === null || r.max === null ? 'unknown' : `${r.min}–${r.max}`;
 const table = summary.map(r => `| ${r.number} | ${r.solvability} | ${r.difficulty.rank ?? r.difficulty.status} | ${r.difficulty.beforeRank ?? '—'} / ${r.difficulty.afterRank ?? '—'} | ${r.classicBase.difficultyRank ?? r.classicBase.difficultyStatus} | ${r.classicBase.score ?? r.classicBase.scoreStatus} |`).join('\n');
 const classicTable = summary.flatMap(r => r.classicReferences.stages.map(s =>
@@ -98,6 +109,8 @@ writeFileSync(resolve(directory, 'report.md'), `# Unlock puzzle diagnostics
 Method: ${UNLOCK_RATING_METHOD}
 
 ${evaluation.reason}
+
+${calibration ? `Automatic calibration regression: **${calibration.status}**. This checks the frozen sample, not human agreement or final quality. Source reconstruction, original scores, paired replay and common-public-prefix disclosure certificates are retained in calibration.json. Empty-bottle counts do not enter these verdicts.\n\n| Check | Result |\n| --- | --- |\n${calibration.checks.map(c => `| ${c.name} | ${c.status} |`).join('\n')}` : ''}
 
 | Trial | Solvability | Whole planning rank | Before / after rank, same witness | Classic-base rank | Original classic-base score / 100 |
 | --- | --- | ---: | ---: | ---: | ---: |

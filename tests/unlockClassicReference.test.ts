@@ -60,6 +60,7 @@ test('unknown selected stages and incompatible classic tasks retain no invented 
   const runtime = compileSortingPuzzle(key);
   assert.equal(classicFrameReference(runtime, initialEngineState(runtime)).status, 'not-applicable');
   for (const puzzle of [engineFixture('reference-complete', [['coral', 'coral', 'coral', 'coral'], []]),
+    engineFixture('reference-single-color', [['coral', 'coral'], ['coral', 'coral'], [], []]),
     engineFixture('reference-inventory', [['coral', 'coral'], []]),
     { ...ordinary, amount: 'one' as const }]) {
     const r = compileSortingPuzzle(puzzle), score = classicFrameReference(r, initialEngineState(r));
