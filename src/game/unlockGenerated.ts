@@ -17,10 +17,16 @@ function loadGeneratedTrials(input: unknown, postKey: boolean): readonly UnlockT
   const fail = (): never => { throw new Error('Invalid internal single-key bank'); };
   if (!input || typeof input !== 'object') return fail();
   const bank = input as Record<string, unknown>;
-  if (bank.format !== 'bottle-harmony-internal-key-bank' || bank.version !== 1 || bank.method !== (postKey ? 'classic-key-postchallenge-v1' : 'classic-key-batch-v1')
+  if (bank.format !== 'bottle-harmony-internal-key-bank' || bank.version !== 1 || bank.method !== (postKey ? 'classic-key-postchallenge-v2' : 'classic-key-batch-v1')
     || !Array.isArray(bank.entries) || bank.entries.length !== count || !/^[a-f0-9]{64}$/.test(String(bank.evidenceSha256))) return fail();
-  const recipe = bank.recipe as { count?: number; afterMin?: number; target?: { min?: number; max?: number } } | null;
+  const recipe = bank.recipe as { count?: number; afterMin?: number; target?: { min?: number; max?: number };
+    diversity?: { maxPerRoot?: number; uniqueLowerRows?: boolean; uniqueAfterStates?: boolean } } | null;
   if (recipe?.count !== count || recipe.target?.min !== 4 || recipe.target.max !== 6 || (postKey && recipe.afterMin !== 3)) return fail();
+  if (postKey) {
+    const diversity = bank.diversity as { method?: string; status?: string; roots?: number; lowerRows?: number } | null;
+    if (recipe.diversity?.maxPerRoot !== 1 || recipe.diversity.uniqueLowerRows !== true || recipe.diversity.uniqueAfterStates !== true
+      || diversity?.method !== 'post-key-structure-diversity-v1' || diversity.status !== 'pass' || diversity.roots !== 20 || diversity.lowerRows !== 20) return fail();
+  }
   const ids = new Set<string>(), widths = new Set<number>(), counts = [0, 0, 0, 0];
   const trials = bank.entries.map((entry: unknown, i) => {
     if (!entry || typeof entry !== 'object') return fail();

@@ -11,25 +11,25 @@ import { auditUnlockVisualTemplates } from '../scripts/lib/unlockVisualTemplates
 
 test('larger classic-core recipe preserves inventory, separate source reconstruction and fixed box geometry', () => {
   assert.deepEqual(POST_KEY_RECIPE.target, { min: 4, max: 6 }); assert.equal(POST_KEY_RECIPE.afterMin, 3);
-  const generators = new Set<string>(), sizes = new Set<number>(), cuts = new Set<number>();
-  for (const template of [2, 3] as const) for (let i = 0; i < 12; i++) {
+  const generators = new Set<string>(), profiles = new Set<number>(), links = new Set<boolean>(), lowerRows = new Set<string>();
+  for (const template of [2, 3] as const) for (let i = 0; i < 192; i++) {
     const origin = postKeyOrigin(template, i), source = reconstructPostKeyClassic(origin);
     assert.deepEqual(source, reconstructPostKeyClassic(origin));
     assert.equal(source.bottles.length, source.colors.length + 2); assert.ok([9, 10].includes(source.bottles.length));
     assert.ok(source.bottles.filter(b => !b.layers.length).length <= 2);
     for (const c of source.colors) assert.equal(source.bottles.flatMap(b => b.layers).filter(v => v === c).length, 4);
-    generators.add(origin.generator); sizes.add(source.bottles.length); cuts.add(origin.cut);
-    const overlays = postKeyOverlays(origin); assert.equal(overlays.length, origin.colors - 3);
+    generators.add(origin.generator); profiles.add(origin.partition); links.add(origin.linked); lowerRows.add(JSON.stringify(source.bottles.slice(-4).map(b => b.layers)));
+    const overlays = postKeyOverlays(origin); assert.equal(overlays.length, origin.coreColors);
     for (const overlay of overlays) {
       assert.equal(overlay.puzzle.locked.length, template);
       assert.equal(auditUnlockVisualTemplates(overlay.puzzle).status, 'pass');
       assert.deepEqual(overlay.order.map(b => source.bottles[b].layers), overlay.puzzle.containers.map(c => c.units.map(id => overlay.puzzle.units.find(u => u.id === id)!.color)));
       assert.equal(overlay.worlds, postKeyWorldCount(source.bottles.map(b => b.layers), overlay.locked));
-      if (template === 3) assert.equal(overlay.worlds, 6300);
+      assert.ok(overlay.order.slice(0, 5).some(i => i < 5)); assert.ok(overlay.order.slice(5).some(i => i < 5));
     }
   }
-  assert.equal(generators.size, 2); assert.equal(sizes.size, 2); assert.equal(cuts.size, 3);
-  assert.throws(() => postKeyOrigin(2, -1)); assert.throws(() => reconstructPostKeyClassic({ ...postKeyOrigin(3, 1), cut: 0 as 1 }));
+  assert.equal(generators.size, 2); assert.equal(profiles.size, 4); assert.equal(links.size, 2); assert.ok(lowerRows.size > 40);
+  assert.throws(() => postKeyOrigin(2, -1)); assert.throws(() => reconstructPostKeyClassic({ ...postKeyOrigin(3, 1), partition: -1 }));
 });
 
 test('public budget precheck counts concealed lengths as well as orders', () => {

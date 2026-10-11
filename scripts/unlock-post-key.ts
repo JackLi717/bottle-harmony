@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { Worker } from 'node:worker_threads';
-import { closeSync, existsSync, mkdirSync, openSync, readFileSync, renameSync, unlinkSync, writeFileSync, writeSync } from 'node:fs';
+import { appendFileSync, closeSync, existsSync, mkdirSync, openSync, readFileSync, renameSync, unlinkSync, writeFileSync, writeSync } from 'node:fs';
 import { relative, resolve, sep } from 'node:path';
-import { postKeyRoot, postKeyOrigin, postKeyOverlays, postKeyNeighbors, reconstructPostKeyClassic, POST_KEY_RECIPE, type PostKeyRecord, type PostKeyOrigin } from './lib/unlockPostKeyGeneration.ts';
+import { postKeyRoot, postKeyOrigin, postKeyOverlays, reconstructPostKeyClassic, POST_KEY_RECIPE, type PostKeyRecord, type PostKeyOrigin } from './lib/unlockPostKeyGeneration.ts';
 import { extractUnlockRating, ratingComparisonSet, sha256, type RatingInput } from './lib/unlockRatingEvidence.ts';
 import { acceptSingleKey } from './lib/unlockSingleKeyAcceptance.ts';
 import { unlockClassicReferences } from './lib/unlockClassicReference.ts';
@@ -10,6 +10,7 @@ import { unlockTrialStructure } from './lib/unlockTrialAudit.ts';
 import { initialBoard } from '../src/game/model.ts';
 import { replaySolution } from '../src/game/solver.ts';
 import { structureKey } from '../src/game/generation.ts';
+import { postKeyDiversityIssue, auditPostKeyDiversity } from './lib/unlockPostKeyDiversity.ts';
 import { hasCleanStart } from '../src/game/startQuality.ts';
 
 const args = process.argv.slice(2), command = args.shift() ?? 'generate';
@@ -17,7 +18,7 @@ assert.ok(command === 'generate' || command === 'verify', 'Expected generate or 
 const allowed = ['--out', '--limit'];
 for (let i = 0; i < args.length; i += 2) assert.ok(allowed.includes(args[i]) && args[i + 1] && args.indexOf(args[i]) === i, 'Unknown, duplicate or incomplete option');
 const option = (name: string, fallback: string) => { const i = args.indexOf(name); return i < 0 ? fallback : args[i + 1]; };
-const directory = resolve(option('--out', 'builds/unlock-post-key-20'));
+const directory = resolve(option('--out', 'builds/unlock-post-key-20-v2'));
 const child = relative(resolve('builds'), directory);
 assert.ok(child && child !== '..' && !child.startsWith(`..${sep}`) && !child.startsWith(sep), 'Output must be inside ignored builds/');
 const count = POST_KEY_RECIPE.count;
@@ -36,12 +37,12 @@ process.once('SIGINT', () => process.exit(130)); process.once('SIGTERM', () => p
 const recipe = { ...POST_KEY_RECIPE, count }, recipeSha256 = sha256(recipe);
 const checkpointPath = resolve(directory, 'checkpoint.json');
 const atomicJson = (path: string, value: unknown) => { const temp = `${path}.${process.pid}.tmp`; writeFileSync(temp, JSON.stringify(value) + '\n'); renameSync(temp, path); };
-type Checkpoint = { recipeSha256: string; next: Record<number, number>; queue: Record<number, PostKeyOrigin[]>; files: string[]; attempts: number; counts: Record<string, number> };
+type Checkpoint = { recipeSha256: string; next: Record<number, number>; files: string[]; attempts: number; counts: Record<string, number> };
 const state: Checkpoint = existsSync(checkpointPath) ? JSON.parse(readFileSync(checkpointPath, 'utf8'))
-  : { recipeSha256, next: { 2: 0, 3: 0 }, queue: { 2: [], 3: [] }, files: [], attempts: 0, counts: {} };
+  : { recipeSha256, next: { 2: 0, 3: 0 }, files: [], attempts: 0, counts: {} };
 assert.equal(state.recipeSha256, recipeSha256, 'Checkpoint recipe differs; use a new output directory');
 const records: PostKeyRecord[] = state.files.map(file => {
-  assert.ok(/^post-key-[0-9m-]+\.json$/.test(file), 'Invalid checkpoint record name');
+  assert.ok(/^post-key2-[0-9-]+\.json$/.test(file), 'Invalid checkpoint record name');
   return JSON.parse(readFileSync(resolve(directory, 'records', file), 'utf8'));
 });
 const baseKeys = new Set(records.map(r => r.source.structureKey));
@@ -50,38 +51,49 @@ assert.equal(baseKeys.size, records.length, 'Duplicate checkpoint classics'); as
 const quotas = [0, 0, count / 2, count / 2];
 let lastProgress = 0;
 if (command === 'generate' && records.length < count) {
-  const workers = [2, 3].map(() => new Worker(new URL('./lib/unlockPostKeyWorker.ts', import.meta.url)));
+  const workers = Array.from({ length: 4 }, () => new Worker(new URL('./lib/unlockPostKeyWorker.ts', import.meta.url)));
   type Result = { record: PostKeyRecord | null; counts: Record<string, number>; error?: string };
-  const evaluate = (template: 2 | 3, origin: PostKeyOrigin) => new Promise<Result>((resolve, reject) => {
-    const worker = workers[template - 2];
+  const evaluate = (workerIndex: number, origin: PostKeyOrigin) => new Promise<Result>((resolve, reject) => {
+    const worker = workers[workerIndex];
     const failed = (error: Error) => { worker.off('message', received); reject(error); };
     const received = (result: Result) => { worker.off('error', failed); if (result.error) reject(new Error(result.error)); else resolve(result); };
     worker.once('message', received); worker.once('error', failed); worker.postMessage(origin);
   });
   try {
     while (records.length < count && state.attempts < limit) {
-      const templates = ([2, 3] as const).filter(template => records.filter(r => r.source.origin.template === template).length < quotas[template] && (state.next[template] < recipe.maxCandidates
-          || state.queue[template].some(origin => records.filter(r => postKeyRoot(r.source.origin) === postKeyRoot(origin)).length < recipe.maxPerRoot)))
-        .slice(0, limit - state.attempts);
-      if (!templates.length) break;
-      // CPU work is concurrent; acceptance and checkpoint updates stay in fixed
-      // template order. A crash never advances an unprocessed candidate index.
-      const tasks = templates.map(template => {
-        const queue = state.queue[template];
-        while (queue.length && records.filter(r => postKeyRoot(r.source.origin) === postKeyRoot(queue[0])).length >= recipe.maxPerRoot) queue.shift();
-        return { template, origin: queue[0] ?? postKeyOrigin(template, state.next[template]), neighbor: queue.length > 0 };
-      });
-      const results = await Promise.all(tasks.map(({ template, origin }) => baseKeys.has(structureKey(reconstructPostKeyClassic(origin)))
-        ? Promise.resolve<Result>({ record: null, counts: { 'classic-duplicate:fail:already-selected': 1 } }) : evaluate(template, origin)));
+      // Dispatch in source order even after a bounded run or interruption.
+      // Results mutate selection only in this same order, never completion order.
+      const tasks: { template: 2 | 3; origin: PostKeyOrigin }[] = [];
+      while (tasks.length < workers.length && state.attempts + tasks.length < limit) {
+        const pending = (t: number) => tasks.filter(task => task.template === t).length;
+        const choices = ([2, 3] as const).filter(t => records.filter(r => r.source.origin.template === t).length + pending(t) < quotas[t]
+          && state.next[t] + pending(t) < recipe.maxCandidates)
+          .sort((a, b) => state.next[a] + pending(a) - state.next[b] - pending(b) || a - b);
+        if (!choices.length) break;
+        const template = choices[0];
+        tasks.push({ template, origin: postKeyOrigin(template, state.next[template] + pending(template)) });
+      }
+      if (!tasks.length) break;
+      const results = await Promise.all(tasks.map(({ origin }, index) => baseKeys.has(structureKey(reconstructPostKeyClassic(origin)))
+        ? Promise.resolve<Result>({ record: null, counts: { 'classic-duplicate:fail:already-selected': 1 } }) : evaluate(index, origin)));
       for (const [index, { record: result, counts }] of results.entries()) {
-        const { template, neighbor } = tasks[index];
-        if (neighbor) state.queue[template].shift(); else state.next[template]++; state.attempts++;
-        for (const [key, value] of Object.entries(counts)) state.counts[key] = (state.counts[key] ?? 0) + value;
+        const { template } = tasks[index];
+        state.next[template]++; state.attempts++;
+        for (const [key, value] of Object.entries(counts)) {
+          state.counts[key] = (state.counts[key] ?? 0) + value;
+          const scoped = `box-${template}:${key}`;
+          state.counts[scoped] = (state.counts[scoped] ?? 0) + value;
+        }
         if (result) {
           const key = unlockTrialStructure(result.puzzle);
-          if (!baseKeys.has(result.source.structureKey) && !overlayKeys.has(key)) {
+          const diversityIssue = postKeyDiversityIssue(result, records);
+          if (diversityIssue) {
+            state.counts[`diversity:fail:${diversityIssue}`] = (state.counts[`diversity:fail:${diversityIssue}`] ?? 0) + 1;
+            appendFileSync(resolve(directory, 'diversity-rejections.jsonl'), JSON.stringify({ origin: result.source.origin, reason: diversityIssue }) + '\n');
+          }
+          if (!baseKeys.has(result.source.structureKey) && !overlayKeys.has(key) && !diversityIssue) {
             const file = `${result.puzzle.id}.json`; atomicJson(resolve(directory, 'records', file), result);
-            state.files.push(file); records.push(result); state.queue[template].push(...postKeyNeighbors(result)); baseKeys.add(result.source.structureKey); overlayKeys.add(key);
+            state.files.push(file); records.push(result); baseKeys.add(result.source.structureKey); overlayKeys.add(key);
             console.log(`Accepted ${records.length}/${count}: box ${template}, rank ${result.rating.evidence?.stageDifficulty.rank}, ${result.puzzle.id}`);
           }
         }
@@ -99,14 +111,15 @@ if (records.length !== count) {
 } else {
   const roots = new Map<string, number>();
   for (const record of records) { const key = postKeyRoot(record.source.origin); roots.set(key, (roots.get(key) ?? 0) + 1); }
-  assert.ok([...roots.values()].every(n => n <= recipe.maxPerRoot), 'Root-family cap exceeded');
+  assert.ok([...roots.values()].every(n => n <= recipe.diversity.maxPerRoot), 'Root-family cap exceeded');
+  const diversity = auditPostKeyDiversity(records); assert.equal(diversity.status, 'pass', JSON.stringify(diversity));
   const checks = [];
   // Verify each frozen source and every derived definition independently before
   // emitting the playable projection. Unknown never becomes a fallback puzzle.
   for (const [i, record] of records.entries()) {
     const origin = record.source.origin;
     const indexedOrigin = postKeyOrigin(origin.template, origin.seed - recipe.seed - recipe.templateSeedOffset[origin.template]);
-    assert.deepEqual(origin, { ...indexedOrigin, ...(origin.mutation ? { mutation: origin.mutation } : {}) }, 'Origin is outside the frozen recipe');
+    assert.deepEqual(origin, indexedOrigin, 'Origin is outside the frozen recipe');
     assert.equal(record.sourceSha256, sha256(record.source), 'Source hash differs');
     assert.deepEqual(record.source.classic, reconstructPostKeyClassic(record.source.origin), 'Source reconstruction differs');
     assert.ok(hasCleanStart(record.source.classic), 'Source start filter differs');
@@ -115,7 +128,6 @@ if (records.length !== count) {
     const expected = postKeyOverlays(record.source.origin).find(o => o.key === record.source.overlay.key
       && JSON.stringify(o.locked) === JSON.stringify(record.source.overlay.locked));
     assert.ok(expected);
-    assert.ok(!origin.mutation || !expected.locked.includes(origin.mutation.bottle), 'Mutation is outside the unlocked source neighborhood');
     assert.deepEqual(expected.order, record.source.overlay.order); assert.deepEqual(expected.puzzle, record.puzzle);
     const input: RatingInput = { puzzle: record.puzzle, design: record.rating.design };
     const rating = extractUnlockRating(input, ratingComparisonSet([input]), recipe.graph.maxStates, recipe.graph.maxEdges, recipe.maxStageWork);
@@ -151,7 +163,7 @@ if (records.length !== count) {
       rhythm: { before: r.rating.evidence.stageRhythm.before, after: r.rating.evidence.stageRhythm.after, structure: r.rating.evidence.stageRhythm.structure },
       acceptance: { status: r.acceptance.status, label: r.acceptance.label, evidenceSha256: r.acceptance.evidenceSha256 } };
   });
-  const payload = { format: 'bottle-harmony-internal-key-bank', version: 1, method: POST_KEY_RECIPE.method, recipe, entries };
+  const payload = { format: 'bottle-harmony-internal-key-bank', version: 1, method: POST_KEY_RECIPE.method, recipe, diversity, entries };
   const bank = { ...payload, evidenceSha256: sha256(payload) };
   if (command === 'verify') {
     assert.deepEqual(JSON.parse(readFileSync(resolve(directory, 'play.json'), 'utf8')), bank, 'Playable projection differs');
@@ -161,7 +173,7 @@ if (records.length !== count) {
     atomicJson(resolve('assets/levels/unlock-post-key-20.json'), bank);
   }
   atomicJson(resolve(directory, 'verification.json'), { status: 'pass', recipeSha256, count, checks, evidenceSha256: sha256(checks) });
-  const report = `# 单钥匙后段挑战内部体验题\n\n${count} 道，统一目标 ${recipe.target.min}–${recipe.target.max} 档、后段至少 ${recipe.afterMin} 档，全部统一验收通过并独立复验。双／三瓶匣 ${quotas.slice(2).join('／')} 道。正式题库与玩家数据未改动。\n\n| 题号 | 匣宽 | 整题档 | 前／后档 | 原经典分 | 解锁后经典分 | 前／后整理量 | 结果 |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n${entries.map(e => `| ${e.number} | ${e.origin.template} | ${e.rank} | ${e.beforeRank}／${e.afterRank} | ${e.classicScore ?? '未知'} | ${e.afterClassicScore ?? '未知'} | ${e.rhythm.before}／${e.rhythm.after} | ${e.acceptance.label} |`).join('\n')}\n\n制作检查 ${state.attempts} 个候选（含瓶内交换变体）。来源、定义、路线、分段证书、公开隐藏局面和验收原因在 records/；筛选计数与断点在 checkpoint.json。原经典分数仅作对照，不换算新档位。此包用于内部体验，尚无真人档位校准或正式内容编排。\n`;
+  const report = `# 单钥匙后段挑战内部体验题\n\n${count} 道，统一目标 ${recipe.target.min}–${recipe.target.max} 档、后段至少 ${recipe.afterMin} 档，全部统一验收通过并独立复验。双／三瓶匣 ${quotas.slice(2).join('／')} 道。正式题库与玩家数据未改动。\n\n| 题号 | 匣宽 | 整题档 | 前／后档 | 原经典分 | 解锁后经典分 | 前／后整理量 | 结果 |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n${entries.map(e => `| ${e.number} | ${e.origin.template} | ${e.rank} | ${e.beforeRank}／${e.afterRank} | ${e.classicScore ?? '未知'} | ${e.afterClassicScore ?? '未知'} | ${e.rhythm.before}／${e.rhythm.after} | ${e.acceptance.label} |`).join('\n')}\n\n结构验收：${diversity.roots} 个独立经典核心、${diversity.fillProfiles} 种填充形状、${diversity.linked} 题跨组颜色关联；忽略换色与瓶位后的下排结构互异，实际解锁后局面结构互异。\n\n制作检查 ${state.attempts} 个候选（独立种子，无换序变体）。来源、定义、路线、分段证书、公开隐藏局面和验收原因在 records/；筛选计数与断点在 checkpoint.json。原经典分数仅作对照，不换算新档位。此包用于内部体验，尚无真人档位校准或正式内容编排。\n`;
   writeFileSync(resolve(directory, 'report.md'), report);
   console.log(`Complete: ${directory}/play.json`);
 }
