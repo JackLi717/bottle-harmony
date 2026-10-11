@@ -138,6 +138,7 @@ test('a full-truth solution cannot substitute for all public-information worlds'
   assert.notEqual(graph.shortestMoves, null);
   const result = proveSingleKeyDisclosure(puzzle, graph.route);
   assert.equal(result.status, 'fail'); assert.equal(result.reason, 'public-world-unsolvable');
+  assert.equal(proveSingleKeyDisclosure(puzzle, graph.route, PUBLIC_DISCLOSURE_BUDGET, true).reason, 'public-world-unsolvable');
 });
 
 test('acceptance evidence binds target, budget, definition and unchanged rating evidence; stale inputs throw', () => {

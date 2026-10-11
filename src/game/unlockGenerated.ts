@@ -1,5 +1,7 @@
 import { parseSortingPuzzle } from './engineModel.ts';
 import type { UnlockTrialLevel } from './unlockTrial.ts';
+import { compileSortingPuzzle } from './engine.ts';
+import { parseSingleKeyHintTable } from './unlockHints.ts';
 
 /** Only a frozen, offline-accepted internal projection enters this preview.
  * Full provenance and solver evidence stay offline; this loader never rates,
@@ -8,8 +10,14 @@ export function generatedUnlockTrials(input: unknown): readonly UnlockTrialLevel
   return loadGeneratedTrials(input, false);
 }
 
-export function generatedPostKeyTrials(input: unknown): readonly UnlockTrialLevel[] {
-  return loadGeneratedTrials(input, true);
+export function generatedPostKeyTrials(input: unknown, hints?: unknown): readonly UnlockTrialLevel[] {
+  const levels = loadGeneratedTrials(input, true);
+  if (hints === undefined) return levels;
+  const bank = input as { evidenceSha256: string }, hintBank = hints as { method?: string; bankEvidenceSha256?: string; tables?: Record<string, unknown> } | null;
+  if (hintBank?.method !== 'single-key-complete-hints-v1' || hintBank.bankEvidenceSha256 !== bank.evidenceSha256
+    || !hintBank.tables || Object.keys(hintBank.tables).length !== levels.length) throw new Error('Hint bank mismatch');
+  return Object.freeze(levels.map(level => Object.freeze({ ...level,
+    hints: parseSingleKeyHintTable(hintBank.tables![level.puzzle.id], compileSortingPuzzle(level.puzzle)) })));
 }
 
 function loadGeneratedTrials(input: unknown, postKey: boolean): readonly UnlockTrialLevel[] {

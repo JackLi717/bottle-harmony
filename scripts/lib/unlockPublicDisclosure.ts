@@ -31,7 +31,7 @@ function* orders(counts: Map<string, number>, total: number, head: string[] = []
 /** A single public preparation must work in all inventory-consistent worlds;
  * after the only disclosure each world may use its own visible continuation.
  * This proves existence, not safety of arbitrary wrong moves or discoverability. */
-export function proveSingleKeyDisclosure(puzzle: SortingPuzzle, route: readonly EngineAction[], budget: DisclosureBudget = PUBLIC_DISCLOSURE_BUDGET) {
+export function proveSingleKeyDisclosure(puzzle: SortingPuzzle, route: readonly EngineAction[], budget: DisclosureBudget = PUBLIC_DISCLOSURE_BUDGET, acceptEarlyCompletion = false) {
   validateDisclosureBudget(budget); assertRatingScope(puzzle);
   const started = performance.now(), runtime = compileSortingPuzzle(puzzle), trigger = puzzle.triggers[0];
   assert.ok(puzzle.hidden.length === 0 && puzzle.triggers.length === 1 && trigger.when.type === 'empty'
@@ -56,7 +56,7 @@ export function proveSingleKeyDisclosure(puzzle: SortingPuzzle, route: readonly 
   type World = { contents: string[][]; status: 'pass' | 'fail' | 'unknown'; reason: string | null; continuation: readonly EngineAction[] | null };
   const worlds: World[] = []; let states = 0;
   const finish = (status: World['status'], reason: string | null) => ({ method: PUBLIC_DISCLOSURE_METHOD, status, reason, budget,
-    criterion: 'common-public-prefix-then-visible-completion', prefix, locked: locked.map(c => c.id), worlds, states,
+    criterion: acceptEarlyCompletion ? 'common-public-prefix-until-complete-or-visible-continuation' : 'common-public-prefix-then-visible-completion', prefix, locked: locked.map(c => c.id), worlds, states,
     limits: 'Enumerates concealed counts and color orders from public inventory, not just the true locked multiset per bottle. Allows a different fully visible continuation after opening. Does not prove every move safe, human discoverability or equal difficulty in every world.' });
   for (const sizes of lengths(unknown.length, locked.length)) for (const order of orders(counts, unknown.length)) {
     if (performance.now() - started >= budget.maxMilliseconds) return finish('unknown', 'public-time-budget');
@@ -70,7 +70,13 @@ export function proveSingleKeyDisclosure(puzzle: SortingPuzzle, route: readonly 
       const i = locked.findIndex(l => l.id === c.id); return i < 0 ? c : { ...c, units: units[i] };
     }) });
     let current = initialEngineState(world);
+    let completedEarly = false;
     for (const [i, action] of prefix.entries()) {
+      // A hint preserves success if this possible world already completed. The
+      // stage/rating certificate keeps its original, stricter common-key policy.
+      if (acceptEarlyCompletion && evaluateEngineGoal(world, current.state)) {
+        replayEngineRoute(world, initialEngineState(world), prefix.slice(0, i)); completedEarly = true; break;
+      }
       if (evaluateEngineGoal(world, current.state) || JSON.stringify(visibleEngineState(world, current.state, current.known)) !== JSON.stringify(observations[i])) {
         worlds.push({ contents, status: 'fail', reason: 'public-preparation-mismatch', continuation: null }); return finish('fail', 'public-preparation-mismatch');
       }
@@ -78,6 +84,7 @@ export function proveSingleKeyDisclosure(puzzle: SortingPuzzle, route: readonly 
       if (!next.accepted) { worlds.push({ contents, status: 'fail', reason: 'public-preparation-illegal', continuation: null }); return finish('fail', 'public-preparation-illegal'); }
       current = next;
     }
+    if (completedEarly) { worlds.push({ contents, status: 'pass', reason: null, continuation: [] }); continue; }
     assert.ok(current.state.open.every(Boolean) && current.known.length === puzzle.units.length);
     const remaining = budget.maxMilliseconds - (performance.now() - started);
     if (remaining <= 0) return finish('unknown', 'public-time-budget');

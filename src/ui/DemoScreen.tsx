@@ -68,7 +68,7 @@ function internalGeneratedTrials() {
 
 let postKeyTrials: readonly UnlockTrialLevel[] | null = null;
 function internalPostKeyTrials() {
-  postKeyTrials ??= generatedPostKeyTrials(require('../../assets/levels/unlock-post-key-20.json'));
+  postKeyTrials ??= generatedPostKeyTrials(require('../../assets/levels/unlock-post-key-20.json'), require('../../assets/levels/unlock-post-key-hints.json'));
   return postKeyTrials;
 }
 

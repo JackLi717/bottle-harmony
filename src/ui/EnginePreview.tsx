@@ -18,6 +18,7 @@ import { createPourPlan, POUR_DURATION_MS, type PourPlan } from '../art/pourGeom
 import { isBottleComplete } from '../art/bottleCompletion';
 import { createEngineSession, moveEngineSession, resetEngineSession, undoEngineSession, visibleEngineState, type EngineAction, type EngineSession, type VisibleEngineContainer } from '../game/engine';
 import { createEngineHintTask, type EngineHintTask } from '../game/engineSearch';
+import { singleKeyHintRecoverySteps, singleKeyTableHint } from '../game/unlockHints';
 import { ENGINE_EXAMPLES } from '../game/engineExamples';
 import { UNLOCK_TRIAL, nextUnlockTrialIndex, type UnlockTrialLevel } from '../game/unlockTrial';
 import { UNLOCK_ART_CASES, unlockArtExample, unlockKeyPairsExample } from '../game/unlockArtExamples';
@@ -187,6 +188,21 @@ export function EnginePreview({ vessel: preferredVessel, symbols: showSymbols, s
   }
   function hint() {
     if (busy.current || searching || artRun.current || renderRun.current || session.status === 'solved') return;
+    const table = trial ? trialLevels[index].hints : undefined;
+    if (table) {
+      const result = singleKeyTableHint(current.current, table);
+      if (result.status === 'hint') execute(result.action, result.revision);
+      else {
+        const steps = singleKeyHintRecoverySteps(current.current, table);
+        const reason = result.status === 'unsolvable'
+          ? zh ? '当前局面已验证无解。' : 'This position is proven unsolvable.'
+          : zh ? '当前分支无法保证不猜隐藏内容。' : 'This branch has no hint safe across all concealed possibilities.';
+        setNotice(reason + (steps !== null
+          ? zh ? `请免费撤销 ${steps} 步，再点提示。` : ` Undo ${steps} step(s) for free, then tap Hint.`
+          : zh ? '请免费重来，再点提示。' : ' Reset for free, then tap Hint.'));
+      }
+      return;
+    }
     const task = createEngineHintTask(current.current); search.current = task; setSearching(true);
     const step = () => {
       if (search.current !== task) return;

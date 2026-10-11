@@ -1,11 +1,13 @@
 import { engineFixture } from './engineExamples.ts';
 import type { SortingPuzzle, SortingTrigger } from './engineModel.ts';
+import type { SingleKeyHintTable } from './unlockHints.ts';
 
 export type UnlockTrialLevel = {
   readonly puzzle: SortingPuzzle;
   readonly title: readonly [string, string];
   readonly introduction: readonly [string, string];
   readonly focus: string;
+  readonly hints?: SingleKeyHintTable;
 };
 const A = 'coral', B = 'jade', C = 'amber', D = 'azure';
 const key = (id: string, bottle: number, targets: number[]): SortingTrigger => ({ id, when: { type: 'empty', container: `b${bottle}` }, unlock: targets.map(i => `b${i}`) });
