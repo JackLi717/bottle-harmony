@@ -6,6 +6,7 @@ import { UNLOCK_TRIAL } from '../src/game/unlockTrial.ts';
 import { UNLOCK_STAGE_CALIBRATION } from '../src/game/unlockStageCalibration.ts';
 import { extractUnlockRating, pairedRatingComparisons, ratingComparisonSet, sha256, UNLOCK_RATING_METHOD, RATING_LIMITS, type RatingDesign, type RatingInput } from './lib/unlockRatingEvidence.ts';
 import { STAGE_DIFFICULTY_METHOD } from './lib/unlockStageDifficulty.ts';
+import { STAGE_RHYTHM_METHOD, STAGE_RHYTHM_POLICY } from './lib/unlockStageRhythm.ts';
 import { unlockClassicReferences } from './lib/unlockClassicReference.ts';
 import { auditStageCalibration } from './lib/unlockStageCalibrationAudit.ts';
 
@@ -68,6 +69,9 @@ for (const [i, input] of inputs.entries()) {
     difficulty: { method: STAGE_DIFFICULTY_METHOD, status: difficulty?.status ?? 'unknown', rank: difficulty?.rank ?? null,
       beforeRank: difficulty?.beforeRank ?? null, afterRank: difficulty?.afterRank ?? null,
       reason: difficulty?.reason ?? (report.status === 'unknown' ? `graph-${report.graph.reason}` : null) },
+    rhythm: evidence?.stageRhythm ?? { method: STAGE_RHYTHM_METHOD, policy: STAGE_RHYTHM_POLICY, unit: 'color-run-merges',
+      status: 'unknown', structure: null, before: null, after: null, total: null, witness: null,
+      reason: report.status === 'unknown' ? `graph-${report.graph.reason}` : 'missing-evidence' },
     shortestMoves: evidence?.graph.shortestMoves ?? null,
     classicBase: evidence?.ablations.classicBase.status === 'complete'
       ? { status: 'complete', shortestMoves: evidence.ablations.classicBase.shortestMoves,
@@ -88,8 +92,8 @@ const pairs = pairedRatingComparisons(reports).map(pair => ({
   original: pair.original, reference: pair.reference, status: pair.status,
   originalEvidenceSha256: pair.originalEvidenceSha256, referenceEvidenceSha256: pair.referenceEvidenceSha256,
 }));
-const evaluation = { difficultyMethod: STAGE_DIFFICULTY_METHOD, qualityStatus: 'unimplemented',
-  reason: 'Difficulty is the lowest certified planning rank, using the same policy ladder for both stages and ordinary controls. It is not a 0–100 human score. Workload rhythm and visual-template quality acceptance remain unimplemented.' };
+const evaluation = { difficultyMethod: STAGE_DIFFICULTY_METHOD, rhythmMethod: STAGE_RHYTHM_METHOD, qualityStatus: 'unimplemented',
+  reason: 'Difficulty is the lowest certified planning rank, using the same policy ladder for both stages and ordinary controls. It is not a 0–100 human score. Single-key workload rhythm uses only color-run merges on that same witness. Visual-template checks and final quality acceptance remain unimplemented.' };
 const calibration = set === 'stage' ? auditStageCalibration(reports, JSON.parse(readFileSync('assets/levels/mainline-catalog.json', 'utf8')).records) : null;
 if (calibration) {
   writeFileSync(resolve(directory, 'calibration.json'), JSON.stringify(calibration, null, 2) + '\n');
@@ -104,6 +108,7 @@ const classicTable = summary.flatMap(r => r.classicReferences.stages.map(s =>
   `| ${r.number} | ${s.phase} | ${s.goal} | ${s.score ?? s.status} | ${s.reason ?? '—'} |`)).join('\n');
 const stageTable = summary.flatMap(r => r.milestones.map(m =>
   `| ${r.number} | ${m.trigger} | ${m.mandatory} | ${m.minimumSuccessfulPreparation ?? 'unreachable'} | ${interval(m.beforePours)} | ${interval(m.afterPours)} |`)).join('\n');
+const rhythmTable = summary.map(r => `| ${r.number} | ${r.rhythm.before ?? '—'} | ${r.rhythm.after ?? '—'} | ${r.rhythm.structure ?? '—'} | ${r.rhythm.status} | ${r.rhythm.reason ?? '—'} |`).join('\n');
 writeFileSync(resolve(directory, 'report.md'), `# Unlock puzzle diagnostics
 
 Method: ${UNLOCK_RATING_METHOD}
@@ -124,7 +129,17 @@ These independent human-decision-v1 scores retain their original planning-depth-
 | --- | --- | --- | ---: | --- |
 ${classicTable}
 
-## Stage workload
+## Single-key workload rhythm
+
+Method: ${STAGE_RHYTHM_METHOD}. Work is the decrease in whole-board color runs, including locked liquid. Before ends just after the key-triggering pour; after starts at that exact frame from the selected difficulty witness. Moving a color run without merging adds no work; opening a group adds none by itself. No route is reselected to improve rhythm. The policy and raw run counts are bound in the per-puzzle evidence hash.
+
+A before share of ${STAGE_RHYTHM_POLICY.balancedBeforePercent.min}%–${STAGE_RHYTHM_POLICY.balancedBeforePercent.max}% inclusive passes as balanced; a larger share passes as front-loaded. A smaller share fails these two supported structures. Zero total merges fails; ordinary controls have no key split and are not-applicable. Limited or unsupported stage evaluation receives no rhythm verdict. This initial uniform rule is not player-calibrated and adds no difficulty points or weighted quality score.
+
+| Trial | Before merges | After merges | Structure | Result | Reason if unavailable / failed |
+| --- | ---: | ---: | --- | --- | --- |
+${rhythmTable}
+
+## Shortest-route pour counts (diagnostic only)
 
 All shortest complete walks; before includes the triggering pour. These workload ranges are independent of the selected difficulty witness. Minimum successful preparation and range endpoints may belong to different walks; do not splice them into a single playthrough.
 

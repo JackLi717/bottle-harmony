@@ -67,6 +67,8 @@ export function auditStageCalibration(reports: readonly StageCalibrationReport[]
   for (const [i, r] of ordered.entries()) {
     const entry = UNLOCK_STAGE_CALIBRATION[i];
     add(`replayed-completion-${i + 1}`, [r], () => r.status === 'complete' && r.evidence.admission.solvability === 'solved');
+    if (entry.variant === 'key') add(`supported-workload-rhythm-${entry.pair}`, [r],
+      () => r.status === 'complete' && r.evidence.stageRhythm.status === 'pass');
     if (r.status !== 'complete' || r.evidence.stageDifficulty.status !== 'rated') continue;
     const stage = r.evidence.stageDifficulty, runtime = compileSortingPuzzle(entry.puzzle);
     replayEngineRoute(runtime, initialEngineState(runtime), stage.witness.route);

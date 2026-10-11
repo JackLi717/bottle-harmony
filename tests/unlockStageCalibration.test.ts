@@ -39,6 +39,13 @@ test('automatic calibration reconstructs sources and certifies increasing bands 
   assert.deepEqual([rank(0), rank(2), rank(4)], [2, 4, 7]);
   assert.deepEqual([rank(1), rank(3), rank(5)], [2, 4, 5]);
   assert.deepEqual([rank(6), rank(7), rank(8)], [1, 1, 1]);
+  assert.deepEqual([1, 3, 5].map(i => {
+    const r = reports[i]; assert.equal(r.status, 'complete'); if (r.status !== 'complete') throw new Error('Missing evidence');
+    const rhythm = r.evidence.stageRhythm;
+    assert.equal(rhythm.status, 'pass'); assert.equal(rhythm.structure, 'balanced');
+    assert.equal(rhythm.witness?.splitPour, r.evidence.stageDifficulty.witness?.splitPour);
+    return [rhythm.before, rhythm.after];
+  }), [[7, 8], [7, 8], [6, 9]]);
   assert.deepEqual(audit.disclosures.map(d => d.worlds.length), [12, 12, 12]);
   for (const r of reports.slice(6, 8)) assert.equal(r.classicReferences.base.status, 'not-applicable');
 });
