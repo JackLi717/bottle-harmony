@@ -4,9 +4,8 @@ import { UNLOCK_BASELINE } from '../src/game/unlockBaseline.ts';
 import { UNLOCK_CALIBRATION } from '../src/game/unlockCalibration.ts';
 import { UNLOCK_TRIAL } from '../src/game/unlockTrial.ts';
 import { extractUnlockRating, pairedRatingComparisons, ratingComparisonSet, UNLOCK_RATING_METHOD, RATING_LIMITS, type RatingDesign, type RatingInput } from './lib/unlockRatingEvidence.ts';
-import { scoreUnlockRating } from './lib/unlockRatingScores.ts';
 
-// Roles are editorial declarations, never selected by the evaluator to maximize Q.
+// Roles describe fixture intent; they are not quality or difficulty verdicts.
 const designs: RatingDesign[] = [
   { role: 'teaching', family: 'ordinary-three', purpose: { event: 'sort', description: 'Practice whole-board sorting with three colors and two spare bottles.' } },
   { role: 'teaching', family: 'first-key', purpose: { event: 'key', description: 'Empty the marked bottle and use the newly opened group.' } },
@@ -49,36 +48,54 @@ const reports = [];
 for (const [i, input] of inputs.entries()) {
   console.log(`Evaluating ${i + 1}/${inputs.length}: ${input.puzzle.id}`);
   const report = extractUnlockRating(input, comparison, maxStates, maxEdges);
-  const scores = scoreUnlockRating(input.puzzle.id, report);
   reports.push(report);
-  writeFileSync(resolve(directory, `${input.puzzle.id}.json`), JSON.stringify({ ...report, scores }, null, 2) + '\n');
-  summary.push({ number: i + 1, puzzle: input.puzzle.id, role: input.design.role, family: input.design.family,
-    status: report.status, solvability: scores.solvability, evidenceSha256: report.evidenceSha256,
-    shortestMoves: report.status === 'complete' && report.evidence.graph.status === 'complete' ? report.evidence.graph.shortestMoves : null,
-    shortestStates: report.evidence?.shortest.states ?? null, plusTwoStates: report.evidence?.plusTwo.states ?? null,
-    D6: scores.metrics.D6.grade, D6Status: scores.metrics.D6.status, Q: scores.Q, D: scores.D,
-    measurements: report.status === 'complete' && report.evidence.decisions.status === 'complete'
-      ? { shortest: { summary: report.evidence.decisions.shortest.summary, route: report.evidence.decisions.shortest.route },
-        plusTwo: { summary: report.evidence.decisions.plusTwo.summary, route: report.evidence.decisions.plusTwo.route } } : null });
+  writeFileSync(resolve(directory, `${input.puzzle.id}.json`), JSON.stringify(report, null, 2) + '\n');
+  const evidence = report.status === 'complete' ? report.evidence : null;
+  summary.push({ number: i + 1, puzzle: input.puzzle.id,
+    solvability: evidence?.admission.solvability ?? 'unknown', evidenceSha256: report.evidenceSha256,
+    shortestMoves: evidence?.graph.shortestMoves ?? null,
+    classicBase: evidence?.ablations.classicBase.status === 'complete'
+      ? { status: 'complete', shortestMoves: evidence.ablations.classicBase.shortestMoves }
+      : { status: 'unknown', shortestMoves: null },
+    milestones: evidence?.decisions.status === 'complete' ? evidence.decisions.shortest.milestones.map(m => ({
+      trigger: m.trigger, mandatory: m.mandatory, minimumSuccessfulPreparation: m.minimumSuccessfulPreparation,
+      beforePours: m.before.route.pours, afterPours: m.after.route.pours,
+    })) : [] });
 }
-const pairs = pairedRatingComparisons(reports);
-writeFileSync(resolve(directory, 'summary.json'), JSON.stringify({ method: UNLOCK_RATING_METHOD, comparisonSha256: comparison.sha256, limits: RATING_LIMITS, summary, pairs }, null, 2) + '\n');
-function axisStatus(axis: ReturnType<typeof scoreUnlockRating>['Q']) {
-  return axis.score ?? (axis.blocked.length ? 'blocked' : axis.unknown.length ? 'unknown' : 'unimplemented');
-}
-const table = summary.map(r => `| ${r.number} | ${r.role} | ${r.family} | ${r.shortestMoves ?? r.solvability} | ${r.shortestStates ?? 'unknown'} / ${r.plusTwoStates ?? 'unknown'} | ${r.D6 ?? r.D6Status} | ${axisStatus(r.Q)} | ${axisStatus(r.D)} |`).join('\n');
+const pairs = pairedRatingComparisons(reports).map(pair => ({
+  original: pair.original, reference: pair.reference, status: pair.status,
+  originalEvidenceSha256: pair.originalEvidenceSha256, referenceEvidenceSha256: pair.referenceEvidenceSha256,
+}));
+const evaluation = { status: 'unimplemented',
+  reason: 'Goal-specific stage difficulty and visual-template acceptance are not implemented. Pour counts and consequence differences are diagnostics, not difficulty or quality scores.' };
+writeFileSync(resolve(directory, 'summary.json'), JSON.stringify({ method: UNLOCK_RATING_METHOD,
+  comparisonSha256: comparison.sha256, limits: RATING_LIMITS, evaluation, summary, pairs }, null, 2) + '\n');
 const interval = (r: { min: number | null; max: number | null }) => r.min === null || r.max === null ? 'unknown' : `${r.min}–${r.max}`;
-const measurementTable = summary.map(r => {
-  const m = r.measurements?.shortest;
-  return `| ${r.number} | ${m ? interval(m.route.consequentialPours) : r.solvability} | ${m ? interval(m.route.optimalPlanningPours) : 'unknown'} | ${m ? interval(m.route.longestConsequentialRun) : 'unknown'} | ${m ? interval(m.route.tailAfterLastConsequentialChoice) : 'unknown'} | ${m?.summary.choiceProgressHorizon.resolved.median ?? 'unknown'} / ${m?.summary.choiceProgressHorizon.resolved.max ?? 'unknown'} | ${m?.summary.choiceProgressHorizon.unresolved ?? 'unknown'} / ${m?.summary.choiceProgressHorizon.unavailable ?? 'unknown'} |`;
-}).join('\n');
-const stageTable = reports.flatMap((r, i) => r.status === 'complete' && r.evidence.decisions.status === 'complete'
-  ? r.evidence.decisions.shortest.milestones.map(m => `| ${i + 1} | ${m.trigger} | ${m.mandatory} | ${m.minimumSuccessfulPreparation ?? 'unreachable'} | ${interval(m.before.route.pours)} / ${interval(m.after.route.pours)} | ${interval(m.before.route.consequentialPours)} / ${interval(m.after.route.consequentialPours)} | ${m.crossings.emptyReceiverGain.min ?? 'unknown'}–${m.crossings.emptyReceiverGain.max ?? 'unknown'} |`) : []).join('\n');
-const extremaDelta = (r: { min: number | null; max: number | null }) => r.min === null || r.max === null ? 'unknown' : `${r.min} / ${r.max}`;
-const deltaTable = reports.map((r, i) => {
-  const c = r.status === 'complete' ? r.evidence.decisionComparisons.classicBase : null;
-  return `| ${i + 1} | ${c?.status ?? 'unknown'} | ${c?.status === 'complete' ? extremaDelta(c.shortest.route.consequentialPours) : 'unknown'} | ${c?.status === 'complete' ? extremaDelta(c.shortest.route.optimalPlanningPours) : 'unknown'} | ${c?.status === 'complete' ? extremaDelta(c.shortest.route.noEmptyReceiverPours) : 'unknown'} |`;
-}).join('\n');
-const measurementReport = `\n## Automatic consequence measurements\n\nAll shortest complete walks; N+2 sensitivity is retained in JSON. Equivalent self-loops are neutral. A consequence difference is not a quality point.\n\n| Trial | Consequential pours | Equal-cost planning pours | Longest consequence run | Tail after last consequence | Choice-horizon median / peak | Unresolved / unavailable choice states |\n| --- | ---: | ---: | ---: | ---: | ---: | ---: |\n${measurementTable}\n\n## Milestone phases\n\nBefore includes the triggering pour; after starts at its destination. Each milestone is evaluated separately, including optional and simultaneous triggers.\n\n| Trial | Trigger | Mandatory | Minimum successful preparation | Before / after pours | Before / after consequential pours | Empty-receiver gain at crossing |\n| --- | --- | --- | ---: | ---: | ---: | ---: |\n${stageTable}\n\n## Final puzzle minus its classic base\n\nClassic base removes locks, triggers and hidden boundaries, retaining the exact initial liquid inventory and layout. Each version is independently solved and measured. Extrema differences compare ranges, not matched player trajectories; signs are not automatic harder/easier or quality labels. Actual classic controls matched by structure are bound in summary.json pairs.\n\n| Trial | Status | Consequential pours Δmin / Δmax | Equal-cost planning pours Δmin / Δmax | No-empty-receiver pours Δmin / Δmax |\n| --- | --- | ---: | ---: | ---: |\n${deltaTable}\n\nThe bounded public-progress policy maximizes completed colors, then minimizes color runs, then maximizes empty receivers. Exact costs only audit its choices. Hidden states are unavailable; unresolved within seven pours is not high difficulty. Choice-only horizon distributions keep easy tails separate; horizon deltas are withheld when visibility coverage differs. The horizon and consequence-based tail are proxies, not established human foresight or effortless play.\n`;
-writeFileSync(resolve(directory, 'report.md'), `# Classic quality and difficulty evidence\n\nMethod: ${UNLOCK_RATING_METHOD}\n\n${RATING_LIMITS}\n\n| Trial | Role | Family | Shortest pours | N / N+2 states | D6 grade | Q | D |\n| --- | --- | --- | ---: | ---: | ---: | ---: | ---: |\n${table}\n\nScores accept automatic algorithms only; no manual grade input or override is supported. D6 is implemented. Other automatic grade mappings remain unimplemented. Proven unsolvable originals block all grades; incomplete required searches remain unknown. Any missing metric blocks its Q or D total; no defaults or weight redistribution are used. See summary.json for separate unimplemented, unknown and blocked metric lists.\n\nPer-puzzle JSON includes complete-graph counts, route replay, all-shortest and plus-two distributions, bounded examples with all alternatives, public information trace, structural/dynamic trigger dependencies, individual/all-open/fully-visible ablations and duplicate/base comparisons. Descriptive consequence classes and count distances are not automatic quality grades. Public-world fairness, cue similarity and distinguishing foresight remain unproved.\n${measurementReport}`);
+const table = summary.map(r => `| ${r.number} | ${r.solvability} | ${r.shortestMoves ?? 'unknown'} | ${r.classicBase.shortestMoves ?? 'unknown'} |`).join('\n');
+const stageTable = summary.flatMap(r => r.milestones.map(m =>
+  `| ${r.number} | ${m.trigger} | ${m.mandatory} | ${m.minimumSuccessfulPreparation ?? 'unreachable'} | ${interval(m.beforePours)} | ${interval(m.afterPours)} |`)).join('\n');
+writeFileSync(resolve(directory, 'report.md'), `# Unlock puzzle diagnostics
+
+Method: ${UNLOCK_RATING_METHOD}
+
+${evaluation.reason}
+
+| Trial | Solvability | Final puzzle shortest pours | Classic base shortest pours |
+| --- | --- | ---: | ---: |
+${table}
+
+## Stage workload
+
+All shortest complete walks; before includes the triggering pour. These are workload facts, not independently rated stage tasks. Minimum successful preparation may belong to a different complete walk than the before/after ranges. Range endpoints may also belong to different walks.
+
+| Trial | Trigger | Mandatory | Minimum successful preparation | Before pours | After pours |
+| --- | --- | --- | ---: | ---: | ---: |
+${stageTable}
+
+The next difficulty model evaluates the key task and the actual unlocked sorting state as a coherent pair, takes their maximum, then finds the least required challenge across completable plans. It is not implemented by the table above. Quality will use difficulty targets, workload rhythm and approved visual templates, with no manual per-puzzle grades.
+
+Admission requires at least one replayed legal complete solution. Unknown search results remain unknown; unsolvable puzzles are rejected. Unlocking every group is not an extra completion goal. ${RATING_LIMITS}
+
+Detailed per-puzzle JSON retains replay, compatible space, structural deduplication, bounded-walk diagnostics and independently solved classic/mechanism comparisons. Consequence counts and the fixed public-progress policy do not establish human thinking difficulty. Evidence hashes bind definitions, methods, budgets and comparisons; these outputs neither modify the public bank nor read player data.
+`);
 console.log(`Wrote ${directory}/report.md`);

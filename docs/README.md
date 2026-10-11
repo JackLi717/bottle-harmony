@@ -25,7 +25,7 @@
 
 | 文档 | 状态与范围 |
 | --- | --- |
-| [经典关卡扩展](color-unlock-plan.md) | 三种能力、四家族机关外观、十二关连续体验、八题阶段对照及六题经典基准配对已有内部实现；拥有核心规则、体验质量／难度离线证据、取舍／阶段／经典对照自动测量、全自动判别契约与待校准映射及待定正式编排，真机验收另记 |
+| [经典关卡扩展](color-unlock-plan.md) | 核心规则、内部机关表现与三批对照题；离线诊断已实现，目标分段难度、整理节奏与固定视觉模板验收待实现，最终单题判别全自动；正式编排待定，真机验收另记 |
 | [商业规则与创意](gameplay-ideas.md) | 已确认待实现的产品规则与待评审候选分开；保留 1–158 稳定编号 |
 
 素材与商店说明分别在[音频](../assets/audio/README.md)、[品牌](../assets/brand/README.md)、[Google Play](../store/google-play/README.md)及[商店截图](../store/google-play/screenshots/README.md)。

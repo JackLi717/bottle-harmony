@@ -6,7 +6,6 @@ import { replayEngineRoute } from '../src/game/engineSearch.ts';
 import { UNLOCK_TRIAL } from '../src/game/unlockTrial.ts';
 import { buildRatingGraph } from '../scripts/lib/unlockRatingGraph.ts';
 import { extractUnlockRating, ratingComparisonSet, publicRatingFacts, ratingSpace, type RatingInput } from '../scripts/lib/unlockRatingEvidence.ts';
-import { operationGrade, scoreUnlockRating } from '../scripts/lib/unlockRatingScores.ts';
 
 const design: RatingInput['design'] = { role: 'teaching', family: 'test', purpose: { event: 'sort', description: 'Sort all liquid.' } };
 const small = engineFixture('rating-small', [['coral', 'jade', 'coral', 'jade'], ['jade', 'coral', 'jade', 'coral'], [], []]);
@@ -18,37 +17,11 @@ function complete(value: ReturnType<typeof extractUnlockRating>) {
   return value;
 }
 
-test('D6 has exactly the approved bands and Q/D never redistribute missing weights', () => {
-  for (const [moves, expected] of [[0,0],[6,0],[7,1],[12,1],[13,2],[18,2],[19,3],[24,3],[25,4],[30,4],[31,5],[80,5]]) assert.equal(operationGrade(moves), expected);
-  for (const n of [-1, 0.5, Infinity, NaN]) assert.throws(() => operationGrade(n));
-  const scores = scoreUnlockRating(small.id, report);
-  assert.equal(scores.Q.score, null); assert.equal(scores.D.score, null);
-  assert.equal(scores.Q.pending.length, 5); assert.equal(scores.D.pending.length, 5);
-  assert.equal(scores.metrics.D6.source, 'automatic');
-  assert.equal(scores.metrics.D5.grade, null); // No implicit zero/default grade even on a visible board.
-});
-
-test('scores accept only automatic mappings and reject manual inputs or stale methods', () => {
-  const scores = scoreUnlockRating(small.id, report);
-  assert.equal(scores.solvability, 'solved');
-  assert.deepEqual(scores.Q.unimplemented, ['Q1','Q2','Q3','Q4','Q5']);
-  assert.deepEqual(scores.D.unimplemented, ['D1','D2','D3','D4','D5']);
-  assert.ok(Object.values(scores.metrics).every(m => m.source === 'automatic'));
-  assert.throws(() => Reflect.apply(scoreUnlockRating, undefined, [small.id, report, { metrics: { Q1: { grade: 5 } } }]), /Manual score input/);
-  assert.throws(() => scoreUnlockRating('another', report), /puzzle mismatch/);
-  assert.throws(() => scoreUnlockRating(small.id, { ...report, method: 'classic-quality-evidence-v2' } as unknown as typeof report), /method mismatch/);
-});
-
 test('completed original evidence does not complete a budget-limited ablation', () => {
   const entry = { puzzle: UNLOCK_TRIAL[2].puzzle, design };
   const partial = complete(extractUnlockRating(entry, ratingComparisonSet([entry]), 195));
   assert.equal(partial.evidence.ablations.allOpen.status, 'unknown');
-  const scores = scoreUnlockRating(entry.puzzle.id, partial);
-  assert.equal(scores.metrics.Q2.status, 'unknown');
   assert.equal(partial.evidence.decisionComparisons.classicBase.status, 'unknown');
-  assert.deepEqual(scores.Q.unknown, ['Q2']);
-  assert.equal(scores.metrics.D6.status, 'scored');
-  assert.equal(scores.Q.score, null); assert.equal(scores.D.score, null);
 });
 
 test('bounded searches are unknown, complete exhaustion is unsolvable, unsupported rules reject', () => {
@@ -56,8 +29,7 @@ test('bounded searches are unknown, complete exhaustion is unsolvable, unsupport
   assert.throws(() => extractUnlockRating({ ...input, design: { ...design, role: 'challenge' } },comparison));
   assert.throws(() => extractUnlockRating({ ...input, puzzle: { ...small, revision: small.revision + '-changed' } }, comparison), /does not bind/);
   const unknown = extractUnlockRating(input, comparison, 1);
-  assert.equal(unknown.status, 'unknown'); assert.equal(scoreUnlockRating(small.id, unknown).metrics.D6.grade, null);
-  assert.equal(scoreUnlockRating(small.id, unknown).metrics.Q1.status, 'unknown');
+  assert.equal(unknown.status, 'unknown'); assert.equal(unknown.evidence, null);
   assert.equal(buildRatingGraph(small, 100, 1).status, 'unknown');
   for (const n of [0, -1, NaN, 1.5]) assert.throws(() => buildRatingGraph(small, n));
   const stuck = { ...small, containers: small.containers.slice(0,2), goal: { type: 'sort' as const, containers: ['b0','b1'] } };
@@ -65,11 +37,8 @@ test('bounded searches are unknown, complete exhaustion is unsolvable, unsupport
   if (graph.status === 'complete') { assert.equal(graph.shortestMoves, null); assert.ok(graph.deadEnds > 0); }
   const stuckInput = { puzzle: stuck, design };
   const stuckReport = complete(extractUnlockRating(stuckInput, ratingComparisonSet([stuckInput])));
-  const stuckScores = scoreUnlockRating(stuck.id, stuckReport);
-  assert.equal(stuckScores.solvability, 'unsolvable');
-  assert.equal(stuckScores.Q.score, null); assert.equal(stuckScores.D.score, null);
-  assert.equal(stuckScores.Q.blocked.length, 5); assert.equal(stuckScores.D.blocked.length, 6);
-  assert.ok(Object.values(stuckScores.metrics).every(m => m.status === 'blocked' && m.grade === null));
+  assert.equal(stuckReport.evidence.admission.solvability, 'unsolvable');
+  assert.equal(stuckReport.evidence.decisions.status, 'blocked');
   assert.throws(() => buildRatingGraph({ ...small, amount: 'one' }));
   assert.throws(() => buildRatingGraph({ ...small, goal: { type: 'collect', container: 'b0', color: 'coral', count: 4, exact: true, exclusive: true } }));
 });
@@ -126,7 +95,6 @@ test('renaming/reordering/color permutation retains evidence distributions and e
   }
   assert.deepEqual(a.evidence.decisionComparisons.classicBase,
     { ...b.evidence.decisionComparisons.classicBase, definitionSha256: a.evidence.decisionComparisons.classicBase.definitionSha256 });
-  assert.equal(scoreUnlockRating(puzzle.id,a).metrics.Q5.grade,null);
   assert.deepEqual(extractUnlockRating(entries[0],set),a);
 });
 
@@ -149,14 +117,12 @@ test('space excludes locks, incompatible colors and source; public deductions ne
   assert.equal(publicRatingFacts(runtime,frame).forcedColor,null);
 });
 
-test('same-base comparisons preserve D6 and do not grant automatic hidden-information quality/difficulty', () => {
+test('same-base comparisons preserve exact operation counts across disclosure variants', () => {
   const entries = [0,7,1,10].map(i=>({ puzzle:UNLOCK_TRIAL[i].puzzle,design })), set = ratingComparisonSet(entries);
   const reports = entries.map(e=>complete(extractUnlockRating(e,set)));
   assert.equal(reports[0].evidence.graph.shortestMoves,10); assert.equal(reports[1].evidence.graph.shortestMoves,10);
   assert.equal(reports[2].evidence.graph.shortestMoves,9); assert.equal(reports[3].evidence.graph.shortestMoves,9);
-  for (const [i,r] of reports.entries()) {
-    const scores = scoreUnlockRating(entries[i].puzzle.id,r);
-    assert.equal(scores.metrics.D6.grade,1); assert.equal(scores.metrics.D5.grade,null); assert.equal(scores.metrics.Q5.grade,null);
+  for (const r of reports) {
     assert.ok(r.evidence.novelty.nearest.some(n=>n.sameBase));
   }
 });
@@ -168,11 +134,9 @@ test('unchanged ablation move counts do not erase both first-color opening order
   if (r.evidence.ablations.allOpen.status === 'complete') assert.equal(r.evidence.ablations.allOpen.shortestMoves,13);
   assert.ok(r.evidence.mechanisms.firedSets.includes('cover-a')); assert.ok(r.evidence.mechanisms.firedSets.includes('cover-b'));
   assert.equal(r.evidence.mechanisms.verifiedPrecedence.length,0);
-  assert.equal(scoreUnlockRating(entry.puzzle.id,r).metrics.Q2.grade,null);
 });
 
-
-test('mechanical detours change exact route intervals without manufacturing thinking grades', () => {
+test('mechanical detours change operation intervals despite a trivial one-pour task', () => {
   const puzzle = engineFixture('mechanical-detour', [['coral','coral'],['coral','coral'],[],[]]);
   const entry = { puzzle, design }, set = ratingComparisonSet([entry]), r = complete(extractUnlockRating(entry,set));
   assert.equal(r.evidence.graph.shortestMoves,1);
@@ -181,9 +145,4 @@ test('mechanical detours change exact route intervals without manufacturing thin
   assert.equal(r.evidence.plusTwo.rhythm!.longestPreparation.min,0);
   assert.equal(r.evidence.plusTwo.rhythm!.longestPreparation.max,2);
   assert.equal(r.evidence.plusTwo.rhythm!.tailAfterLastChoice.max,0);
-  const scores = scoreUnlockRating(puzzle.id,r);
-  assert.equal(scores.metrics.D6.grade,0);
-  for (const metric of ['Q1','Q2','Q4','D1','D2','D5'] as const) assert.equal(scores.metrics[metric].grade,null);
-  assert.equal(scores.metrics.Q1.status, 'unimplemented');
-  assert.equal(scores.Q.score, null); assert.equal(scores.D.score, null);
 });

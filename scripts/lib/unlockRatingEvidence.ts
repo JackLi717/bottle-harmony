@@ -7,7 +7,7 @@ import { analyzeRatingDecisions, compareRatingDecisions } from './unlockDecision
 import { unlockTrialStructure } from './unlockTrialAudit.ts';
 export { distribution, publicRatingFacts, ratingSpace } from './unlockRatingFacts.ts';
 
-export const UNLOCK_RATING_METHOD = 'classic-quality-evidence-v3';
+export const UNLOCK_RATING_METHOD = 'unlock-diagnostics-v1';
 export const sha256 = (value: unknown) => createHash('sha256').update(JSON.stringify(value)).digest('hex');
 export type RatingDesign = { role: 'teaching' | 'recovery' | 'challenge'; family: string;
   purpose: { event: 'sort' | 'key' | 'cover' | 'reveal' | 'order' | 'chain' | 'simultaneous'; description: string } };
@@ -143,7 +143,7 @@ function corridor(graph: RatingGraph, extra: number) {
     preparationToNextEvent: distribution(observed.flatMap(f => Number.isFinite(preparations[f.i]) ? [preparations[f.i]] : [])),
     rhythm: routeRhythm(graph, extra, widths), examples,
     consequenceEquivalence: 'Same exact remaining cost, fired set, empty receivers, free slots, sorted compatible capacities and known-color counts. A descriptive projection, not proof of equal strategic value.',
-    lookahead: { status: 'separate-policy-measurement', evidenceRef: 'decisions', reason: 'Fixed public-progress policy horizons are measured separately; public-cue similarity and human D1 grade mapping remain unimplemented. Preparation distance is not D1.' } };
+    lookahead: { status: 'separate-policy-measurement', evidenceRef: 'decisions', reason: 'Fixed public-progress policy horizons are separate diagnostics. Neither these horizons nor preparation distances establish human thinking difficulty.' } };
 }
 
 function dependencies(graph: RatingGraph) {
@@ -253,12 +253,11 @@ export function extractUnlockRating(input: RatingInput, comparison: ReturnType<t
     decisionComparisons: { classicBase: compare(ablations.classicBase), allOpen: compare(ablations.allOpen), fullyVisible: compare(ablations.fullyVisible),
       individual: ablations.individual.map(a => ({ trigger: a.trigger, comparison: compare(a.result) })) },
     information: { source: 'public visible state and public four-of-each inventory only', trace: timeline,
-      fairness: puzzle.hidden.length || puzzle.locked.length ? 'unknown-alternative-worlds-not-enumerated' : 'fully-visible',
-      reasoningGrade: 'unimplemented-automatic-mapping; reveal counts and full-truth costs do not establish inference demand' },
+      fairness: puzzle.hidden.length || puzzle.locked.length ? 'unknown-alternative-worlds-not-enumerated' : 'fully-visible' },
     expression: { ruleChecks: { strictDefinition: true, fourOfEach: true, wholeBoardGoal: true, automaticEvents: true },
       presentation: 'unimplemented automatic presentation checks: readable conditions, linked targets, known/unknown distinction, reveal feedback and seen-relocked rendering require presentation evidence' },
     novelty: { comparisonSha256: comparison.sha256, family: design.family, nearest,
-      distanceMeaning: 'L1 distance of colors/bottles/keys/covers/hidden counts; descriptive only. Exact duplicates use full canonical structure. Neither distance nor family label gives Q5.' } };
+      distanceMeaning: 'L1 distance of colors/bottles/keys/covers/hidden counts; descriptive only. Exact duplicates use full canonical structure. Neither distance nor family label establishes quality.' } };
   return { ...binding, status: 'complete' as const, evidence, evidenceSha256: sha256({ binding, evidence }), limits: RATING_LIMITS };
 }
 export type UnlockRatingReport = ReturnType<typeof extractUnlockRating>;
