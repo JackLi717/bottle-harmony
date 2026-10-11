@@ -4,6 +4,7 @@ import { UNLOCK_BASELINE } from '../src/game/unlockBaseline.ts';
 import { UNLOCK_CALIBRATION } from '../src/game/unlockCalibration.ts';
 import { UNLOCK_TRIAL } from '../src/game/unlockTrial.ts';
 import { extractUnlockRating, pairedRatingComparisons, ratingComparisonSet, UNLOCK_RATING_METHOD, RATING_LIMITS, type RatingDesign, type RatingInput } from './lib/unlockRatingEvidence.ts';
+import { STAGE_DIFFICULTY_METHOD } from './lib/unlockStageDifficulty.ts';
 
 // Roles describe fixture intent; they are not quality or difficulty verdicts.
 const designs: RatingDesign[] = [
@@ -28,13 +29,14 @@ function option(name: string, fallback?: string) {
   if (!value || value.startsWith('--') || args.lastIndexOf(name) !== index) throw new Error(`Expected one value for ${name}`);
   return value;
 }
-for (let i = 0; i < args.length; i += 2) if (!['--out', '--max-states', '--max-edges', '--set'].includes(args[i]) || !args[i + 1]) throw new Error(`Unknown or incomplete option: ${args[i]}`);
+for (let i = 0; i < args.length; i += 2) if (!['--out', '--max-states', '--max-edges', '--max-stage-work', '--set'].includes(args[i]) || !args[i + 1]) throw new Error(`Unknown or incomplete option: ${args[i]}`);
 const set = option('--set', 'trial');
 if (set !== 'trial' && set !== 'calibration' && set !== 'baseline') throw new Error('Expected --set trial, calibration or baseline');
 const directory = resolve(option('--out', set === 'trial' ? 'builds/unlock-rating' : `builds/unlock-${set}-rating`)!);
 const withinBuilds = relative(resolve('builds'), directory);
 if (!withinBuilds || withinBuilds === '..' || withinBuilds.startsWith(`..${sep}`) || resolve(directory) === resolve('builds')) throw new Error('Output must be a subdirectory of ignored builds/');
 const maxStates = Number(option('--max-states', '250000')), maxEdges = Number(option('--max-edges', '4000000'));
+const maxStageWork = Number(option('--max-stage-work', '2000000'));
 const inputs: RatingInput[] = set === 'trial' ? UNLOCK_TRIAL.map((entry, i) => ({ puzzle: entry.puzzle, design: designs[i] }))
   : set === 'baseline' ? UNLOCK_BASELINE.map(entry => ({ puzzle:entry.puzzle, design:{role:'challenge',family:entry.focus,
     purpose:{event:entry.variant === 'key' ? 'key' : 'sort',description:'Compare a rated classic base near 50 with its midpoint-key overlay. The overlay does not inherit the classic difficulty score.'}} }))
@@ -47,16 +49,22 @@ const summary = [];
 const reports = [];
 for (const [i, input] of inputs.entries()) {
   console.log(`Evaluating ${i + 1}/${inputs.length}: ${input.puzzle.id}`);
-  const report = extractUnlockRating(input, comparison, maxStates, maxEdges);
+  const report = extractUnlockRating(input, comparison, maxStates, maxEdges, maxStageWork);
   reports.push(report);
   writeFileSync(resolve(directory, `${input.puzzle.id}.json`), JSON.stringify(report, null, 2) + '\n');
   const evidence = report.status === 'complete' ? report.evidence : null;
+  const difficulty = evidence?.stageDifficulty;
   summary.push({ number: i + 1, puzzle: input.puzzle.id,
     solvability: evidence?.admission.solvability ?? 'unknown', evidenceSha256: report.evidenceSha256,
+    difficulty: { method: STAGE_DIFFICULTY_METHOD, status: difficulty?.status ?? 'unknown', rank: difficulty?.rank ?? null,
+      beforeRank: difficulty?.beforeRank ?? null, afterRank: difficulty?.afterRank ?? null,
+      reason: difficulty?.reason ?? (report.status === 'unknown' ? `graph-${report.graph.reason}` : null) },
     shortestMoves: evidence?.graph.shortestMoves ?? null,
     classicBase: evidence?.ablations.classicBase.status === 'complete'
-      ? { status: 'complete', shortestMoves: evidence.ablations.classicBase.shortestMoves }
-      : { status: 'unknown', shortestMoves: null },
+      ? { status: 'complete', shortestMoves: evidence.ablations.classicBase.shortestMoves,
+        difficultyRank: evidence.ablations.classicBase.stageDifficulty.rank,
+        difficultyStatus: evidence.ablations.classicBase.stageDifficulty.status }
+      : { status: 'unknown', shortestMoves: null, difficultyRank: null, difficultyStatus: 'unknown' },
     milestones: evidence?.decisions.status === 'complete' ? evidence.decisions.shortest.milestones.map(m => ({
       trigger: m.trigger, mandatory: m.mandatory, minimumSuccessfulPreparation: m.minimumSuccessfulPreparation,
       beforePours: m.before.route.pours, afterPours: m.after.route.pours,
@@ -66,12 +74,12 @@ const pairs = pairedRatingComparisons(reports).map(pair => ({
   original: pair.original, reference: pair.reference, status: pair.status,
   originalEvidenceSha256: pair.originalEvidenceSha256, referenceEvidenceSha256: pair.referenceEvidenceSha256,
 }));
-const evaluation = { status: 'unimplemented',
-  reason: 'Goal-specific stage difficulty and visual-template acceptance are not implemented. Pour counts and consequence differences are diagnostics, not difficulty or quality scores.' };
+const evaluation = { difficultyMethod: STAGE_DIFFICULTY_METHOD, qualityStatus: 'unimplemented',
+  reason: 'Difficulty is the lowest certified planning rank, using the same policy ladder for both stages and ordinary controls. It is not a 0–100 human score. Workload rhythm and visual-template quality acceptance remain unimplemented.' };
 writeFileSync(resolve(directory, 'summary.json'), JSON.stringify({ method: UNLOCK_RATING_METHOD,
   comparisonSha256: comparison.sha256, limits: RATING_LIMITS, evaluation, summary, pairs }, null, 2) + '\n');
 const interval = (r: { min: number | null; max: number | null }) => r.min === null || r.max === null ? 'unknown' : `${r.min}–${r.max}`;
-const table = summary.map(r => `| ${r.number} | ${r.solvability} | ${r.shortestMoves ?? 'unknown'} | ${r.classicBase.shortestMoves ?? 'unknown'} |`).join('\n');
+const table = summary.map(r => `| ${r.number} | ${r.solvability} | ${r.difficulty.rank ?? r.difficulty.status} | ${r.difficulty.beforeRank ?? '—'} / ${r.difficulty.afterRank ?? '—'} | ${r.classicBase.difficultyRank ?? r.classicBase.difficultyStatus} |`).join('\n');
 const stageTable = summary.flatMap(r => r.milestones.map(m =>
   `| ${r.number} | ${m.trigger} | ${m.mandatory} | ${m.minimumSuccessfulPreparation ?? 'unreachable'} | ${interval(m.beforePours)} | ${interval(m.afterPours)} |`)).join('\n');
 writeFileSync(resolve(directory, 'report.md'), `# Unlock puzzle diagnostics
@@ -80,19 +88,21 @@ Method: ${UNLOCK_RATING_METHOD}
 
 ${evaluation.reason}
 
-| Trial | Solvability | Final puzzle shortest pours | Classic base shortest pours |
-| --- | --- | ---: | ---: |
+| Trial | Solvability | Whole planning rank | Before / after rank, same witness | Classic-base rank |
+| --- | --- | ---: | ---: | ---: |
 ${table}
 
 ## Stage workload
 
-All shortest complete walks; before includes the triggering pour. These are workload facts, not independently rated stage tasks. Minimum successful preparation may belong to a different complete walk than the before/after ranges. Range endpoints may also belong to different walks.
+All shortest complete walks; before includes the triggering pour. These workload ranges are independent of the selected difficulty witness. Minimum successful preparation and range endpoints may belong to different walks; do not splice them into a single playthrough.
 
 | Trial | Trigger | Mandatory | Minimum successful preparation | Before pours | After pours |
 | --- | --- | --- | ---: | ---: | ---: |
 ${stageTable}
 
-The next difficulty model evaluates the key task and the actual unlocked sorting state as a coherent pair, takes their maximum, then finds the least required challenge across completable plans. It is not implemented by the table above. Quality will use difficulty targets, workload rhythm and approved visual templates, with no manual per-puzzle grades.
+The key task ends at the first firing. Each retained unlocked state is evaluated anew for whole-board sorting; the whole rank is the minimum paired maximum among certified policies. Policies use preparation limits of 2/4/6/6/8/10/12 pours and lookahead of 0/1/2/3/4/6/8 progress segments. Before the key, progress means fewer key-bottle portions, then fewer open-board color runs; after the key it means fewer whole-board color runs. No exact solution distance selects a policy frontier. All tied shortest retained segments must succeed. Lower policies are checked before a higher rank; work limits or exhausting this ladder without certification return unknown, never a high fallback grade. The per-puzzle witness replays both stages together and retains the actual unlocked frame. Ordinary controls run the same sorting policies.
+
+This version supports ordinary visible boards and one mandatory bottom key, with no progressive hidden layers or additional triggers. Unsupported combinations receive no rank. Quality will use difficulty targets, workload rhythm and approved visual templates, with no manual per-puzzle grades.
 
 Admission requires at least one replayed legal complete solution. Unknown search results remain unknown; unsolvable puzzles are rejected. Unlocking every group is not an extra completion goal. ${RATING_LIMITS}
 

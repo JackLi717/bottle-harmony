@@ -25,7 +25,7 @@
 
 | 文档 | 状态与范围 |
 | --- | --- |
-| [经典关卡扩展](color-unlock-plan.md) | 核心规则、内部机关表现与三批对照题；离线诊断已实现，目标分段难度、整理节奏与固定视觉模板验收待实现，最终单题判别全自动；正式编排待定，真机验收另记 |
+| [经典关卡扩展](color-unlock-plan.md) | 核心规则、内部机关表现与三批对照题；离线诊断与首版单钥匙分段规划已实现，真人校准、整理节奏与固定视觉模板验收待推进，最终单题判别全自动；正式编排待定，真机验收另记 |
 | [商业规则与创意](gameplay-ideas.md) | 已确认待实现的产品规则与待评审候选分开；保留 1–158 稳定编号 |
 
 素材与商店说明分别在[音频](../assets/audio/README.md)、[品牌](../assets/brand/README.md)、[Google Play](../store/google-play/README.md)及[商店截图](../store/google-play/screenshots/README.md)。

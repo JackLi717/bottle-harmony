@@ -5,9 +5,10 @@ import { buildRatingGraph, completeColors, type RatingGraph } from './unlockRati
 import { distribution, publicRatingFacts, ratingSpace } from './unlockRatingFacts.ts';
 import { analyzeRatingDecisions, compareRatingDecisions } from './unlockDecisionAnalysis.ts';
 import { unlockTrialStructure } from './unlockTrialAudit.ts';
+import { analyzeStageDifficulty } from './unlockStageDifficulty.ts';
 export { distribution, publicRatingFacts, ratingSpace } from './unlockRatingFacts.ts';
 
-export const UNLOCK_RATING_METHOD = 'unlock-diagnostics-v1';
+export const UNLOCK_RATING_METHOD = 'unlock-diagnostics-v2';
 export const sha256 = (value: unknown) => createHash('sha256').update(JSON.stringify(value)).digest('hex');
 export type RatingDesign = { role: 'teaching' | 'recovery' | 'challenge'; family: string;
   purpose: { event: 'sort' | 'key' | 'cover' | 'reveal' | 'order' | 'chain' | 'simultaneous'; description: string } };
@@ -40,9 +41,9 @@ function outcomes(graph: RatingGraph, index: number) {
   });
 }
 
-function graphSummary(graph: ReturnType<typeof buildRatingGraph>) {
+function graphSummary(graph: ReturnType<typeof buildRatingGraph>, maxStageWork: number) {
   if (graph.status === 'unknown') return graph;
-  return { ...completeGraphSummary(graph), decisions: analyzeRatingDecisions(graph) };
+  return { ...completeGraphSummary(graph), decisions: analyzeRatingDecisions(graph), stageDifficulty: analyzeStageDifficulty(graph, maxStageWork) };
 }
 function completeGraphSummary(graph: RatingGraph) {
   return { status: graph.status, states: graph.nodes.length, edges: graph.edges, deadEnds: graph.deadEnds,
@@ -210,7 +211,8 @@ export function ratingComparisonSet(inputs: readonly RatingInput[]) {
       covers: puzzle.triggers.filter(t => t.when.type === 'color-full').length, hidden: puzzle.hidden.length } }; });
   return { sha256: sha256(inputs.map(i => ({ puzzle: i.puzzle, design: i.design })).sort((a, b) => a.puzzle.id.localeCompare(b.puzzle.id))), structures };
 }
-export function extractUnlockRating(input: RatingInput, comparison: ReturnType<typeof ratingComparisonSet>, maxStates = 250000, maxEdges = 4000000) {
+export function extractUnlockRating(input: RatingInput, comparison: ReturnType<typeof ratingComparisonSet>, maxStates = 250000, maxEdges = 4000000, maxStageWork = 2000000) {
+  if (!Number.isSafeInteger(maxStageWork) || maxStageWork < 1 || maxStageWork > 50000000) throw new Error('Invalid stage work budget');
   validateDesign(input.design);
   const { puzzle, design } = input;
   const own = comparison.structures.find(c => c.id === puzzle.id);
@@ -223,15 +225,16 @@ export function extractUnlockRating(input: RatingInput, comparison: ReturnType<t
     featureDistance: Object.keys(own.features).reduce((n, k) => n + Math.abs(own.features[k as keyof typeof own.features] - c.features[k as keyof typeof c.features]), 0) }))
     .sort((a, b) => Number(b.exactDuplicate) - Number(a.exactDuplicate) || Number(b.sameBase) - Number(a.sameBase) || a.featureDistance - b.featureDistance || a.id.localeCompare(b.id));
   const binding = { puzzleId: puzzle.id, method: UNLOCK_RATING_METHOD, rules: puzzle.rules, definitionSha256: sha256(puzzle), structureSha256: own.structure, classicStructureSha256: own.base,
-    design, comparisonSha256: comparison.sha256, budget: { maxStates, maxEdges } };
+    design, comparisonSha256: comparison.sha256, budget: { maxStates, maxEdges, maxStageWork } };
   if (graph.status === 'unknown') return { ...binding, status: 'unknown' as const, graph, evidence: null, evidenceSha256: sha256({ binding, graph }), limits: RATING_LIMITS };
   const decisions = analyzeRatingDecisions(graph);
-  const originalSummary = { ...completeGraphSummary(graph), decisions };
+  const stageDifficulty = analyzeStageDifficulty(graph, maxStageWork);
+  const originalSummary = { ...completeGraphSummary(graph), decisions, stageDifficulty };
   const ablationCache = new Map<string, ReturnType<typeof graphSummary>>([[sha256(puzzle), originalSummary]]);
   const ablate = (candidate: SortingPuzzle) => {
     const hash = sha256(candidate);
     let summary = ablationCache.get(hash);
-    if (!summary) { summary = graphSummary(buildRatingGraph(candidate, maxStates, maxEdges)); ablationCache.set(hash, summary); }
+    if (!summary) { summary = graphSummary(buildRatingGraph(candidate, maxStates, maxEdges), maxStageWork); ablationCache.set(hash, summary); }
     return { definitionSha256: hash, ...summary };
   };
   const timeline = trace(graph);
@@ -249,7 +252,7 @@ export function extractUnlockRating(input: RatingInput, comparison: ReturnType<t
       const used = timeline.find(row => opened && row.step > opened.step && (row.action.source === container || row.action.target === container));
       return { container, openedAt: opened?.step ?? null, firstUsedAt: used?.step ?? null, scope: 'One replayed shortest route; participation is not mechanism value.' };
     }) },
-    decisions, ablations,
+    decisions, stageDifficulty, ablations,
     decisionComparisons: { classicBase: compare(ablations.classicBase), allOpen: compare(ablations.allOpen), fullyVisible: compare(ablations.fullyVisible),
       individual: ablations.individual.map(a => ({ trigger: a.trigger, comparison: compare(a.result) })) },
     information: { source: 'public visible state and public four-of-each inventory only', trace: timeline,
