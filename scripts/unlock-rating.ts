@@ -10,6 +10,8 @@ import { STAGE_RHYTHM_METHOD, STAGE_RHYTHM_POLICY } from './lib/unlockStageRhyth
 import { VISUAL_TEMPLATE_METHOD } from './lib/unlockVisualTemplates.ts';
 import { unlockClassicReferences } from './lib/unlockClassicReference.ts';
 import { auditStageCalibration } from './lib/unlockStageCalibrationAudit.ts';
+import { acceptSingleKey, SINGLE_KEY_ACCEPTANCE_METHOD, validateDifficultyTarget } from './lib/unlockSingleKeyAcceptance.ts';
+import { PUBLIC_DISCLOSURE_BUDGET, validateDisclosureBudget } from './lib/unlockPublicDisclosure.ts';
 
 // Roles describe fixture intent; they are not quality or difficulty verdicts.
 const designs: RatingDesign[] = [
@@ -34,7 +36,7 @@ function option(name: string, fallback?: string) {
   if (!value || value.startsWith('--') || args.lastIndexOf(name) !== index) throw new Error(`Expected one value for ${name}`);
   return value;
 }
-for (let i = 0; i < args.length; i += 2) if (!['--out', '--max-states', '--max-edges', '--max-stage-work', '--set'].includes(args[i]) || !args[i + 1]) throw new Error(`Unknown or incomplete option: ${args[i]}`);
+for (let i = 0; i < args.length; i += 2) if (!['--out', '--max-states', '--max-edges', '--max-stage-work', '--set', '--min-rank', '--max-rank', '--max-public-worlds', '--max-public-states', '--max-public-total-states', '--max-public-ms'].includes(args[i]) || !args[i + 1]) throw new Error(`Unknown or incomplete option: ${args[i]}`);
 const set = option('--set', 'trial');
 if (set !== 'trial' && set !== 'calibration' && set !== 'baseline' && set !== 'stage') throw new Error('Expected --set trial, calibration, baseline or stage');
 const directory = resolve(option('--out', set === 'trial' ? 'builds/unlock-rating' : `builds/unlock-${set}-rating`)!);
@@ -42,6 +44,17 @@ const withinBuilds = relative(resolve('builds'), directory);
 if (!withinBuilds || withinBuilds === '..' || withinBuilds.startsWith(`..${sep}`) || resolve(directory) === resolve('builds')) throw new Error('Output must be a subdirectory of ignored builds/');
 const maxStates = Number(option('--max-states', '250000')), maxEdges = Number(option('--max-edges', '4000000'));
 const maxStageWork = Number(option('--max-stage-work', '2000000'));
+const minRank = option('--min-rank'), maxRank = option('--max-rank');
+if ((minRank === undefined) !== (maxRank === undefined)) throw new Error('Provide both --min-rank and --max-rank');
+const target = minRank === undefined ? null : { min: Number(minRank), max: Number(maxRank) };
+validateDifficultyTarget(target);
+const disclosureBudget = {
+  maxWorlds: Number(option('--max-public-worlds', String(PUBLIC_DISCLOSURE_BUDGET.maxWorlds))),
+  maxStatesPerWorld: Number(option('--max-public-states', String(PUBLIC_DISCLOSURE_BUDGET.maxStatesPerWorld))),
+  maxTotalStates: Number(option('--max-public-total-states', String(PUBLIC_DISCLOSURE_BUDGET.maxTotalStates))),
+  maxMilliseconds: Number(option('--max-public-ms', String(PUBLIC_DISCLOSURE_BUDGET.maxMilliseconds))),
+};
+validateDisclosureBudget(disclosureBudget);
 const inputs: RatingInput[] = set === 'trial' ? UNLOCK_TRIAL.map((entry, i) => ({ puzzle: entry.puzzle, design: designs[i] }))
   : set === 'stage' ? UNLOCK_STAGE_CALIBRATION.map(entry => ({ puzzle: entry.puzzle,
     design: { role: entry.variant === 'mechanical' ? 'teaching' : 'challenge', family: entry.focus,
@@ -60,12 +73,15 @@ for (const [i, input] of inputs.entries()) {
   const rating = extractUnlockRating(input, comparison, maxStates, maxEdges, maxStageWork);
   const classicReferences = unlockClassicReferences(input.puzzle,
     rating.status === 'complete' ? rating.evidence.stageDifficulty : null, rating.evidenceSha256);
-  const report = { ...rating, classicReferences };
+  const acceptance = acceptSingleKey(input.puzzle, rating, { target, disclosureBudget });
+  const report = { ...rating, classicReferences, acceptance };
+  if (target && input.puzzle.triggers.length === 1 && input.puzzle.triggers[0].when.type === 'empty' && acceptance.status !== 'pass') process.exitCode = 1;
   reports.push(report);
   writeFileSync(resolve(directory, `${input.puzzle.id}.json`), JSON.stringify(report, null, 2) + '\n');
   const evidence = report.status === 'complete' ? report.evidence : null;
   const difficulty = evidence?.stageDifficulty;
   summary.push({ number: i + 1, puzzle: input.puzzle.id,
+    acceptance: { status: acceptance.status, label: acceptance.label, reasons: acceptance.reasons, evidenceSha256: acceptance.evidenceSha256 },
     solvability: evidence?.admission.solvability ?? 'unknown', evidenceSha256: report.evidenceSha256,
     presentation: { method: report.presentation.method, status: report.presentation.status,
       templates: [...new Set(report.presentation.groups.map(g => g.template))], issues: report.presentation.issues,
@@ -96,8 +112,8 @@ const pairs = pairedRatingComparisons(reports).map(pair => ({
   original: pair.original, reference: pair.reference, status: pair.status,
   originalEvidenceSha256: pair.originalEvidenceSha256, referenceEvidenceSha256: pair.referenceEvidenceSha256,
 }));
-const evaluation = { difficultyMethod: STAGE_DIFFICULTY_METHOD, rhythmMethod: STAGE_RHYTHM_METHOD, presentationMethod: VISUAL_TEMPLATE_METHOD, qualityStatus: 'unimplemented',
-  reason: 'Difficulty uses certified planning ranks; rhythm uses only same-witness color-run merges. Fixed visual templates have binary conformance checks, independent of solver budgets. No weighted quality score. Final content acceptance still requires difficulty targets and public-information validation; template conformance alone is not final quality.' };
+const evaluation = { difficultyMethod: STAGE_DIFFICULTY_METHOD, rhythmMethod: STAGE_RHYTHM_METHOD, presentationMethod: VISUAL_TEMPLATE_METHOD, acceptanceMethod: SINGLE_KEY_ACCEPTANCE_METHOD, qualityStatus: 'single-key-implemented', target, disclosureBudget,
+  reason: 'Difficulty uses certified planning ranks; rhythm uses only same-witness color-run merges. Fixed visual templates have binary conformance checks, independent of solver budgets. No weighted quality score. Single-key acceptance combines necessary gates against an explicit batch target: any proved failure fails, otherwise any unknown prevents a pass. Missing targets remain unknown. This is offline recipe acceptance, not player calibration or permission to publish content.' };
 const calibration = set === 'stage' ? auditStageCalibration(reports, JSON.parse(readFileSync('assets/levels/mainline-catalog.json', 'utf8')).records) : null;
 if (calibration) {
   writeFileSync(resolve(directory, 'calibration.json'), JSON.stringify(calibration, null, 2) + '\n');
@@ -106,6 +122,7 @@ if (calibration) {
 writeFileSync(resolve(directory, 'summary.json'), JSON.stringify({ method: UNLOCK_RATING_METHOD,
   comparisonSha256: comparison.sha256, limits: RATING_LIMITS, evaluation, summary, pairs,
   ...(calibration ? { calibration: { status: calibration.status, evidenceSha256: sha256(calibration), sources: calibration.sources, checks: calibration.checks } } : {}) }, null, 2) + '\n');
+const acceptanceTable = summary.map(r => `| ${r.number} | ${r.acceptance.label} | ${r.acceptance.reasons.map(v => v.reason).join('；')} |`).join('\n');
 const interval = (r: { min: number | null; max: number | null }) => r.min === null || r.max === null ? 'unknown' : `${r.min}–${r.max}`;
 const table = summary.map(r => `| ${r.number} | ${r.solvability} | ${r.difficulty.rank ?? r.difficulty.status} | ${r.difficulty.beforeRank ?? '—'} / ${r.difficulty.afterRank ?? '—'} | ${r.classicBase.difficultyRank ?? r.classicBase.difficultyStatus} | ${r.classicBase.score ?? r.classicBase.scoreStatus} |`).join('\n');
 const classicTable = summary.flatMap(r => r.classicReferences.stages.map(s =>
@@ -119,6 +136,14 @@ writeFileSync(resolve(directory, 'report.md'), `# Unlock puzzle diagnostics
 Method: ${UNLOCK_RATING_METHOD}
 
 ${evaluation.reason}
+
+## 单钥匙统一自动验收
+
+统一目标：${target ? `${target.min}–${target.max} 档` : '未提供，难度门槛为未知'}。只用通过／不通过／未知，不加权。检查至少一条完整解、必经钥匙、同一分段证书的公开准备与解锁后可解性、目标难度、整理节奏和固定模板；普通对照及不支持的机关组合不在单钥匙范围。已证明的失败优先于其他未知。公开信息验证枚举库存一致的隐藏数量及排列，预算不足保留未知。
+
+| Trial | 结果 | 原因 |
+| --- | --- | --- |
+${acceptanceTable}
 
 ${calibration ? `Automatic calibration regression: **${calibration.status}**. This checks the frozen sample, not human agreement or final quality. Source reconstruction, original scores, paired replay and common-public-prefix disclosure certificates are retained in calibration.json. Empty-bottle counts do not enter these verdicts.\n\n| Check | Result |\n| --- | --- |\n${calibration.checks.map(c => `| ${c.name} | ${c.status} |`).join('\n')}` : ''}
 
@@ -162,7 +187,7 @@ ${stageTable}
 
 The key task ends at the first firing. Each retained unlocked state is evaluated anew for whole-board sorting; the whole rank is the minimum paired maximum among certified policies. Policies use preparation limits of 2/4/6/6/8/10/12 pours and lookahead of 0/1/2/3/4/6/8 progress segments. Before the key, progress means fewer key-bottle portions, then fewer open-board color runs; after the key it means fewer whole-board color runs. No exact solution distance selects a policy frontier. All tied shortest retained segments must succeed. Lower policies are checked before a higher rank; work limits or exhausting this ladder without certification return unknown, never a high fallback grade. The per-puzzle witness replays both stages together and retains the actual unlocked frame. Ordinary controls run the same sorting policies.
 
-Stage difficulty supports ordinary visible boards and one mandatory bottom key, with no progressive hidden layers or additional triggers. Unsupported combinations receive no rank. Visual-template checks independently support 4–12 bottles and color cloth covers or one/two/three-bottle boxes. A passing template cannot fill an unknown difficulty or fairness result. Final quality will combine required gates without manual per-puzzle grades.
+Stage difficulty supports ordinary visible boards and one mandatory bottom key, with no progressive hidden layers or additional triggers. Unsupported combinations receive no rank. Visual-template checks independently support 4–12 bottles and color cloth covers or one/two/three-bottle boxes. A passing template cannot fill an unknown difficulty or fairness result. Single-key acceptance combines these required gates without manual per-puzzle grades; unsupported combinations remain unknown.
 
 Admission requires at least one replayed legal complete solution. Unknown search results remain unknown; unsolvable puzzles are rejected. Unlocking every group is not an extra completion goal. ${RATING_LIMITS}
 

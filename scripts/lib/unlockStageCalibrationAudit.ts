@@ -9,7 +9,7 @@ import { sha256, type UnlockRatingReport } from './unlockRatingEvidence.ts';
 import type { unlockClassicReferences } from './unlockClassicReference.ts';
 import { auditUnlockVisualTemplates } from './unlockVisualTemplates.ts';
 
-export type StageCalibrationReport = UnlockRatingReport & { classicReferences: ReturnType<typeof unlockClassicReferences> };
+export type StageCalibrationReport = UnlockRatingReport & { classicReferences: ReturnType<typeof unlockClassicReferences>; acceptance?: unknown };
 type Check = { name: string; status: 'pass' | 'fail' | 'unknown'; puzzles: string[]; reason?: string };
 
 /** Reconstruct frozen controls from existing source provenance, never generate
@@ -32,10 +32,10 @@ export function auditStageCalibration(reports: readonly StageCalibrationReport[]
     assert.deepEqual(report.presentation, auditUnlockVisualTemplates(entry.puzzle), 'Visual template evidence differs from shared presentation');
     const { evidenceSha256, classicReferences } = report;
     if (report.status === 'complete') {
-      const { status: _status, evidenceSha256: _hash, limits: _limits, classicReferences: _references, evidence, ...binding } = report;
+      const { status: _status, evidenceSha256: _hash, limits: _limits, classicReferences: _references, acceptance: _acceptance, evidence, ...binding } = report;
       assert.equal(evidenceSha256, sha256({ binding, evidence }), 'Stage evidence hash differs');
     } else {
-      const { status: _status, evidenceSha256: _hash, limits: _limits, classicReferences: _references, evidence: _evidence, graph, ...binding } = report;
+      const { status: _status, evidenceSha256: _hash, limits: _limits, classicReferences: _references, acceptance: _acceptance, evidence: _evidence, graph, ...binding } = report;
       assert.equal(evidenceSha256, sha256({ binding, graph }), 'Unknown graph evidence hash differs');
     }
     const { base, stages, evidenceSha256: referenceHash, ...referenceBinding } = classicReferences;

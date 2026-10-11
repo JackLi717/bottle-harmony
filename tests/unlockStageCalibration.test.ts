@@ -34,6 +34,8 @@ test('nine frozen controls preserve the source board in each pair; empty counts 
 test('automatic calibration reconstructs sources and certifies increasing bands without confusing work with planning', () => {
   const audit = auditStageCalibration(reports, catalog.records);
   assert.equal(audit.status, 'pass'); assert.ok(audit.checks.every(c => c.status === 'pass'));
+  // Independent companions do not become part of the original rating hash.
+  assert.deepEqual(auditStageCalibration(reports.map(r => ({ ...r, acceptance: { status: 'unknown' } })), catalog.records), audit);
   assert.deepEqual(audit.sources.map(s => [s.mainline, s.classicScore]), [[11, 20], [496, 49], [759, 62]]);
   const rank = (i: number) => reports[i].status === 'complete' ? reports[i].evidence.stageDifficulty.rank : null;
   assert.deepEqual([rank(0), rank(2), rank(4)], [2, 4, 7]);
