@@ -276,3 +276,8 @@ iPhone 12 Pro Max／iOS 17.4.1 已安装独立 0.1.6／build 1 包，签名校�
 独立离线 Release／Hermes 体验包 `Harmony Engine`（`com.bottleharmony.engineacceptance`）两端仍为 0.1.6，Android code 10／iOS build 1。新版已原位安装到 iPhone 12 Pro Max，签名与安装信息读回通过；自动启动被设备锁屏阻止，尚未验收手机棋盘。iPhone 正式应用安装元数据与更新前完全一致。TCL T517D 本次未连接，未安装本轮新版；其设备仍保留上一轮体验包，新 APK 已在本机备妥。未卸载应用或清理玩家库，正式 SQLite、原百题及正式内容未改变。构建、安装命令和浏览器检查均不构成真人难度校准或真机性能验收。
 
 入口为首页设置 → 开发工具 →「后段挑战体验 · 二十题」。当前 APK、签名、iPhone 安装／读回、锁屏启动失败日志及浏览器截图在忽略的 `builds/unlock-post-key-v3-device/`；完整来源与统一验收记录在 `builds/unlock-post-key-20-v3-whole-board/`。
+
+
+### 双钥匙六题内部体验（2026 年 10 月 12 日）
+
+本轮只更新内部源码与离线题包，未构建或安装新的 iOS／Android 原生包。独立 `engine-acceptance` Web 导出、离线分析环境与显式内部工具在 `http://localhost:8108/` 实测：从设置打开六题入口，第一题连续提示经过两次开锁并完成全盘；两次开锁后的撤销均保留已见颜色但重新锁住，重来恢复两组未知遮盖，第一／第六题可切换。截图为 `builds/unlock-two-key-six/web-initial.png`、`web-second-open.png`、`web-complete.png`。离线六题全可达局面提示、全题提示回放、来源与独立统一验收通过，内容方法与预算由[经典扩展](color-unlock-plan.md#双钥匙六题生成闭环内部)维护。这些是桌面功能证据，不是手机安装或移动性能证据；现有手机内部包仍是上一批单钥匙体验，正式包和玩家 SQLite 未改动。

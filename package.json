@@ -102,7 +102,10 @@
     "unlock:post-key": "node --experimental-strip-types scripts/unlock-post-key.ts generate",
     "unlock:post-key:verify": "node --experimental-strip-types scripts/unlock-post-key.ts verify",
     "unlock:post-key:hints": "node --experimental-strip-types scripts/unlock-hints.ts",
-    "unlock:two-key": "node --experimental-strip-types scripts/unlock-two-key.ts"
+    "unlock:two-key": "node --experimental-strip-types scripts/unlock-two-key.ts",
+    "unlock:two-key:generate": "node --experimental-strip-types scripts/unlock-two-key-generate.ts generate",
+    "unlock:two-key:verify": "node --experimental-strip-types scripts/unlock-two-key-generate.ts verify",
+    "unlock:two-key:hints": "node --experimental-strip-types scripts/unlock-two-key-hints.ts"
   },
   "private": true,
   "engines": {

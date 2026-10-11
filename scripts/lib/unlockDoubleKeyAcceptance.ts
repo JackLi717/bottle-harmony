@@ -15,7 +15,8 @@ import { classicFrameReference } from './unlockClassicReference.ts';
 export const DOUBLE_KEY_ACCEPTANCE_METHOD = 'sequential-two-key-acceptance-v1';
 type Check = { check: string; status: 'pass' | 'fail' | 'unknown'; code: string; reason: string };
 
-/** Only offline fixed samples: no asset projection, phone rating or player I/O. */
+/** Offline evaluation for fixed controls and generated internal trials. No phone
+ * rating, content installation or player I/O occurs in this evaluator. */
 export function evaluateDoubleKey(puzzle: SortingPuzzle, options: {
   target: DifficultyTarget | null; maxStates?: number; maxEdges?: number; maxWork?: number; disclosureBudget?: DisclosureBudget;
 }) {
@@ -37,7 +38,7 @@ export function evaluateDoubleKey(puzzle: SortingPuzzle, options: {
     const status = checks.some(c => c.status === 'fail') ? 'fail' : checks.some(c => c.status === 'unknown') ? 'unknown' : 'pass';
     const reasons = status === 'pass' ? [{ code: 'all-required-checks-passed', reason: '双钥匙同一完整证书的全部必要检查通过。' }] : checks.filter(c => c.status !== 'pass').map(({ code, reason }) => ({ code, reason }));
     const evidence = { status, label: ACCEPTANCE_LABELS[status], reasons, checks, graph: graphSummary, difficulty, rhythm, presentation, publicInformation };
-    return { ...binding, ...evidence, evidenceSha256: sha256({ binding, evidence }), limits: 'Offline two sequential mandatory bottom keys; pass/fail/unknown only. No weights, player-calibrated grades, all-action safety, generated bank or release approval.' };
+    return { ...binding, ...evidence, evidenceSha256: sha256({ binding, evidence }), limits: 'Offline two sequential mandatory bottom keys; pass/fail/unknown only. No weights, player-calibrated grades, all-action safety or release approval.' };
   };
   try { assertRatingScope(puzzle); } catch { checks.push({ check: 'scope', status: 'unknown', code: 'outside-classic-rating-scope', reason: '仅支持至多十瓶、四份容量的经典全盘排序。' }); return finish(); }
   if (scope.status !== 'supported') { checks.push({ check: 'scope', status: 'unknown', code: scope.reason, reason: '需两把底部钥匙，第二把位于第一组内，两组独立覆盖全部锁瓶，钥匙瓶初始非空。' }); return finish(); }

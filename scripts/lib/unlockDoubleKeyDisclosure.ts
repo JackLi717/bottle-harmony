@@ -3,7 +3,7 @@ import { evaluateEngineGoal, listEngineActions, transitionEngine, visibleEngineS
 import { replayEngineRoute } from '../../src/game/engineSearch.ts';
 import type { SortingPuzzle } from '../../src/game/engineModel.ts';
 import { solveBoard } from '../../src/game/solver.ts';
-import { assertRatingScope } from './unlockRatingGraph.ts';
+import { assertRatingScope, ratingStateKey } from './unlockRatingGraph.ts';
 import { concealedInventoryWorlds, PUBLIC_DISCLOSURE_BUDGET, validateDisclosureBudget, type DisclosureBudget } from './unlockPublicDisclosure.ts';
 import { sequentialKeys, validateDoubleKeyWitness } from './unlockSequentialKeys.ts';
 import { sha256 } from './unlockRatingEvidence.ts';
@@ -12,17 +12,21 @@ import type { analyzeDoubleKeyDifficulty } from './unlockDoubleKeyDifficulty.ts'
 type Verdict = 'pass' | 'fail' | 'unknown';
 type World = { contents: string[][]; runtime: EngineRuntime; initial: EngineFrame; frame: EngineFrame; observation: string; prefix: EngineAction[] };
 type Certificate = { world: number; route: readonly EngineAction[] };
+/** Reuse only completely exhausted common-preparation subgraphs of this exact
+ * puzzle. A budget-limited graph never enters the negative cache. */
+export type DoubleKeyDisclosureWorkspace = { binding: string; losing: Set<string> };
 class Limit extends Error { reason: string; constructor(reason: string) { super(reason); this.reason = reason; } }
 
 /** A common first prefix; then one common second-key preparation per actual
  * PUBLIC observation, followed by fully visible world-specific sorting. Search
  * never branches on the still concealed second group. A bounded search cannot
  * prove absence. The true observation remains bound to the rating witness. */
-export function proveDoubleKeyDisclosure(puzzle: SortingPuzzle, stage: ReturnType<typeof analyzeDoubleKeyDifficulty>, budget: DisclosureBudget = PUBLIC_DISCLOSURE_BUDGET) {
+export function proveDoubleKeyDisclosure(puzzle: SortingPuzzle, stage: ReturnType<typeof analyzeDoubleKeyDifficulty>, budget: DisclosureBudget = PUBLIC_DISCLOSURE_BUDGET, workspace?: DoubleKeyDisclosureWorkspace) {
   validateDisclosureBudget(budget); assertRatingScope(puzzle);
   const scope = sequentialKeys(puzzle); assert.equal(scope.status, 'supported'); assert.ok(scope.status === 'supported');
   assert.equal(stage.status, 'rated'); assert.ok(stage.status === 'rated');
   const w = stage.witness, prefix = w.route.slice(0, w.splitPours[0]), trueMiddle = w.route.slice(w.splitPours[0], w.splitPours[1]);
+  if (workspace) assert.equal(workspace.binding, sha256(puzzle));
   const started = performance.now(), worlds: World[] = [], certificates: Certificate[] = [];
   const branches: { observation: string; worlds: number[]; status: Verdict; middle: readonly EngineAction[] | null; reason: string | null }[] = [];
   let states = 0;
@@ -33,19 +37,29 @@ export function proveDoubleKeyDisclosure(puzzle: SortingPuzzle, stage: ReturnTyp
     prefix, states, worlds: worlds.map(x => ({ contents: x.contents, observation: x.observation })), branches, certificates,
     limits: 'All inventory-consistent concealed counts and orders; adaptive second preparation only by public observation. The true branch uses the coupled rating certificate. Proves a sufficient public policy, not arbitrary-action safety, human discoverability, or that another first prefix cannot work.' });
   const { runtime: trueRuntime, initial: trueInitial } = validateDoubleKeyWitness(puzzle, w), trueObservation = observation(trueRuntime, w.openedFrames[0]);
+  const quotient = ratingStateKey(trueRuntime);
+  const continuations = new Map<string, Extract<ReturnType<typeof solveBoard>, { status: 'solved' | 'unsolvable' }>>();
   const solveVisible = (world: number, frame: EngineFrame, middle: readonly EngineAction[]): { status: Verdict; route?: readonly EngineAction[] } => {
     const row = worlds[world];
     if (evaluateEngineGoal(row.runtime, frame.state)) return { status: 'pass', route: [...row.prefix, ...middle] };
     assert.ok(frame.state.open.every(Boolean)); time();
     if (states >= budget.maxTotalStates) throw new Limit('public-total-state-budget');
-    const result = solveBoard(frame.state.contents.map(s => s.map(id => row.runtime.unitColors.get(id)!)), {
+    const board = frame.state.contents.map(s => s.map(id => row.runtime.unitColors.get(id)!));
+    const indices = board.map((_, i) => i);
+    if (budget.reuseContinuations) indices.sort((a, b) => board[a].join(',').localeCompare(board[b].join(',')) || a - b);
+    const ordered = indices.map(i => board[i]), identity = JSON.stringify(ordered);
+    let result: ReturnType<typeof solveBoard> | undefined = budget.reuseContinuations ? continuations.get(identity) : undefined;
+    if (!result) {
+      result = solveBoard(ordered, {
       maxStates: Math.min(budget.maxStatesPerWorld, budget.maxTotalStates - states), maxMilliseconds: Math.min(60000, budget.maxMilliseconds - (performance.now() - started)),
-    });
-    charge(result.stats.visitedStates);
+      });
+      charge(result.stats.visitedStates);
+      if (budget.reuseContinuations && (result.status === 'solved' || result.status === 'unsolvable')) continuations.set(identity, result);
+    }
     if (result.status === 'invalid') throw new Error('Invalid disclosed classic board');
     if (result.status === 'limitReached') return { status: 'unknown' };
     if (result.status === 'unsolvable') return { status: 'fail' };
-    const route = [...row.prefix, ...middle, ...result.route.map(p => ({ type: 'transfer' as const, source: puzzle.containers[p.source].id, target: puzzle.containers[p.target].id }))];
+    const route = [...row.prefix, ...middle, ...result.route.map(p => ({ type: 'transfer' as const, source: puzzle.containers[indices[p.source]].id, target: puzzle.containers[indices[p.target]].id }))];
     replayEngineRoute(row.runtime, row.initial, route); return { status: 'pass', route };
   };
   try {
@@ -103,12 +117,14 @@ export function proveDoubleKeyDisclosure(puzzle: SortingPuzzle, stage: ReturnTyp
           charge(); const node = queue[cursor], ending = close(node);
           if (ending) { if (ending.status === 'pass') { result = ending; chosen = node.path; break; } if (ending.status === 'unknown') unknown = true; continue; }
           const representative = node.frames[0], runtime = worlds[representative.world].runtime;
-          const identity = JSON.stringify([observation(runtime, representative.frame), node.frames.map(x => x.world)]);
+          const identity = JSON.stringify([budget.reuseContinuations ? quotient(representative.frame) : observation(runtime, representative.frame), node.frames.map(x => x.world)]);
           if (seen.has(identity)) continue; seen.add(identity);
+          if (workspace?.losing.has(identity)) continue;
           if (seen.size >= budget.maxStatesPerWorld) { unknown = true; break; }
           for (const action of listEngineActions(runtime, representative.frame.state, representative.frame.known)) queue.push(advance(node, action));
         }
         result ??= { status: unknown ? 'unknown' : 'fail', certs: [] };
+        if (result.status === 'fail' && !unknown && workspace) for (const identity of seen) workspace.losing.add(identity);
       }
       const reason = result.status === 'pass' ? null : result.status === 'unknown' ? 'public-second-search-budget'
         : observed === trueObservation ? 'paired-second-preparation-unsafe' : 'no-common-second-preparation';
