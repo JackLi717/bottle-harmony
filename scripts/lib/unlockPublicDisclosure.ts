@@ -30,6 +30,22 @@ function* orders(counts: Map<string, number>, total: number, head: string[] = []
   }
 }
 
+/** Shared inventory-only enumeration. Neither concealed counts nor per-bottle
+ * true multisets constrain possible public worlds. Stable IDs preserve color. */
+export function* concealedInventoryWorlds(puzzle: SortingPuzzle) {
+  const locked = puzzle.containers.filter(c => puzzle.locked.includes(c.id));
+  const unknown = new Set(locked.flatMap(c => c.units));
+  const counts = new Map([...puzzle.colors].sort().map(color => [color, 4 - puzzle.units.filter(u => !unknown.has(u.id) && u.color === color).length]));
+  const pools = new Map([...counts.keys()].map(color => [color, puzzle.units.filter(u => unknown.has(u.id) && u.color === color).map(u => u.id).sort()]));
+  for (const sizes of lengths(unknown.size, locked.length)) for (const order of orders(counts, unknown.size)) {
+    let offset = 0;
+    const contents = sizes.map(size => { const stack = order.slice(offset, offset + size); offset += size; return stack; });
+    const used = new Map<string, number>();
+    const units = contents.map(stack => stack.map(color => { const i = used.get(color) ?? 0; used.set(color, i + 1); return pools.get(color)![i]; }));
+    yield { contents, units };
+  }
+}
+
 /** A single public preparation must work in all inventory-consistent worlds;
  * after the only disclosure each world may use its own visible continuation.
  * This proves existence, not safety of arbitrary wrong moves or discoverability. */

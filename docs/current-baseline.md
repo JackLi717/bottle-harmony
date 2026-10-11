@@ -1,6 +1,6 @@
 # 当前实现基线
 
-更新日期：2026 年 10 月 11 日。本文只汇总当前源码及资产，具体规则各有唯一责任文档。应用版本来自 package.json／app.json：**0.1.6，Android 手机／平板 versionCode 10**。应用品牌 Bottle Harmony，Google Play 标题 Water Sort - No Ads，包名 com.bottleharmony.app，开发者 Platon Games。
+更新日期：2026 年 10 月 12 日。本文只汇总当前源码及资产，具体规则各有唯一责任文档。应用版本来自 package.json／app.json：**0.1.6，Android 手机／平板 versionCode 10**。应用品牌 Bottle Harmony，Google Play 标题 Water Sort - No Ads，包名 com.bottleharmony.app，开发者 Platon Games。
 
 **Google Play 封闭测试已于 2026 年 10 月 10 日（墨尔本）正式开始。** 用户确认测试人员已招募足够；本次 Console 核实 0.1.5（9）已向选定测试者开放，0.1.6（10）已提交 Alpha 审核，观察时快速检查仍在运行。具体产物与证据由[发布记录](release-readiness.md)维护；送审不等于审核通过或公开生产发行。本次引擎升级尚未提交商店，不属于已送审 0.1.6（10）产物的内容。
 
@@ -43,6 +43,8 @@
 | 运行内容库 | assets/levels/content.sqlite，1150 道；SHA-256 06863e76f853042dfe230dafbf9b4a9a38b154c128550c585969eac4c0bad52e，与 contentManifest.ts 一致 |
 
 JSON 是离线输入和回归证据，手机按需读取 SQLite，不现场出题或完整评级。内部调色六题定义在 mixingCatalog.ts；另有独立的单钥匙百题体验投影 unlock-internal-100.json，均不包含在上述 1150 道内容库计数中。后段挑战二十题投影 unlock-post-key-20.json 先生成完整经典底题，再选钥匙和锁瓶；双／三瓶匣各十题，整题 4–6 档、后段至少 3 档，内部离线计算支持至多十瓶。生成器检查实际开锁时匣内外颜色关联，以及完整底题、下排和开锁后结构不重复；难度规则、正式题库和玩家数据保持原样。单钥匙已接通经典底题、加钥匙、统一验收及独立复验闭环；百题整题 4–6 档，单／双／三瓶匣 34／33／33 道，仅在开发工具中试玩，不保存进度或发券，配方与证据见[经典扩展](color-unlock-plan.md#内部百题生成闭环)。当前难度等级是制作代理，不能称为玩家实测。
+
+双钥匙先后依赖已实现离线三段难度、公开观察分支与统一自动验收，三个固定技术样例验证通过；复用原策略梯度与最大阶段难度原则，检查遮盖不超过一半，不生成或接入新手机题包。详见[双钥匙离线验收](color-unlock-plan.md#双钥匙先后依赖离线分段评价与统一验收)。
 
 ## 规划与设想的边界
 

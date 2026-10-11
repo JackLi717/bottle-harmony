@@ -29,7 +29,7 @@ export function stageProgress(graph: RatingGraph, index: number, keyContainer: n
 
 /** Re-map quotient state paths onto the actual live frame, keeping stable IDs.
  * A representative's action IDs must never be concatenated across states. */
-function replayPath(graph: RatingGraph, path: readonly number[]) {
+export function replayRatingPath(graph: RatingGraph, path: readonly number[]) {
   let frame = graph.nodes[0].frame;
   const route: EngineAction[] = [];
   if (path[0] !== 0) throw new Error('Stage witness must start at the initial state');
@@ -46,6 +46,75 @@ function replayPath(graph: RatingGraph, path: readonly number[]) {
   }
   replayEngineRoute(graph.runtime, graph.nodes[0].frame, route);
   return route;
+}
+
+/** Shared unchanged strategy kernel for ordinary, single-key and sequential-key tasks. */
+export function stagePolicyPhase(graph: RatingGraph, done: (index: number) => boolean,
+  progress: readonly number[], charge: () => void) {
+  const cache = new Map<string, Macro[]>();
+  // Endpoint selection uses only legal moves and public progress, never exact
+  // solution distances, after-key grades, or the reference shortest route.
+  const macros = (root: number, limit: number): Macro[] => {
+    charge();
+    const cacheKey = `${limit}:${root}`, prior = cache.get(cacheKey);
+    if (prior) return prior;
+    const queue: Macro[] = [{ to: root, path: [] }], seen = new Set([root]), ends = new Map<number, Macro>();
+    for (let cursor = 0; cursor < queue.length; cursor++) {
+      const current = queue[cursor]; charge();
+      for (const edge of graph.nodes[current.to].edges) {
+        charge();
+        if (edge.to === current.to) continue;
+        const path = [...current.path, edge.to];
+        if (done(edge.to) || progress[edge.to] < progress[root]) {
+          if (!ends.has(edge.to)) ends.set(edge.to, { to: edge.to, path });
+        } else if (path.length < limit && !seen.has(edge.to)) {
+          seen.add(edge.to); queue.push({ to: edge.to, path });
+        }
+      }
+    }
+    const result = [...ends.values()].sort((a, b) => a.path.length - b.path.length || a.to - b.to);
+    cache.set(cacheKey, result); return result;
+  };
+  const policy = (config: typeof STAGE_POLICIES[number]) => {
+    const viability = new Map<string, boolean>(), checked = new Map<number, boolean>(), fronts = new Map<number, Macro[]>();
+    const viable = (i: number, depth: number): boolean => {
+      charge();
+      if (done(i) || depth === 0) return true;
+      const key = `${depth}:${i}`, prior = viability.get(key);
+      if (prior !== undefined) return prior;
+      const result = macros(i, config.chainLimit).some(m => viable(m.to, depth - 1));
+      viability.set(key, result); return result;
+    };
+    const frontier = (i: number) => {
+      const prior = fronts.get(i); if (prior) return prior;
+      const retained = macros(i, config.chainLimit).filter(m => viable(m.to, config.lookahead));
+      const best = retained[0]?.path.length;
+      const result = retained.filter(m => m.path.length === best);
+      fronts.set(i, result); return result;
+    };
+    const verify = (i: number): boolean => {
+      charge();
+      if (done(i)) return true;
+      const prior = checked.get(i); if (prior !== undefined) return prior;
+      const next = frontier(i);
+      // Every nonterminal macro strictly decreases a nonnegative public rank.
+      const result = next.length > 0 && next.every(m => verify(m.to));
+      checked.set(i, result); return result;
+    };
+    const witnesses = (root: number, all: boolean) => {
+      const queue: { i: number; path: number[] }[] = [{ i: root, path: [] }], seen = new Set([root]), result = new Map<number, number[]>();
+      for (let cursor = 0; cursor < queue.length; cursor++) {
+        charge(); const row = queue[cursor];
+        if (done(row.i)) { result.set(row.i, row.path); if (!all) break; continue; }
+        for (const m of frontier(row.i)) if (!seen.has(m.to)) {
+          seen.add(m.to); queue.push({ i: m.to, path: [...row.path, ...m.path] });
+        }
+      }
+      return result;
+    };
+    return { verify, witnesses };
+  };
+  return { policy };
 }
 
 export function analyzeStageDifficulty(graph: RatingGraph | GraphUnknown, maxWork = 2000000) {
@@ -67,79 +136,14 @@ export function analyzeStageDifficulty(graph: RatingGraph | GraphUnknown, maxWor
   let work = 0;
   const charge = () => { if (work >= maxWork) throw new WorkLimit(); work++; };
   const prefixChecks: PolicyCheck[] = [], ordinaryChecks: PolicyCheck[] = [];
-  const phase = (key: boolean) => {
-    const done = (i: number) => key ? graph.nodes[i].frame.state.fired.includes(trigger!.id) : graph.nodes[i].solved;
-    const progress = graph.nodes.map((_, i) => stageProgress(graph, i, key ? keyContainer : null));
-    const cache = new Map<string, Macro[]>();
-    // Endpoint selection uses only legal moves and public progress, never exact
-    // solution distances, after-key grades, or the reference shortest route.
-    const macros = (root: number, limit: number): Macro[] => {
-      charge();
-      const cacheKey = `${limit}:${root}`, prior = cache.get(cacheKey);
-      if (prior) return prior;
-      const queue: Macro[] = [{ to: root, path: [] }], seen = new Set([root]), ends = new Map<number, Macro>();
-      for (let cursor = 0; cursor < queue.length; cursor++) {
-        const current = queue[cursor]; charge();
-        for (const edge of graph.nodes[current.to].edges) {
-          charge();
-          if (edge.to === current.to) continue;
-          const path = [...current.path, edge.to];
-          if (done(edge.to) || progress[edge.to] < progress[root]) {
-            if (!ends.has(edge.to)) ends.set(edge.to, { to: edge.to, path });
-          } else if (path.length < limit && !seen.has(edge.to)) {
-            seen.add(edge.to); queue.push({ to: edge.to, path });
-          }
-        }
-      }
-      const result = [...ends.values()].sort((a, b) => a.path.length - b.path.length || a.to - b.to);
-      cache.set(cacheKey, result); return result;
-    };
-    const policy = (config: typeof STAGE_POLICIES[number]) => {
-      const viability = new Map<string, boolean>(), checked = new Map<number, boolean>(), fronts = new Map<number, Macro[]>();
-      const viable = (i: number, depth: number): boolean => {
-        charge();
-        if (done(i) || depth === 0) return true;
-        const key = `${depth}:${i}`, prior = viability.get(key);
-        if (prior !== undefined) return prior;
-        const result = macros(i, config.chainLimit).some(m => viable(m.to, depth - 1));
-        viability.set(key, result); return result;
-      };
-      const frontier = (i: number) => {
-        const prior = fronts.get(i); if (prior) return prior;
-        const retained = macros(i, config.chainLimit).filter(m => viable(m.to, config.lookahead));
-        const best = retained[0]?.path.length;
-        const result = retained.filter(m => m.path.length === best);
-        fronts.set(i, result); return result;
-      };
-      const verify = (i: number): boolean => {
-        charge();
-        if (done(i)) return true;
-        const prior = checked.get(i); if (prior !== undefined) return prior;
-        const next = frontier(i);
-        // Every nonterminal macro strictly decreases a nonnegative public rank.
-        const result = next.length > 0 && next.every(m => verify(m.to));
-        checked.set(i, result); return result;
-      };
-      const witnesses = (root: number, all: boolean) => {
-        const queue: { i: number; path: number[] }[] = [{ i: root, path: [] }], seen = new Set([root]), result = new Map<number, number[]>();
-        for (let cursor = 0; cursor < queue.length; cursor++) {
-          charge(); const row = queue[cursor];
-          if (done(row.i)) { result.set(row.i, row.path); if (!all) break; continue; }
-          for (const m of frontier(row.i)) if (!seen.has(m.to)) {
-            seen.add(m.to); queue.push({ i: m.to, path: [...row.path, ...m.path] });
-          }
-        }
-        return result;
-      };
-      return { verify, witnesses };
-    };
-    return { policy };
-  };
+  const phase = (key: boolean) => stagePolicyPhase(graph,
+    i => key ? graph.nodes[i].frame.state.fired.includes(trigger!.id) : graph.nodes[i].solved,
+    graph.nodes.map((_, i) => stageProgress(graph, i, key ? keyContainer : null)), charge);
   const sort = phase(false), before = trigger ? phase(true) : null;
   const afterPolicies = STAGE_POLICIES.map(config => sort.policy(config));
   const candidates = new Map<number, { beforeRank: number; prefix: number[]; afterRank: number | null; afterChecks: PolicyCheck[]; suffix: number[] | null }>();
   const result = (rank: number, beforeRank: number | null, afterRank: number, path: number[], split: number | null, state: number | null) => {
-    const route = replayPath(graph, path);
+    const route = replayRatingPath(graph, path);
     let unlocked = graph.nodes[0].frame;
     for (const action of route.slice(0, split ?? 0)) {
       const next = transitionEngine(graph.runtime, unlocked.state, unlocked.known, action);

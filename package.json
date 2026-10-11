@@ -101,7 +101,8 @@
     "unlock:lock-width": "node --experimental-strip-types scripts/unlock-lock-width.ts",
     "unlock:post-key": "node --experimental-strip-types scripts/unlock-post-key.ts generate",
     "unlock:post-key:verify": "node --experimental-strip-types scripts/unlock-post-key.ts verify",
-    "unlock:post-key:hints": "node --experimental-strip-types scripts/unlock-hints.ts"
+    "unlock:post-key:hints": "node --experimental-strip-types scripts/unlock-hints.ts",
+    "unlock:two-key": "node --experimental-strip-types scripts/unlock-two-key.ts"
   },
   "private": true,
   "engines": {
