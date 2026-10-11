@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { AppState, BackHandler, Dimensions, Platform, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { AppState, BackHandler, Dimensions, Keyboard, Platform, ScrollView, StyleSheet, TextInput, View, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { cancelAnimation, Easing, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -43,6 +43,7 @@ type Props = { vessel: VesselDesign; symbols: boolean; sound: boolean; reduceMot
 /** Internal classic-board acceptance. Never persists, unlocks or credits player progress. */
 export function EnginePreview({ vessel: preferredVessel, symbols: showSymbols, sound, reduceMotion, onBack, trial = false, trialLevels = UNLOCK_TRIAL }: Props) {
   const { t, language } = useI18n(), zh = language.startsWith('zh'), insets = useSafeAreaInsets(), dimensions = useWindowDimensions();
+  const [jump, setJump] = useState('');
   const [index, setIndex] = useState(0), [session, setSession] = useState(() => createEngineSession(trial ? trialLevels[0].puzzle : ENGINE_EXAMPLES[0], 'preview-0'));
   const current = useRef(session);
   const tabs = useRef<ScrollView>(null), tabOffsets = useRef<number[]>([]);
@@ -201,7 +202,7 @@ export function EnginePreview({ vessel: preferredVessel, symbols: showSymbols, s
   function selectExample(next: number) { cancel(); setHandoffCase(null); setArtCount(null); setIndex(next); if (next === 0 && family === 'cloth') setFamily('wood'); commit(createEngineSession(ENGINE_EXAMPLES[next], `preview-${next}`)); }
   function selectTrial(next: number) {
     if (!Number.isInteger(next) || next < 0 || next >= trialLevels.length) return;
-    cancel(); setIndex(next); setFamily(defaultCoverFamily(trialLevels[next].puzzle));
+    cancel(); Keyboard.dismiss(); setIndex(next); setJump(''); setFamily(defaultCoverFamily(trialLevels[next].puzzle));
     commit(createEngineSession(trialLevels[next].puzzle, `trial-${next}`));
   }
   function selectArt(count: 1 | 2 | 3) {
@@ -344,9 +345,17 @@ export function EnginePreview({ vessel: preferredVessel, symbols: showSymbols, s
   const shown = presentation?.containers ?? visible;
   const covers = coverGroups(puzzle, visible, animation?.before ?? null, layout.positions, family);
   const names = zh ? ['底部钥匙', '颜色盖布', '逐层显色', '十二份收集', '彩虹层序'] : ['Bottom key', 'Color cover', 'Progressive reveal', 'Twelve portions', 'Ordered colors'];
-  return <LinearGradient colors={['#11171E', '#090E16', '#070B12']} style={[styles.screen, { paddingTop: Math.max(10, insets.top), paddingBottom: Math.max(12, insets.bottom) }]}>
+  return <LinearGradient colors={['#11171E', '#090E16', '#070B12']} style={[styles.screen,
+    trial && trialLevels.length > 20 && Platform.OS === 'web' && { flexGrow: 0, flexShrink: 0, flexBasis: 'auto', height: Math.max(dimensions.height, 520) },
+    { paddingTop: Math.max(10, insets.top), paddingBottom: Math.max(12, insets.bottom) }]}>
     <GameHeader label={`${trial ? zh ? '内部体验' : 'Internal trial' : zh ? '引擎验收' : 'Engine acceptance'} · ${index + 1}/${trial ? trialLevels.length : 5}`} compact disabled={false} onBack={back} />
-    <ScrollView ref={tabs} horizontal style={styles.tabs} contentContainerStyle={styles.tabContent}>{(trial ? trialLevels.map((entry,i) => `${i + 1} · ${entry.title[zh ? 0 : 1]}`) : names).map((name, i) => <Pressable key={name} accessibilityRole="button" accessibilityState={{ selected: i === index }} onLayout={event => { tabOffsets.current[i] = event.nativeEvent.layout.x; }} onPress={() => trial ? selectTrial(i) : selectExample(i)} style={[styles.tab, i === index && styles.activeTab]}><UiText style={styles.text}>{name}</UiText></Pressable>)}</ScrollView>
+    {trial && trialLevels.length > 20 ? <View style={styles.trialNavigation}>
+      <Pressable accessibilityRole="button" accessibilityLabel={zh ? '上一道体验题' : 'Previous trial'} disabled={index === 0} onPress={() => selectTrial(index - 1)} style={styles.artTab}><UiText style={styles.text}>←</UiText></Pressable>
+      <TextInput accessibilityLabel={zh ? '跳转体验题号' : 'Trial number'} placeholder={`${index + 1} / ${trialLevels.length}`} placeholderTextColor="#AABDBD" value={jump} onChangeText={setJump} keyboardType="number-pad" returnKeyType="go" maxLength={3} style={styles.jump}
+        onSubmitEditing={() => { if (/^[0-9]+$/.test(jump)) selectTrial(Number(jump) - 1); }} />
+      <Pressable accessibilityRole="button" onPress={() => { if (/^[0-9]+$/.test(jump)) selectTrial(Number(jump) - 1); }} style={styles.artTab}><UiText style={styles.text}>{zh ? '跳转' : 'Go'}</UiText></Pressable>
+      <Pressable accessibilityRole="button" accessibilityLabel={zh ? '下一道体验题' : 'Next trial'} disabled={index + 1 === trialLevels.length} onPress={() => selectTrial(index + 1)} style={styles.artTab}><UiText style={styles.text}>→</UiText></Pressable>
+    </View> : <ScrollView ref={tabs} horizontal style={styles.tabs} contentContainerStyle={styles.tabContent}>{(trial ? trialLevels.map((entry,i) => `${i + 1} · ${entry.title[zh ? 0 : 1]}`) : names).map((name, i) => <Pressable key={name} accessibilityRole="button" accessibilityState={{ selected: i === index }} onLayout={event => { tabOffsets.current[i] = event.nativeEvent.layout.x; }} onPress={() => trial ? selectTrial(i) : selectExample(i)} style={[styles.tab, i === index && styles.activeTab]}><UiText style={styles.text}>{name}</UiText></Pressable>)}</ScrollView>}
     <UiText style={styles.goal}>{trial ? trialLevels[index].introduction[zh ? 0 : 1] : goalText(puzzle.goal)}</UiText>
     {!trial && <>
     <View style={styles.artTools}>{COVER_FAMILIES.map((name, i) => <Pressable key={name} accessibilityRole="button" accessibilityState={{ selected: family === name }}
@@ -412,8 +421,9 @@ export function EnginePreview({ vessel: preferredVessel, symbols: showSymbols, s
   </LinearGradient>;
 }
 const styles = StyleSheet.create({
+  trialNavigation: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, paddingVertical: 6 }, jump: { color: '#DFE9E8', borderWidth: 1, borderColor: '#365252', borderRadius: 8, textAlign: 'center', minHeight: 40, width: 90, padding: 6 },
   screen: { flex: 1 }, tabs: { flexGrow: 0, maxHeight: 52 }, tabContent: { gap: 8, paddingHorizontal: 12 }, tab: { minHeight: 44, justifyContent: 'center', paddingHorizontal: 12, borderRadius: 10, backgroundColor: '#22303E' }, activeTab: { backgroundColor: '#365252' },
-  text: { color: '#DFE9E8', fontSize: 13 }, goal: { color: '#D8C9A7', textAlign: 'center', fontSize: 13, minHeight: 34, padding: 8 }, stage: { flex: 1, alignItems: 'center', justifyContent: 'center', overflow: 'visible' },
+  text: { color: '#DFE9E8', fontSize: 13 }, goal: { color: '#D8C9A7', textAlign: 'center', fontSize: 13, minHeight: 34, padding: 8 }, stage: { flex: 1, minHeight: 0, alignItems: 'center', justifyContent: 'center', overflow: 'visible' },
   artTools: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 5, paddingVertical: 3 }, artTab: { minHeight: 36, justifyContent: 'center', paddingHorizontal: 9, borderRadius: 8, backgroundColor: '#202C37' }, measureToggle: { minHeight: 26, justifyContent: 'center' }, capacity: { textAlign: 'center', color: '#C4D4D7', fontSize: 11 },
   condition: { color: '#C8BCA0', fontSize: 9, textAlign: 'center' }, tools: { flexDirection: 'row', justifyContent: 'center', gap: 24, paddingVertical: 4 }, notice: { textAlign: 'center', color: '#C6D8D8', fontSize: 12, minHeight: 34, paddingHorizontal: 12 },
   continueButton: { minHeight: 44, alignItems: 'center', justifyContent: 'center', marginHorizontal: 24, borderRadius: 12, backgroundColor: '#365252' },
