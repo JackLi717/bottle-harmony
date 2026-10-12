@@ -38,8 +38,8 @@ test('cloth stays per bottle; key fallback really renders a shared box; existing
   assert.equal(pairs.status, 'pass'); assert.deepEqual(pairs.groups.map(g => g.template), ['double-box', 'double-box', 'double-box']);
   const base = unlockArtExample(1, 'key'), mixed = { ...base, locked: ['b6', 'b7'], triggers: [...base.triggers,
     { id: 'color-gate', when: { type: 'color-full' as const, color: 'jade', count: 4 as const }, unlock: ['b7'] }] };
-  assert.equal(defaultCoverFamily(mixed), 'wood'); // Same preset as actual mixed-mechanism trials.
-  assert.deepEqual(auditUnlockVisualTemplates(mixed).groups.map(g => g.template), ['single-box', 'single-box']);
+  assert.equal(defaultCoverFamily(mixed), 'cloth'); // Color cloth plus automatic wooden key shell.
+  assert.deepEqual(auditUnlockVisualTemplates(mixed).groups.map(g => g.template), ['single-box', 'cloth']);
   assert.deepEqual(auditUnlockVisualTemplates(mixed, { family: 'cloth' }).groups.map(g => g.template), ['single-box', 'cloth']);
 });
 

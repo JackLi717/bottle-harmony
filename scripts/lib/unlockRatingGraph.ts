@@ -3,14 +3,15 @@ import { compileSortingPuzzle, evaluateEngineGoal, initialEngineState, listEngin
 import { replayEngineRoute } from '../../src/game/engineSearch.ts';
 import type { SortingPuzzle } from '../../src/game/engineModel.ts';
 
-export function assertRatingScope(puzzle: SortingPuzzle) {
+export function assertRatingScope(puzzle: SortingPuzzle, maxBottles = 10) {
+  if (!Number.isSafeInteger(maxBottles) || maxBottles < 1 || maxBottles > 12) throw new Error('Invalid offline bottle scope');
   compileSortingPuzzle(puzzle); // Strict shared decoder before any offline assumptions.
-  if (puzzle.containers.length > 10 || puzzle.amount !== 'run' || puzzle.goal.type !== 'sort'
+  if (puzzle.containers.length > maxBottles || puzzle.amount !== 'run' || puzzle.goal.type !== 'sort'
     || puzzle.goal.containers.length !== puzzle.containers.length
     || puzzle.containers.some(c => c.capacity !== 4 || !c.canSource || !c.canReceive || c.receive !== 'same'
       || c.protectedBottom || c.acceptColors !== null)
     || puzzle.colors.some(c => puzzle.units.filter(u => u.color === c).length !== 4)) {
-    throw new Error('Rating supports only <=10-container classic four-portion whole-board trials');
+    throw new Error(`Rating supports only <=${maxBottles}-container classic four-portion whole-board trials`);
   }
 }
 
@@ -58,8 +59,8 @@ export function completeColors(runtime: EngineRuntime, frame: EngineFrame) {
   return runtime.puzzle.colors.filter(color => frame.state.contents.some(stack => stack.length === 4 && stack.every(u => runtime.unitColors.get(u) === color)));
 }
 
-export function buildRatingGraph(puzzle: SortingPuzzle, maxStates = 250000, maxEdges = 4000000): RatingGraph | GraphUnknown {
-  assertRatingScope(puzzle);
+export function buildRatingGraph(puzzle: SortingPuzzle, maxStates = 250000, maxEdges = 4000000, maxBottles = 10): RatingGraph | GraphUnknown {
+  assertRatingScope(puzzle, maxBottles);
   if (!Number.isSafeInteger(maxStates) || maxStates < 1 || maxStates > 1000000
     || !Number.isSafeInteger(maxEdges) || maxEdges < 1 || maxEdges > 10000000) throw new Error('Invalid rating budget');
   const runtime = compileSortingPuzzle(puzzle), key = ratingStateKey(runtime), initial = initialEngineState(runtime);

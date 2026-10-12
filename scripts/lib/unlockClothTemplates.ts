@@ -11,13 +11,14 @@ const hash = (value: unknown) => createHash('sha256').update(JSON.stringify(valu
 /** Automatic pattern recognition, in addition to the shared geometry audit.
  * Key counts distinct color conditions, not physical bottom keys or route stages.
  * No preferred color, pair orientation, solution search or difficulty score. */
-export function auditUnlockClothTemplates(puzzle: SortingPuzzle, options: { layout?: BoardLayout } = {}) {
+export function auditUnlockClothTemplates(puzzle: SortingPuzzle, options: { layout?: BoardLayout; mixedKeys?: boolean } = {}) {
   const geometry = auditUnlockVisualTemplates(puzzle, { ...options, family: 'cloth' });
   const count = puzzle.containers.length;
   const corners = [0, count / 2 - 1, count / 2, count - 1];
-  const keyCount = puzzle.triggers.length;
-  const groupSizes = puzzle.triggers.map(t => t.unlock.length).sort((a, b) => b - a);
-  const binding = { method: CLOTH_TEMPLATE_METHOD, definitionSha256: geometry.definitionSha256,
+  const conditions = options.mixedKeys ? puzzle.triggers.filter(t => t.when.type === 'color-full') : puzzle.triggers;
+  const keyCount = conditions.length;
+  const groupSizes = conditions.map(t => t.unlock.length).sort((a, b) => b - a);
+  const binding = { method: options.mixedKeys ? 'key-cloth-corners-v1' : CLOTH_TEMPLATE_METHOD, definitionSha256: geometry.definitionSha256,
     geometryEvidenceSha256: geometry.evidenceSha256, keyCount, groupSizes };
   const issues: { code: string; trigger?: string }[] = [...geometry.issues];
   const finish = (status: 'pass' | 'fail' | 'unsupported') => ({ ...binding, status, issues, geometry,
@@ -27,11 +28,12 @@ export function auditUnlockClothTemplates(puzzle: SortingPuzzle, options: { layo
     return finish('unsupported');
   }
   const expected = corners.map(i => puzzle.containers[i].id).sort();
-  if (JSON.stringify([...puzzle.locked].sort()) !== JSON.stringify(expected)) {
+  const covered = options.mixedKeys ? conditions.flatMap(t => t.unlock) : puzzle.locked;
+  if (JSON.stringify([...covered].sort()) !== JSON.stringify(expected)) {
     issues.push({ code: 'cloth-requires-four-row-end-covers' });
   }
   const colors = new Set<string>();
-  for (const trigger of puzzle.triggers) {
+  for (const trigger of conditions) {
     if (trigger.when.type !== 'color-full' || trigger.when.count !== 4) {
       issues.push({ code: 'cloth-requires-four-portion-color-condition', trigger: trigger.id });
     } else if (colors.has(trigger.when.color)) {

@@ -107,6 +107,9 @@
     "unlock:two-key:verify": "node --experimental-strip-types scripts/unlock-two-key-generate.ts verify",
     "reveal:generate": "node --experimental-strip-types scripts/progressive-reveal.ts generate",
     "reveal:verify": "node --experimental-strip-types scripts/progressive-reveal.ts verify",
+    "reveal:rate": "node --experimental-strip-types scripts/disclosure-rating.ts --kind reveal",
+    "unlock:cloth": "node --experimental-strip-types scripts/disclosure-rating.ts --kind cloth",
+    "unlock:combined": "node --experimental-strip-types scripts/disclosure-rating.ts --kind combined",
     "unlock:two-key:hints": "node --experimental-strip-types scripts/unlock-two-key-hints.ts"
   },
   "private": true,

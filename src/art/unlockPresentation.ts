@@ -7,9 +7,10 @@ import { containerRestraintState } from './containerRestraintState.ts';
 
 export const COVER_FAMILIES = ['wood', 'louver', 'cloth', 'roller'] as const;
 export type CoverFamily = typeof COVER_FAMILIES[number];
-// Same automatic preset as internal trials; mixed key/color boards use boxes.
+// Color conditions use individual cloths; key conditions fall back to wood
+// through coverFamilyForConditions, including mixed boards.
 export function defaultCoverFamily(puzzle: Pick<SortingPuzzle, 'triggers'>): CoverFamily {
-  return puzzle.triggers.some(t => t.when.type === 'empty') ? 'wood' : 'cloth';
+  return puzzle.triggers.some(t => t.when.type === 'color-full') || !puzzle.triggers.length ? 'cloth' : 'wood';
 }
 export const COVER_TEMPLATE_GEOMETRY = Object.freeze({ insetX: 18, insetY: 16, width: 64, height: 158, maxBoxBottles: 3, maxPitch: 134 });
 export type CoverState = 'closed' | 'opening' | 'relocked';
