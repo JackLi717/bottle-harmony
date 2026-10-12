@@ -110,7 +110,9 @@
     "reveal:rate": "node --experimental-strip-types scripts/disclosure-rating.ts --kind reveal",
     "unlock:cloth": "node --experimental-strip-types scripts/disclosure-rating.ts --kind cloth",
     "unlock:combined": "node --experimental-strip-types scripts/disclosure-rating.ts --kind combined",
-    "unlock:two-key:hints": "node --experimental-strip-types scripts/unlock-two-key-hints.ts"
+    "unlock:two-key:hints": "node --experimental-strip-types scripts/unlock-two-key-hints.ts",
+    "unlock:combined:generate": "node --experimental-strip-types scripts/unlock-combinations.ts generate",
+    "unlock:combined:verify": "node --experimental-strip-types scripts/unlock-combinations.ts verify"
   },
   "private": true,
   "engines": {

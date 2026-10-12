@@ -30,6 +30,7 @@ import { UNLOCK_CALIBRATION } from '../game/unlockCalibration';
 import { UNLOCK_BASELINE } from '../game/unlockBaseline';
 import { UNLOCK_STAGE_CALIBRATION } from '../game/unlockStageCalibration';
 import { generatedRevealTrials } from '../game/progressiveRevealGenerated';
+import { generatedCombinationTrials } from '../game/combinationGenerated';
 import { generatedTwoKeyTrials } from '../game/unlockTwoKeyGenerated';
 import { generatedUnlockTrials, generatedPostKeyTrials } from '../game/unlockGenerated';
 import type { UnlockTrialLevel } from '../game/unlockTrial';
@@ -86,6 +87,12 @@ function internalRevealTrials() {
   return revealTrials;
 }
 
+let combinationTrials: readonly UnlockTrialLevel[] | null = null;
+function internalCombinationTrials() {
+  combinationTrials ??= generatedCombinationTrials(require('../../assets/levels/unlock-combination-six.json'));
+  return combinationTrials;
+}
+
 type Animation = { before: Board; pour: Pour; plan: PourPlan };
 
 export function DemoScreen() {
@@ -97,7 +104,7 @@ export function DemoScreen() {
   const SIDE_AFTER = SOLID_SIDES.entries.map(item => item.afterMainline);
   const { sound, ready: soundReady, saved: soundSaved, toggleSound } = useSoundPreference();
   const { vessel, ready: vesselReady, saved: vesselSaved, chooseVessel } = useVesselPreference();
-  const [page, setPage] = useState<'home' | 'game' | 'opening-memory' | 'memory' | 'mixing' | 'engine' | 'unlock-trial' | 'unlock-calibration' | 'unlock-baseline' | 'unlock-stage-calibration' | 'unlock-generated' | 'unlock-post-key' | 'unlock-two-key' | 'progressive-reveal'>('home');
+  const [page, setPage] = useState<'home' | 'game' | 'opening-memory' | 'memory' | 'mixing' | 'engine' | 'unlock-trial' | 'unlock-calibration' | 'unlock-baseline' | 'unlock-stage-calibration' | 'unlock-generated' | 'unlock-post-key' | 'unlock-two-key' | 'progressive-reveal' | 'unlock-combinations'>('home');
   // Keep the existing home visible until the native memory board has its measured layout.
   const memoryOpening = page === 'opening-memory';
   const memoryPrepared = useCallback(() => setPage(current => current === 'opening-memory' ? 'memory' : current), [setPage]);
@@ -509,7 +516,7 @@ export function DemoScreen() {
 
   if (!ready || !soundReady || !vesselReady) return <LinearGradient colors={['#11171E', '#070B12']} style={[styles.screen, { alignItems: 'center', justifyContent: 'center' }]}><StatusBar style="light" /><UiText style={styles.loading}>{t('loading')}</UiText></LinearGradient>;
 
-  if ((page === 'engine' || page === 'unlock-trial' || page === 'unlock-calibration' || page === 'unlock-baseline' || page === 'unlock-stage-calibration' || page === 'unlock-generated' || page === 'unlock-post-key' || page === 'unlock-two-key' || page === 'progressive-reveal') && INTERNAL_TOOLS) return <EnginePreview key={page} trial={page !== 'engine'} trialLevels={page === 'progressive-reveal' ? internalRevealTrials() : page === 'unlock-two-key' ? internalTwoKeyTrials() : page === 'unlock-post-key' ? internalPostKeyTrials() : page === 'unlock-generated' ? internalGeneratedTrials() : page === 'unlock-stage-calibration' ? UNLOCK_STAGE_CALIBRATION : page === 'unlock-baseline' ? UNLOCK_BASELINE : page === 'unlock-calibration' ? UNLOCK_CALIBRATION : undefined} vessel={vessel} symbols={play.symbols} sound={sound} reduceMotion={reduceMotion} onBack={goHome} />;
+  if ((page === 'engine' || page === 'unlock-trial' || page === 'unlock-calibration' || page === 'unlock-baseline' || page === 'unlock-stage-calibration' || page === 'unlock-generated' || page === 'unlock-post-key' || page === 'unlock-two-key' || page === 'progressive-reveal' || page === 'unlock-combinations') && INTERNAL_TOOLS) return <EnginePreview key={page} trial={page !== 'engine'} trialLevels={page === 'unlock-combinations' ? internalCombinationTrials() : page === 'progressive-reveal' ? internalRevealTrials() : page === 'unlock-two-key' ? internalTwoKeyTrials() : page === 'unlock-post-key' ? internalPostKeyTrials() : page === 'unlock-generated' ? internalGeneratedTrials() : page === 'unlock-stage-calibration' ? UNLOCK_STAGE_CALIBRATION : page === 'unlock-baseline' ? UNLOCK_BASELINE : page === 'unlock-calibration' ? UNLOCK_CALIBRATION : undefined} vessel={vessel} symbols={play.symbols} sound={sound} reduceMotion={reduceMotion} onBack={goHome} />;
 
   if (page === 'mixing' && INTERNAL_TOOLS) return <MixingScreen vessel={vessel} symbols={play.symbols} sound={sound} reduceMotion={reduceMotion} onBack={goHome} />;
 
@@ -582,7 +589,7 @@ export function DemoScreen() {
       </View>}
       {page !== 'memory' && <>
       {debugReport && <DifficultyDebug visible={difficultyVisible} report={debugReport} human={debugHuman} sample={sample} label={label} onClose={() => setDifficultyVisible(false)} />}
-      {menuVisible && <MainlineMenu visible initialSection={menuSection} showLevels={page === 'game'} play={play} saveStatus={t(saveStatus)} onClose={() => setMenuVisible(false)} onResume={resumeCurrent} onSelect={chooseNumber} onSelectSide={chooseSide} onPreview={previewMainline} onSidePreview={previewSide} onSamples={() => { setMenuVisible(false); setPickerVisible(true); }} onProgressiveReveal={() => { setMenuVisible(false); setInternalSession(null); setPage('progressive-reveal'); }} onUnlockTwoKey={() => { setMenuVisible(false); setInternalSession(null); setPage('unlock-two-key'); }} onUnlockPostKey={() => { setMenuVisible(false); setInternalSession(null); setPage('unlock-post-key'); }} onUnlockGenerated={() => { setMenuVisible(false); setInternalSession(null); setPage('unlock-generated'); }} onUnlockStageCalibration={() => { setMenuVisible(false); setInternalSession(null); setPage('unlock-stage-calibration'); }} onUnlockBaseline={() => { setMenuVisible(false); setInternalSession(null); setPage('unlock-baseline'); }} onUnlockCalibration={() => { setMenuVisible(false); setInternalSession(null); setPage('unlock-calibration'); }} onUnlockTrial={() => { setMenuVisible(false); setInternalSession(null); setPage('unlock-trial'); }} onEnginePreview={() => { setMenuVisible(false); setInternalSession(null); setPage('engine'); }} onMixingTrial={() => { setMenuVisible(false); setInternalSession(null); setPage('mixing'); }} symbols={play.symbols} onSymbols={() => setPlay(Object.freeze({ ...play, symbols: !play.symbols }), { type: 'preference', preference: 'symbols', value: String(!play.symbols) })} sound={sound} soundSaved={soundSaved} onSound={toggleSound} onCelebrationPreview={previewCelebration} onPrivacy={() => { setMenuVisible(false); setPrivacyVisible(true); }} onDebug={INTERNAL_TOOLS && !sideEntry ? openDifficulty : undefined} />}
+      {menuVisible && <MainlineMenu visible initialSection={menuSection} showLevels={page === 'game'} play={play} saveStatus={t(saveStatus)} onClose={() => setMenuVisible(false)} onResume={resumeCurrent} onSelect={chooseNumber} onSelectSide={chooseSide} onPreview={previewMainline} onSidePreview={previewSide} onSamples={() => { setMenuVisible(false); setPickerVisible(true); }} onUnlockCombinations={() => { setMenuVisible(false); setInternalSession(null); setPage('unlock-combinations'); }} onProgressiveReveal={() => { setMenuVisible(false); setInternalSession(null); setPage('progressive-reveal'); }} onUnlockTwoKey={() => { setMenuVisible(false); setInternalSession(null); setPage('unlock-two-key'); }} onUnlockPostKey={() => { setMenuVisible(false); setInternalSession(null); setPage('unlock-post-key'); }} onUnlockGenerated={() => { setMenuVisible(false); setInternalSession(null); setPage('unlock-generated'); }} onUnlockStageCalibration={() => { setMenuVisible(false); setInternalSession(null); setPage('unlock-stage-calibration'); }} onUnlockBaseline={() => { setMenuVisible(false); setInternalSession(null); setPage('unlock-baseline'); }} onUnlockCalibration={() => { setMenuVisible(false); setInternalSession(null); setPage('unlock-calibration'); }} onUnlockTrial={() => { setMenuVisible(false); setInternalSession(null); setPage('unlock-trial'); }} onEnginePreview={() => { setMenuVisible(false); setInternalSession(null); setPage('engine'); }} onMixingTrial={() => { setMenuVisible(false); setInternalSession(null); setPage('mixing'); }} symbols={play.symbols} onSymbols={() => setPlay(Object.freeze({ ...play, symbols: !play.symbols }), { type: 'preference', preference: 'symbols', value: String(!play.symbols) })} sound={sound} soundSaved={soundSaved} onSound={toggleSound} onCelebrationPreview={previewCelebration} onPrivacy={() => { setMenuVisible(false); setPrivacyVisible(true); }} onDebug={INTERNAL_TOOLS && !sideEntry ? openDifficulty : undefined} />}
       <GameNotice notice={notice} onClose={() => setNotice(null)} />
       <PrivacyPolicy visible={privacyVisible} onClose={() => { setPrivacyVisible(false); openMenu('settings'); }} />
       <Tutorial visible={page === 'game' && ready && !internalSession && !play.tutorialDone} vessel={vessel} sound={sound} symbols={play.symbols} reduceMotion={reduceMotion} onStart={() => setPlay(Object.freeze({ ...play, tutorialDone: true }))} />

@@ -20,6 +20,7 @@ import { createEngineSession, moveEngineSession, resetEngineSession, undoEngineS
 import { createEngineHintTask, type EngineHintTask } from '../game/engineSearch';
 import { twoKeyHintRecoverySteps, twoKeyTableHint } from '../game/unlockTwoKeyHints';
 import { revealRecoverySteps, revealTableHint } from '../game/progressiveRevealHints';
+import { combinationRecoverySteps, combinationTableHint } from '../game/combinationHints';
 import { singleKeyHintRecoverySteps, singleKeyTableHint } from '../game/unlockHints';
 import { ENGINE_EXAMPLES } from '../game/engineExamples';
 import { UNLOCK_TRIAL, nextUnlockTrialIndex, type UnlockTrialLevel } from '../game/unlockTrial';
@@ -193,11 +194,12 @@ export function EnginePreview({ vessel: preferredVessel, symbols: showSymbols, s
     const table = trial ? trialLevels[index].hints : undefined;
     const twoKeyTable = trial ? trialLevels[index].twoKeyHints : undefined;
     const revealTable = trial ? trialLevels[index].revealHints : undefined;
-    if (table || twoKeyTable || revealTable) {
-      const result = revealTable ? revealTableHint(current.current, revealTable) : twoKeyTable ? twoKeyTableHint(current.current, twoKeyTable) : singleKeyTableHint(current.current, table!);
+    const combinationTable = trial ? trialLevels[index].combinationHints : undefined;
+    if (table || twoKeyTable || revealTable || combinationTable) {
+      const result = combinationTable ? combinationTableHint(current.current, combinationTable) : revealTable ? revealTableHint(current.current, revealTable) : twoKeyTable ? twoKeyTableHint(current.current, twoKeyTable) : singleKeyTableHint(current.current, table!);
       if (result.status === 'hint') execute(result.action, result.revision);
       else {
-        const steps = revealTable ? revealRecoverySteps(current.current, revealTable) : twoKeyTable ? twoKeyHintRecoverySteps(current.current, twoKeyTable) : singleKeyHintRecoverySteps(current.current, table!);
+        const steps = combinationTable ? combinationRecoverySteps(current.current, combinationTable) : revealTable ? revealRecoverySteps(current.current, revealTable) : twoKeyTable ? twoKeyHintRecoverySteps(current.current, twoKeyTable) : singleKeyHintRecoverySteps(current.current, table!);
         const reason = result.status === 'unsolvable'
           ? zh ? '当前局面已验证无解。' : 'This position is proven unsolvable.'
           : zh ? '请回到已有安全提示的局面继续。' : 'Return to a position with a certified safe hint.';

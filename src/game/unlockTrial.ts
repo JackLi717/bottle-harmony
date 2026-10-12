@@ -12,6 +12,7 @@ export type UnlockTrialLevel = {
   readonly hints?: SingleKeyHintTable;
   readonly twoKeyHints?: TwoKeyHintTable;
   readonly revealHints?: RevealHintTable;
+  readonly combinationHints?: RevealHintTable;
 };
 const A = 'coral', B = 'jade', C = 'amber', D = 'azure';
 const key = (id: string, bottle: number, targets: number[]): SortingTrigger => ({ id, when: { type: 'empty', container: `b${bottle}` }, unlock: targets.map(i => `b${i}`) });
