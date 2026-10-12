@@ -27,6 +27,7 @@
 | --- | --- |
 | [经典关卡扩展](color-unlock-plan.md) | 核心规则与内部体验；单／双钥匙、独立布盖／显色及单钥匙＋盖布、一／两把依赖钥匙＋显色的离线综合评价已实现，三种组合各两题已生成、独立复验并接内部入口。较早引入变化、组合比例与遮盖模板配方已确认，具体数值可微调；正式题库不动，真人标定与真机验收另记 |
 | [商业规则与创意](gameplay-ideas.md) | 已确认待实现的产品规则与待评审候选分开；保留 1–158 稳定编号 |
+| [首页与主题浏览](home-navigation-plan.md) | 已选主题画廊方向；继续优先、未来三玩法入口、主题库与详情浏览为待评审界面方案，未开发 |
 
 素材与商店说明分别在[音频](../assets/audio/README.md)、[品牌](../assets/brand/README.md)、[Google Play](../store/google-play/README.md)及[商店截图](../store/google-play/screenshots/README.md)。
 
