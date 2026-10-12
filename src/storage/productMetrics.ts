@@ -67,9 +67,11 @@ export class ProductMetrics {
     if (environment !== 'production' && environment !== 'test') return;
     const id = `${this.installation}:${revision}:${suffix}`;
     const eventId = this.db.getFirstSync<{id:string}>('SELECT lower(hex(randomblob(16))) id')!.id;
-    const data = { ...params, event_id: eventId, event_at: at, metrics_version: PRODUCT_METRICS_VERSION, app_version: this.appVersion, build_environment: environment };
+    // Monotonic slice endpoints can be fractional; the durable queue uses integer epoch milliseconds.
+    const eventAt = Math.trunc(at);
+    const data = { ...params, event_id: eventId, event_at: eventAt, metrics_version: PRODUCT_METRICS_VERSION, app_version: this.appVersion, build_environment: environment };
     validateParameters(name, data);
-    await this.db.runAsync('INSERT OR IGNORE INTO metric_outbox(id,revision,at,name,params,epoch) VALUES(?,?,?,?,?,?)', id, revision, at, name, JSON.stringify(data), epoch);
+    await this.db.runAsync('INSERT OR IGNORE INTO metric_outbox(id,revision,at,name,params,epoch) VALUES(?,?,?,?,?,?)', id, revision, eventAt, name, JSON.stringify(data), epoch);
   }
   async session(revision: number, at: number, kind: 'foreground' | 'background' | 'ready', detail: AnalyticsParameters = {}) {
     let session = await this.db.getFirstAsync<{ id: string }>('SELECT id FROM metric_app_sessions WHERE ended_at IS NULL');
@@ -230,7 +232,7 @@ export class ProductMetrics {
       await this.emit(revision, at, 'bh_puzzle_complete', { ...common(run), result: observation.completion, first_clear: ['mainline', 'side', 'memory'].includes(run.mode) ? first.changes : 0, assistance: assistance(flags), attempts: totals.attempts ?? 1, route_steps: context.routePosition });
       await this.emit(revision, at, 'bh_puzzle_timing', { ...common(run), foreground_ms: totals.foreground_ms ?? 0, blocked_ms: totals.blocked_ms ?? 0, available_ms: totals.available_ms ?? 0,
         observation_ms: totals.observation_ms ?? 0, peek_ms: totals.peek_ms ?? 0, hidden_ms: totals.hidden_ms ?? 0, cleanup_ms: totals.cleanup_ms ?? 0 });
-      await this.emit(revision, at, 'bh_puzzle_operations', { ...common(run), pours: totals.pours ?? 0, hint_pours: totals.hint_pours ?? 0, undos: totals.undos ?? 0, resets: totals.resets ?? 0,
+      await this.emit(revision, at, 'bh_puzzle_operations', { ...common(run), assistance: assistance(flags), pours: totals.pours ?? 0, hint_pours: totals.hint_pours ?? 0, undos: totals.undos ?? 0, resets: totals.resets ?? 0,
         peeks: totals.peeks ?? 0, melts: totals.melts ?? 0, reserves: totals.reserves ?? 0 });
       if (first.changes && ['mainline', 'side', 'memory'].includes(run.mode) && [1, 3, 10, 20, 100, 1000].includes(context.number)) await this.emit(revision, at, 'bh_milestone', { ...common(run), level_number: context.number });
     } else if (['pause', 'background', 'navigate', 'select'].includes(kind)) await this.closeVisit(run, revision, at, kind);

@@ -80,6 +80,16 @@ T517D／Android 15 实测复现了一条确定路径：Play 安装的 0.1.4（8�
 
 测量使用系统 AudioTrack 播放事件，不是录音、扬声器听感、同步延迟或 S25 Ultra 验收。原 Play 包没有被覆盖或清数据，待解第 17 关棋盘与 5/5 提示券前后相同；临时铃声模式已恢复 NORMAL。该修复尚未上传商店。三星 Gaming Hub 的独立游戏静音和单应用音频路由仍是待测试者核对的系统设置，不能由此认定其设备有兼容性缺陷。
 
+## 在线统计修复的 Test 验收（10 月 12 日）
+
+当前源码修复 App 自定义维度的整数编码和操作事件缺失的辅助组合；同时修复实际验证发现的首次有效日小数时间戳写入 STRICT 队列失败。这三项不改变玩家 schema、统计版本、游戏规则或权益，不清库、不补历史；源码修复尚未上传 Play。
+
+独立新建 Pixel 4a／Android API 34 模拟器使用 Firebase Test Release：原生 Google HTTP 204，Test GA4（558291890）DebugView 实际显示 `level_1`／`level_2`、`first_clear=yes`、`since_activation=day_0`；第 1 关无提示、第 2 关一次免费提示后通关，完成与操作事件分别一致携带 `nohint_nomelt_noreserve`／`hint_nomelt_noreserve`，操作次数和时长仍为数值。进入棋盘停留超过十秒后继续操作与通关正常，447 项自动回归、TypeScript、ESLint 通过。
+
+覆盖旧 Test 候选后，原库的进度、偏好、会话、液层、完成记录和安装身份均保留，统计计数只增加实际新访问；基线已有的 schema 1→2 引擎增量也按原逻辑执行。本轮最终包两关首通、2/5 提示券、五步撤销历史、月光瓶／符号开启／音效关闭偏好及首次事实／摘要冷启动前后相同，SQLite 完整性与外键检查通过，上传待发零。旧候选 UI 曾显示未落盘动作，因此升级比对只采用实际读回的已提交库，未把未保存的通关当作旧进度。全部为临时模拟器合成数据，没有读取、覆盖或清理真实玩家应用。
+
+证据 `builds/analytics-fix-test/verification.json`、`storage-verification.json`、原生日志及数据库副本；最终 Test APK SHA-256 为 `e7bf1f1730d4ec9a7227c84a2b74d6a1c8ffa449b7350f42d364d613fb6270b3`。DebugView 证明本轮样本的云端收件，不等于已处理探索报表、历史回填、全部 27 事件或真机／长时间性能验收；未修改 Production 或商店发布。
+
 ## 0.1.5 在线统计的原生证据
 
 默认开启源码通过该批次 240 项回归、TypeScript、ESLint，Test Android arm64 Release 在全新 API 36／16 KB 模拟器首次启动：Google HTTP 204、GA4 DebugView 显示 bh_app_ready／first_open／session_start；业务参数 app_version=0.1.5、metrics_version=product-metrics-v1、build_environment=test。SQLite 主文件与 WAL 只读复制完整性 ok，analytics=true、environment=test、待发 0、应用会话 1。

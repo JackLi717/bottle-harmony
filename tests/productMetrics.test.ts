@@ -12,6 +12,7 @@ import type { AnalyticsGateway } from '../src/analytics/contracts.ts';
 import { ANALYTICS_EVENTS, validateParameters } from '../src/analytics/contracts.ts';
 import { localAnalyticsReport } from '../src/analytics/report.ts';
 import { REPORT_SECTIONS } from '../src/analytics/reportDefinitions.ts';
+import { moveMainline } from '../src/game/mainline.ts';
 const source = new TestDatabase('assets/levels/content.sqlite'), content = new ContentRepository(source);
 async function setup() { const db = new TestDatabase(); const player = await PlayerRepository.open(db, content.mainline, content.sides, 'test'); await db.runAsync("INSERT INTO metadata VALUES('analytics-environment','test')"); return {db,player}; }
 const context = {slot:'main', mode:'mainline', levelId:'test-level',catalog:'test',rules:'water-sort-v1',number:1,existing:false,completed:false,routePosition:0};
@@ -132,6 +133,61 @@ test('full completion payloads respect GA4 limits and award/spend events do not 
  assert.equal(JSON.parse(events.find(e=>e.name==='bh_credit_spend')!.params).credits_spent,1);
  assert.equal(JSON.parse(events.find(e=>e.name==='bh_credit_change')!.params).credits_spent,undefined);
  assert.equal(events.filter(e=>e.name==='bh_first_action').length,0);
+ const complete=JSON.parse(events.find(e=>e.name==='bh_puzzle_complete')!.params);
+ const operations=JSON.parse(events.find(e=>e.name==='bh_puzzle_operations')!.params);
+ assert.equal(operations.assistance,complete.assistance);
+ assert.equal(operations.assistance,'hint_nomelt_noreserve');
+ assert.ok(Object.keys(operations).length<=25);
+ db.native.close();
+});
+
+test('delivery encodes already queued numeric facts without changing player data or local metric facts',async()=>{
+ const {db,player}=await setup();const at=Date.now();
+ await player.setPreference('vessel','moon');await player.setPreference('language','zh-Hans');
+ await player.enqueueWrite(async revision=>{
+  await player.metrics.record(revision,at,{...context,attributes:{colors:11,stage:20,tier:'D4',wave_role:'main-peak'}},{kind:'show'});
+  await player.metrics.record(revision+1,at+1,context,{kind:'pour',totals:{pours:1,foreground_ms:1000,available_ms:1000},completion:'solved'});
+ });
+ const queued=db.getAllSync<{name:Parameters<typeof validateParameters>[0];params:string}>('SELECT name,params FROM metric_outbox');
+ assert.equal(JSON.parse(queued.find(e=>e.name==='bh_puzzle_start')!.params).level_number,1);
+ const names=db.getAllSync<{name:string}>("SELECT name FROM sqlite_master WHERE type='table' AND name NOT IN('metric_outbox','metadata') ORDER BY name").map(x=>x.name);
+ const snapshot=()=>names.map(name=>[name,db.getAllSync(`SELECT * FROM "${name}" ORDER BY rowid`)]);
+ const before=snapshot(),installation=player.installation;
+ const sent:{name:Parameters<typeof validateParameters>[0];params:Record<string,string|number>}[]=[];
+ const delivery=new AnalyticsDelivery(player,{configure:async()=>true,reset:async()=>{throw Error('must not reset');},logEvent:async(name,params)=>{sent.push({name,params});}},'test');
+ await delivery.initialize();await delivery.flush();
+ assert.equal(sent.find(e=>e.name==='bh_puzzle_start')!.params.level_number,'level_1');
+ assert.equal(sent.find(e=>e.name==='bh_puzzle_complete')!.params.first_clear,'yes');
+ assert.equal(sent.find(e=>e.name==='bh_puzzle_operations')!.params.assistance,'nohint_nomelt_noreserve');
+ assert.equal(sent.find(e=>e.name==='bh_puzzle_operations')!.params.pours,1);
+ assert.equal(sent.find(e=>e.name==='bh_puzzle_timing')!.params.foreground_ms,1000);
+ assert.deepEqual(snapshot(),before);
+ assert.equal(player.installation,installation);
+ assert.equal(player.preference('vessel'),'moon');assert.equal(player.preference('language'),'zh-Hans');
+ assert.equal(db.getFirstSync<{n:number}>('SELECT COUNT(*) n FROM metric_outbox')!.n,0);
+ db.native.close();
+});
+
+test('fractional ten-second activity checkpoints cannot block subsequent progress, rewards or restoration',async()=>{
+ const {db,player}=await setup();const at=Date.now(),installation=player.installation;
+ await player.setPreference('vessel','moon');await player.setPreference('sound','false');
+ assert.equal(await player.record({type:'show'},at),true);
+ assert.equal(await player.record({type:'clock',foregroundMs:10000.25,slices:[{endAt:at+10000.25,durationMs:10000.25,offset:660,phase:'play',blocked:false}]},at+10001),true);
+ const active=db.getFirstSync<{at:number;params:string;kind:string}>("SELECT at,params,typeof(at) kind FROM metric_outbox WHERE name='bh_active_day'")!;
+ assert.equal(active.kind,'integer');assert.equal(active.at,at+9999);
+ assert.equal(JSON.parse(active.params).event_at,active.at);
+ const run=db.getFirstSync<{totals:string}>('SELECT totals FROM metric_runs')!;
+ assert.equal(JSON.parse(run.totals).foreground_ms,10000.25);
+ assert.equal(db.getFirstSync<{value:number}>("SELECT SUM(value) value FROM metric_days WHERE metric='foreground_ms'")!.value,10000.25);
+ for(const step of content.mainline.entries[0].solution){
+  const accepted=moveMainline(player.state,step.source,step.target)!;
+  assert.equal(await player.commit(accepted.state,{type:'pour'}),true);
+ }
+ const reopened=await PlayerRepository.open(db,content.mainline,content.sides,'test');
+ assert.equal(reopened.state.completedThrough,1);assert.equal(reopened.state.hintCredits,1);
+ assert.equal(reopened.state.main.status,'solved');assert.equal(reopened.state.main.history.length,5);
+ assert.equal(reopened.installation,installation);assert.equal(reopened.preference('vessel'),'moon');assert.equal(reopened.preference('sound'),'false');
+ assert.equal(db.getFirstSync<{n:number}>("SELECT COUNT(*) n FROM metric_outbox WHERE name='bh_puzzle_complete'")!.n,1);
  db.native.close();
 });
 

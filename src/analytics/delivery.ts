@@ -1,5 +1,6 @@
 import type { PlayerRepository } from '../storage/playerRepository.ts';
 import type { AnalyticsGateway, AnalyticsEventName, AnalyticsParameters } from './contracts.ts';
+import { encodeAnalyticsParameters } from './encoding.ts';
 
 type PendingEvent = { id: string; at: number; name: AnalyticsEventName; params: string; epoch: number; retries: number };
 /** SQLite owns the collection preference and outbox. SDK calls stay outside player transactions. */
@@ -60,7 +61,7 @@ export class AnalyticsDelivery {
         const stale = row.epoch !== epoch || row.at < Date.now() - 2 * 86400000 || row.retries >= 5;
         let accepted = stale;
         if (!stale) {
-          try { await this.gateway.logEvent(row.name, JSON.parse(row.params) as AnalyticsParameters); accepted = true; }
+          try { await this.gateway.logEvent(row.name, encodeAnalyticsParameters(row.name, JSON.parse(row.params) as AnalyticsParameters)); accepted = true; }
           catch { /* Preserve this row for a bounded retry on the next foreground/heartbeat. */ }
         }
         if (!await this.player.enqueueWrite(async () => {

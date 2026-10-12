@@ -1,6 +1,6 @@
 <en-US>
-First-time tutorials remember your confirmation in Classic and Memory. Your puzzle progress, hints and preferences are preserved when updating.
+Improved reliability of progress saving and usage statistics. Your existing puzzle progress, hints and preferences are preserved when updating.
 </en-US>
 <zh-CN>
-经典排序与颜色记忆教学会分别记住确认，之后不再自动重复。更新保留关卡进度、提示券和个人设置。
+改善进度保存与使用统计的可靠性。更新保留现有关卡进度、提示券和个人设置。
 </zh-CN>
