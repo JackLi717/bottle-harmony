@@ -280,4 +280,10 @@ iPhone 12 Pro Max／iOS 17.4.1 已安装独立 0.1.6／build 1 包，签名校�
 
 ### 双钥匙六题内部体验（2026 年 10 月 12 日）
 
-本轮只更新内部源码与离线题包，未构建或安装新的 iOS／Android 原生包。独立 `engine-acceptance` Web 导出、离线分析环境与显式内部工具在 `http://localhost:8108/` 实测：从设置打开六题入口，第一题连续提示经过两次开锁并完成全盘；两次开锁后的撤销均保留已见颜色但重新锁住，重来恢复两组未知遮盖，第一／第六题可切换。截图为 `builds/unlock-two-key-six/web-initial.png`、`web-second-open.png`、`web-complete.png`。离线六题全可达局面提示、全题提示回放、来源与独立统一验收通过，内容方法与预算由[经典扩展](color-unlock-plan.md#双钥匙六题生成闭环内部)维护。这些是桌面功能证据，不是手机安装或移动性能证据；现有手机内部包仍是上一批单钥匙体验，正式包和玩家 SQLite 未改动。
+六题及完整离线提示已从源码 `02562e0` 构建并原位更新到两台真机的独立 **Harmony Engine**（`com.bottleharmony.engineacceptance`）：iPhone 12 Pro Max／iOS 17.4.1 为 0.1.6（1），TCL T517D／Android 15 为 0.1.6（10）。Release／Hermes、离线分析环境和显式内部工具，无需 Metro。入口为首页设置 → 开发工具 →「双钥匙生成体验 · 六题」，提示／撤销／重来免费，体验不保存进度、不发券。
+
+Android 安装成功、启动成功，读回已安装 APK 与交付 APK 的 SHA-256 一致：`6fe53edbb7dad277578a4245d988fd3eaf85c94d9c4c2863f1e5891ec9dc75ba`。iPhone 签名验证、安装及应用读回成功；自动启动先超时，重试明确因锁屏拒绝，解锁后需手动打开，未宣称完成本批 iPhone 实际游玩。两端 Hermes 包均核对六题证据哈希和完整提示表证据哈希。
+
+未卸载、清空或覆盖正式应用；Android 正式包的版本、安装路径、应用 ID、首次安装／更新时间及数据目录前后一致，内部包原位更新保留首次安装时间；iPhone 正式应用的版本和安装 URL 等读回信息前后一致。正式内容 SQLite 哈希保持基线值；未读取私人玩家数据库，不把安装元数据核对称为进度内容审计。安装／签名／读回／保护核对、APK 与交付清单位于忽略的 `builds/unlock-two-key-device/`。
+
+独立 Web 导出在 `http://localhost:8108/` 实测：第一题连续提示经过两次开锁并完成全盘；两次开锁后的撤销均保留已见颜色但重新锁住，重来恢复两组未知遮盖，第一／第六题可切换。截图为 `builds/unlock-two-key-six/web-initial.png`、`web-second-open.png`、`web-complete.png`。离线六题全可达局面提示、全题提示回放、来源与独立统一验收通过，内容方法与预算由[经典扩展](color-unlock-plan.md#双钥匙六题生成闭环内部)维护。桌面功能和手机安装不代替真人六题体验或移动性能验收。
