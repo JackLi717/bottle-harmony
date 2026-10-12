@@ -105,6 +105,8 @@
     "unlock:two-key": "node --experimental-strip-types scripts/unlock-two-key.ts",
     "unlock:two-key:generate": "node --experimental-strip-types scripts/unlock-two-key-generate.ts generate",
     "unlock:two-key:verify": "node --experimental-strip-types scripts/unlock-two-key-generate.ts verify",
+    "reveal:generate": "node --experimental-strip-types scripts/progressive-reveal.ts generate",
+    "reveal:verify": "node --experimental-strip-types scripts/progressive-reveal.ts verify",
     "unlock:two-key:hints": "node --experimental-strip-types scripts/unlock-two-key-hints.ts"
   },
   "private": true,

@@ -19,6 +19,7 @@ import { isBottleComplete } from '../art/bottleCompletion';
 import { createEngineSession, moveEngineSession, resetEngineSession, undoEngineSession, visibleEngineState, type EngineAction, type EngineSession, type VisibleEngineContainer } from '../game/engine';
 import { createEngineHintTask, type EngineHintTask } from '../game/engineSearch';
 import { twoKeyHintRecoverySteps, twoKeyTableHint } from '../game/unlockTwoKeyHints';
+import { revealRecoverySteps, revealTableHint } from '../game/progressiveRevealHints';
 import { singleKeyHintRecoverySteps, singleKeyTableHint } from '../game/unlockHints';
 import { ENGINE_EXAMPLES } from '../game/engineExamples';
 import { UNLOCK_TRIAL, nextUnlockTrialIndex, type UnlockTrialLevel } from '../game/unlockTrial';
@@ -191,11 +192,12 @@ export function EnginePreview({ vessel: preferredVessel, symbols: showSymbols, s
     if (busy.current || searching || artRun.current || renderRun.current || session.status === 'solved') return;
     const table = trial ? trialLevels[index].hints : undefined;
     const twoKeyTable = trial ? trialLevels[index].twoKeyHints : undefined;
-    if (table || twoKeyTable) {
-      const result = twoKeyTable ? twoKeyTableHint(current.current, twoKeyTable) : singleKeyTableHint(current.current, table!);
+    const revealTable = trial ? trialLevels[index].revealHints : undefined;
+    if (table || twoKeyTable || revealTable) {
+      const result = revealTable ? revealTableHint(current.current, revealTable) : twoKeyTable ? twoKeyTableHint(current.current, twoKeyTable) : singleKeyTableHint(current.current, table!);
       if (result.status === 'hint') execute(result.action, result.revision);
       else {
-        const steps = twoKeyTable ? twoKeyHintRecoverySteps(current.current, twoKeyTable) : singleKeyHintRecoverySteps(current.current, table!);
+        const steps = revealTable ? revealRecoverySteps(current.current, revealTable) : twoKeyTable ? twoKeyHintRecoverySteps(current.current, twoKeyTable) : singleKeyHintRecoverySteps(current.current, table!);
         const reason = result.status === 'unsolvable'
           ? zh ? '当前局面已验证无解。' : 'This position is proven unsolvable.'
           : zh ? '请回到已有安全提示的局面继续。' : 'Return to a position with a certified safe hint.';
