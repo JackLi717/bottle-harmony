@@ -1,36 +1,36 @@
 # 当前发布与测试状态
 
-更新日期：2026 年 10 月 10 日（墨尔本）。**Google Play 封闭测试已于今天正式开始，测试人员已招募足够；0.1.5（9）已向选定测试者开放，0.1.6（10）已提交 Alpha 封闭测试审核。** 起算日与招募情况来自用户确认，未提供精确人数；版本状态来自本次实际 Console 观察。本文是发布状态、产物与声明的唯一记录；[基线](current-baseline.md)描述源码，[设备支持](device-support.md)描述实际运行证据。
+更新日期：2026 年 10 月 12 日（墨尔本）。**Google Play 封闭测试已于 10 月 10 日正式开始；0.1.6（10）已向选定测试者开放，0.1.7（11）更新已提交 Alpha 审核。** 起算日与招募情况来自用户确认，版本状态来自本次实际 Console 观察。本文是发布状态、产物与声明的唯一记录；[基线](current-baseline.md)描述源码，[设备支持](device-support.md)描述实际运行证据。
 
 ## 当前闭测更新
 
-10 月 10 日 11:08 左右已发送 0.1.6（Android versionCode 10）更新，Console 显示 **Changes in review**，唯一变更为 Alpha 的 `0.1.6 (10) - first-run tutorials`，Start full rollout。观察时自动快速检查仍在运行，完成后进入审核；不能据此认定已获批或测试者已收到新版。Managed publishing off，沿用既有测试群、178 个国家／地区和 100% Alpha rollout。证据 `builds/release-0.1.6/changes-in-review.png`。
+10 月 12 日 15:51 左右已发送 `0.1.7 (11) - saving and analytics`，Console 显示 **Changes in review**，唯一变更为 Alpha 的 Start full rollout。自动快速检查仍在运行，成功后进入审核；不能据此认定已获批或测试者已收到新版。Managed publishing off，沿用既有测试群、178 个国家／地区和 100% Alpha rollout。证据 `builds/release-0.1.7/changes-in-review.png`、`console-submission.json`。
 
-本次保留经典／记忆各自的 SQLite 教学确认，并新增真实 hook＋SQLite 回归。用户遇到的重复教学来自旧私有教学体验包强制重播的初始化，修复后从已保存确认恢复。公开构建保留经典千关、50 副关、黑色记忆百题、21 语种、十五款容器与现行分析设置；内部工具和调色入口关闭，推荐、Premium、付费门槛和内购未实施。
+本次修复 App 分类维度的发送编码、操作事件缺失的辅助组合，以及小数活动时间戳导致玩家保存事务回滚的问题；不清库、不回填历史。商店包也包含 main 此前已验收的共享排序内核／原格式适配、既有 schema 1→2 增量和 Android 静音／振动模式的媒体音效修复。公开经典千关、50 副关、记忆百题和规则保持；机关体验、调色及其他内部入口仍关闭，推荐、Premium 与内购未实施。
 
-送审前实际观察 0.1.5（9）为 Available to selected testers，Released on 10 Oct 04:03；证据 `builds/release-0.1.6/previous-alpha-available.png`。它仍是本次已确认可用的闭测版本；新更新审核不等于公开生产发行。
+送审前实际观察 0.1.6（10）为 Available to selected testers，Released on 10 Oct 11:31；证据 `builds/release-0.1.7/previous-alpha-available.png`。它仍是本次已确认可用的闭测版本；新更新送审不等于公开生产发行。
 
 ## 最终已上传产物
 
 | 位置 | SHA-256 |
 | --- | --- |
-| builds/play/bottle-harmony-0.1.6-10.aab | 85b8a3ae4c75dc92ca3b06f1e0059a388621cc1c3c7cd037dbf0376fc437b6a7 |
-| builds/play/bottle-harmony-0.1.6-10.apk | 404504d12544eb6f727b465e1e824d39da2fb5e2eaddf07605b59fbefd119f82 |
-| builds/play/bottle-harmony-0.1.6-10-mapping.txt | df59ee23e2f328968405351bc50168f543755f307ebc11b8a9b195654c6fcbcc |
+| builds/play/bottle-harmony-0.1.7-11.aab | 3b55847769a8b444908f55ad23714fcff0a4fff8d432220ccded1bbbdcab3329 |
+| builds/play/bottle-harmony-0.1.7-11.apk | 17ae556926519272f49119b11001f08a1d99e6835fd9b91b2dbddb531705a103 |
+| builds/play/bottle-harmony-0.1.7-11-mapping.txt | df59ee23e2f328968405351bc50168f543755f307ebc11b8a9b195654c6fcbcc |
 
-构建源码基于 main 的 cbb3178，144 个运行源码／配置文件指纹在构建期间一致。后续 aff0ac1 只修正回归测试输入类型，未改变运行包。构建、包检查、指纹、映射、升级读回和 Console 证据均在 `builds/release-0.1.6/`；必要前版证据留在对应忽略目录。
+运行源码提交为 main 的 `199a5f5`。255 个输入指纹和最终核对在 `builds/release-0.1.7/`；构建期间其他任务只向 package.json 增加离线主题命令，排除 scripts 后配置与运行源码一致。题库 SQLite 与 0.1.6 精确相同。APK 从实际上传的 AAB 派生。
 
-`npm run android:store` 使用原上传证书、APP_VARIANT=store、内部工具关闭、Production 分析环境、双 ABI Release 与 R8；APK 由实际上传 AAB 派生。清单不可调试，最低 API 24、目标 API 36，系统备份关闭，包内 proguard.map 与保存的 mapping 哈希一致。Console 已附加 ReTrace 映射与原生符号。
+`npm run android:store` 使用原上传证书、APP_VARIANT=store、内部工具关闭、Production 分析环境、双 ABI Release 与 R8。最终 AAB／派生 APK 的签名、版本、Production 配置、权限、16 KB LOAD／ZIP 对齐检查通过；AAB 内 proguard.map 与保存映射一致，Console 已附加 ReTrace 映射与原生符号。清单不可调试，最低 API 24、目标 API 36，系统备份关闭。Production Android 客户端为 `1:947509375072:android:ff971b2ee151ed379b9305`；静态分析／广告默认值为 false，启动按 SQLite 偏好配置。
 
-最终 AAB／派生 APK 的签名、版本、Production 配置、网络权限、广告及敏感权限排除、16 KB LOAD／ZIP 对齐检查通过。Production Android 客户端为 1:947509375072:android:ff971b2ee151ed379b9305。静态分析收集和广告相关默认值为 false，启动按 SQLite 偏好配置。无广告 ID、定位、麦克风、摄像头、联系人、存储或悬浮窗权限；网络能力供在线分析使用。
-
-20 个 ARM64 原生库保留 13 项 RELRO 末端取整警告，填充区无可写分配节，strictRelroChecklistPassed=false；未改预编译 ELF 或弱化 RELRO。构建还保留上游 play-services-auth-21.5.0 的 R8 stack-map 警告，成功构建不表示这些工具链问题已消除。
+20 个 ARM64 原生库仍有 13 项 RELRO 末端取整警告，填充区无可写分配节，strictRelroChecklistPassed=false；未改预编译 ELF 或弱化 RELRO。构建仍有上游 play-services-auth-21.5.0 的 R8 stack-map 警告；成功构建不表示这些问题已消除。
 
 ## 验证覆盖
 
-本批次全量 **241 项自动回归、TypeScript 与 ESLint 通过**，包括经典／记忆教学确认、重新挂载与 SQLite 冷恢复。独立 API 34 模拟器使用原上传签名 0.1.5（9）和本次精确 AAB 派生 0.1.6（10）APK，完成覆盖升级与二次冷启：八张关键表、教学确认、棋盘与撤销、钱包、偏好、安装身份和已有统计均保留，完整性与外键读回通过。测试存档由真实仓库接口离线生成，非真实玩家数据；原有关闭分析偏好保持。
+统计修复通过 **447 项自动回归、TypeScript 与 ESLint**；随后只提升发布版本，未再改运行代码。独立 API 34 模拟器 Test Release 的 Firebase DebugView 实际收到 `level_1`／`level_2`、`first_clear=yes`、`day_0`，无提示／一次提示的完成与操作辅助组合一致。首次有效日落盘、两关首通、2/5 券、五步撤销、偏好、身份与统计冷启动读回通过；范围及精确 Test 包见[设备支持](device-support.md)。Test 收件不代表 Production 全事件验收或旧报表回填。
 
-本次原生验收限于启动与存储恢复，未操作真实手机或逐场景画面，不是 16 KB 原生运行或 Production 云端收件验收。0.1.5 Test 的 Google HTTP 204／DebugView、Production 候选的 16 KB 启动及更早教学画面证据仍只属于各自所测产物，不能延伸为本次全部路径已通过。私有 iPhone 修复包已构建验签，但设备断连导致安装未完成；未把旧包视为已更新。具体范围与持续性能、声音和低端设备待验项见[设备支持](device-support.md)。本次没有重新运行远端 Expo Doctor、React Native Directory 或 npm 审计。
+发布前另用 0.1.6 验收所留的合成 schema 1 存档，由 0.1.7 仓库离线打开并执行原有 schema 1→2 增量：八张关键表内容、棋盘与撤销、经典／记忆教学、钱包、偏好、安装身份和已有统计保留，关闭分析偏好保持，SQLite 完整性与外键通过。证据 `builds/release-0.1.7/upgrade-verification.json`；这是仓库升级检查，非最终 Production APK 的原生原地升级。未操作真实玩家手机或数据库，未卸载、清数据或重置偏好。
+
+本次最终 Production 包完成构建和静态检查，未重新做真机、16 KB 原生运行、长时间性能或 Production 云端全场景验收。已有 0.1.6 精确 AAB 派生包的原生升级／二次冷启证据仍仅属于该产物；Test、桌面和商店审核互不替代。设备与性能缺口由[设备支持](device-support.md)维护。本次未重新运行远端 Expo Doctor、React Native Directory 或 npm 审计。
 
 ## 身份、素材与声明
 
@@ -44,10 +44,10 @@
 
 ## 外部测试与发行边界
 
-Alpha 已绑定独立 Google 测试群，加入入口及进行中的任务见[测试安排](play-testing-plan.md)。用户确认已招募足够测试人员，正式起算日为 **2026 年 10 月 10 日（墨尔本）**。精确人数、每位测试者的连续资格及平台认可的时长仍按本应用 Console 记录核对；本次没有联系测试者或核对实际反馈、Production 分析收件。
+Alpha 已绑定独立 Google 测试群，加入入口及进行中的任务见[测试安排](play-testing-plan.md)。用户确认已招募足够测试人员，正式起算日为 **2026 年 10 月 10 日（墨尔本）**。精确人数、每位测试者的连续资格及平台认可的时长仍按本应用 Console 记录核对；本次没有联系测试者或核对实际反馈；Production 收件核查范围见[统计专题](gameplay-statistics-plan.md)。
 
 闭测已经开始，旧的“没有玩家时可重建开发基线”授权不再适用。后续更新必须保留现有 SQLite 进度、钱包、偏好、身份与统计；保存失败不得清库或覆盖为新进度。
 
-此前按该个人账号情况核查的准备要求为本应用至少 12 名真实测试者连续加入封闭测试 14 天并实际试玩，再申请正式发布权限；数独记录不能替代，达到天数不自动获批。本次没有重新核验政策或 Console 资格，连续资格与正式发布申请条件须按本应用 Console 复核。参考[Google 官方要求](https://support.google.com/googleplay/android-developer/answer/14151465?hl=en)。用户选择完成封闭测试后申请正式发行，不另做 Early Access。
+此前按该个人账号情况核查的准备要求为本应用至少 12 名真实测试者连续加入封闭测试 14 天并实际试玩，再申请正式发布权限；数独记录不能替代，达到天数不自动获批。10 月 12 日仪表盘显示 12 名测试者连续加入两天，申请生产权限仍不可用；该观察不是每位测试者实际试玩或未来资格的证明。参考[Google 官方要求](https://support.google.com/googleplay/android-developer/answer/14151465?hl=en)。用户选择完成封闭测试后申请正式发行，不另做 Early Access。
 
 当前发布范围为 Google 手机／平板 Alpha 封闭测试，尚未确认公开生产发行。Apple 商店、TV 商店与游戏网页公网部署均未确认发布；公开隐私页面部署不等于游戏网页部署。13+ 与 Required 申报不证明所有地区免同意或完整合规，Apple privacy 尚未提交。真实设备、持续体验与性能缺口由[设备支持](device-support.md)统一维护。

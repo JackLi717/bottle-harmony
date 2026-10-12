@@ -6,7 +6,7 @@
 
 当前已实现 `product-metrics-v1`：经典／副关／重玩与记忆统计适配、单调时间切片、挑战和首次体验事实、长期分布、统一提示请求、默认开启的在线采集、SQLite 上传队列、原生 Firebase Analytics，以及本地报告命令。已有 `gameplay-v1`／`memory-black-tracking-v2` 继续保留各自口径；新统计有独立观察起点，不从旧日志编造历史。
 
-两个 Spark 免费项目已创建，分别注册相同应用身份 `com.bottleharmony.app` 的 Android、iOS 应用，关联独立 GA4 属性；未绑定账单。每个属性已注册 28 个事件维度、24 个数值指标。报告的具体配置和验证状态见下文。Production 收件核查记录在忽略的 `builds/analytics-audit-2026-10-12/report.json`；分类字段与辅助组合的源码修复已通过 Test 原生／云端样本，准确范围见[设备支持](device-support.md)，尚未发布到商店，不以源码接入推定全部事件或真机验收。
+两个 Spark 免费项目已创建，分别注册相同应用身份 `com.bottleharmony.app` 的 Android、iOS 应用，关联独立 GA4 属性；未绑定账单。每个属性已注册 28 个事件维度、24 个数值指标。报告的具体配置和验证状态见下文。Production 收件核查记录在忽略的 `builds/analytics-audit-2026-10-12/report.json`；分类字段与辅助组合的源码修复已通过 Test 原生／云端样本，准确范围见[设备支持](device-support.md)，已随 0.1.7（11）提交 Alpha，尚待审核；不以源码接入推定全部事件或真机验收。
 
 本方案不改变关卡、免费辅助、钱包、教学、解锁、记忆规则或动画。商业权益及其未来事件仍由[商业规则](gameplay-ideas.md#后续商业规则无广告推荐与-premium)维护；内容及设备实际状态分别见[当前基线](current-baseline.md)、[设备支持](device-support.md)。
 

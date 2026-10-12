@@ -78,17 +78,17 @@ T517D／Android 15 实测复现了一条确定路径：Play 安装的 0.1.4（8�
 
 当前源码已改为 Android 允许在铃声静音／振动时播放媒体音效，保留 iOS 原静音行为。独立 `com.bottleharmony.engineacceptance` Release 包在同一手机 NORMAL／VIBRATE／SILENT 均启动倒水音轨；SILENT 下完整重玩记录五次倒水和一次礼花，关闭应用音效后同流程零次播放。音频相关 13 项回归、TypeScript、ESLint 通过。证据在 `builds/audio-silent-investigation/`，测试 APK SHA-256 为 `e9291c94a727d7fc9d8e1d98fbd7f53c37d3909629cbb022cf8b72b0c8e800d2`。
 
-测量使用系统 AudioTrack 播放事件，不是录音、扬声器听感、同步延迟或 S25 Ultra 验收。原 Play 包没有被覆盖或清数据，待解第 17 关棋盘与 5/5 提示券前后相同；临时铃声模式已恢复 NORMAL。该修复尚未上传商店。三星 Gaming Hub 的独立游戏静音和单应用音频路由仍是待测试者核对的系统设置，不能由此认定其设备有兼容性缺陷。
+测量使用系统 AudioTrack 播放事件，不是录音、扬声器听感、同步延迟或 S25 Ultra 验收。原 Play 包没有被覆盖或清数据，待解第 17 关棋盘与 5/5 提示券前后相同；临时铃声模式已恢复 NORMAL。该修复已随 0.1.7（11）提交 Alpha，具体审核状态见[发布记录](release-readiness.md)。三星 Gaming Hub 的独立游戏静音和单应用音频路由仍是待测试者核对的系统设置，不能由此认定其设备有兼容性缺陷。
 
 ## 在线统计修复的 Test 验收（10 月 12 日）
 
-当前源码修复 App 自定义维度的整数编码和操作事件缺失的辅助组合；同时修复实际验证发现的首次有效日小数时间戳写入 STRICT 队列失败。这三项不改变玩家 schema、统计版本、游戏规则或权益，不清库、不补历史；源码修复尚未上传 Play。
+当前源码修复 App 自定义维度的整数编码和操作事件缺失的辅助组合；同时修复实际验证发现的首次有效日小数时间戳写入 STRICT 队列失败。这三项不改变玩家 schema、统计版本、游戏规则或权益，不清库、不补历史；源码修复已随 0.1.7（11）提交 Alpha，审核状态见[发布记录](release-readiness.md)。
 
 独立新建 Pixel 4a／Android API 34 模拟器使用 Firebase Test Release：原生 Google HTTP 204，Test GA4（558291890）DebugView 实际显示 `level_1`／`level_2`、`first_clear=yes`、`since_activation=day_0`；第 1 关无提示、第 2 关一次免费提示后通关，完成与操作事件分别一致携带 `nohint_nomelt_noreserve`／`hint_nomelt_noreserve`，操作次数和时长仍为数值。进入棋盘停留超过十秒后继续操作与通关正常，447 项自动回归、TypeScript、ESLint 通过。
 
 覆盖旧 Test 候选后，原库的进度、偏好、会话、液层、完成记录和安装身份均保留，统计计数只增加实际新访问；基线已有的 schema 1→2 引擎增量也按原逻辑执行。本轮最终包两关首通、2/5 提示券、五步撤销历史、月光瓶／符号开启／音效关闭偏好及首次事实／摘要冷启动前后相同，SQLite 完整性与外键检查通过，上传待发零。旧候选 UI 曾显示未落盘动作，因此升级比对只采用实际读回的已提交库，未把未保存的通关当作旧进度。全部为临时模拟器合成数据，没有读取、覆盖或清理真实玩家应用。
 
-证据 `builds/analytics-fix-test/verification.json`、`storage-verification.json`、原生日志及数据库副本；最终 Test APK SHA-256 为 `e7bf1f1730d4ec9a7227c84a2b74d6a1c8ffa449b7350f42d364d613fb6270b3`。DebugView 证明本轮样本的云端收件，不等于已处理探索报表、历史回填、全部 27 事件或真机／长时间性能验收；未修改 Production 或商店发布。
+证据 `builds/analytics-fix-test/verification.json`、`storage-verification.json`、原生日志及数据库副本；最终 Test APK SHA-256 为 `e7bf1f1730d4ec9a7227c84a2b74d6a1c8ffa449b7350f42d364d613fb6270b3`。DebugView 证明本轮样本的云端收件，不等于已处理探索报表、历史回填、全部 27 事件或真机／长时间性能验收；该 Test 验证未向 Production 发事件；随后商店包送审状态见[发布记录](release-readiness.md)。
 
 ## 0.1.5 在线统计的原生证据
 
@@ -102,7 +102,7 @@ Production 上传证书／R8 候选 APK 在独立模拟器运行，真实 16384 
 
 ## 排序引擎升级验收（10 月 10 日）
 
-技术规划先提交为 2efbf9a。当前升级源码未上传 Google Play，不改变已提交 0.1.6（10）的发布证据。正式内容库 SHA-256 仍为 06863e76f853042dfe230dafbf9b4a9a38b154c128550c585969eac4c0bad52e。
+技术规划先提交为 2efbf9a。升级源码已随 0.1.7（11）提交 Alpha，不改变先前 0.1.6（10）产物的证据范围。正式内容库 SHA-256 仍为 06863e76f853042dfe230dafbf9b4a9a38b154c128550c585969eac4c0bad52e。
 
 - 284／284 项完整自动回归通过，覆盖 1000 主线完整参考路线与独立旧规则逐步比较、50 副关双状态、原记忆百题、机关／知识、目标、容量与 SQLite 错误恢复；另测可选诊断计数、原生帧解析、有界自动渲染事件／镜像分段、75 组完整路线与 SVG 诊断／实验的可撤回／公开包隔离。随后帧报告修正的六项专项回归通过，包含新增的操作／镜像／窗口隔离和有效呈现时间保留；类型检查与 lint 通过。
 - 实际 schema 1 库副本在桌面升级后，按相同启动操作对照规划提交的旧实现，26 张原表完全一致。Android API 34 隔离模拟器安装开发签名内部 Release、植入离线测试库并冷启后，真实 Expo SQLite 升为 schema 2，关键进度、撤销、记忆、偏好和身份保留，完整性／外键通过；二次冷启读回同样保留这些数据。这不是手机私有存档的原地升级证据。
